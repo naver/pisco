@@ -1,6 +1,6 @@
 # PISCO/OSCAR
 
-PISCO is a model designed for faster RAG inference. Given some RAG collection, PISCO offers to precompute and store embeddings for each of your documents. During inference, instead of using the texts, PISCO features an LLM which can work from the embeddings representations directly. 
+PISCO (https://arxiv.org/abs/2501.16075) is a model designed for faster RAG inference. Given some RAG collection, PISCO offers to precompute and store embeddings for each of your documents. During inference, instead of using the texts, PISCO features an LLM which can work from the embeddings representations directly. 
 
 PISCO is a **compress-then-generate** model:
 
@@ -10,7 +10,8 @@ PISCO is a **compress-then-generate** model:
 
 It is implemented as a huggingface (v.4) pretrained model.
 
-OSCAR is very similar to PISCO except that the compression operation is made in a query-dependent fashion (it boosts accuracy) and with a small compressor model (to keep latency advantages).
+OSCAR (https://arxiv.org/abs/2504.07109) is similar to PISCO except that the compression operation is made in a query-dependent fashion (it boosts accuracy) and with a small compressor model (to keep latency advantages).
+
 
 ---
 
