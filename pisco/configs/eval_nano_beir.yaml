@@ -1,0 +1,47 @@
+max_length: 256
+data_local_cache: /beegfs/scratch/project/calmar/rpisco/eval_data_cache
+batch_size: 24
+
+model_name_or_path: null
+out_dir: null
+
+datasets:
+ - document_collection: nano-beir/arguana
+   query_collection: nano-beir/arguana
+   collection_name: arguana
+ - document_collection: nano-beir/climate-fever
+   query_collection: nano-beir/climate-fever
+   collection_name: climate_fever
+ - document_collection: nano-beir/dbpedia-entity
+   query_collection: nano-beir/dbpedia-entity
+   collection_name: dbpedia
+ - document_collection: nano-beir/fever
+   query_collection: nano-beir/fever
+   collection_name: fever
+ - document_collection: nano-beir/fiqa
+   query_collection: nano-beir/fiqa
+   collection_name: fiqa
+ - document_collection: nano-beir/hotpotqa
+   query_collection: nano-beir/hotpotqa
+   collection_name: hotpotqa
+ - document_collection: nano-beir/msmarco
+   query_collection: nano-beir/msmarco
+   collection_name: msmarco
+ - document_collection: nano-beir/nfcorpus
+   query_collection: nano-beir/nfcorpus
+   collection_name: nfcorpus
+ - document_collection: nano-beir/nq
+   query_collection: nano-beir/nq
+   collection_name: nq
+ - document_collection: nano-beir/quora
+   query_collection: nano-beir/quora
+   collection_name: quora
+ - document_collection: nano-beir/scidocs
+   query_collection: nano-beir/scidocs
+   collection_name: scidocs
+ - document_collection: nano-beir/scifact
+   query_collection: nano-beir/scifact
+   collection_name: scifact
+ - document_collection: nano-beir/webis-touche2020
+   query_collection: nano-beir/webis-touche2020
+   collection_name: webis_touche2020

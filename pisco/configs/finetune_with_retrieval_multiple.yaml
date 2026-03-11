@@ -1,0 +1,63 @@
+hf_training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 32
+  learning_rate: 1e-4
+  warmup_ratio: 0.05
+  weight_decay: 0.1
+  save_strategy: steps
+  save_steps: 1000
+  save_total_limit: 5
+  logging_strategy: steps
+  logging_steps: 50
+  eval_strategy: steps
+  eval_steps: 400
+  report_to: tensorboard
+  bf16: True
+  max_grad_norm: 1.
+  dataloader_num_workers: 1
+  remove_unused_columns: False
+
+data:
+  ret_training_dataset: /beegfs/scratch/user/mlouis/calmar/pisco/datasets/spladev3_8n_qds_with_mistral_labels.hf
+  gen_training_dataset: /beegfs/scratch/user/mlouis/calmar/pisco/datasets/spladev3_8n_qds_with_mistral_labels.hf
+  samples: 100000
+
+gen_collator_class: pisco.collator.FineTuningCollator
+
+gen_collator_kwargs:
+  compressor_max_length: 128  
+  decoder_max_length: 1024
+  topk_generation: 5
+  retrieval_output: False
+  chunk_docs: False
+
+ret_collator_class: pisco.collator.FineTuningCollator
+
+ret_collator_kwargs:
+  compressor_max_length: 128  
+  decoder_max_length: 1024
+  topk_generation: 1
+  nb_negs_per_query: 8
+  retrieval_output: True
+  chunk_docs: False
+
+out_dir: null
+
+model_name_or_path: null
+
+retrieval_pooling: mean 
+
+# The losses weights and params:
+contrastive_weight: 1.
+contrastive_temperature: 0.1
+kl_weight: 1.
+kl_temperature: 0.1
+generation_weight: 1.
+
+eval:
+  d_collection: beir/nfcorpus/test
+  q_collection: beir/nfcorpus/test
+  data_local_cache: /beegfs/scratch/project/calmar/retrieval/eval_data_hf
+  batch_size: 32  

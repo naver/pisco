@@ -1,0 +1,8 @@
+max_length: 256
+batch_size: 24
+
+model_name_or_path: null
+out_dir: null
+name: null
+
+benchmark: MTEB(eng, v2)

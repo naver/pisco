@@ -1,0 +1,55 @@
+hf_training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 32
+  learning_rate: 1e-4
+  warmup_ratio: 0.05
+  weight_decay: 0.1
+  save_strategy: steps
+  save_steps: 2400
+  save_total_limit: 5
+  logging_strategy: steps
+  logging_steps: 50
+  eval_strategy: steps
+  eval_steps: 400
+  report_to: tensorboard
+  bf16: True
+  max_grad_norm: 1.
+  dataloader_num_workers: 1
+  remove_unused_columns: False
+
+
+data:
+  training_dataset: EleutherAI/SmolLM2-135M-10B
+  samples: 100000
+
+collator_class: pisco.collator.PretrainingCollator
+
+collator_kwargs:
+  compressor_max_length: 128  
+  decoder_max_length: 512
+  ae_ratio: 0.5
+
+out_dir: null
+
+trainer_kwargs:
+  generation_weight: 1.  
+  eval_d_collection: beir/nfcorpus/test
+  eval_q_collection: beir/nfcorpus/test
+  data_local_cache: /beegfs/scratch/project/calmar/retrieval/eval_data_hf
+  eval_batch_size: 32  
+
+
+model:
+  init_args:
+    _target_: pisco.model.PISCO
+    config:
+      _target_: pisco.model.PISCOConfig
+      decoder_model_name: "Qwen/Qwen3-0.6B"
+      compressor_model_name: "Qwen/Qwen3-0.6B"
+      compr_rate: 16
+      compressor_mlp_hidden_dim: 4096
+      lora_decoder: True,  # lora on decoder (and decoder as compr)
+      lora_r_decoder: 64
+      attn_implementation: "flash_attention_2"

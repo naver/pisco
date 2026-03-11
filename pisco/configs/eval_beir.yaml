@@ -1,0 +1,21 @@
+max_length: 256
+data_local_cache: /beegfs/scratch/project/calmar/rpisco/eval_data_cache
+batch_size: 24
+
+model_name_or_path: null
+out_dir: null
+
+datasets:
+ - document_collection: beir/nfcorpus/test
+   query_collection: beir/nfcorpus/test
+   collection_name: nfcorpus
+ - document_collection: beir/fiqa/test
+   query_collection: beir/fiqa/test
+   collection_name: fiqa
+ - document_collection: beir/webis-touche2020/v2
+   query_collection: beir/webis-touche2020/v2
+   collection_name: webis_touche2020
+ - document_collection: beir/scidocs
+   query_collection: beir/scidocs
+   collection_name: scidocs
+ 
