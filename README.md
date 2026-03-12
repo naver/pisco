@@ -57,13 +57,14 @@ python train.py out_dir=PRETRAINED_MODEL_OUT_PATH \
 ```
 - a fine-tuning stage, during which PISCO/OSCAR is fine-tuned on RAG-QA data (though one can imagine other applications !). With a command like:
 ```
- --config-name=finetune out_dir=FINETUNED_MODEL_OUT_PATH \
+python --config-name=finetune out_dir=FINETUNED_MODEL_OUT_PATH \
     ++data.samples=1000 ++hf_training.logging_steps=1 ++hf_training.eval_steps=1 \
     ++model_name_or_path=PRETRAINED_MODEL_OUT_PATH
 ````
 
 If you use `data.samples=500000` and the appropriate backbones, you should reproduce PISCO results. We do not release the full data for OSCAR release, but you can produce a decent model using PISCO data and `++collator_kwargs.query_dependent=True` during fine-tuning.
 
+The configs used for training comprise elements from PISCOConfig (in model.py) with arguments from huggingface trainer as well as a few other arguments for data handling (see `train.py`).
 
 ## Data-preprocessing and collation
 
@@ -89,9 +90,9 @@ class MyCustomCollator(BaseCollator):
 
 > Rule: the number of `<MEM>` tokens in the decoder prompt must match the number of `<MEM>` tokens in the compressor input.
 
-## 
+## Comments about previous model releases
 
-Note that we released PISCO and OSCAR models from a completely different implementation of the code. THis one is much cleaner and it mostly reproduces the results (+/- ~1%). This implementation of PISCO/OSCAR collators places a number of `<MEM>` tokens proportional to the length of the input documents for compression (unlike in the papers). This implementation also uses a single <MEM> token, where the original PISCO code was using <MEM1>, <MEM2> ... but ablation shows it does not really matter. Also, this implementation systematically uses a "connector" 2-layer MLP between compressor hidden states and decoder input embeddings. This prevents the development of no-pretraining PISCO models, but it enables to use small compressors (which are faster, and generally about as good).
+We released PISCO and OSCAR models on huggingface from a completely different implementation of the code. This one is much cleaner and it mostly reproduces the results (+/- ~1%). This implementation of PISCO/OSCAR collators places a number of `<MEM>` tokens proportional to the length of the input documents for compression (unlike in the papers). This implementation also uses a single <MEM> token, where the original PISCO code was using <MEM1>, <MEM2> ... but ablation shows it does not really matter. Also, this implementation systematically uses a "connector" 2-layer MLP between compressor hidden states and decoder input embeddings. This prevents the development of no-pretraining PISCO models, but it enables to use small compressors (which are faster, and generally about as good).
 
 > For OSCAR, compression is query-dependent. The model class is agnostic to this choice: it only materializes with the `query_dependent` arg of the finetuning collator.
 
