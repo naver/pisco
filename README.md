@@ -1,4 +1,12 @@
-# PISCO/OSCAR
+
+[![arXiv PISCO](https://img.shields.io/badge/arXiv-PISCO-b31b1b.svg)](https://arxiv.org/abs/2501.16075)
+[![ACL 2025 Findings](https://img.shields.io/badge/ACL%202025-Findings-1f77b4.svg)](https://aclanthology.org/2025.findings-acl.800/)
+[![arXiv OSCAR](https://img.shields.io/badge/arXiv-OSCAR-b31b1b.svg)](https://arxiv.org/abs/2504.07109)
+[![ICLR 2026 Poster](https://img.shields.io/badge/ICLR%202026-Poster-4b44ce.svg)](https://openreview.net/forum?id=ideKAUWvFE)
+[![NAVER LABS Europe](https://img.shields.io/badge/NAVER%20LABS-Europe-03C75A.svg)](https://europe.naverlabs.com/)
+
+
+# PISCO/OSCAR Soft Compression Methods
 
 PISCO (https://arxiv.org/abs/2501.16075) is a model designed for faster RAG inference. Given some RAG collection, PISCO offers to precompute and store embeddings for each of your documents. During inference, instead of using the texts, PISCO features an LLM which can work from the embeddings representations directly. 
 
