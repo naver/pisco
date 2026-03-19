@@ -45,6 +45,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-hda65f42_9.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/c-ares-1.34.6-hb03c661_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-hbd8a1cb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/causal-conv1d-1.6.1.post4-cuda129py313h8c14261_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2026.2.25-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/charset-normalizer-3.4.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-8.3.1-pyh8f84b5b_1.conda
@@ -246,6 +247,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.3.3-hceb46e0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
+      - pypi: https://files.pythonhosted.org/packages/ee/36/3c303f92bafea7c3f97d68bbb83d18cc42e30cd0bfb1b7cfe589360f11d6/fla_core-0.4.2-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/60/ee/a3cba17965482b35c4990af90bad108e82c32edcb59911c37f318b5f4198/flash_linear_attention-0.4.2-py3-none-any.whl
       - pypi: ./
   dev:
     channels:
@@ -292,6 +295,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/bzip2-1.0.8-hda65f42_9.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/c-ares-1.34.6-hb03c661_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.2.25-hbd8a1cb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/causal-conv1d-1.6.1.post4-cuda129py313h8c14261_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2026.2.25-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/charset-normalizer-3.4.6-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/click-8.3.1-pyh8f84b5b_1.conda
@@ -495,6 +499,8 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-1.3.1-hb9d3cd8_2.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zlib-ng-2.3.3-hceb46e0_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
+      - pypi: https://files.pythonhosted.org/packages/ee/36/3c303f92bafea7c3f97d68bbb83d18cc42e30cd0bfb1b7cfe589360f11d6/fla_core-0.4.2-py3-none-any.whl
+      - pypi: https://files.pythonhosted.org/packages/60/ee/a3cba17965482b35c4990af90bad108e82c32edcb59911c37f318b5f4198/flash_linear_attention-0.4.2-py3-none-any.whl
       - pypi: ./
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-7_kmp_llvm.conda
@@ -996,6 +1002,26 @@ packages:
   purls: []
   size: 147413
   timestamp: 1772006283803
+- conda: https://conda.anaconda.org/conda-forge/linux-64/causal-conv1d-1.6.1.post4-cuda129py313h8c14261_0.conda
+  sha256: a70c7481f449adfd9d4205ae723656b556694fd4cc743019f3a4073713da39f7
+  md5: 42b01201f7d46cfea8614aa37c572584
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - cuda-cudart
+  - cuda-version >=12.9,<13
+  - libgcc >=14
+  - libstdcxx >=14
+  - libtorch >=2.10.0,<2.11.0a0
+  - packaging
+  - python >=3.13,<3.14.0a0
+  - python_abi 3.13.* *_cp313
+  - pytorch >=2.10.0,<2.11.0a0
+  license: BSD-3-Clause
+  license_family: BSD
+  purls:
+  - pkg:pypi/causal-conv1d?source=hash-mapping
+  size: 176897824
+  timestamp: 1773138856640
 - conda: https://conda.anaconda.org/conda-forge/noarch/certifi-2026.2.25-pyhd8ed1ab_0.conda
   sha256: a6b118fd1ed6099dc4fc03f9c492b88882a780fadaef4ed4f93dc70757713656
   md5: 765c4d97e877cdbbb88ff33152b86125
@@ -1241,6 +1267,14 @@ packages:
   - pkg:pypi/filelock?source=compressed-mapping
   size: 25845
   timestamp: 1773314012590
+- pypi: https://files.pythonhosted.org/packages/ee/36/3c303f92bafea7c3f97d68bbb83d18cc42e30cd0bfb1b7cfe589360f11d6/fla_core-0.4.2-py3-none-any.whl
+  name: fla-core
+  version: 0.4.2
+  sha256: cba3db29380002da3cbfc0db94d6efac19aaf528900d19c05c2765e8f3cc485b
+  requires_dist:
+  - torch
+  - einops
+  requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/linux-64/flash-attn-2.8.3-py313h16b89e1_3.conda
   sha256: e0ceaf3dfed36e3f7c59b45ea2efaa3c78941d13ac991f1b63e26d8c49e15a33
   md5: c48b509a87664cc2270e17931f4d43a6
@@ -1262,6 +1296,18 @@ packages:
   - pkg:pypi/flash-attn?source=hash-mapping
   size: 222093770
   timestamp: 1770094910288
+- pypi: https://files.pythonhosted.org/packages/60/ee/a3cba17965482b35c4990af90bad108e82c32edcb59911c37f318b5f4198/flash_linear_attention-0.4.2-py3-none-any.whl
+  name: flash-linear-attention
+  version: 0.4.2
+  sha256: c08be006ce4dbe1be81f54938ee8e6fc7968cfba397c8d06c7669e97b8c44c0d
+  requires_dist:
+  - fla-core==0.4.2
+  - transformers
+  - causal-conv1d>=1.4.0 ; extra == 'conv1d'
+  - matplotlib ; extra == 'benchmark'
+  - datasets>=3.3.0 ; extra == 'benchmark'
+  - pytest ; extra == 'test'
+  requires_python: '>=3.10'
 - conda: https://conda.anaconda.org/conda-forge/linux-64/fmt-12.1.0-hff5e90c_0.conda
   sha256: d4e92ba7a7b4965341dc0fca57ec72d01d111b53c12d11396473115585a9ead6
   md5: f7d7a4104082b39e3b3473fbd4a38229

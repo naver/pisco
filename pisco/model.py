@@ -12,7 +12,7 @@ appropriate embeddings computed by the compressor.
 """
 
 import os
-from typing import Any, Optional, Dict
+from typing import List, Optional, Dict
 from typing import cast, TYPE_CHECKING
 
 import torch
@@ -29,6 +29,7 @@ from transformers import (
 
 if TYPE_CHECKING:
     from transformers.generation import GenerationMixin
+    from transformers import TokenizersBackend
 
     # class for better type annotations
     class _BaseModelWithGenerate(PreTrainedModel, GenerationMixin):
@@ -37,8 +38,17 @@ if TYPE_CHECKING:
 
 
 class PISCOConfig(PretrainedConfig):
-
     model_type = "PISCO"
+    decoder_model_name: str
+    compressor_model_name: str
+    compr_rate: int
+    compressor_mlp_hidden_dim: int
+    lora_decoder: bool
+    lora_r_decoder: int
+    attn_implementation: str
+    device_map: Optional[str]
+    load_decoder: bool
+    decoder_gradient_checkpointing: bool
 
     def __init__(
         self,
@@ -49,8 +59,8 @@ class PISCOConfig(PretrainedConfig):
         lora_decoder: bool = True,  # TODO: this is mandatory right now
         lora_r_decoder: int = 64,
         attn_implementation: str = "flash_attention_2",
-        device_map=None,
-        load_decoder=True,
+        device_map: Optional[str] = None,
+        load_decoder: bool = True,
         decoder_gradient_checkpointing: bool = False,
         **kwargs,
     ):
@@ -76,7 +86,7 @@ class PISCOConfig(PretrainedConfig):
 class PISCO(PreTrainedModel):
     config_class = PISCOConfig
 
-    def __init__(self, config):
+    def __init__(self, config: PISCOConfig):
         super().__init__(config)
         self.decoder_tokenizer = self.create_decoder_tokenizer(config)
 
@@ -88,10 +98,11 @@ class PISCO(PreTrainedModel):
             )
 
         decoder_config = AutoConfig.from_pretrained(config.decoder_model_name)
+        hidden_size = decoder_config.hidden_size if hasattr(decoder_config, "hidden_size") else decoder_config.text_config.hidden_size
 
         self.compressor_tokenizer = self.create_compressor_tokenizer(config)
         self.compressor, self.connector = self.create_compressor_and_connector(
-            config, decoder_hidden_dim=decoder_config.hidden_size
+            config, decoder_hidden_dim=hidden_size
         )
 
         print("Base compressor nb parameters", self.compressor.num_parameters())
@@ -105,11 +116,11 @@ class PISCO(PreTrainedModel):
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
 
-    def create_decoder(self, config) -> "_BaseModelWithGenerate":
+    def create_decoder(self, config: PISCOConfig) -> PreTrainedModel:
         """
         Loads the base decoder.
         """
-        decoder = cast("_BaseModelWithGenerate", AutoModelForCausalLM.from_pretrained(
+        decoder = cast(PreTrainedModel, AutoModelForCausalLM.from_pretrained(
             config.decoder_model_name,
             attn_implementation=self.config.attn_implementation,
             dtype=torch.bfloat16,
@@ -129,13 +140,10 @@ class PISCO(PreTrainedModel):
 
         return decoder
 
-    def create_decoder_tokenizer(self, config: PISCOConfig):
-        decoder_tokenizer = cast(
-            Any,
-            AutoTokenizer.from_pretrained(
-                config.decoder_model_name, padding_side="left", truncation_side="right"
-            ),
-        )
+    def create_decoder_tokenizer(self, config: PISCOConfig) -> "TokenizersBackend":
+        decoder_tokenizer = cast("TokenizersBackend", AutoTokenizer.from_pretrained(
+            config.decoder_model_name, padding_side="left", truncation_side="right"
+        ))
 
         decoder_tokenizer.mem_token = "<MEM>"
         decoder_tokenizer.add_special_tokens(
@@ -163,13 +171,17 @@ class PISCO(PreTrainedModel):
 
         return decoder_tokenizer
 
-    def create_compressor_and_connector(self, config, decoder_hidden_dim):
-        compressor = AutoModelForCausalLM.from_pretrained(
+    def create_compressor_and_connector(
+            self, 
+            config: PISCOConfig, 
+            decoder_hidden_dim: int
+        ) -> tuple["_BaseModelWithGenerate", nn.Sequential]:
+        compressor = cast("_BaseModelWithGenerate", AutoModelForCausalLM.from_pretrained(
             config.compressor_model_name,
             attn_implementation=self.config.attn_implementation,
             dtype=torch.bfloat16,
             device_map=config.device_map,
-        )
+        ))
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
 
         connector = nn.Sequential(
@@ -180,9 +192,9 @@ class PISCO(PreTrainedModel):
 
         return compressor, connector
 
-    def create_compressor_tokenizer(self, config):
+    def create_compressor_tokenizer(self, config: PISCOConfig) -> "TokenizersBackend":
         compressor_tokenizer = cast(
-            Any,
+            "TokenizersBackend",
             AutoTokenizer.from_pretrained(
                 config.compressor_model_name, padding_side="left"
             ),
@@ -205,7 +217,7 @@ class PISCO(PreTrainedModel):
 
         return compressor_tokenizer
 
-    def compress(self, input_ids, attention_mask) -> list[torch.Tensor]:
+    def compress(self, input_ids: Optional[torch.LongTensor], attention_mask: Optional[torch.LongTensor]) -> torch.Tensor:
         """
         Compresses.
         It returns a list of embeddings, one for each input_ids,
@@ -243,7 +255,7 @@ class PISCO(PreTrainedModel):
             modules_to_save=["embed_tokens", "lm_head"],  # important
         )
 
-    def replace_embeddings(self, compressed_embs, dec_input_ids):
+    def replace_embeddings(self, compressed_embs: torch.Tensor, dec_input_ids: torch.LongTensor) -> torch.Tensor:
         """
         Replace memory tokens in the decoder input with the compressed embeddings
         This assumes (and checks) that there are as many elements compressed_embs as there are mem tokens in dec_input_ids
@@ -252,7 +264,7 @@ class PISCO(PreTrainedModel):
         B, L, H = dec_embeds.shape
 
         # Locate mem_token positions
-        mem_mask = dec_input_ids == self.decoder_tokenizer.mem_token_id
+        mem_mask = (dec_input_ids == self.decoder_tokenizer.mem_token_id)
 
         num_mem_tokens = mem_mask.sum().item()
         assert num_mem_tokens == compressed_embs.shape[0], (
@@ -276,10 +288,10 @@ class PISCO(PreTrainedModel):
 
     def forward(
         self,
-        compressor_input_ids: Optional[torch.LongTensor] = None,
-        compressor_attention_mask: Optional[torch.LongTensor] = None,
-        decoder_input_ids: Optional[torch.LongTensor] = None,
-        decoder_attention_mask: Optional[torch.LongTensor] = None,
+        compressor_input_ids: torch.LongTensor,
+        compressor_attention_mask: torch.LongTensor,
+        decoder_input_ids: torch.LongTensor,
+        decoder_attention_mask: torch.LongTensor,
         labels: Optional[torch.LongTensor] = None,
     ) -> Dict[str, torch.Tensor]:
         # Compression
@@ -296,7 +308,7 @@ class PISCO(PreTrainedModel):
 
         return {"loss": decoder_outputs.loss, "logits": decoder_outputs.logits}
 
-    def generate(self, model_input, max_new_tokens=128):
+    def generate(self, model_input: Dict[str, torch.LongTensor], max_new_tokens: int = 128) -> List[str]:
 
         (
             compressor_input_ids,
