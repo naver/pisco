@@ -10,7 +10,7 @@ the decoder is trained to generate from the compressed.
 
 import torch
 import numpy as np
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 from transformers import DefaultDataCollator
 
 from pisco.collator_utils import (
@@ -89,11 +89,23 @@ class PretrainingCollator(BaseCollator):
 
     def __init__(
         self,
+        compressor_tokenizer,
+        decoder_tokenizer,
+        compr_rate,
+        compressor_max_length=512,
+        decoder_max_length=1024,
+        *,
         ae_ratio=0.5,
-        *args,
         **kwargs,
     ):
-        super(PretrainingCollator, self).__init__(*args, **kwargs)
+        super(PretrainingCollator, self).__init__(
+            compressor_tokenizer=compressor_tokenizer,
+            decoder_tokenizer=decoder_tokenizer,
+            compr_rate=compr_rate,
+            compressor_max_length=compressor_max_length,
+            decoder_max_length=decoder_max_length,
+            **kwargs,
+        )
         self.ae_ratio = ae_ratio
 
     def prepare_for_autoencoding(self, text: str, text_ids: List[int]):
@@ -232,11 +244,23 @@ class PretrainingCollator(BaseCollator):
 class AgentTrajCollator(BaseCollator):
     def __init__(
         self,
+        compressor_tokenizer,
+        decoder_tokenizer,
+        compr_rate,
+        compressor_max_length=512,
+        decoder_max_length=1024,
+        *,
         p_compress=0.5,
-        *args,
         **kwargs,
     ):
-        super(AgentTrajCollator, self).__init__(*args, **kwargs)
+        super(AgentTrajCollator, self).__init__(
+            compressor_tokenizer=compressor_tokenizer,
+            decoder_tokenizer=decoder_tokenizer,
+            compr_rate=compr_rate,
+            compressor_max_length=compressor_max_length,
+            decoder_max_length=decoder_max_length,
+            **kwargs,
+        )
         self.p_compress = p_compress
 
     def trajectory_compression(
@@ -372,20 +396,32 @@ class FineTuningCollator(BaseCollator):
 
     def __init__(
         self,
-        query_dependent=False,
+        compressor_tokenizer,
+        decoder_tokenizer,
+        compr_rate,
+        compressor_max_length=512,
+        decoder_max_length=1024,
+        *,
+        query_dependent: bool = False,
         chunk_docs: bool = False,  # If True, then docs exceed compressor_max_lengths are chunked
         chunk_overlap: int = 0,  # how much (number of tokens) the chunks should overlap with chunk_docs=True
-        n_max_chunks: int = None,  # in case of chunking, upper bound on chunk number.
+        n_max_chunks: Optional[int] = None,  # in case of chunking, upper bound on chunk number.
         topk_docs: int = 5,  # how many docs to keep per query.
         system_prompt: str = (
             "You are a helpful assistant. Your task is to extract relevant information from "
             "provided documents and to answer to questions as briefly as possible."
         ),
         user_prompt: str = "\n\nBackground:[documents]\n Question: [question]",
-        *args,
         **kwargs,
     ):
-        super(FineTuningCollator, self).__init__(*args, **kwargs)
+        super(FineTuningCollator, self).__init__(
+            compressor_tokenizer=compressor_tokenizer,
+            decoder_tokenizer=decoder_tokenizer,
+            compr_rate=compr_rate,
+            compressor_max_length=compressor_max_length,
+            decoder_max_length=decoder_max_length,
+            **kwargs,
+        )
         self.query_dependent = query_dependent
 
         self.chunk_docs = chunk_docs
@@ -396,6 +432,7 @@ class FineTuningCollator(BaseCollator):
 
         if (
             self.chunk_docs
+            and self.n_max_chunks is not None
             and (self.compressor_max_length + 1) * self.n_max_chunks
             > 0.1 * self.decoder_max_length
         ):
@@ -413,8 +450,8 @@ class FineTuningCollator(BaseCollator):
         if query_dependent:
             print("You are using a query-dependent collator.")
 
-    def preprend_query_to_docs(self, queries, documents):
-        query_documents = []
+    def preprend_query_to_docs(self, queries: List[str], documents: List[List[str]]) -> List[List[str]]:
+        query_documents: List[List[str]] = []
         for query, docs in zip(queries, documents):
             query_documents.append(
                 ["Query: " + query + "\n Document: " + d for d in docs]
@@ -452,7 +489,7 @@ class FineTuningCollator(BaseCollator):
 
         return prompt, prefix_length
 
-    def mask_labels_before_prefix(self, labels, prefix_lengths):
+    def mask_labels_before_prefix(self, labels: torch.Tensor, prefix_lengths) -> torch.Tensor:
         # Masking anything before the response thanks to prefix lengths:
         n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(
             1
@@ -472,7 +509,7 @@ class FineTuningCollator(BaseCollator):
         labels = labels.masked_fill_(prefix_mask, -100)
         return labels
 
-    def preprocess_for_compressor(self, texts):
+    def preprocess_for_compressor(self, texts: List[str]) -> Dict[str, Any]:
         input_ids = self.compressor_tokenizer(
             texts,
             padding="do_not_pad",
@@ -486,7 +523,7 @@ class FineTuningCollator(BaseCollator):
         )
         return self.compressor_pad(input_ids)
 
-    def torch_call(self, examples):
+    def torch_call(self, examples: List[Dict[str, Any]]) -> Dict[str, Any]:
         documents = [elt["docs"] for elt in examples]
         queries = [elt["query"] for elt in examples]
         labels = [elt["mistral_label"] for elt in examples]

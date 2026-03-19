@@ -5,6 +5,7 @@ All Rights Reserved.
 """
 
 import datasets
+import datasets.config
 import os
 import hydra
 
@@ -104,6 +105,8 @@ def main(config: DictConfig):
     else:
         ds = datasets.load_dataset(config.data.training_dataset, split="train")
 
+    if isinstance(ds, list):
+        raise TypeError("Expected a Hugging Face Dataset, got a list instead.")
     ds = ds.select(range(min(len(ds), config.data.samples)))
     ds = ds.train_test_split(test_size=min(64, len(ds) // 10))
     train_ds, eval_ds = ds["train"], ds["test"]
@@ -154,6 +157,6 @@ if __name__ == "__main__":
     torch.manual_seed(seed)
 
     datasets.disable_caching()
-    datasets.config.IN_MEMORY_MAX_SIZE = 200 * 1024**3  # 200 GB
+    datasets.config.IN_MEMORY_MAX_SIZE = float(200 * 1024**3)  # 200 GB
 
     main()

@@ -70,7 +70,7 @@ def rouge_wrapper(rouge, prediction, ground_truth):
     try:
         result = rouge.get_scores(prediction, ground_truth, avg=True)
         return result["rouge-1"]["f"], result["rouge-2"]["f"], result["rouge-l"]["f"]
-    except:
+    except Exception:
         return 0.0, 0.0, 0.0
 
 

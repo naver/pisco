@@ -12,6 +12,9 @@ appropriate embeddings computed by the compressor.
 """
 
 import os
+from typing import Any, Optional, Dict
+from typing import cast, TYPE_CHECKING
+
 import torch
 from torch import nn
 from peft import LoraConfig
@@ -24,7 +27,13 @@ from transformers import (
     PretrainedConfig,
 )
 
-from pisco.collator import add_memory_tokens_to_inputs
+if TYPE_CHECKING:
+    from transformers.generation import GenerationMixin
+
+    # class for better type annotations
+    class _BaseModelWithGenerate(PreTrainedModel, GenerationMixin):
+        pass
+
 
 
 class PISCOConfig(PretrainedConfig):
@@ -96,16 +105,16 @@ class PISCO(PreTrainedModel):
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
 
-    def create_decoder(self, config):
+    def create_decoder(self, config) -> "_BaseModelWithGenerate":
         """
         Loads the base decoder.
         """
-        decoder = AutoModelForCausalLM.from_pretrained(
+        decoder = cast("_BaseModelWithGenerate", AutoModelForCausalLM.from_pretrained(
             config.decoder_model_name,
             attn_implementation=self.config.attn_implementation,
             dtype=torch.bfloat16,
             device_map=config.device_map,
-        )
+        ))
         decoder.resize_token_embeddings(len(self.decoder_tokenizer))
 
         if config.lora_decoder:
@@ -121,8 +130,11 @@ class PISCO(PreTrainedModel):
         return decoder
 
     def create_decoder_tokenizer(self, config: PISCOConfig):
-        decoder_tokenizer = AutoTokenizer.from_pretrained(
-            config.decoder_model_name, padding_side="left", truncation_side="right"
+        decoder_tokenizer = cast(
+            Any,
+            AutoTokenizer.from_pretrained(
+                config.decoder_model_name, padding_side="left", truncation_side="right"
+            ),
         )
 
         decoder_tokenizer.mem_token = "<MEM>"
@@ -169,8 +181,11 @@ class PISCO(PreTrainedModel):
         return compressor, connector
 
     def create_compressor_tokenizer(self, config):
-        compressor_tokenizer = AutoTokenizer.from_pretrained(
-            config.compressor_model_name, padding_side="left"
+        compressor_tokenizer = cast(
+            Any,
+            AutoTokenizer.from_pretrained(
+                config.compressor_model_name, padding_side="left"
+            ),
         )
 
         compressor_tokenizer.mem_token = "<MEM>"
@@ -261,12 +276,12 @@ class PISCO(PreTrainedModel):
 
     def forward(
         self,
-        compressor_input_ids: torch.LongTensor = None,
-        compressor_attention_mask: torch.LongTensor = None,
-        decoder_input_ids: torch.LongTensor = None,
-        decoder_attention_mask: torch.LongTensor = None,
-        labels: torch.LongTensor = None,
-    ):
+        compressor_input_ids: Optional[torch.LongTensor] = None,
+        compressor_attention_mask: Optional[torch.LongTensor] = None,
+        decoder_input_ids: Optional[torch.LongTensor] = None,
+        decoder_attention_mask: Optional[torch.LongTensor] = None,
+        labels: Optional[torch.LongTensor] = None,
+    ) -> Dict[str, torch.Tensor]:
         # Compression
         embeddings = self.compress(compressor_input_ids, compressor_attention_mask)
 
@@ -345,7 +360,7 @@ class PISCO(PreTrainedModel):
         load_decoder=True,
         *args,
         **kwargs,
-    ):
+    ) -> "PISCO":
         """
         Loading: to take care of checkpoints containing only lora and not base model.
         """

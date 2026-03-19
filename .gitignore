@@ -5,3 +5,4 @@ __pycache__/
 /.idea
 /xRAG
 pisco_outputs/
+outputs/
