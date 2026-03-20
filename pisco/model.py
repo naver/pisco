@@ -72,7 +72,7 @@ class PISCOConfig(PretrainedConfig):
         self.compr_rate = compr_rate  # compression rate
         self.compressor_mlp_hidden_dim = compressor_mlp_hidden_dim
 
-        self.lora_decoder = lora_decoder  # boolean type, whether to use lora trsining
+        self.lora_decoder = lora_decoder  # boolean type, whether to use lora training
         self.lora_r_decoder = lora_r_decoder  # lora_r for lora training, we use 16 throughout the experiment.
 
         self.device_map = device_map
@@ -85,6 +85,7 @@ class PISCOConfig(PretrainedConfig):
 
 class PISCO(PreTrainedModel):
     config_class = PISCOConfig
+    supports_gradient_checkpointing = True
 
     def __init__(self, config: PISCOConfig):
         super().__init__(config)

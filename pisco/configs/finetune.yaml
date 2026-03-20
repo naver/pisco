@@ -1,3 +1,7 @@
+defaults:
+  - defaults
+  - _self_
+  
 hf_training:
   num_train_epochs: 1
   per_device_train_batch_size: 4
@@ -18,6 +22,7 @@ hf_training:
   max_grad_norm: 1.
   dataloader_num_workers: 1
   remove_unused_columns: False
+  gradient_checkpointing: True
 
 
 data:
@@ -30,6 +35,7 @@ collator_kwargs:
   compressor_max_length: 128  
   decoder_max_length: 512
 
-out_dir: null
+exp_name: finetune_${model_name_or_path}
+out_dir: .
 
 model_name_or_path: null

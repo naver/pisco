@@ -73,6 +73,12 @@ def compute_metrics(eval_pred, model):
     return metrics
 
 
+OmegaConf.register_new_resolver(
+    "sanitize_override_dirname",
+    lambda s: str(s).replace("/", "_") if s else "",
+)
+
+
 @hydra.main(config_path="configs", config_name="pretraining", version_base="1.3")
 def main(config: DictConfig):
     print("Training config:")

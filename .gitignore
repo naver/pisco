@@ -6,3 +6,5 @@ __pycache__/
 /xRAG
 pisco_outputs/
 outputs/
+*broom.yml
+*.sh

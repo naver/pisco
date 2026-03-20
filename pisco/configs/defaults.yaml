@@ -1,0 +1,16 @@
+user_dir: outputs
+
+hydra:
+  job:
+    chdir: true
+    config:
+      override_dirname:
+        kv_sep: ":"
+        item_sep: "--"
+        exclude_keys:
+          - exp_name
+  run:
+    dir: ${hydra:sweep.dir}
+  sweep:
+    dir: ${user_dir}/${exp_name}
+    subdir: ${sanitize_override_dirname:${hydra.job.override_dirname}}
