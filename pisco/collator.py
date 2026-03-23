@@ -484,7 +484,7 @@ class FineTuningCollator(BaseCollator):
             self.decoder_tokenizer.apply_chat_template(
                 messages[:-1] + [{"role": "assistant", "content": ""}],
                 tokenize=True,
-            )
+            )["input_ids"]
         )
 
         return prompt, prefix_length
