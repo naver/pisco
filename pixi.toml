@@ -38,6 +38,11 @@ causal-conv1d = ">=1.6"
 pisco = {path = ".", editable = true}
 flash-linear-attention = ">=0.4"
 
+[tasks]
+pretrain = "python pisco/train.py --config-name=pretraining"
+finetune = "python pisco/train.py --config-name=finetune"
+eval-qa = "python scripts/eval_agent_qa.py --checkpoint_path"
+
 [feature.dev.dependencies]
 ty = ">=0.0.23"
 ruff = ">=0.15"

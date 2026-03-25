@@ -65,7 +65,7 @@ python train.py out_dir=PRETRAINED_MODEL_OUT_PATH \
 ```
 - a fine-tuning stage, during which PISCO/OSCAR is fine-tuned on RAG-QA data (though one can imagine other applications !). With a command like:
 ```
-python --config-name=finetune out_dir=FINETUNED_MODEL_OUT_PATH \
+python train.py --config-name=finetune out_dir=FINETUNED_MODEL_OUT_PATH \
     ++data.samples=1000 ++hf_training.logging_steps=1 ++hf_training.eval_steps=1 \
     ++model_name_or_path=PRETRAINED_MODEL_OUT_PATH
 ````
