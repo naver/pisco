@@ -35,7 +35,7 @@ collator_kwargs:
   compressor_max_length: 128  
   decoder_max_length: 512
 
-exp_name: finetune_${model_name_or_path}
+exp_name: finetune_${sanitize_override_dirname:${path_after_user_dir:${model_name_or_path},${user_dir}}}
 out_dir: .
 
 model_name_or_path: null

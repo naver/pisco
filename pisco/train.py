@@ -23,6 +23,7 @@ from transformers import Trainer, TrainingArguments
 from pisco.metrics import hard_metrics
 from pisco.collator_utils import print_collated_sample
 from pisco.model import PISCO
+from pisco.hydra_utils import register_resolvers
 
 
 def preprocess_logits_for_metrics(logits, labels):
@@ -74,10 +75,7 @@ def compute_metrics(eval_pred, model):
     return metrics
 
 
-OmegaConf.register_new_resolver(
-    "sanitize_override_dirname",
-    lambda s: str(s).replace("/", "_") if s else "",
-)
+register_resolvers()
 
 
 @hydra.main(config_path="configs", config_name="pretraining", version_base="1.3")
