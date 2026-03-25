@@ -232,6 +232,8 @@ class PretrainingCollator(BaseCollator):
 
         self.assert_consistent_n_mems(compressor_inputs, decoder_inputs)
 
+        breakpoint()
+
         return {
             "compressor_input_ids": compressor_inputs["input_ids"],
             "compressor_attention_mask": compressor_inputs["attention_mask"],
@@ -482,8 +484,10 @@ class FineTuningCollator(BaseCollator):
         # To compute the labels mask
         prefix_length = len(
             self.decoder_tokenizer.apply_chat_template(
-                messages[:-1] + [{"role": "assistant", "content": ""}],
+                messages[:-1],
                 tokenize=True,
+                add_generation_prompt=True,
+                enable_thinking=False,
             )["input_ids"]
         )
 
@@ -493,7 +497,7 @@ class FineTuningCollator(BaseCollator):
         # Masking anything before the response thanks to prefix lengths:
         n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(
             1
-        ) - 4  # some margin for safety... TODO make this perfect but tedious...
+        )
         prefix_lengths = torch.LongTensor(
             prefix_lengths, device=labels.device
         ).unsqueeze(

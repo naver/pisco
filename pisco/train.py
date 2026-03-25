@@ -8,6 +8,7 @@ import datasets
 import datasets.config
 import os
 import hydra
+from typing import cast
 
 import numpy as np
 import random
@@ -101,7 +102,7 @@ def main(config: DictConfig):
         model = PISCO.from_pretrained(config.model_name_or_path)
     else:
         print("Creating new PISCO model")
-        model = instantiate(config.model.init_args)
+        model = cast(PISCO, instantiate(config.model.init_args))
 
     print(model)
 
