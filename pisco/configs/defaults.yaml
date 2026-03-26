@@ -1,4 +1,4 @@
-user_dir: outputs
+user_dir: ./outputs
 
 hydra:
   job:

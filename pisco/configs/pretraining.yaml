@@ -1,5 +1,6 @@
 defaults:
   - defaults
+  - optional local@_global_: local
   - _self_
 
 hf_training:

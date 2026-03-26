@@ -232,8 +232,6 @@ class PretrainingCollator(BaseCollator):
 
         self.assert_consistent_n_mems(compressor_inputs, decoder_inputs)
 
-        breakpoint()
-
         return {
             "compressor_input_ids": compressor_inputs["input_ids"],
             "compressor_attention_mask": compressor_inputs["attention_mask"],
