@@ -74,6 +74,23 @@ class BaseCollator(DefaultDataCollator):
             return_tensors="pt",
         )
 
+    def fit_chunks_to_mem_budget(self, chunks, n_mems, max_mem_slots):
+        """
+        Keep only chunked compressor inputs that can be represented by mem placeholders
+        in the decoder sequence budget.
+        """
+        kept_chunks = []
+        kept_n_mems = []
+        remaining_slots = max(0, int(max_mem_slots))
+        for chunk, n_mem in zip(chunks, n_mems):
+            n_mem = int(n_mem)
+            if n_mem > remaining_slots:
+                break
+            kept_chunks.append(chunk)
+            kept_n_mems.append(n_mem)
+            remaining_slots -= n_mem
+        return kept_chunks, kept_n_mems
+
 
 class PretrainingCollator(BaseCollator):
     """
@@ -273,9 +290,12 @@ class AgentTrajCollator(BaseCollator):
         """
         compressor_input_ids = []
         decoder_ids = []
+        mem_token_id = self.decoder_tokenizer.mem_token_id
         for tok_step, dec_tok_step, is_compressed in zip(
             tok_steps, dec_tok_steps, to_compress
         ):
+            if len(decoder_ids) >= self.decoder_max_length:
+                break
             decoder_ids.append(decoder_line_return_id)
             if is_compressed:
                 chunks = chunk_list(
@@ -287,13 +307,20 @@ class AgentTrajCollator(BaseCollator):
                     chunks, self.compressor_tokenizer, self.compr_rate
                 )
 
-                compressor_input_ids.extend(chunks)
-                decoder_ids.extend([self.decoder_tokenizer.mem_token_id] * sum(n_mems))
+                remaining_decoder_slots = self.decoder_max_length - len(decoder_ids)
+                used_chunks, used_n_mems = self.fit_chunks_to_mem_budget(
+                    chunks, n_mems, remaining_decoder_slots
+                )
 
-                # early stopping to respect max length (only approximately though):
-                if len(decoder_ids) > self.decoder_max_length:
+                if len(used_chunks) == 0:
                     break
 
+                compressor_input_ids.extend(used_chunks)
+                decoder_ids.extend([mem_token_id] * sum(used_n_mems))
+
+                # No room left to continue adding steps.
+                if len(decoder_ids) >= self.decoder_max_length:
+                    break
             else:
                 # early stopping to respect max length:
                 if len(decoder_ids) + len(dec_tok_step) > self.decoder_max_length:
@@ -378,6 +405,7 @@ class AgentTrajCollator(BaseCollator):
         ), f'{compressor_inputs["input_ids"].size(-1)} vs {self.compressor_max_length}'
 
         self.assert_consistent_n_mems(compressor_inputs, decoder_inputs)
+
 
         return {
             "compressor_input_ids": compressor_inputs["input_ids"],
