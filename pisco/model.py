@@ -39,16 +39,16 @@ if TYPE_CHECKING:
 
 class PISCOConfig(PretrainedConfig):
     model_type = "PISCO"
-    decoder_model_name: str
-    compressor_model_name: str
-    compr_rate: int
-    compressor_mlp_hidden_dim: int
-    lora_decoder: bool
-    lora_r_decoder: int
-    attn_implementation: str
-    device_map: Optional[str]
-    load_decoder: bool
-    decoder_gradient_checkpointing: bool
+    decoder_model_name: str = "Qwen/Qwen3-8B"
+    compressor_model_name: str = "Qwen/Qwen3-0.6B"
+    compr_rate: int = 16
+    compressor_mlp_hidden_dim: int = 4096
+    lora_decoder: bool = True
+    lora_r_decoder: int = 64
+    attn_implementation: str = "flash_attention_2"
+    device_map: Optional[str] = None
+    load_decoder: bool = True
+    decoder_gradient_checkpointing: bool = False
 
     def __init__(
         self,
@@ -218,13 +218,20 @@ class PISCO(PreTrainedModel):
 
         return compressor_tokenizer
 
-    def compress(self, input_ids: Optional[torch.LongTensor], attention_mask: Optional[torch.LongTensor]) -> torch.Tensor:
+    def compress(
+        self,
+        input_ids: Optional[torch.LongTensor],
+        attention_mask: Optional[torch.LongTensor],
+    ) -> torch.Tensor:
         """
         Compresses.
         It returns a list of embeddings, one for each input_ids,
         they may have different lengths
         """
-        last_hidden_states = self.compressor(
+        if input_ids is None:
+            raise ValueError("`input_ids` must not be None for compression.")
+
+        last_hidden_states: torch.Tensor = self.compressor(
             input_ids=input_ids,
             attention_mask=attention_mask,
             output_hidden_states=True,
@@ -235,7 +242,7 @@ class PISCO(PreTrainedModel):
         mask = input_ids == self.compressor_tokenizer.mem_token_id
 
         hidden_states = [
-            last_hidden_states[i, mask[i], :] for i in range(len(last_hidden_states))
+            last_hidden_states[i, mask[i], :] for i in range(last_hidden_states.shape[0])
         ]  # B-length list of (l_i, hc) shapes
 
         all_hidden_states = torch.cat(hidden_states, 0)  # (sum l_i, hc) shape
