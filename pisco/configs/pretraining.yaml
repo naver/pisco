@@ -48,7 +48,6 @@ model:
       compressor_mlp_hidden_dim: 4096
       lora_decoder: True
       lora_r_decoder: 64
-      attn_implementation: "flash_attention_2"
 
 compressor: Qwen/Qwen3-0.6B
 decoder: Qwen/Qwen3-0.6B

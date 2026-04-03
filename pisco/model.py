@@ -45,7 +45,7 @@ class PISCOConfig(PretrainedConfig):
     compressor_mlp_hidden_dim: int = 4096
     lora_decoder: bool = True
     lora_r_decoder: int = 64
-    attn_implementation: str = "flash_attention_2"
+    attn_implementation: Optional[str] = None
     device_map: Optional[str] = None
     load_decoder: bool = True
     decoder_gradient_checkpointing: bool = False
@@ -58,7 +58,7 @@ class PISCOConfig(PretrainedConfig):
         compressor_mlp_hidden_dim: int = 4096,
         lora_decoder: bool = True,  # TODO: this is mandatory right now
         lora_r_decoder: int = 64,
-        attn_implementation: str = "flash_attention_2",
+        attn_implementation: Optional[str] = None,
         device_map: Optional[str] = None,
         load_decoder: bool = True,
         decoder_gradient_checkpointing: bool = False,
@@ -75,9 +75,8 @@ class PISCOConfig(PretrainedConfig):
         self.lora_decoder = lora_decoder  # boolean type, whether to use lora training
         self.lora_r_decoder = lora_r_decoder  # lora_r for lora training, we use 16 throughout the experiment.
 
-        self.device_map = device_map
-
         self.attn_implementation = attn_implementation
+        self.device_map = device_map
 
         self.load_decoder = load_decoder
         self.decoder_gradient_checkpointing = decoder_gradient_checkpointing
@@ -117,15 +116,21 @@ class PISCO(PreTrainedModel):
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
 
+    @staticmethod
+    def _model_load_kwargs(config: PISCOConfig) -> Dict[str, object]:
+        """Common kwargs for AutoModelForCausalLM.from_pretrained."""
+        kw: Dict[str, object] = {"dtype": torch.bfloat16, "device_map": config.device_map}
+        if config.attn_implementation is not None:
+            kw["attn_implementation"] = config.attn_implementation
+        return kw
+
     def create_decoder(self, config: PISCOConfig) -> PreTrainedModel:
         """
         Loads the base decoder.
         """
         decoder = cast(PreTrainedModel, AutoModelForCausalLM.from_pretrained(
             config.decoder_model_name,
-            attn_implementation=self.config.attn_implementation,
-            dtype=torch.bfloat16,
-            device_map=config.device_map,
+            **self._model_load_kwargs(config),
         ))
         decoder.resize_token_embeddings(len(self.decoder_tokenizer))
 
@@ -179,14 +184,18 @@ class PISCO(PreTrainedModel):
         ) -> tuple["_BaseModelWithGenerate", nn.Sequential]:
         compressor = cast("_BaseModelWithGenerate", AutoModelForCausalLM.from_pretrained(
             config.compressor_model_name,
-            attn_implementation=self.config.attn_implementation,
-            dtype=torch.bfloat16,
-            device_map=config.device_map,
+            **self._model_load_kwargs(config),
         ))
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
 
+        hidden_size = getattr(
+            compressor.config, 
+            "hidden_size",
+            compressor.config.text_config.hidden_size
+        )
+
         connector = nn.Sequential(
-            nn.Linear(compressor.config.hidden_size, config.compressor_mlp_hidden_dim),
+            nn.Linear(hidden_size, config.compressor_mlp_hidden_dim),
             nn.ReLU(),
             nn.Linear(config.compressor_mlp_hidden_dim, decoder_hidden_dim),
         )
@@ -260,7 +269,7 @@ class PISCO(PreTrainedModel):
             lora_alpha=2 * lora_r,
             target_modules="all-linear",
             lora_dropout=0.1,
-            modules_to_save=["embed_tokens", "lm_head"],  # important
+            trainable_token_indices=[self.decoder_tokenizer.ae_token_id], # For pre-training
         )
 
     def replace_embeddings(self, compressed_embs: torch.Tensor, dec_input_ids: torch.LongTensor) -> torch.Tensor:
@@ -283,11 +292,10 @@ class PISCO(PreTrainedModel):
         # Replace embeddings in order
         mem_indices = mem_mask.view(-1).nonzero(as_tuple=False).squeeze(1)
 
-        # Flatten embeddings for easy indexing
-        dec_embeds_flat = dec_embeds.view(-1, H)
-
-        # Replace
-        dec_embeds_flat[mem_indices] = compressed_embs
+        # Flatten embeddings for easy indexing.
+        dec_embeds_flat = dec_embeds.reshape(-1, H)
+        # Use out-of-place index_copy to avoid in-place ops on autograd views.
+        dec_embeds_flat = dec_embeds_flat.index_copy(0, mem_indices, compressed_embs)
 
         # Restore shape
         dec_embeds = dec_embeds_flat.view(B, L, H)
@@ -351,17 +359,10 @@ class PISCO(PreTrainedModel):
     def save_pretrained(self, save_directory: str, **kwargs):
         """
         Save only the LoRA adapters and their configurations.
-        Some gymnastic to not save all parameters but still enable LoRA with the added tokens
+        Use PEFT standard artifacts for the decoder adapter.
         """
         self.config.save_pretrained(save_directory)
-        torch.save(
-            {
-                k: v
-                for k, v in self.decoder.state_dict().items()
-                if any(x in k for x in ["embed_tokens", "lm_head", "lora", "adapter"])
-            },
-            os.path.join(save_directory, "decoder_state.pt"),
-        )
+        self.decoder.save_pretrained(save_directory, safe_serialization=True)
         self.compressor.save_pretrained(os.path.join(save_directory, "compressor"))
         torch.save(
             self.connector.state_dict(), os.path.join(save_directory, "connector.pt")
@@ -386,26 +387,39 @@ class PISCO(PreTrainedModel):
         """
         # Load the configuration
         config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
-        config.attn_implementation = kwargs.get(
-            "attn_implementation", config.attn_implementation
-        )
-
         config.load_decoder = load_decoder
 
         model = cls(config)
 
         if load_decoder:
-            model.decoder.load_state_dict(
-                torch.load(
-                    os.path.join(pretrained_model_name_or_path, "decoder_state.pt")
-                ),
-                strict=False,
+            adapter_config_path = os.path.join(
+                pretrained_model_name_or_path, "adapter_config.json"
             )
+            decoder_state_path = os.path.join(
+                pretrained_model_name_or_path, "decoder_state.pt"
+            )
+
+            if os.path.exists(adapter_config_path):
+                model.decoder.load_adapter(
+                    pretrained_model_name_or_path, adapter_name="default"
+                )
+            elif os.path.exists(decoder_state_path):
+                # Backward compatibility with old checkpoints.
+                model.decoder.load_state_dict(
+                    torch.load(decoder_state_path),
+                    strict=False,
+                )
+            else:
+                raise FileNotFoundError(
+                    f"Could not find decoder adapter files in "
+                    f"{pretrained_model_name_or_path}. Expected either "
+                    f"'adapter_config.json' (new format) or "
+                    f"'decoder_state.pt' (legacy format)."
+                )
 
         model.compressor = AutoModelForCausalLM.from_pretrained(
             os.path.join(pretrained_model_name_or_path, "compressor"),
-            dtype=torch.bfloat16,
-            attn_implementation=config.attn_implementation,
+            **cls._model_load_kwargs(config),
         )
         model.connector.load_state_dict(
             torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"))

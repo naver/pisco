@@ -278,7 +278,6 @@ def main() -> None:
     parser.add_argument("--trajectory_max_chars", type=int, default=None, help="If set, keep only the last N characters of the trajectory text (helps fit context).")
 
     parser.add_argument("--device", type=str, default=None, help="e.g. cuda, cuda:0, cpu. Default: cuda if available else cpu.")
-    parser.add_argument("--attn_implementation", type=str, default=None, help="Override attention implementation (PISCO mode).")
     args = parser.parse_args()
 
     if args.batch_size != 1:
@@ -310,7 +309,6 @@ def main() -> None:
         pisco_model = PISCO.from_pretrained(
             args.checkpoint_path,
             load_decoder=True,
-            attn_implementation=args.attn_implementation,
         )
         pisco_model.to(device)
         pisco_model.eval()

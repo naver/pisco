@@ -32,14 +32,18 @@ flash-attn = ">=2"
 rouge = ">=1.0"
 tensorboard = ">=2"
 
+### For Qwen 3.5
 causal-conv1d = ">=1.6"
 
 [pypi-dependencies]
 pisco = {path = ".", editable = true}
+
+### For Qwen 3.5
 flash-linear-attention = ">=0.4"
 
 [tasks]
 pretrain = "python pisco/train.py --config-name=pretraining"
+agentic = "python pisco/train.py --config-name=agentic"
 finetune = "python pisco/train.py --config-name=finetune"
 eval-qa = "python scripts/eval_agent_qa.py --checkpoint_path"
 
