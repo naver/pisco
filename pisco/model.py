@@ -145,10 +145,12 @@ class PISCO(PreTrainedModel):
                 )
             print(f"Loading decoder adapter from {adapter_source}")
 
+        ### Load using AutoModelForImageTextToText if possible, otherwise fallback to AutoModelForCausalLM
+        ### It's important that when loading the pisco adapter, we use the same path as during piso training.
         try:
             decoder = cast(
                 PreTrainedModel,
-                AutoModelForCausalLM.from_pretrained(
+                AutoModelForImageTextToText.from_pretrained(
                     config.decoder_model_name,
                     **self._model_load_kwargs(config),
                 ),
@@ -157,7 +159,7 @@ class PISCO(PreTrainedModel):
             print(f"Error loading decoder: {e}")
             decoder = cast(
                 PreTrainedModel,
-                AutoModelForImageTextToText.from_pretrained(
+                AutoModelForCausalLM.from_pretrained(
                     config.decoder_model_name,
                     **self._model_load_kwargs(config),
                 ),
