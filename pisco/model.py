@@ -17,10 +17,11 @@ from typing import cast, TYPE_CHECKING
 
 import torch
 from torch import nn
-from peft import LoraConfig
+from peft import LoraConfig, PeftConfig, PeftModel
 
 from transformers import (
     AutoModelForCausalLM,
+    AutoModelForImageTextToText,
     AutoConfig,
     AutoTokenizer,
     PreTrainedModel,
@@ -49,6 +50,7 @@ class PISCOConfig(PretrainedConfig):
     device_map: Optional[str] = None
     load_decoder: bool = True
     decoder_gradient_checkpointing: bool = False
+    decoder_adapter_path: Optional[str] = None
 
     def __init__(
         self,
@@ -62,6 +64,7 @@ class PISCOConfig(PretrainedConfig):
         device_map: Optional[str] = None,
         load_decoder: bool = True,
         decoder_gradient_checkpointing: bool = False,
+        decoder_adapter_path: Optional[str] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -80,6 +83,7 @@ class PISCOConfig(PretrainedConfig):
 
         self.load_decoder = load_decoder
         self.decoder_gradient_checkpointing = decoder_gradient_checkpointing
+        self.decoder_adapter_path = decoder_adapter_path
 
 
 class PISCO(PreTrainedModel):
@@ -126,15 +130,48 @@ class PISCO(PreTrainedModel):
 
     def create_decoder(self, config: PISCOConfig) -> PreTrainedModel:
         """
-        Loads the base decoder.
+        Loads the base decoder and optionally loads a PEFT adapter from decoder_adapter_path.
         """
-        decoder = cast(PreTrainedModel, AutoModelForCausalLM.from_pretrained(
-            config.decoder_model_name,
-            **self._model_load_kwargs(config),
-        ))
+        adapter_source = config.decoder_adapter_path
+        has_adapter_checkpoint = False
+        if adapter_source is not None:
+            adapter_config_path = os.path.join(adapter_source, "adapter_config.json")
+            has_adapter_checkpoint = os.path.isdir(adapter_source) and os.path.exists(
+                adapter_config_path
+            )
+            if not has_adapter_checkpoint:
+                raise FileNotFoundError(
+                    f"decoder_adapter_path is set to {adapter_source}, but adapter_config.json was not found."
+                )
+            print(f"Loading decoder adapter from {adapter_source}")
+
+        try:
+            decoder = cast(
+                PreTrainedModel,
+                AutoModelForCausalLM.from_pretrained(
+                    config.decoder_model_name,
+                    **self._model_load_kwargs(config),
+                ),
+            )
+        except Exception as e:
+            print(f"Error loading decoder: {e}")
+            decoder = cast(
+                PreTrainedModel,
+                AutoModelForImageTextToText.from_pretrained(
+                    config.decoder_model_name,
+                    **self._model_load_kwargs(config),
+                ),
+            )
         decoder.resize_token_embeddings(len(self.decoder_tokenizer))
 
-        if config.lora_decoder:
+        if has_adapter_checkpoint and adapter_source is not None:
+            decoder = PeftModel.from_pretrained(
+                decoder, 
+                adapter_source, 
+                is_trainable=config.lora_decoder
+            )
+        elif config.lora_decoder:
+            print("Creating fresh decoder LoRA adapter")
             peft_config = self.get_peft_config(lora_r=config.lora_r_decoder)
             decoder.add_adapter(peft_config)
 
@@ -188,11 +225,7 @@ class PISCO(PreTrainedModel):
         ))
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
 
-        hidden_size = getattr(
-            compressor.config, 
-            "hidden_size",
-            compressor.config.text_config.hidden_size
-        )
+        hidden_size = compressor.config.hidden_size if hasattr(compressor.config, "hidden_size") else compressor.config.text_config.hidden_size
 
         connector = nn.Sequential(
             nn.Linear(hidden_size, config.compressor_mlp_hidden_dim),
@@ -388,34 +421,10 @@ class PISCO(PreTrainedModel):
         # Load the configuration
         config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
         config.load_decoder = load_decoder
+        if load_decoder:
+            config.decoder_adapter_path = pretrained_model_name_or_path
 
         model = cls(config)
-
-        if load_decoder:
-            adapter_config_path = os.path.join(
-                pretrained_model_name_or_path, "adapter_config.json"
-            )
-            decoder_state_path = os.path.join(
-                pretrained_model_name_or_path, "decoder_state.pt"
-            )
-
-            if os.path.exists(adapter_config_path):
-                model.decoder.load_adapter(
-                    pretrained_model_name_or_path, adapter_name="default"
-                )
-            elif os.path.exists(decoder_state_path):
-                # Backward compatibility with old checkpoints.
-                model.decoder.load_state_dict(
-                    torch.load(decoder_state_path),
-                    strict=False,
-                )
-            else:
-                raise FileNotFoundError(
-                    f"Could not find decoder adapter files in "
-                    f"{pretrained_model_name_or_path}. Expected either "
-                    f"'adapter_config.json' (new format) or "
-                    f"'decoder_state.pt' (legacy format)."
-                )
 
         model.compressor = AutoModelForCausalLM.from_pretrained(
             os.path.join(pretrained_model_name_or_path, "compressor"),

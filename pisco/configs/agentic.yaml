@@ -12,7 +12,7 @@ hf_training:
   warmup_steps: 0.05
   weight_decay: 0.1
   save_strategy: steps
-  save_steps: 2400
+  save_steps: 400
   save_total_limit: 5
   logging_strategy: steps
   logging_steps: 50
