@@ -33,12 +33,12 @@ collator_class: pisco.collator.AgentTrajCollator
 
 collator_kwargs:
   compressor_max_length: 128  
-  decoder_max_length: 512
+  decoder_max_length: 2048
   p_compress: 0.5
 
 model:
   init_args:
-    _target_: pisco.model.PISCO
+    _target_: ${model_class}
     config:
       _target_: pisco.model.PISCOConfig
       decoder_model_name: ${decoder}

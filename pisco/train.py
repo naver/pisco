@@ -95,11 +95,12 @@ def main(config: DictConfig):
     print("Output directory:", config.out_dir)
 
     # Model
+    model_cls = cast(type[PISCO], get_class(config.model_class))
     if getattr(config, "model_name_or_path", None) is not None:
-        print(f"Loading existing model at {config.model_name_or_path}")
-        model = PISCO.from_pretrained(config.model_name_or_path)
+        print(f"Loading existing {model_cls.__name__} at {config.model_name_or_path}")
+        model = model_cls.from_pretrained(config.model_name_or_path)
     else:
-        print("Creating new PISCO model")
+        print(f"Creating new {model_cls.__name__} model")
         model = cast(PISCO, instantiate(config.model.init_args))
 
     print(model)

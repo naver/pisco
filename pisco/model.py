@@ -17,11 +17,11 @@ from typing import cast, TYPE_CHECKING
 
 import torch
 from torch import nn
-from peft import LoraConfig, PeftConfig, PeftModel
+from peft import LoraConfig, PeftModel
 
 from transformers import (
     AutoModelForCausalLM,
-    AutoModelForImageTextToText,
+    AutoModelForMultimodalLM,
     AutoConfig,
     AutoTokenizer,
     PreTrainedModel,
@@ -101,12 +101,9 @@ class PISCO(PreTrainedModel):
                 f"Decoder trainable parameters: {self.decoder.num_parameters(only_trainable=True)}"
             )
 
-        decoder_config = AutoConfig.from_pretrained(config.decoder_model_name)
-        hidden_size = decoder_config.hidden_size if hasattr(decoder_config, "hidden_size") else decoder_config.text_config.hidden_size
-
         self.compressor_tokenizer = self.create_compressor_tokenizer(config)
         self.compressor, self.connector = self.create_compressor_and_connector(
-            config, decoder_hidden_dim=hidden_size
+            config, decoder_hidden_dim=self._get_connector_target_dim(config)
         )
 
         print("Base compressor nb parameters", self.compressor.num_parameters())
@@ -119,6 +116,18 @@ class PISCO(PreTrainedModel):
             f"Compressor trainable parameters: {self.compressor.num_parameters(only_trainable=True)}"
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
+
+    @staticmethod
+    def _get_connector_target_dim(config: PISCOConfig) -> int:
+        """Dimension the connector should project into (decoder embed_tokens hidden_size)."""
+        decoder_config = AutoConfig.from_pretrained(config.decoder_model_name)
+        if hasattr(decoder_config, "hidden_size"):
+            return decoder_config.hidden_size
+        return decoder_config.text_config.hidden_size
+
+    def _get_target_embedding(self) -> nn.Module:
+        """Return the embedding module where compressed representations are injected."""
+        return self.decoder.get_input_embeddings()
 
     @staticmethod
     def _model_load_kwargs(config: PISCOConfig) -> Dict[str, object]:
@@ -145,26 +154,19 @@ class PISCO(PreTrainedModel):
                 )
             print(f"Loading decoder adapter from {adapter_source}")
 
-        ### Load using AutoModelForImageTextToText if possible, otherwise fallback to AutoModelForCausalLM
-        ### It's important that when loading the pisco adapter, we use the same path as during piso training.
+        load_kwargs = self._model_load_kwargs(config)
         try:
             decoder = cast(
                 PreTrainedModel,
-                AutoModelForImageTextToText.from_pretrained(
-                    config.decoder_model_name,
-                    **self._model_load_kwargs(config),
-                ),
+                AutoModelForMultimodalLM.from_pretrained(config.decoder_model_name, **load_kwargs),
             )
         except Exception as e:
-            print(f"Error loading decoder: {e}")
+            print(f"AutoModelForMultimodalLM failed for {config.decoder_model_name}: {e}")
             decoder = cast(
                 PreTrainedModel,
-                AutoModelForCausalLM.from_pretrained(
-                    config.decoder_model_name,
-                    **self._model_load_kwargs(config),
-                ),
+                AutoModelForCausalLM.from_pretrained(config.decoder_model_name, **load_kwargs),
             )
-        decoder.resize_token_embeddings(len(self.decoder_tokenizer))
+        self._resize_token_embeddings(decoder, len(self.decoder_tokenizer))
 
         if has_adapter_checkpoint and adapter_source is not None:
             decoder = PeftModel.from_pretrained(
@@ -307,35 +309,70 @@ class PISCO(PreTrainedModel):
             trainable_token_indices=[self.decoder_tokenizer.ae_token_id], # For pre-training
         )
 
-    def replace_embeddings(self, compressed_embs: torch.Tensor, dec_input_ids: torch.LongTensor) -> torch.Tensor:
-        """
-        Replace memory tokens in the decoder input with the compressed embeddings
-        This assumes (and checks) that there are as many elements compressed_embs as there are mem tokens in dec_input_ids
-        """
-        dec_embeds = self.decoder.get_input_embeddings()(dec_input_ids)
-        B, L, H = dec_embeds.shape
+    @staticmethod
+    def _resize_token_embeddings(model: PreTrainedModel, new_num_tokens: int):
+        """Resize all embedding tables to accommodate new tokens.
 
-        # Locate mem_token positions
+        Handles the standard embed_tokens / lm_head via the HF API, then
+        resizes auxiliary tables like Gemma4's embed_tokens_per_layer that
+        resize_token_embeddings does not cover.
+        """
+        model.resize_token_embeddings(new_num_tokens)
+
+        for module in model.modules():
+            if not hasattr(module, 'embed_tokens_per_layer'):
+                continue
+            old_emb: nn.Embedding = cast(nn.Embedding, module.embed_tokens_per_layer)
+            if old_emb.num_embeddings >= new_num_tokens:
+                return
+            kwargs: Dict[str, object] = {
+                "num_embeddings": new_num_tokens,
+                "embedding_dim": old_emb.embedding_dim,
+                "padding_idx": old_emb.padding_idx,
+            }
+            if hasattr(old_emb, 'scalar_embed_scale'):
+                kwargs["embed_scale"] = old_emb.scalar_embed_scale
+            new_emb: nn.Embedding = type(old_emb)(**kwargs)  # type: ignore[arg-type]
+            new_emb.weight.data[:old_emb.num_embeddings] = old_emb.weight.data
+            new_emb = new_emb.to(device=old_emb.weight.device, dtype=old_emb.weight.dtype)  # type: ignore[assignment]
+            module.embed_tokens_per_layer = new_emb
+            return
+
+    def _embed_replace_hook(
+        self,
+        compressed_embs: torch.Tensor,
+        dec_input_ids: torch.LongTensor,
+        one_shot: bool = False,
+    ):
+        """
+        Register a forward hook on the target embedding layer that replaces
+        MEM-token embeddings with compressed representations.
+
+        Returns the hook handle (caller must remove it).
+
+        When *one_shot* is True the hook only fires once (for the prefill step
+        during ``generate``); subsequent calls with a different sequence length
+        are passed through unchanged.
+        """
         mem_mask = (dec_input_ids == self.decoder_tokenizer.mem_token_id)
-
-        num_mem_tokens = mem_mask.sum().item()
-        assert num_mem_tokens == compressed_embs.shape[0], (
-            f"Mismatch: {num_mem_tokens} mem tokens but "
+        num_mem = mem_mask.sum().item()
+        assert num_mem == compressed_embs.shape[0], (
+            f"Mismatch: {num_mem} mem tokens but "
             f"{compressed_embs.shape[0]} compressed embeddings"
         )
-
-        # Replace embeddings in order
         mem_indices = mem_mask.view(-1).nonzero(as_tuple=False).squeeze(1)
+        prefill_seq_len = dec_input_ids.shape[1]
+        fired = [False]
 
-        # Flatten embeddings for easy indexing.
-        dec_embeds_flat = dec_embeds.reshape(-1, H)
-        # Use out-of-place index_copy to avoid in-place ops on autograd views.
-        dec_embeds_flat = dec_embeds_flat.index_copy(0, mem_indices, compressed_embs)
+        def hook_fn(module, args, output):
+            if one_shot and (fired[0] or output.shape[1] != prefill_seq_len):
+                return output
+            fired[0] = True
+            flat = output.reshape(-1, output.shape[-1])
+            flat = flat.index_copy(0, mem_indices, compressed_embs)
+            return flat.view(output.shape)
 
-        # Restore shape
-        dec_embeds = dec_embeds_flat.view(B, L, H)
-
-        return dec_embeds
+        return self._get_target_embedding().register_forward_hook(hook_fn)
 
     def forward(
         self,
@@ -345,17 +382,17 @@ class PISCO(PreTrainedModel):
         decoder_attention_mask: torch.LongTensor,
         labels: Optional[torch.LongTensor] = None,
     ) -> Dict[str, torch.Tensor]:
-        # Compression
         embeddings = self.compress(compressor_input_ids, compressor_attention_mask)
 
-        # Inserting compressed reps into the decoder inputs:
-        dec_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
-
-        decoder_outputs = self.decoder(
-            inputs_embeds=dec_inputs_embeds,
-            attention_mask=decoder_attention_mask,
-            labels=labels,
-        )
+        handle = self._embed_replace_hook(embeddings, decoder_input_ids)
+        try:
+            decoder_outputs = self.decoder(
+                input_ids=decoder_input_ids,
+                attention_mask=decoder_attention_mask,
+                labels=labels,
+            )
+        finally:
+            handle.remove()
 
         return {"loss": decoder_outputs.loss, "logits": decoder_outputs.logits}
 
@@ -375,15 +412,17 @@ class PISCO(PreTrainedModel):
 
         embeddings = self.compress(compressor_input_ids, compressor_attention_mask)
 
-        decoder_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
-
-        output_ids = self.decoder.generate(
-            inputs_embeds=decoder_inputs_embeds.to("cuda"),
-            attention_mask=decoder_attention_mask.to("cuda"),
-            do_sample=False,
-            top_p=None,
-            max_new_tokens=max_new_tokens,
-        )
+        handle = self._embed_replace_hook(embeddings, decoder_input_ids, one_shot=True)
+        try:
+            output_ids = self.decoder.generate(
+                input_ids=decoder_input_ids.to("cuda"),
+                attention_mask=decoder_attention_mask.to("cuda"),
+                do_sample=False,
+                top_p=None,
+                max_new_tokens=max_new_tokens,
+            )
+        finally:
+            handle.remove()
 
         decoded = self.decoder_tokenizer.batch_decode(
             output_ids, skip_special_tokens=True
@@ -438,3 +477,40 @@ class PISCO(PreTrainedModel):
         model.connector.to(torch.bfloat16)
 
         return model
+
+
+class PISCOPLE(PISCO):
+    """PISCO variant for Gemma4 that injects compressed representations into
+    the per-layer embedding (PLE) stream instead of the main token embeddings.
+
+    Because the main embed_tokens is left untouched, the MEM and AE token
+    embeddings are learned normally through LoRA — only the PLE signal at
+    MEM positions carries the compressed context.
+    """
+
+    @staticmethod
+    def _get_connector_target_dim(config: PISCOConfig) -> int:
+        """Connector targets the PLE embedding dim (num_layers * ple_dim)."""
+        decoder_config = AutoConfig.from_pretrained(config.decoder_model_name)
+        text_config = (
+            decoder_config.text_config
+            if hasattr(decoder_config, "text_config")
+            else decoder_config
+        )
+        ple_dim = getattr(text_config, "hidden_size_per_layer_input", 0)
+        if not ple_dim:
+            raise ValueError(
+                f"Decoder {config.decoder_model_name} has no per-layer embeddings. "
+                "Use PISCO instead of PISCOPLE."
+            )
+        return text_config.num_hidden_layers * ple_dim
+
+    def _get_target_embedding(self) -> nn.Module:
+        """Return the embed_tokens_per_layer module from the decoder."""
+        for module in self.decoder.modules():
+            if hasattr(module, "embed_tokens_per_layer"):
+                return module.embed_tokens_per_layer
+        raise RuntimeError(
+            "No embed_tokens_per_layer found in decoder. "
+            "PISCOPLE requires a Gemma4-family decoder."
+        )

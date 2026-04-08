@@ -39,7 +39,7 @@ collator_kwargs:
 
 model:
   init_args:
-    _target_: pisco.model.PISCO
+    _target_: ${model_class}
     config:
       _target_: pisco.model.PISCOConfig
       decoder_model_name: ${decoder}

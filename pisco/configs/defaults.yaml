@@ -1,4 +1,5 @@
 user_dir: ./outputs
+model_class: pisco.model.PISCO  # pisco.model.PISCOPLE for Gemma4 PLE injection
 
 hydra:
   job:
