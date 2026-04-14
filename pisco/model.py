@@ -69,14 +69,13 @@ class PISCOConfig(PretrainedConfig):
     ):
         super().__init__(**kwargs)
 
-        self.decoder_model_name = decoder_model_name  # model name of decoder
-
-        self.compressor_model_name = compressor_model_name  # model name of compressor
-        self.compr_rate = compr_rate  # compression rate
+        self.decoder_model_name = decoder_model_name
+        self.compressor_model_name = compressor_model_name
+        self.compr_rate = compr_rate
         self.compressor_mlp_hidden_dim = compressor_mlp_hidden_dim
 
-        self.lora_decoder = lora_decoder  # boolean type, whether to use lora training
-        self.lora_r_decoder = lora_r_decoder  # lora_r for lora training, we use 16 throughout the experiment.
+        self.lora_decoder = lora_decoder
+        self.lora_r_decoder = lora_r_decoder
 
         self.attn_implementation = attn_implementation
         self.device_map = device_map
@@ -306,7 +305,7 @@ class PISCO(PreTrainedModel):
             lora_alpha=2 * lora_r,
             target_modules="all-linear",
             lora_dropout=0.1,
-            trainable_token_indices=[self.decoder_tokenizer.ae_token_id], # For pre-training
+            trainable_token_indices=[self.decoder_tokenizer.ae_token_id, self.decoder_tokenizer.mem_token_id], # For pre-training
         )
 
     @staticmethod
@@ -459,8 +458,7 @@ class PISCO(PreTrainedModel):
         """
         Loading: to take care of checkpoints containing only lora and not base model.
         """
-        # Load the configuration
-        config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
+        config = cls.config_class.from_pretrained(pretrained_model_name_or_path)
         config.load_decoder = load_decoder
         if load_decoder:
             config.decoder_adapter_path = pretrained_model_name_or_path
@@ -479,6 +477,10 @@ class PISCO(PreTrainedModel):
         return model
 
 
+class PISCOPLEConfig(PISCOConfig):
+    model_type = "PISCOPLE"
+
+
 class PISCOPLE(PISCO):
     """PISCO variant for Gemma4 that injects compressed representations into
     the per-layer embedding (PLE) stream instead of the main token embeddings.
@@ -487,6 +489,12 @@ class PISCOPLE(PISCO):
     embeddings are learned normally through LoRA — only the PLE signal at
     MEM positions carries the compressed context.
     """
+    config_class = PISCOPLEConfig
+
+    def __init__(self, config: PISCOConfig):
+        if not isinstance(config, PISCOPLEConfig):
+            config = PISCOPLEConfig(**config.to_dict())
+        super().__init__(config)
 
     @staticmethod
     def _get_connector_target_dim(config: PISCOConfig) -> int:
@@ -514,3 +522,27 @@ class PISCOPLE(PISCO):
             "No embed_tokens_per_layer found in decoder. "
             "PISCOPLE requires a Gemma4-family decoder."
         )
+
+
+_MODEL_CLASSES: Dict[str, type[PISCO]] = {
+    "PISCO": PISCO,
+    "PISCOPLE": PISCOPLE,
+}
+
+
+def auto_load(
+    pretrained_model_name_or_path: str,
+    load_decoder: bool = True,
+    **kwargs,
+) -> PISCO:
+    """Load a PISCO or PISCOPLE checkpoint, auto-detecting the variant
+    from ``model_type`` in the saved config."""
+    import json
+
+    config_path = os.path.join(pretrained_model_name_or_path, "config.json")
+    with open(config_path) as f:
+        model_type = json.load(f).get("model_type", "PISCO")
+
+    cls = _MODEL_CLASSES[model_type]
+    print(f"auto_load: detected {model_type} checkpoint at {pretrained_model_name_or_path}")
+    return cls.from_pretrained(pretrained_model_name_or_path, load_decoder=load_decoder, **kwargs)

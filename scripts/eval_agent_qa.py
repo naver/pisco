@@ -11,13 +11,36 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from pisco.collator_utils import add_memory_tokens_to_inputs, chunk_list
 from pisco.metrics import f1_single, match_single
-from pisco.model import PISCO, PISCOConfig
+from pisco.model import PISCO, PISCOConfig, auto_load
 
 
 SYSTEM_PROMPT = (
     "You are a helpful assistant. Your task is to extract relevant information from "
     "provided documents and to answer to questions as briefly as possible."
 )
+
+
+def _read_training_compressor_max_length(checkpoint_path: str) -> Optional[int]:
+    """Read compressor_max_length from the .hydra/config.yaml next to the checkpoint."""
+    hydra_config = os.path.join(checkpoint_path, os.pardir, ".hydra", "config.yaml")
+    hydra_config = os.path.normpath(hydra_config)
+    if not os.path.isfile(hydra_config):
+        return None
+    try:
+        import yaml
+
+        with open(hydra_config) as f:
+            cfg = yaml.safe_load(f) or {}
+        for key in ("compressor_max_length", "collator_kwargs"):
+            if key == "collator_kwargs":
+                value = cfg.get("collator_kwargs", {}).get("compressor_max_length")
+            else:
+                value = cfg.get(key)
+            if value is not None:
+                return int(value)
+    except Exception as e:
+        print(f"Could not read compressor_max_length from {hydra_config}: {e}")
+    return None
 
 
 def _maybe_mkdir_parent(path: str) -> None:
@@ -214,17 +237,20 @@ def _generate_with_pisco(
     decoder_input_ids = decoder_input_ids.to(device)
     decoder_attention_mask = decoder_attention_mask.to(device)
 
-    # Compression + embedding replacement
     embeddings = model.compress(compressor_input_ids, compressor_attention_mask)
-    dec_inputs_embeds = model.replace_embeddings(embeddings, decoder_input_ids)
 
-    output_ids = model.decoder.generate(
-        inputs_embeds=dec_inputs_embeds,
-        attention_mask=decoder_attention_mask,
-        do_sample=False,
-        top_p=None,
-        max_new_tokens=max_new_tokens,
-    )
+    handle = model._embed_replace_hook(embeddings, decoder_input_ids, one_shot=True)
+    try:
+        output_ids = model.decoder.generate(
+            input_ids=decoder_input_ids,
+            attention_mask=decoder_attention_mask,
+            do_sample=False,
+            top_p=None,
+            max_new_tokens=max_new_tokens,
+        )
+    finally:
+        handle.remove()
+
     decoded = decoder_tok.batch_decode(output_ids, skip_special_tokens=True)[0]
     return decoded
 
@@ -306,12 +332,26 @@ def main() -> None:
     base_tok: Any = None
 
     if args.mode == "pisco":
-        pisco_model = PISCO.from_pretrained(
+        pisco_model = auto_load(
             args.checkpoint_path,
             load_decoder=True,
         )
         pisco_model.to(device)
         pisco_model.eval()
+
+        train_compressor_max_length = _read_training_compressor_max_length(args.checkpoint_path)
+        if train_compressor_max_length is not None:
+            if args.compressor_max_length != train_compressor_max_length:
+                print(
+                    f"WARNING: --compressor_max_length={args.compressor_max_length} differs from "
+                    f"training value {train_compressor_max_length}. Using training value."
+                )
+            args.compressor_max_length = train_compressor_max_length
+
+        print(f"Model variant: {type(pisco_model).__name__}")
+        print(f"  compr_rate:            {pisco_model.compr_rate}")
+        print(f"  compressor_max_length: {args.compressor_max_length}")
+        print(f"  decoder_max_length:    {args.decoder_max_length}")
     else:
         if args.base_model_name:
             decoder_model_name = args.base_model_name
@@ -400,6 +440,8 @@ def main() -> None:
 
     payload = {
         "mode": args.mode,
+        "model_variant": type(pisco_model).__name__ if pisco_model else None,
+        "compr_rate": pisco_model.compr_rate if pisco_model else None,
         "data_path": args.data_path,
         "checkpoint_path": args.checkpoint_path,
         "base_model_name": args.base_model_name,
