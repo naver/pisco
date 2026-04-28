@@ -658,3 +658,237 @@ class FineTuningCollator(BaseCollator):
         }
 
         return output
+
+class FineTuningCollatorA(BaseCollator):
+    """
+    Given a query and docs, forms the compressor inputs (potentially chunking each doc)
+    and the decoder inputs, with a RAG prompt.
+    """
+
+    def __init__(
+        self,
+        query_dependent=False,
+        chunk_docs: bool = False,  # If True, then docs exceed compressor_max_lengths are chunked
+        chunk_overlap: int = 0,  # how much (number of tokens) the chunks should overlap with chunk_docs=True
+        n_max_chunks: int = None,  # in case of chunking, upper bound on chunk number.
+        topk_docs: int = 2,  # how many docs to keep per query.
+        system_prompt: str = (
+            "You are a helpful assistant. Your task is to extract relevant information from "
+            "provided documents and to answer to questions as briefly as possible."
+        ),
+        user_prompt: str = "\n\nBackground:[documents]\n Question: [question]",
+        *args,
+        **kwargs,
+    ):
+        super(FineTuningCollatorA, self).__init__(*args, **kwargs)
+        self.query_dependent = query_dependent
+
+        self.chunk_docs = chunk_docs
+        self.chunk_overlap = chunk_overlap
+        self.n_max_chunks = n_max_chunks
+
+        self.topk_docs = topk_docs
+
+        if (
+            self.chunk_docs
+            and (self.compressor_max_length + 1) * self.n_max_chunks
+            > 0.1 * self.decoder_max_length
+        ):
+            print(
+                "WARNING: with your chunking params you may exceed the decoder max length"
+            )
+
+        assert not (
+            self.chunk_docs and self.query_dependent
+        ), "Incompatible options for now"
+
+        self.system_prompt = system_prompt
+        self.user_prompt = user_prompt
+
+        if query_dependent:
+            print("You are using a query-dependent collator.")
+
+    def preprend_query_to_docs(self, queries, documents):
+        query_documents = []
+        for query, docs in zip(queries, documents):
+            query_documents.append(
+                ["Query: " + query + "\n Document: " + d for d in docs]
+            )
+        return query_documents
+
+    def compute_prompt_and_prefix_length(
+        self, docs: str, query: str, label: Optional[str]
+    ) -> Tuple[str, int]:
+        """
+        Forms the templated prompt given docs and queries.
+        Also returns the length of the prompt WITHOUT the label, to mask in the loss.
+        """
+        messages = [
+            {"role": "system", "content": self.system_prompt},
+            {
+                "role": "user",
+                "content": self.user_prompt.replace("[documents]", docs).replace(
+                    "[question]", query
+                ),
+            },
+        ]
+        if label is not None:
+            messages.append({"role": "assistant", "content": label})
+            
+        prompt = self.decoder_tokenizer.apply_chat_template(messages,
+                                                            tokenize=False,
+                                                            continue_final_message=True,
+                                                            )
+        # To compute the labels mask
+        prefix_length = len(
+            self.decoder_tokenizer.apply_chat_template(
+                messages[:-1] + [{"role": "assistant", "content": "\n<think>\n\n</think>\n\n"}],
+                tokenize=True,continue_final_message=True,enable_thinking=False
+            )['input_ids']
+        )
+        return prompt, prefix_length
+
+    def mask_labels_before_prefix(self, labels, prefix_lengths):
+        # Masking anything before the response thanks to prefix lengths:
+        n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(
+            1
+        ) - 0  # - 4 some margin for safety... TODO make this perfect but tedious...
+        prefix_lengths = torch.LongTensor(
+            prefix_lengths, device=labels.device
+        ).unsqueeze(
+            1
+        )  # (B, 1)
+        positions = (
+            torch.arange(labels.size(1), device=labels.device)
+            .unsqueeze(0)
+            .expand(labels.size())
+        )  # (B, T)
+
+        prefix_mask = positions < (n_pad + prefix_lengths)
+        labels = labels.masked_fill_(prefix_mask, -100)
+        return labels
+
+    def preprocess_for_compressor(self, texts):
+        input_ids = self.compressor_tokenizer(
+            texts,
+            padding="do_not_pad",
+            return_tensors=None,
+            truncation=True,
+            max_length=self.compressor_max_length,
+        )["input_ids"]
+
+        input_ids, _ = add_memory_tokens_to_inputs(
+            input_ids, self.compressor_tokenizer, self.compr_rate
+        )
+        return self.compressor_pad(input_ids)
+
+    def torch_call(self, examples):
+        raw_documents = [elt["uncompressed_docs"] for elt in examples]
+        documents = [elt["compressed_docs"] for elt in examples]
+        queries = [elt["query"] for elt in examples]
+        labels = [elt["mistral_label"] for elt in examples]
+
+        # These are special tokens: we don't want them to appear accidentally in data !
+        queries = [self.clean_text(q) for q in queries]
+        labels = [self.clean_text(label) for label in labels]
+
+        # In this case, we just prepend the query to the documents:
+        if self.query_dependent:
+            documents = self.preprend_query_to_docs(queries, documents)
+
+        all_compressor_input_ids = []
+        all_decoder_texts = []
+        prefix_lengths = []
+
+        for i in range(len(documents)):
+            docs = documents[i]
+            docs = [self.clean_text(doc) for doc in docs]
+            raw_docs = raw_documents[i]
+            raw_docs = [self.clean_text(doc) for doc in raw_docs[-5:]]
+            if self.topk_docs is not None:
+                docs = docs[: self.topk_docs]
+
+            docs_input_ids = self.compressor_tokenizer(
+                docs,
+                padding="do_not_pad",
+                return_tensors=None,
+                truncation=not self.chunk_docs,  # we truncate only when not chunking
+                max_length=self.compressor_max_length,
+            )["input_ids"]
+            if self.chunk_docs:
+                chunked_docs_input_ids = []
+                doc_text = ""
+                for k, elt in enumerate(docs_input_ids):
+                    # chunking
+                    chunks = chunk_list(
+                        elt,
+                        chunk_length=self.compressor_max_length,
+                        chunk_overlap=self.chunk_overlap,
+                    )[: self.n_max_chunks]
+
+                    # adding the mem tokens
+                    chunks, n_mems = add_memory_tokens_to_inputs(
+                        chunks, self.compressor_tokenizer, self.compr_rate
+                    )
+                    chunked_docs_input_ids.extend(chunks)
+
+                    # Building the doc prompt, which numbers docs and their chunks
+                    doc_text += (
+                        #f"Document {k}:"
+                        f"\n"
+                        + self.decoder_tokenizer.mem_token * sum(n_mems)
+                    )
+                all_compressor_input_ids.extend(chunked_docs_input_ids)
+
+            else:
+                docs_input_ids, n_mems = add_memory_tokens_to_inputs(
+                    docs_input_ids, self.compressor_tokenizer, self.compr_rate
+                )
+
+                all_compressor_input_ids.extend(docs_input_ids)
+
+                doc_text = "".join(
+                    [
+                        #f"Document {j}:" + self.decoder_tokenizer.mem_token * n_mems[j]
+                        f"\n" + self.decoder_tokenizer.mem_token * n_mems[j]
+                        for j in range(len(docs))
+                    ]
+                )
+            uncompressed_doc_text = "".join(
+                [f"\n {raw_docs[j]}" for j in range(len(raw_docs))]
+            )            
+            prompt, prefix_length = self.compute_prompt_and_prefix_length(
+                uncompressed_doc_text+doc_text, queries[i], labels[i]
+            )
+            all_decoder_texts.append(prompt)
+            prefix_lengths.append(prefix_length)
+
+        # Padding
+        compressor_inputs = self.compressor_pad(all_compressor_input_ids)
+
+        decoder_inputs = self.decoder_tokenizer(
+            all_decoder_texts,
+            return_tensors="pt",
+            padding="longest",
+            add_special_tokens=False,
+            max_length=self.decoder_max_length,
+            enable_thinking=False,
+            truncation=True,
+        )
+
+        labels = decoder_inputs["input_ids"].clone()
+        labels = self.mask_labels_before_prefix(labels, prefix_lengths)
+        labels = self.mask_special_tokens(labels)
+        # Check we formed as many chunks to compress as placeholders in decoder inputs to put them at:
+        self.assert_consistent_n_mems(compressor_inputs, decoder_inputs)
+       
+        output = {
+            "compressor_input_ids": compressor_inputs["input_ids"],
+            "compressor_attention_mask": compressor_inputs["attention_mask"],
+            "decoder_input_ids": decoder_inputs["input_ids"],
+            "decoder_attention_mask": decoder_inputs["attention_mask"],
+            "labels": labels,
+        }
+
+        return output
+    
