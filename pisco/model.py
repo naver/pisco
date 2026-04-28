@@ -40,50 +40,68 @@ if TYPE_CHECKING:
 
 class PISCOConfig(PretrainedConfig):
     model_type = "PISCO"
-    decoder_model_name: str = "Qwen/Qwen3-8B"
-    compressor_model_name: str = "Qwen/Qwen3-0.6B"
-    compr_rate: int = 16
-    compressor_mlp_hidden_dim: int = 4096
-    lora_decoder: bool = True
-    lora_r_decoder: int = 64
-    attn_implementation: Optional[str] = None
-    device_map: Optional[str] = None
-    load_decoder: bool = True
-    decoder_gradient_checkpointing: bool = False
-    decoder_adapter_path: Optional[str] = None
+    # decoder_model_name: str = "Qwen/Qwen3-8B"
+    # freeze_decoder: bool = False
+    # compressor_model_name: str = "Qwen/Qwen3-4B"
+    # compr_rate: int = 16
+    # compressor_mlp_hidden_dim: int = 4096
+    # lora_decoder: bool = True
+    # lora_compressor: bool = False
+    # lora_r_compressor: int = 64
+    # lora_r_decoder: int = 64
+    # attn_implementation: Optional[str] = None
+    # device_map: Optional[str] = None
+    # load_decoder: bool = True
+    # decoder_gradient_checkpointing: bool = False
+    # compressor_gradient_checkpointing: bool = False
+    # decoder_adapter_path: Optional[str] = None
+    # compressor_adapter_path: Optional[str] = None
 
     def __init__(
         self,
         decoder_model_name: str = "Qwen/Qwen3-8B",
-        compressor_model_name: str = "Qwen/Qwen3-0.6B",
+        freeze_decoder: bool = False,
+        compressor_model_name: str = "Qwen/Qwen3-4B",
         compr_rate: int = 16,
         compressor_mlp_hidden_dim: int = 4096,
-        lora_decoder: bool = True,  # TODO: this is mandatory right now
+        lora_decoder: bool = True,  
+        lora_compressor: bool = False,
+        lora_r_compressor: int = 64,
         lora_r_decoder: int = 64,
         attn_implementation: Optional[str] = None,
         device_map: Optional[str] = None,
         load_decoder: bool = True,
         decoder_gradient_checkpointing: bool = False,
         decoder_adapter_path: Optional[str] = None,
+        compressor_gradient_checkpointing: bool = False,
+        compressor_adapter_path: Optional[str] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
 
+        #decoder settings
         self.decoder_model_name = decoder_model_name  # model name of decoder
-
-        self.compressor_model_name = compressor_model_name  # model name of compressor
-        self.compr_rate = compr_rate  # compression rate
-        self.compressor_mlp_hidden_dim = compressor_mlp_hidden_dim
-
-        self.lora_decoder = lora_decoder  # boolean type, whether to use lora training
-        self.lora_r_decoder = lora_r_decoder  # lora_r for lora training, we use 16 throughout the experiment.
-
-        self.attn_implementation = attn_implementation
-        self.device_map = device_map
-
         self.load_decoder = load_decoder
         self.decoder_gradient_checkpointing = decoder_gradient_checkpointing
         self.decoder_adapter_path = decoder_adapter_path
+        self.lora_decoder = lora_decoder  # boolean type, whether to use lora training
+        self.lora_r_decoder = lora_r_decoder  # lora_r for lora training
+        self.freeze_decoder = freeze_decoder
+
+        #compressor settings
+        self.compressor_model_name = compressor_model_name  # model name of compressor
+        self.compr_rate = compr_rate  # compression rate
+        self.compressor_mlp_hidden_dim = compressor_mlp_hidden_dim
+        self.compressor_gradient_checkpointing = compressor_gradient_checkpointing
+        self.lora_compressor = lora_compressor  # boolean type, whether to use lora training
+        self.lora_r_compressor = lora_r_compressor  # lora_r for lora training
+        self.compressor_adapter_path = compressor_adapter_path
+        
+        #other settings
+        self.attn_implementation = attn_implementation
+        self.device_map = device_map
+
+
 
 
 class PISCO(PreTrainedModel):
@@ -111,22 +129,16 @@ class PISCO(PreTrainedModel):
 
         print("Base compressor nb parameters", self.compressor.num_parameters())
 
-        # other settings
-        self.generation_top_k = 1
-        self.compr_rate = config.compr_rate
 
         print(
             f"Compressor trainable parameters: {self.compressor.num_parameters(only_trainable=True)}"
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
 
-    @staticmethod
-    def _model_load_kwargs(config: PISCOConfig) -> Dict[str, object]:
-        """Common kwargs for AutoModelForCausalLM.from_pretrained."""
-        kw: Dict[str, object] = {"dtype": torch.bfloat16, "device_map": config.device_map}
-        if config.attn_implementation is not None:
-            kw["attn_implementation"] = config.attn_implementation
-        return kw
+        # other settings
+        self.generation_top_k = 1
+        self.compr_rate = config.compr_rate
+
 
     def create_decoder(self, config: PISCOConfig) -> PreTrainedModel:
         """
@@ -152,7 +164,7 @@ class PISCO(PreTrainedModel):
                 PreTrainedModel,
                 AutoModelForImageTextToText.from_pretrained(
                     config.decoder_model_name,
-                    **self._model_load_kwargs(config),
+                    attn_implementation=config.attn_implementation,
                 ),
             )
         except Exception as e:
@@ -161,12 +173,18 @@ class PISCO(PreTrainedModel):
                 PreTrainedModel,
                 AutoModelForCausalLM.from_pretrained(
                     config.decoder_model_name,
-                    **self._model_load_kwargs(config),
+                    attn_implementation=config.attn_implementation,
                 ),
             )
         decoder.resize_token_embeddings(len(self.decoder_tokenizer))
 
-        if has_adapter_checkpoint and adapter_source is not None:
+
+        if config.freeze_decoder:
+            print("Freezing decoder")
+            for param in decoder.parameters():
+                param.requires_grad = False
+
+        elif has_adapter_checkpoint and adapter_source is not None:
             decoder = PeftModel.from_pretrained(
                 decoder, 
                 adapter_source, 
@@ -186,6 +204,7 @@ class PISCO(PreTrainedModel):
         return decoder
 
     def create_decoder_tokenizer(self, config: PISCOConfig) -> "TokenizersBackend":
+
         decoder_tokenizer = cast("TokenizersBackend", AutoTokenizer.from_pretrained(
             config.decoder_model_name, padding_side="left", truncation_side="right"
         ))
@@ -220,12 +239,65 @@ class PISCO(PreTrainedModel):
             self, 
             config: PISCOConfig, 
             decoder_hidden_dim: int
-        ) -> tuple["_BaseModelWithGenerate", nn.Sequential]:
-        compressor = cast("_BaseModelWithGenerate", AutoModelForCausalLM.from_pretrained(
-            config.compressor_model_name,
-            **self._model_load_kwargs(config),
-        ))
+        ) -> PreTrainedModel:
+
+        # if not adapter path  then load compressor_model_name +'compressor'
+        # else load  compressor_model_name   then load adapter
+
+        has_adapter_checkpoint = False
+        if  config.compressor_adapter_path is not None:
+            adapter_config_path = os.path.join( config.compressor_adapter_path, "adapter_config.json")
+            has_adapter_checkpoint = os.path.isdir( config.compressor_adapter_path) and os.path.exists(
+                adapter_config_path
+            )
+            if not has_adapter_checkpoint:
+                raise FileNotFoundError(
+                    f"compressor_adapter_path is set to {config.compressor_adapter_path}, but adapter_config.json was not found."
+                )
+            print(f"Loading compressor adapter from {config.compressor_adapter_path}")
+
+
+
+        # load model
+        # if lora: point to base model 
+        # else path/compressor
+        try:
+            compressor = AutoModelForImageTextToText.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation)
+            
+        except Exception as e:
+            compressor =  AutoModelForCausalLM.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation)
+
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
+        
+        # load adapter 
+        if has_adapter_checkpoint: # and adapter_source is not None:
+            print(f"Loading compressor adapter from {config.compressor_adapter_path}")
+            compressor = PeftModel.from_pretrained(
+                compressor, 
+                config.compressor_adapter_path, 
+                is_trainable=config.lora_compressor
+            )
+        # create new adapter
+        elif config.lora_compressor:
+            print("Creating fresh compressor LoRA adapter")
+            # peft_config = self.get_peft_config(lora_r=config.lora_r_compressor)
+            peft_config = LoraConfig(
+            task_type="CAUSAL_LM",
+            r=config.lora_r_compressor,
+            lora_alpha=2 * config.lora_r_compressor,
+            target_modules="all-linear",
+            lora_dropout=0.1,
+            trainable_token_indices=[self.compressor_tokenizer.mem_token_id]
+            )
+            compressor.add_adapter(peft_config)
+
+
+
+        if config.compressor_gradient_checkpointing:
+            print("Activating gradient checkpointing on compressor")
+            compressor.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}  # optional
+            )
 
         hidden_size = compressor.config.hidden_size if hasattr(compressor.config, "hidden_size") else compressor.config.text_config.hidden_size
 
@@ -396,24 +468,34 @@ class PISCO(PreTrainedModel):
         Save only the LoRA adapters and their configurations.
         Use PEFT standard artifacts for the decoder adapter.
         """
-        self.config.save_pretrained(save_directory)
-        self.decoder.save_pretrained(save_directory, safe_serialization=True)
+        # self.config.save_pretrained(save_directory)
+        if not self.config.freeze_decoder:
+            self.decoder.save_pretrained(save_directory, safe_serialization=True)
+        
         self.compressor.save_pretrained(os.path.join(save_directory, "compressor"))
         torch.save(
             self.connector.state_dict(), os.path.join(save_directory, "connector.pt")
         )
+        if self.config.lora_compressor:
+           self.config.compressor_adapter_path=os.path.join(save_directory, "compressor")
+        
         self.compressor_tokenizer.save_pretrained(
-            os.path.join(save_directory, "compressor_tokenizer")
+            os.path.join(os.path.join(save_directory, "compressor"))
+            #os.path.join(os.path.join(save_directory, "compressor"), "compressor_tokenizer")
         )
-        self.decoder_tokenizer.save_pretrained(
-            os.path.join(save_directory, "decoder_tokenizer")
+        # useless??  tokenizer are always re-created from the model name
+        self.decoder_tokenizer.save_pretrained(save_directory
+            #os.path.join(save_directory, "decoder_tokenizer")
         )
+        # real pisco config!!!
+        self.config.save_pretrained(save_directory)
 
     @classmethod
     def from_pretrained(
         cls,
         pretrained_model_name_or_path,
-        load_decoder=True,
+        #load_decoder=True,
+        freeze_decoder=False,
         *args,
         **kwargs,
     ) -> "PISCO":
@@ -422,19 +504,27 @@ class PISCO(PreTrainedModel):
         """
         # Load the configuration
         config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
-        config.load_decoder = load_decoder
-        if load_decoder:
-            config.decoder_adapter_path = pretrained_model_name_or_path
+        #config.load_decoder = load_decoder
+        #config.freeze_decoder = freeze_decoder
+        
+        if not config.freeze_decoder:
+            if config.lora_decoder:
+                config.decoder_adapter_path = pretrained_model_name_or_path
+            #config.decoder_model_name = pretrained_model_name_or_path
 
+        #config.compressor_model_name = os.path.join(pretrained_model_name_or_path, "compressor")
+        if config.lora_compressor:
+            config.compressor_adapter_path =  os.path.join(pretrained_model_name_or_path, "compressor")
+        else:
+            config.compressor_model_name = os.path.join(pretrained_model_name_or_path, "compressor")
+            
+        print(config)
         model = cls(config)
 
-        model.compressor = AutoModelForCausalLM.from_pretrained(
-            os.path.join(pretrained_model_name_or_path, "compressor"),
-            **cls._model_load_kwargs(config),
-        )
+
         model.connector.load_state_dict(
             torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"))
         )
         model.connector.to(torch.bfloat16)
-
+        print(model)
         return model
