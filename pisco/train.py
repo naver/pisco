@@ -106,7 +106,8 @@ def main(config: DictConfig):
 
     # Data:
     if os.path.exists(config.data.training_dataset):
-        ds = datasets.load_from_disk(config.data.training_dataset)["train"]
+        try:ds = datasets.load_from_disk(config.data.training_dataset)["train"]
+        except:ds = datasets.load_from_disk(config.data.training_dataset)
     else:
         ds = datasets.load_dataset(config.data.training_dataset, split="train")
 
