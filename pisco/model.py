@@ -75,6 +75,7 @@ class PISCOConfig(PretrainedConfig):
         decoder_adapter_path: Optional[str] = None,
         compressor_gradient_checkpointing: bool = False,
         compressor_adapter_path: Optional[str] = None,
+        torch_dtype: str = "bfloat16",
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -100,8 +101,22 @@ class PISCOConfig(PretrainedConfig):
         #other settings
         self.attn_implementation = attn_implementation
         self.device_map = device_map
+        # Stored as string so the config serializes to JSON cleanly.
+        # Resolved to a torch.dtype via _resolve_torch_dtype() at load time.
+        self.torch_dtype = torch_dtype
 
 
+
+
+def _resolve_torch_dtype(name: Optional[str]) -> Optional[torch.dtype]:
+    """Map a string like 'bfloat16' or 'float32' to torch.bfloat16 / torch.float32.
+    Accepts None or 'auto' to mean 'let HF decide'."""
+    if name is None or name == "auto":
+        return None
+    dtype = getattr(torch, name, None)
+    if not isinstance(dtype, torch.dtype):
+        raise ValueError(f"torch_dtype={name!r} is not a valid torch dtype")
+    return dtype
 
 
 class PISCO(PreTrainedModel):
@@ -159,12 +174,14 @@ class PISCO(PreTrainedModel):
 
         ### Load using AutoModelForImageTextToText if possible, otherwise fallback to AutoModelForCausalLM
         ### It's important that when loading the pisco adapter, we use the same path as during piso training.
+        dtype = _resolve_torch_dtype(config.torch_dtype)
         try:
             decoder = cast(
                 PreTrainedModel,
                 AutoModelForImageTextToText.from_pretrained(
                     config.decoder_model_name,
                     attn_implementation=config.attn_implementation,
+                    torch_dtype=dtype,
                 ),
             )
         except Exception as e:
@@ -174,6 +191,7 @@ class PISCO(PreTrainedModel):
                 AutoModelForCausalLM.from_pretrained(
                     config.decoder_model_name,
                     attn_implementation=config.attn_implementation,
+                    torch_dtype=dtype,
                 ),
             )
         decoder.resize_token_embeddings(len(self.decoder_tokenizer))
@@ -261,11 +279,12 @@ class PISCO(PreTrainedModel):
         # load model
         # if lora: point to base model 
         # else path/compressor
+        dtype = _resolve_torch_dtype(config.torch_dtype)
         try:
-            compressor = AutoModelForImageTextToText.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation)
-            
+            compressor = AutoModelForImageTextToText.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
+
         except Exception as e:
-            compressor =  AutoModelForCausalLM.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation)
+            compressor =  AutoModelForCausalLM.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
 
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
         
@@ -525,6 +544,8 @@ class PISCO(PreTrainedModel):
         model.connector.load_state_dict(
             torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"))
         )
-        model.connector.to(torch.bfloat16)
+        connector_dtype = _resolve_torch_dtype(config.torch_dtype)
+        if connector_dtype is not None:
+            model.connector.to(connector_dtype)
         print(model)
         return model
