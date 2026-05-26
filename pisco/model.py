@@ -491,7 +491,22 @@ class PISCO(PreTrainedModel):
         if not self.config.freeze_decoder:
             self.decoder.save_pretrained(save_directory, safe_serialization=True)
         
+        # PEFT raises on tied lm_head/embed_tokens when save_embedding_layers=True
+        # (triggered by resized vocab for <MEM>/<AE>). Untie before save, retie after.
+        compressor_base = getattr(self.compressor, "base_model", self.compressor)
+        inner = getattr(compressor_base, "model", compressor_base)
+        lm_head = getattr(inner, "lm_head", None)
+        embed_tokens = getattr(getattr(inner, "model", None), "embed_tokens", None)
+        weights_were_tied = (
+            lm_head is not None
+            and embed_tokens is not None
+            and lm_head.weight.data_ptr() == embed_tokens.weight.data_ptr()
+        )
+        if weights_were_tied:
+            lm_head.weight = torch.nn.Parameter(lm_head.weight.detach().clone())
         self.compressor.save_pretrained(os.path.join(save_directory, "compressor"))
+        if weights_were_tied:
+            lm_head.weight = embed_tokens.weight
         torch.save(
             self.connector.state_dict(), os.path.join(save_directory, "connector.pt")
         )
