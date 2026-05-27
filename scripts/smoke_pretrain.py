@@ -9,6 +9,9 @@ import subprocess
 import sys
 import tempfile
 
+# Repo root is one level up from scripts/; train.py is at repo_root/pisco/train.py.
+REPO_ROOT = pathlib.Path(__file__).parent.parent
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -35,7 +38,7 @@ def main() -> int:
         "hf_training.gradient_checkpointing=false",
         "hf_training.optim=adamw_torch",
     ]
-    result = subprocess.run(cmd)
+    result = subprocess.run(cmd, cwd=REPO_ROOT)
     if result.returncode == 0:
         print(f"[smoke pretrain] OK -> {out}")
     return result.returncode
