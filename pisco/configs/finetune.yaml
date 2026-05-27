@@ -1,11 +1,11 @@
 defaults:
   - defaults
-  - optional local@_global_: local
   - _self_
-  
+
+
 hf_training:
   num_train_epochs: 1
-  per_device_train_batch_size: 4
+  per_device_train_batch_size: 2
   per_device_eval_batch_size: 4
   gradient_accumulation_steps: 32
   learning_rate: 1e-4
@@ -23,7 +23,7 @@ hf_training:
   max_grad_norm: 1.
   dataloader_num_workers: 1
   remove_unused_columns: False
-  gradient_checkpointing: True
+  gradient_checkpointing: False
 
 
 data:
@@ -35,8 +35,5 @@ collator_class: pisco.collator.FineTuningCollator
 collator_kwargs:
   compressor_max_length: 128  
   decoder_max_length: 512
-
-exp_name: finetune_${sanitize_override_dirname:${path_after_user_dir:${model_name_or_path},${user_dir}}}
-out_dir: .
 
 model_name_or_path: null

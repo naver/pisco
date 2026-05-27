@@ -23,7 +23,6 @@ from transformers import Trainer, TrainingArguments
 from pisco.metrics import hard_metrics
 from pisco.collator_utils import print_collated_sample
 from pisco.model import PISCO
-from pisco.hydra_utils import register_resolvers
 
 
 def preprocess_logits_for_metrics(logits, labels):
@@ -53,8 +52,8 @@ def compute_metrics(eval_pred, model):
     )
 
     print("_" * 15)
-    # Select two random indices from the available range
-    random_indices = random.sample(range(len(preds_str)), 2)
+    # Select up to 2 random indices from the available range
+    random_indices = random.sample(range(len(preds_str)), min(2, len(preds_str)))
 
     # Print random examples
     for i in random_indices:
@@ -65,34 +64,18 @@ def compute_metrics(eval_pred, model):
 
     print("_" * 15, flush=True)
     metrics = hard_metrics(predictions=preds_str, references=labels_str)
-    # not all keys matter during this training eval
-    metrics = {
-        k: v
-        for k, v in metrics.items()
-        if k in ["Rouge-1", "Rouge-2", "Rouge-L", "EM", "Levenshtein"]
-    }
 
     return metrics
-
-
-register_resolvers()
 
 
 @hydra.main(config_path="configs", config_name="pretraining", version_base="1.3")
 def main(config: DictConfig):
     print("Training config:")
     print(OmegaConf.to_yaml(config, resolve=True))
-    os.makedirs(config.out_dir, exist_ok=True)
-    with open(
-        os.path.join(
-            config.out_dir,
-            "training_config.yaml",
-        ),
-        "w",
-    ) as f:
+    with open("training_config.yaml", "w") as f:
         OmegaConf.save(config, f)
 
-    print("Output directory:", config.out_dir)
+    print("Output directory:", os.getcwd())
 
     # Model
     if getattr(config, "model_name_or_path", None) is not None:
@@ -106,8 +89,10 @@ def main(config: DictConfig):
 
     # Data:
     if os.path.exists(config.data.training_dataset):
-        try:ds = datasets.load_from_disk(config.data.training_dataset)["train"]
-        except:ds = datasets.load_from_disk(config.data.training_dataset)
+        try:
+            ds = datasets.load_from_disk(config.data.training_dataset)["train"]
+        except KeyError:
+            ds = datasets.load_from_disk(config.data.training_dataset)
     else:
         ds = datasets.load_dataset(config.data.training_dataset, split="train")
 
@@ -134,7 +119,7 @@ def main(config: DictConfig):
     )
     print_collated_sample(sample_batch, collator)
 
-    training_args = TrainingArguments(output_dir=config.out_dir, **config.hf_training)
+    training_args = TrainingArguments(output_dir=".", **config.hf_training)
 
     trainer = Trainer(
         model=model,
@@ -150,7 +135,7 @@ def main(config: DictConfig):
 
     # save final
     if trainer.is_world_process_zero():
-        final_path = os.path.join(config.out_dir, "model")
+        final_path = "model"
         if not os.path.exists(final_path):
             os.makedirs(final_path)
         model.save_pretrained(final_path)

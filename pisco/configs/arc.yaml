@@ -1,6 +1,5 @@
 defaults:
   - defaults
-  - optional local@_global_: local
   - _self_
 
 hf_training:
@@ -51,5 +50,3 @@ model:
 
 compressor: Qwen/Qwen3-0.6B
 decoder: Qwen/Qwen3-0.6B
-exp_name: pretraining_${decoder}_${compressor}_ae${collator_kwargs.ae_ratio}_${collator_kwargs.decoder_max_length}
-out_dir: .
