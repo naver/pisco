@@ -11,13 +11,99 @@ in front of every '<MEM>' token in its inputs
 appropriate embeddings computed by the compressor.
 """
 
+import contextlib
 import os
 from typing import List, Optional, Dict
 from typing import cast, TYPE_CHECKING
 
 import torch
 from torch import nn
-from peft import LoraConfig, PeftConfig, PeftModel
+from peft import LoraConfig, PeftModel
+
+
+@contextlib.contextmanager
+def _untied_for_save(module):
+    """Break PEFT shared tensors so save_pretrained doesn't crash on tied
+    Qwen3/Qwen2.5 embeddings, then restore the aliasing on exit.
+
+    When lm_head and embed_tokens are tied and PEFT's trainable_token_indices
+    is set, both get a TrainableTokensWrapper whose token_adapter shares
+    `base_layer.weight` and `trainable_tokens_delta.default`. transformers'
+    remove_tied_weights_from_state_dict raises on these undeclared aliases.
+    """
+    lm_head = getattr(module, "lm_head", None)
+    inner = getattr(module, "model", None)
+    embed_tokens = getattr(inner, "embed_tokens", None) if inner is not None else None
+    restore = []
+    if lm_head is None or embed_tokens is None:
+        yield
+        return
+
+    lh_ta = getattr(lm_head, "token_adapter", None)
+    et_ta = getattr(embed_tokens, "token_adapter", None)
+    has_token_adapter = lh_ta is not None and et_ta is not None
+
+    # Outer .weight — only meaningful when there's no token_adapter (which
+    # otherwise covers the same tensor at base_layer.weight). On wrappers like
+    # PEFT's TrainableTokensWrapper, `weight` is a property and setattr raises.
+    if not has_token_adapter:
+        lh_w = getattr(lm_head, "weight", None)
+        et_w = getattr(embed_tokens, "weight", None)
+        if (
+            lh_w is not None
+            and et_w is not None
+            and isinstance(lh_w, torch.nn.Parameter)
+            and lh_w.data_ptr() == et_w.data_ptr()
+        ):
+            lm_head.weight = torch.nn.Parameter(
+                lh_w.detach().clone(), requires_grad=lh_w.requires_grad
+            )
+            restore.append((lm_head, "weight", lh_w))
+
+    if has_token_adapter:
+        # token_adapter.base_layer.weight
+        lh_base = getattr(lh_ta, "base_layer", None)
+        et_base = getattr(et_ta, "base_layer", None)
+        if (
+            lh_base is not None
+            and et_base is not None
+            and lh_base.weight.data_ptr() == et_base.weight.data_ptr()
+        ):
+            original = lh_base.weight
+            lh_base.weight = torch.nn.Parameter(
+                original.detach().clone(), requires_grad=original.requires_grad
+            )
+            restore.append((lh_base, "weight", original))
+
+        # trainable_tokens_delta is a ParameterDict; swap in an independent copy.
+        lh_delta = getattr(lh_ta, "trainable_tokens_delta", None)
+        et_delta = getattr(et_ta, "trainable_tokens_delta", None)
+        if isinstance(lh_delta, torch.nn.ParameterDict) and isinstance(
+            et_delta, torch.nn.ParameterDict
+        ):
+            shares_any = any(
+                k in et_delta and lh_delta[k].data_ptr() == et_delta[k].data_ptr()
+                for k in lh_delta.keys()
+            )
+            if shares_any:
+                new_dict = torch.nn.ParameterDict({
+                    k: torch.nn.Parameter(
+                        lh_delta[k].detach().clone(),
+                        requires_grad=lh_delta[k].requires_grad,
+                    )
+                    for k in lh_delta.keys()
+                })
+                lh_ta._modules["trainable_tokens_delta"] = new_dict
+                restore.append((lh_ta, "trainable_tokens_delta", lh_delta))
+
+    try:
+        yield
+    finally:
+        for parent, key, original in restore:
+            if key == "trainable_tokens_delta":
+                parent._modules[key] = original
+            else:
+                setattr(parent, key, original)
 
 from transformers import (
     AutoModelForCausalLM,
@@ -283,8 +369,8 @@ class PISCO(PreTrainedModel):
         try:
             compressor = AutoModelForImageTextToText.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
 
-        except Exception as e:
-            compressor =  AutoModelForCausalLM.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
+        except Exception:
+            compressor = AutoModelForCausalLM.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
 
         compressor.resize_token_embeddings(len(self.compressor_tokenizer))
         
@@ -325,6 +411,11 @@ class PISCO(PreTrainedModel):
             nn.ReLU(),
             nn.Linear(config.compressor_mlp_hidden_dim, decoder_hidden_dim),
         )
+
+        # Cast connector to match the model dtype so compressor hidden states pass through without fp32 promotion.
+        connector_dtype = _resolve_torch_dtype(config.torch_dtype)
+        if connector_dtype is not None:
+            connector.to(connector_dtype)
 
         return compressor, connector
 
@@ -418,8 +509,8 @@ class PISCO(PreTrainedModel):
         # Replace embeddings in order
         mem_indices = mem_mask.view(-1).nonzero(as_tuple=False).squeeze(1)
 
-        # Flatten embeddings for easy indexing.
-        dec_embeds_flat = dec_embeds.reshape(-1, H)
+        # Flatten embeddings for easy indexing (view is safe: get_input_embeddings returns contiguous).
+        dec_embeds_flat = dec_embeds.view(-1, H)
         # Use out-of-place index_copy to avoid in-place ops on autograd views.
         dec_embeds_flat = dec_embeds_flat.index_copy(0, mem_indices, compressed_embs)
 
@@ -469,8 +560,8 @@ class PISCO(PreTrainedModel):
         decoder_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
 
         output_ids = self.decoder.generate(
-            inputs_embeds=decoder_inputs_embeds.to("cuda"),
-            attention_mask=decoder_attention_mask.to("cuda"),
+            inputs_embeds=decoder_inputs_embeds,
+            attention_mask=decoder_attention_mask,
             do_sample=False,
             top_p=None,
             max_new_tokens=max_new_tokens,
@@ -487,35 +578,16 @@ class PISCO(PreTrainedModel):
         Save only the LoRA adapters and their configurations.
         Use PEFT standard artifacts for the decoder adapter.
         """
-        # self.config.save_pretrained(save_directory)
         if not self.config.freeze_decoder:
-            self.decoder.save_pretrained(save_directory, safe_serialization=True)
-        
-        # PEFT raises on tied lm_head/embed_tokens when save_embedding_layers=True
-        # (triggered by resized vocab for <MEM>/<AE>). Untie before save, retie after.
-        compressor_base = getattr(self.compressor, "base_model", self.compressor)
-        inner = getattr(compressor_base, "model", compressor_base)
-        lm_head = getattr(inner, "lm_head", None)
-        embed_tokens = getattr(getattr(inner, "model", None), "embed_tokens", None)
-        weights_were_tied = (
-            lm_head is not None
-            and embed_tokens is not None
-            and lm_head.weight.data_ptr() == embed_tokens.weight.data_ptr()
-        )
-        if weights_were_tied:
-            lm_head.weight = torch.nn.Parameter(lm_head.weight.detach().clone())
-        self.compressor.save_pretrained(os.path.join(save_directory, "compressor"))
-        if weights_were_tied:
-            lm_head.weight = embed_tokens.weight
+            with _untied_for_save(self.decoder):
+                self.decoder.save_pretrained(save_directory, safe_serialization=True)
+        with _untied_for_save(self.compressor):
+            self.compressor.save_pretrained(os.path.join(save_directory, "compressor"))
         torch.save(
             self.connector.state_dict(), os.path.join(save_directory, "connector.pt")
         )
-        if self.config.lora_compressor:
-           self.config.compressor_adapter_path=os.path.join(save_directory, "compressor")
-        
         self.compressor_tokenizer.save_pretrained(
-            os.path.join(os.path.join(save_directory, "compressor"))
-            #os.path.join(os.path.join(save_directory, "compressor"), "compressor_tokenizer")
+            os.path.join(save_directory, "compressor")
         )
         # useless??  tokenizer are always re-created from the model name
         self.decoder_tokenizer.save_pretrained(save_directory
@@ -528,19 +600,16 @@ class PISCO(PreTrainedModel):
     def from_pretrained(
         cls,
         pretrained_model_name_or_path,
-        #load_decoder=True,
-        freeze_decoder=False,
         *args,
         **kwargs,
     ) -> "PISCO":
         """
         Loading: to take care of checkpoints containing only lora and not base model.
+        freeze_decoder / load_decoder are read from the saved PISCOConfig, not from kwargs.
         """
         # Load the configuration
         config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
-        #config.load_decoder = load_decoder
-        #config.freeze_decoder = freeze_decoder
-        
+
         if not config.freeze_decoder:
             if config.lora_decoder:
                 config.decoder_adapter_path = pretrained_model_name_or_path
@@ -557,7 +626,7 @@ class PISCO(PreTrainedModel):
 
 
         model.connector.load_state_dict(
-            torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"))
+            torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"), weights_only=True)
         )
         connector_dtype = _resolve_torch_dtype(config.torch_dtype)
         if connector_dtype is not None:
