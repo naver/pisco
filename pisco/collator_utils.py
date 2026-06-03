@@ -15,7 +15,7 @@ def print_collated_sample(batch, collator):
     """
     a printing utility
     """
-    n_samples = batch["decoder_input_ids"].size(1)
+    n_samples = batch["decoder_input_ids"].size(0)
     n_to_print = min(n_samples, 2)
     print("---compressor inputs----")
     print(
@@ -108,42 +108,6 @@ def chunk_list(
 
     return chunks
 
-
-def randomly_chunk(lst, k, max_size):
-    """
-    chunks the list lst into k continuous pieces such that
-    each piece length does not exceed max_size
-    Used for pretraining, to make pisco robust to sizes and long docs.
-    """
-    n = len(lst)
-
-    if n < k:
-        raise ValueError("List too small for k non-empty pieces")
-    if n > k * max_size:
-        raise ValueError("Cannot split: max_size too small")
-
-    # Start with minimum 1 per piece
-    sizes = [1] * k
-    remaining = n - k
-
-    # Distribute remaining randomly, respecting max_size
-    indices = list(range(k))
-    while remaining > 0:
-        i = random.choice(indices)
-        if sizes[i] < max_size:
-            sizes[i] += 1
-            remaining -= 1
-        else:
-            indices.remove(i)
-
-    # Build the slices
-    result = []
-    start = 0
-    for size in sizes:
-        result.append(lst[start : start + size])
-        start += size
-
-    return result
 
 
 def add_memory_tokens_to_inputs(

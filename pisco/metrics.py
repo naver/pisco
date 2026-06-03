@@ -106,7 +106,8 @@ def compute_rouge_scores(predictions, references):
 
 def hard_metrics(predictions: list[str], references: list[str]) -> dict:
     metrics = compute_rouge_scores(predictions, references)
-    _, precision, recall = f1_score(predictions=predictions, references=references)
+    # f1_score expects list[list[str]] for references (multiple ground truths per item)
+    _, precision, recall = f1_score(predictions=predictions, references=[[r] for r in references])
     metrics.update(
         {
             # 'f1': f1,

@@ -505,7 +505,9 @@ class FineTuningCollator(BaseCollator):
         if label is not None:
             messages.append({"role": "assistant", "content": label})
 
-        prompt = self.decoder_tokenizer.apply_chat_template(messages, tokenize=False)
+        prompt = self.decoder_tokenizer.apply_chat_template(
+            messages, tokenize=False, enable_thinking=False
+        )
 
         # To compute the labels mask
         prefix_length = len(
@@ -524,8 +526,8 @@ class FineTuningCollator(BaseCollator):
         n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(
             1
         )
-        prefix_lengths = torch.LongTensor(
-            prefix_lengths, device=labels.device
+        prefix_lengths = torch.tensor(
+            prefix_lengths, dtype=torch.long, device=labels.device
         ).unsqueeze(
             1
         )  # (B, 1)
@@ -538,20 +540,6 @@ class FineTuningCollator(BaseCollator):
         prefix_mask = positions < (n_pad + prefix_lengths)
         labels = labels.masked_fill_(prefix_mask, -100)
         return labels
-
-    def preprocess_for_compressor(self, texts: List[str]) -> Dict[str, Any]:
-        input_ids = self.compressor_tokenizer(
-            texts,
-            padding="do_not_pad",
-            return_tensors=None,
-            truncation=True,
-            max_length=self.compressor_max_length,
-        )["input_ids"]
-
-        input_ids, _ = add_memory_tokens_to_inputs(
-            input_ids, self.compressor_tokenizer, self.compr_rate
-        )
-        return self.compressor_pad(input_ids)
 
     def torch_call(self, examples: List[Dict[str, Any]]) -> Dict[str, Any]:
         documents = [elt["docs"] for elt in examples]
@@ -640,6 +628,7 @@ class FineTuningCollator(BaseCollator):
             add_special_tokens=False,
             max_length=self.decoder_max_length,
             truncation=True,
+            enable_thinking=False,
         )
 
         labels = decoder_inputs["input_ids"].clone()
@@ -670,7 +659,7 @@ class FineTuningCollatorA(BaseCollator):
         query_dependent=False,
         chunk_docs: bool = False,  # If True, then docs exceed compressor_max_lengths are chunked
         chunk_overlap: int = 0,  # how much (number of tokens) the chunks should overlap with chunk_docs=True
-        n_max_chunks: int = None,  # in case of chunking, upper bound on chunk number.
+        n_max_chunks: Optional[int] = None,  # in case of chunking, upper bound on chunk number.
         topk_docs: int = 2,  # how many docs to keep per query.
         system_prompt: str = (
             "You are a helpful assistant. Your task is to extract relevant information from "
@@ -691,6 +680,7 @@ class FineTuningCollatorA(BaseCollator):
 
         if (
             self.chunk_docs
+            and self.n_max_chunks is not None
             and (self.compressor_max_length + 1) * self.n_max_chunks
             > 0.1 * self.decoder_max_length
         ):
@@ -750,11 +740,9 @@ class FineTuningCollatorA(BaseCollator):
 
     def mask_labels_before_prefix(self, labels, prefix_lengths):
         # Masking anything before the response thanks to prefix lengths:
-        n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(
-            1
-        ) - 0  # - 4 some margin for safety... TODO make this perfect but tedious...
-        prefix_lengths = torch.LongTensor(
-            prefix_lengths, device=labels.device
+        n_pad = (labels == self.decoder_tokenizer.pad_token_id).sum(1).unsqueeze(1)
+        prefix_lengths = torch.tensor(
+            prefix_lengths, dtype=torch.long, device=labels.device
         ).unsqueeze(
             1
         )  # (B, 1)
@@ -767,20 +755,6 @@ class FineTuningCollatorA(BaseCollator):
         prefix_mask = positions < (n_pad + prefix_lengths)
         labels = labels.masked_fill_(prefix_mask, -100)
         return labels
-
-    def preprocess_for_compressor(self, texts):
-        input_ids = self.compressor_tokenizer(
-            texts,
-            padding="do_not_pad",
-            return_tensors=None,
-            truncation=True,
-            max_length=self.compressor_max_length,
-        )["input_ids"]
-
-        input_ids, _ = add_memory_tokens_to_inputs(
-            input_ids, self.compressor_tokenizer, self.compr_rate
-        )
-        return self.compressor_pad(input_ids)
 
     def torch_call(self, examples):
         raw_documents = [elt["uncompressed_docs"] for elt in examples]
@@ -835,7 +809,7 @@ class FineTuningCollatorA(BaseCollator):
                     # Building the doc prompt, which numbers docs and their chunks
                     doc_text += (
                         #f"Document {k}:"
-                        f"\n"
+                        "\n"
                         + self.decoder_tokenizer.mem_token * sum(n_mems)
                     )
                 all_compressor_input_ids.extend(chunked_docs_input_ids)
@@ -850,7 +824,7 @@ class FineTuningCollatorA(BaseCollator):
                 doc_text = "".join(
                     [
                         #f"Document {j}:" + self.decoder_tokenizer.mem_token * n_mems[j]
-                        f"\n" + self.decoder_tokenizer.mem_token * n_mems[j]
+                        "\n" + self.decoder_tokenizer.mem_token * n_mems[j]
                         for j in range(len(docs))
                     ]
                 )
