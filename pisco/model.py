@@ -76,6 +76,7 @@ class PISCOConfig(PretrainedConfig):
         compressor_gradient_checkpointing: bool = False,
         compressor_adapter_path: Optional[str] = None,
         torch_dtype: str = "bfloat16",
+        bidirectional: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -101,11 +102,36 @@ class PISCOConfig(PretrainedConfig):
         #other settings
         self.attn_implementation = attn_implementation
         self.device_map = device_map
+        # When True, the compressor runs with full (bidirectional) attention
+        # instead of the default causal mask. Requires a 4D-mask-capable attn
+        # implementation ('sdpa'/'eager'), since flash_attention_2 only exposes
+        # causality via an is_causal flag. See build_bidirectional_4d_mask.
+        self.bidirectional = bidirectional
         # Stored as string so the config serializes to JSON cleanly.
         # Resolved to a torch.dtype via _resolve_torch_dtype() at load time.
         self.torch_dtype = torch_dtype
 
 
+
+
+def build_bidirectional_4d_mask(attention_mask: torch.Tensor, num_query_tokens: Optional[int] = None) -> torch.Tensor:
+    """Boolean 4D attention mask (B, 1, Q, K) where True means 'attend'.
+
+    Every query position may attend to every non-pad key position with no
+    causal triangle, i.e. full bidirectional attention over the real tokens.
+
+    transformers>=5 forwards an already-4D ``attention_mask`` to the attention
+    backend unchanged (see ``masking_utils.create_causal_mask``: "It can also be
+    an already prepared 4D mask, in which case it is returned as-is"), so passing
+    this in place of the usual 2D padding mask turns a causal decoder
+    bidirectional. Requires attn_implementation 'sdpa' or 'eager' —
+    flash_attention_2 rejects 4D masks. Never returns None, so the model's
+    causal construction can't re-engage.
+    """
+    pad = attention_mask.bool()              # (B, K) True = real token
+    B, K = pad.shape
+    Q = K if num_query_tokens is None else num_query_tokens
+    return pad[:, None, None, :].expand(B, 1, Q, K)
 
 
 def _resolve_torch_dtype(name: Optional[str]) -> Optional[torch.dtype]:
@@ -371,9 +397,17 @@ class PISCO(PreTrainedModel):
         if input_ids is None:
             raise ValueError("`input_ids` must not be None for compression.")
 
+        # Bidirectional: replace the 2D padding mask with a full 4D mask so the
+        # compressor attends across the whole document (text tokens included,
+        # not just the trailing <MEM> tokens). attn_implementation must be
+        # 'sdpa'/'eager' for this to be honored.
+        compr_attention_mask = attention_mask
+        if getattr(self.config, "bidirectional", False) and attention_mask is not None:
+            compr_attention_mask = build_bidirectional_4d_mask(attention_mask)
+
         last_hidden_states: torch.Tensor = self.compressor(
             input_ids=input_ids,
-            attention_mask=attention_mask,
+            attention_mask=compr_attention_mask,
             output_hidden_states=True,
         ).hidden_states[
             -1
@@ -565,7 +599,6 @@ class PISCO(PreTrainedModel):
         elif not config.lora_compressor:
             config.compressor_model_name = compressor_dir
 
-        print(config)
         model = cls(config)
 
         if new_format_decoder and not config.freeze_decoder:
