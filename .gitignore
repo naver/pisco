@@ -9,3 +9,16 @@ outputs/
 results/
 *broom.yml
 *.sh
+
+# experiment outputs & local tool state
+slurm-*.out
+logs/
+exp3/
+exp4/
+expQ/
+expft/
+phase2/
+pretraining/
+eval_data/
+.expmon.conf
+.claude/

@@ -12,6 +12,7 @@ appropriate embeddings computed by the compressor.
 """
 
 import os
+import warnings
 from typing import List, Optional, Dict
 from typing import cast, TYPE_CHECKING
 
@@ -76,6 +77,7 @@ class PISCOConfig(PretrainedConfig):
         compressor_gradient_checkpointing: bool = False,
         compressor_adapter_path: Optional[str] = None,
         torch_dtype: str = "bfloat16",
+        frozen_base_dtype: Optional[str] = None,
         bidirectional: bool = False,
         **kwargs,
     ):
@@ -107,9 +109,25 @@ class PISCOConfig(PretrainedConfig):
         # implementation ('sdpa'/'eager'), since flash_attention_2 only exposes
         # causality via an is_causal flag. See build_bidirectional_4d_mask.
         self.bidirectional = bidirectional
+        # Guard: a 4D bidirectional mask is silently ineffective under
+        # flash_attention_2 (and unset usually resolves to flash). Force sdpa so
+        # the bidirectional path can't be left misconfigured. Honour an explicit
+        # 'eager' (also 4D-capable); only override None/'flash_attention_2'.
+        if self.bidirectional and self.attn_implementation not in ("sdpa", "eager"):
+            if self.attn_implementation not in (None, "flash_attention_2"):
+                warnings.warn(
+                    f"bidirectional=True is incompatible with attn_implementation="
+                    f"{self.attn_implementation!r}; forcing 'sdpa'."
+                )
+            self.attn_implementation = "sdpa"
         # Stored as string so the config serializes to JSON cleanly.
         # Resolved to a torch.dtype via _resolve_torch_dtype() at load time.
         self.torch_dtype = torch_dtype
+        # Option 2 (V100 memory): when set (e.g. "float16"), the FROZEN base
+        # backbones load in this dtype while the trainable LoRA adapters + connector
+        # stay in `torch_dtype` (fp32). Halves base-weight memory so 4B+ fits a 32GB
+        # V100. None -> everything uses torch_dtype (current/default behaviour).
+        self.frozen_base_dtype = frozen_base_dtype
 
 
 
@@ -176,6 +194,20 @@ class PISCO(PreTrainedModel):
         )
         print(f"Total trainable parameters: {self.num_parameters(only_trainable=True)}")
 
+        # Option 2: base loaded in frozen_base_dtype (e.g. fp16), but the trainable
+        # LoRA adapters inherited that dtype too. fp16 AMP's grad-scaler rejects fp16
+        # trainable params ("Attempting to unscale FP16 gradients"), so promote every
+        # trainable param to the fp32 master dtype. Connector is already torch_dtype.
+        if config.frozen_base_dtype is not None:
+            master_dtype = _resolve_torch_dtype(config.torch_dtype)
+            n_cast = 0
+            for p in self.parameters():
+                if p.requires_grad and p.dtype != master_dtype:
+                    p.data = p.data.to(master_dtype)
+                    n_cast += 1
+            print(f"[option2] base in {config.frozen_base_dtype}; promoted "
+                  f"{n_cast} trainable tensors to {config.torch_dtype}")
+
         # other settings
         self.generation_top_k = 1
         self.compr_rate = config.compr_rate
@@ -200,7 +232,8 @@ class PISCO(PreTrainedModel):
 
         ### Load using AutoModelForImageTextToText if possible, otherwise fallback to AutoModelForCausalLM
         ### It's important that when loading the pisco adapter, we use the same path as during piso training.
-        dtype = _resolve_torch_dtype(config.torch_dtype)
+        # Frozen base loads in frozen_base_dtype when set (option 2), else torch_dtype.
+        dtype = _resolve_torch_dtype(config.frozen_base_dtype or config.torch_dtype)
         try:
             decoder = cast(
                 PreTrainedModel,
@@ -303,9 +336,10 @@ class PISCO(PreTrainedModel):
 
 
         # load model
-        # if lora: point to base model 
+        # if lora: point to base model
         # else path/compressor
-        dtype = _resolve_torch_dtype(config.torch_dtype)
+        # Frozen base loads in frozen_base_dtype when set (option 2), else torch_dtype.
+        dtype = _resolve_torch_dtype(config.frozen_base_dtype or config.torch_dtype)
         try:
             compressor = AutoModelForImageTextToText.from_pretrained(config.compressor_model_name, attn_implementation=config.attn_implementation, torch_dtype=dtype)
 
@@ -459,6 +493,9 @@ class PISCO(PreTrainedModel):
 
         # Flatten embeddings for easy indexing (view is safe: get_input_embeddings returns contiguous).
         dec_embeds_flat = dec_embeds.view(-1, H)
+        # Match dtype: under fp16/bf16 autocast the connector output and the embedding
+        # lookup can differ in dtype; index_copy requires them equal. No-op when matched.
+        compressed_embs = compressed_embs.to(dec_embeds_flat.dtype)
         # Use out-of-place index_copy to avoid in-place ops on autograd views.
         dec_embeds_flat = dec_embeds_flat.index_copy(0, mem_indices, compressed_embs)
 
@@ -579,8 +616,15 @@ class PISCO(PreTrainedModel):
           inside create_decoder / create_compressor_and_connector.
 
         freeze_decoder / load_decoder are read from the saved PISCOConfig, not from kwargs.
+
+        Any kwarg that names a PISCOConfig field overrides the saved value BEFORE the model is
+        built — needed e.g. to finetune an A100/bf16 checkpoint on a V100 by passing
+        frozen_base_dtype="float16" + torch_dtype="float32" (base dtype is decided in __init__).
         """
         config = PISCOConfig.from_pretrained(pretrained_model_name_or_path)
+        for _k in list(kwargs):
+            if hasattr(config, _k):
+                setattr(config, _k, kwargs.pop(_k))
 
         decoder_state_path = os.path.join(pretrained_model_name_or_path, "decoder_state.pt")
         compressor_dir = os.path.join(pretrained_model_name_or_path, "compressor")

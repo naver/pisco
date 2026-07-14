@@ -15,6 +15,8 @@ import subprocess
 import sys
 import tempfile
 
+REPO_ROOT = pathlib.Path(__file__).parent.parent
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -78,7 +80,7 @@ def main() -> int:
         "+hf_training.optim=adamw_torch",
         *model_overrides,
     ]
-    result = subprocess.run(cmd)
+    result = subprocess.run(cmd, cwd=REPO_ROOT)
     if result.returncode == 0:
         print(f"[smoke finetune] OK -> {out}")
     return result.returncode

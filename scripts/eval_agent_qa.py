@@ -7,7 +7,11 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, cast
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import (
+    AutoModelForCausalLM,
+    AutoModelForImageTextToText,
+    AutoTokenizer,
+)
 
 from pisco.collator_utils import add_memory_tokens_to_inputs, chunk_list
 from pisco.metrics import f1_single, match_single
@@ -76,7 +80,7 @@ def _trajectory_to_text(msgs: List[Dict[str, str]], *, max_chars: Optional[int])
 
 
 def _build_chat_prompt(tokenizer, *, background: str, question: str) -> str:
-    user_prompt = f"\n\nBackground:{background}\n Question: {question}"
+    user_prompt = f"\n\nBackground:\n{background}\n Question: {question}"
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_prompt},
@@ -168,7 +172,9 @@ def _generate_with_pisco(
     compressor_max_length: int,
     decoder_max_length: int,
     max_new_tokens: int,
-) -> str:
+    chunk_overlap: int = 0,
+    n_max_chunks: Optional[int] = None,
+) -> tuple[str, Dict[str, float]]:
     # Compressor side: tokenize trajectory, chunk, append MEMs, then pad
     compressor_tok = model.compressor_tokenizer
     decoder_tok = model.decoder_tokenizer
@@ -176,15 +182,21 @@ def _generate_with_pisco(
     comp_ids: List[int] = compressor_tok(
         trajectory_text, add_special_tokens=False, truncation=False
     )["input_ids"]
-    chunks = chunk_list(comp_ids, chunk_length=compressor_max_length, chunk_overlap=0)
+    n_traj_tokens = len(comp_ids)
+    chunks = chunk_list(
+        comp_ids, chunk_length=compressor_max_length, chunk_overlap=chunk_overlap
+    )
+    if n_max_chunks is not None:
+        chunks = chunks[:n_max_chunks]
     chunks_with_mems, n_mems = add_memory_tokens_to_inputs(
-        chunks, compressor_tok, model.compr_rate
+        chunks, compressor_tok,
+        model.compr_rate
     )
     total_mems = int(sum(n_mems))
+    mems_before_trim = total_mems
 
     background = decoder_tok.mem_token * total_mems
     prompt = _build_chat_prompt(decoder_tok, background=background, question=question)
-
     decoder_inputs = decoder_tok(
         prompt,
         return_tensors="pt",
@@ -226,7 +238,23 @@ def _generate_with_pisco(
         max_new_tokens=max_new_tokens,
     )
     decoded = decoder_tok.batch_decode(output_ids, skip_special_tokens=True)[0]
-    return decoded
+
+    # Compression diagnostics: how many real (non-MEM) tokens survived into the
+    # surviving chunks, and how many MEM embeddings the decoder actually consumed.
+    comp_mem_id = compressor_tok.mem_token_id
+    real_tokens_used = sum(
+        sum(1 for t in chunk if t != comp_mem_id) for chunk in chunks_with_mems
+    )
+    stats = {
+        # tokens represented per MEM embedding the decoder reads (higher = more compression)
+        "effective_ratio": real_tokens_used / max(1, total_mems),
+        # fraction of the trajectory that survived the decoder MEM budget (1.0 = nothing trimmed)
+        "coverage": real_tokens_used / max(1, n_traj_tokens),
+        "n_traj_tokens": float(n_traj_tokens),
+        "mems_used": float(total_mems),
+        "mems_trimmed": float(mems_before_trim - total_mems),
+    }
+    return decoded, stats
 
 
 @torch.inference_mode()
@@ -250,14 +278,21 @@ def _generate_with_base_decoder(
         truncation=True,
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
+    input_len = inputs["input_ids"].shape[1]
     output_ids = model.generate(
         **inputs,
         do_sample=False,
         top_p=None,
         max_new_tokens=max_new_tokens,
     )
-    decoded = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0]
-    return decoded
+    # generate() with input_ids returns prompt + new tokens; keep only the new ones
+    # (pisco mode uses inputs_embeds, so it already returns only generated tokens).
+    gen_ids = output_ids[:, input_len:]
+    decoded = tokenizer.batch_decode(gen_ids, skip_special_tokens=True)[0]
+    # Qwen3.5 emits a leading <think>...</think> block; drop it so f1 sees the answer.
+    if "</think>" in decoded:
+        decoded = decoded.split("</think>", 1)[1]
+    return decoded.strip()
 
 
 def main() -> None:
@@ -273,8 +308,11 @@ def main() -> None:
     parser.add_argument("--batch_size", type=int, default=1, help="Currently only batch_size=1 is supported.")
 
     parser.add_argument("--compressor_max_length", type=int, default=128)
+    parser.add_argument("--compr_rate", type=int, default=None, help="Override the checkpoint's compr_rate at eval (tokens per <MEM>). Tests how the trained compressor generalizes to a different compression rate; pisco mode only.")
     parser.add_argument("--decoder_max_length", type=int, default=2048)
-    parser.add_argument("--max_new_tokens", type=int, default=128)
+    parser.add_argument("--max_new_tokens", type=int, default=32)
+    parser.add_argument("--chunk_overlap", type=int, default=0, help="Token overlap between consecutive compressor chunks (pisco mode).")
+    parser.add_argument("--n_max_chunks", type=int, default=None, help="Cap the number of compressor chunks per document (pisco mode).")
     parser.add_argument("--trajectory_max_chars", type=int, default=None, help="If set, keep only the last N characters of the trajectory text (helps fit context).")
 
     parser.add_argument("--device", type=str, default=None, help="e.g. cuda, cuda:0, cpu. Default: cuda if available else cpu.")
@@ -306,10 +344,10 @@ def main() -> None:
     base_tok: Any = None
 
     if args.mode == "pisco":
-        pisco_model = PISCO.from_pretrained(
-            args.checkpoint_path,
-            load_decoder=True,
-        )
+        pisco_model = PISCO.from_pretrained(args.checkpoint_path)
+        if args.compr_rate is not None and args.compr_rate != pisco_model.compr_rate:
+            print(f"Overriding compr_rate {pisco_model.compr_rate} -> {args.compr_rate} (eval-time generalization test)")
+            pisco_model.compr_rate = args.compr_rate
         pisco_model.to(device)
         pisco_model.eval()
     else:
@@ -333,16 +371,24 @@ def main() -> None:
                 raise ValueError("Tokenizer has neither pad_token_id nor eos_token_id.")
             base_tok.pad_token_id = int(base_tok.eos_token_id)
 
-        base_model = AutoModelForCausalLM.from_pretrained(
-            decoder_model_name,
-            dtype=torch.bfloat16 if device.type == "cuda" else None,
-            device_map=None,
-        )
+        # Mirror PISCO's decoder loader: some decoders (e.g. Ministral-3) are
+        # multimodal configs that AutoModelForCausalLM rejects.
+        dtype = torch.bfloat16 if device.type == "cuda" else None
+        try:
+            base_model = AutoModelForImageTextToText.from_pretrained(
+                decoder_model_name, torch_dtype=dtype, device_map=None
+            )
+        except Exception as e:
+            print(f"AutoModelForImageTextToText failed ({e}); falling back to AutoModelForCausalLM")
+            base_model = AutoModelForCausalLM.from_pretrained(
+                decoder_model_name, torch_dtype=dtype, device_map=None
+            )
         assert base_model is not None
         base_model.to(device)  # type: ignore[arg-type]
         base_model.eval()
 
     results: List[EvalResult] = []
+    comp_stats_all: List[Dict[str, float]] = []
 
     for i, ex in enumerate(data):
         question = str(ex.get("question", ""))
@@ -352,9 +398,10 @@ def main() -> None:
         # msgs = _parse_trajectory_jsonl(traj_raw)
         # trajectory_text = _trajectory_to_text(msgs, max_chars=args.trajectory_max_chars)
 
+        comp_stats: Dict[str, float] = {}
         if args.mode == "pisco":
             assert pisco_model is not None
-            pred = _generate_with_pisco(
+            pred, comp_stats = _generate_with_pisco(
                 pisco_model,
                 trajectory_text=traj_raw,
                 question=question,
@@ -362,6 +409,8 @@ def main() -> None:
                 compressor_max_length=args.compressor_max_length,
                 decoder_max_length=args.decoder_max_length,
                 max_new_tokens=args.max_new_tokens,
+                chunk_overlap=args.chunk_overlap,
+                n_max_chunks=args.n_max_chunks,
             )
         else:
             assert base_model is not None and base_tok is not None
@@ -375,9 +424,20 @@ def main() -> None:
                 decoder_max_length=args.decoder_max_length,
             )
 
+        if comp_stats:
+            comp_stats_all.append(comp_stats)
+
         m = float(match_single(pred, ground_truth))
         f1, _, _ = f1_single(pred, ground_truth)
         f1 = float(f1)
+
+
+        print(f"Question: {question}")
+        print(f"Trajectory: {traj_raw}")
+        print(f"Ground Truth: {ground_truth}")
+        print(f"Prediction: {pred}")
+        print(f"Match: {m}")
+        print("--------------------------------")
 
         results.append(
             EvalResult(
@@ -398,17 +458,42 @@ def main() -> None:
     avg_match = sum(r.match for r in results) / max(1, len(results))
     avg_f1 = sum(r.f1 for r in results) / max(1, len(results))
 
+    def _avg(key: str) -> Optional[float]:
+        if not comp_stats_all:
+            return None
+        return sum(s[key] for s in comp_stats_all) / len(comp_stats_all)
+
+    compression = (
+        {
+            "effective_ratio": _avg("effective_ratio"),
+            "coverage": _avg("coverage"),
+            "avg_traj_tokens": _avg("n_traj_tokens"),
+            "avg_mems_used": _avg("mems_used"),
+            "avg_mems_trimmed": _avg("mems_trimmed"),
+            "frac_examples_trimmed": sum(
+                1 for s in comp_stats_all if s["mems_trimmed"] > 0
+            )
+            / len(comp_stats_all),
+        }
+        if comp_stats_all
+        else None
+    )
+
     payload = {
         "mode": args.mode,
         "data_path": args.data_path,
         "checkpoint_path": args.checkpoint_path,
         "base_model_name": args.base_model_name,
         "compressor_max_length": args.compressor_max_length,
+        "compr_rate": (pisco_model.compr_rate if pisco_model is not None else None),
         "decoder_max_length": args.decoder_max_length,
+        "chunk_overlap": args.chunk_overlap,
+        "n_max_chunks": args.n_max_chunks,
         "max_new_tokens": args.max_new_tokens,
         "trajectory_max_chars": args.trajectory_max_chars,
         "n_examples": len(results),
         "metrics": {"match": avg_match, "f1": avg_f1},
+        "compression": compression,
         "samples": [
             {
                 "question": r.question,
@@ -429,6 +514,12 @@ def main() -> None:
     print(f"- n_examples: {len(results)}")
     print(f"- match: {avg_match:.4f}")
     print(f"- f1: {avg_f1:.4f}")
+    if compression is not None:
+        print(
+            f"- compression: effective_ratio={compression['effective_ratio']:.2f} "
+            f"coverage={compression['coverage']:.3f} "
+            f"frac_trimmed={compression['frac_examples_trimmed']:.3f}"
+        )
     print(f"- wrote: {args.output_path}")
 
 

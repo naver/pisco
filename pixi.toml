@@ -25,9 +25,9 @@ python = ">=3.10,<3.14"
 hydra-core = ">=1.3"
 pytorch-gpu = ">=2.6"
 cuda-version = "12.9.*"
-transformers = ">=4"
+transformers = "==5.5"
 datasets = ">=4"
-peft = ">=0.15"
+peft = ">=0.19"
 flash-attn = ">=2"
 rouge = ">=1.0"
 tensorboard = ">=2"
@@ -40,6 +40,9 @@ pisco = {path = ".", editable = true}
 
 ### For Qwen 3.5
 flash-linear-attention = ">=0.4"
+pytrec-eval-terrier = ">=0.5.10, <0.6"
+tiktoken = ">=0.13.0, <0.14"
+sentencepiece = ">=0.2.1, <0.3"
 
 [tasks]
 pretrain = "python pisco/train.py --config-name=pretraining"

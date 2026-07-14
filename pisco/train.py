@@ -80,7 +80,13 @@ def main(config: DictConfig):
     # Model
     if getattr(config, "model_name_or_path", None) is not None:
         print(f"Loading existing model at {config.model_name_or_path}")
-        model = PISCO.from_pretrained(config.model_name_or_path)
+        # Optional config overrides applied to the saved checkpoint config before build,
+        # e.g. +model_config_overrides.frozen_base_dtype=float16 for a V100 finetune.
+        _ov = (OmegaConf.to_container(config.model_config_overrides, resolve=True)
+               if getattr(config, "model_config_overrides", None) else {})
+        if _ov:
+            print(f"Applying model_config_overrides: {_ov}")
+        model = PISCO.from_pretrained(config.model_name_or_path, **_ov)
     else:
         print("Creating new PISCO model")
         model = cast(PISCO, instantiate(config.model.init_args))

@@ -1,0 +1,17 @@
+# Bidirectional PISCO pretraining: small compressor (Qwen3.5-4B) feeding a
+# larger decoder (Qwen3.5-9B). Inherits pt_lora and only flips what differs:
+# the backbones and the bidirectional compressor switch. attn_implementation is
+# coerced to 'sdpa' automatically by PISCOConfig when bidirectional=True
+# (flash_attention_2 silently ignores the 4D mask), but we set it explicitly too.
+defaults:
+  - pt_lora
+  - _self_
+
+model:
+  init_args:
+    config:
+      bidirectional: True
+      attn_implementation: sdpa
+
+compressor: Qwen/Qwen3.5-4B
+decoder: Qwen/Qwen3.5-9B

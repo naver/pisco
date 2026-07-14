@@ -487,14 +487,17 @@ class FineTuningCollator(BaseCollator):
         return query_documents
 
     def compute_prompt_and_prefix_length(
-        self, docs: str, query: str, label: Optional[str]
+        self, docs: str, query: str, label: Optional[str],
+        system_prompt: Optional[str] = None,
     ) -> Tuple[str, int]:
         """
         Forms the templated prompt given docs and queries.
         Also returns the length of the prompt WITHOUT the label, to mask in the loss.
+        `system_prompt` overrides self.system_prompt per-example (used for mixed-task
+        finetuning data where e.g. summarization/translation need a non-QA prompt).
         """
         messages = [
-            {"role": "system", "content": self.system_prompt},
+            {"role": "system", "content": system_prompt or self.system_prompt},
             {
                 "role": "user",
                 "content": self.user_prompt.replace("[documents]", docs).replace(
@@ -545,6 +548,8 @@ class FineTuningCollator(BaseCollator):
         documents = [elt["docs"] for elt in examples]
         queries = [elt["query"] for elt in examples]
         labels = [elt["mistral_label"] for elt in examples]
+        # Optional per-example system prompt (mixed-task data); None -> default self.system_prompt.
+        sys_prompts = [elt.get("system_prompt") for elt in examples]
 
         # These are special tokens: we don't want them to appear accidentally in data !
         queries = [self.clean_text(q) for q in queries]
@@ -613,7 +618,7 @@ class FineTuningCollator(BaseCollator):
                 )
 
             prompt, prefix_length = self.compute_prompt_and_prefix_length(
-                doc_text, queries[i], labels[i]
+                doc_text, queries[i], labels[i], system_prompt=sys_prompts[i]
             )
             all_decoder_texts.append(prompt)
             prefix_lengths.append(prefix_length)
@@ -707,14 +712,17 @@ class FineTuningCollatorA(BaseCollator):
         return query_documents
 
     def compute_prompt_and_prefix_length(
-        self, docs: str, query: str, label: Optional[str]
+        self, docs: str, query: str, label: Optional[str],
+        system_prompt: Optional[str] = None,
     ) -> Tuple[str, int]:
         """
         Forms the templated prompt given docs and queries.
         Also returns the length of the prompt WITHOUT the label, to mask in the loss.
+        `system_prompt` overrides self.system_prompt per-example (used for mixed-task
+        finetuning data where e.g. summarization/translation need a non-QA prompt).
         """
         messages = [
-            {"role": "system", "content": self.system_prompt},
+            {"role": "system", "content": system_prompt or self.system_prompt},
             {
                 "role": "user",
                 "content": self.user_prompt.replace("[documents]", docs).replace(
