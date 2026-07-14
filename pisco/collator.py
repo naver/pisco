@@ -258,6 +258,242 @@ class PretrainingCollator(BaseCollator):
         }
 
 
+class MultiTaskPretrainingCollator(PretrainingCollator):
+    """Pretraining collator with a mixture of self-supervised tasks beyond
+    AE + continuation, each targeting a downstream skill the two base tasks
+    don't train:
+
+    - 'ae'       : parent auto-encoding; with prob ae_noise_p the compressor
+                   input is corrupted (token drops/dups) while the target stays
+                   clean -> noise-robust mems.
+    - 'cont'     : parent text continuation.
+    - 'cloze'    : a span (entity-like when possible) is blanked in a clear copy
+                   of the doc; the decoder sees the corrupted copy, then the
+                   compressed clean doc, and must produce the missing span.
+                   Loss on the span only -> exact recall (names/dates/numbers).
+    - 'multidoc' : the target doc is compressed together with 1-3 distractor
+                   docs (sampled from the batch); the decoder must reconstruct
+                   the target from the mixed mem groups -> selective decoding,
+                   matches the top-k-docs RAG setting.
+    - 'midmem'   : continuation with TWO compressed segments interleaved with
+                   clear text (clear-mems-clear-mems-target) -> mems at
+                   arbitrary context positions, matches long-doc/agent use.
+
+    task_weights: dict of relative weights for the 5 tasks (normalized here).
+    """
+
+    def __init__(
+        self,
+        *args,
+        task_weights: Optional[Dict[str, float]] = None,
+        ae_noise_p: float = 0.5,
+        noise_drop_p: float = 0.03,
+        noise_dup_p: float = 0.02,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        task_weights = task_weights or {
+            "ae": 0.2, "cont": 0.2, "cloze": 0.25, "multidoc": 0.2, "midmem": 0.15
+        }
+        self.tasks = list(task_weights.keys())
+        w = np.array([float(task_weights[t]) for t in self.tasks])
+        self.task_p = w / w.sum()
+        self.ae_noise_p = ae_noise_p
+        self.noise_drop_p = noise_drop_p
+        self.noise_dup_p = noise_dup_p
+
+    # ---- task 5: noise-robust AE -------------------------------------------
+    def _noise_ids(self, ids: List[int]) -> List[int]:
+        out = []
+        for t in ids:
+            r = np.random.uniform()
+            if r < self.noise_drop_p:
+                continue  # drop token
+            out.append(t)
+            if r > 1.0 - self.noise_dup_p:
+                out.append(t)  # duplicate token
+        return out if out else ids
+
+    def prepare_for_noisy_autoencoding(self, text: str, text_ids: List[int]):
+        text_ids = text_ids[: self.decoder_max_length]
+        if len(text_ids) <= 64:
+            chunks = [text_ids]
+        else:
+            chunks = chunk_random_no_tiny_tail(
+                text_ids=text_ids, compressor_max_length=self.compressor_max_length
+            )
+        chunks = [self._noise_ids(c) for c in chunks]
+        compressor_input_ids, n_mems = add_memory_tokens_to_inputs(
+            chunks, self.compressor_tokenizer, self.compr_rate
+        )
+        decoder_text = (
+            self.decoder_tokenizer.ae_token
+            + self.decoder_tokenizer.mem_token * sum(n_mems)
+            + self.decoder_tokenizer.bos_token
+            + self.compressor_tokenizer.decode(text_ids)  # clean target
+            + self.decoder_tokenizer.eos_token
+        )
+        return compressor_input_ids, decoder_text
+
+    # ---- task 1: entity/span cloze ------------------------------------------
+    def _pick_span(self, text_ids: List[int]) -> Tuple[int, int]:
+        """Sample candidate spans, prefer entity-like ones (digits/capitals)."""
+        n = len(text_ids)
+        lo, hi = max(1, n // 10), max(2, (9 * n) // 10)
+        best, best_score = None, -1.0
+        for _ in range(6):
+            length = int(np.random.randint(3, 9))
+            start = int(np.random.randint(lo, max(lo + 1, hi - length)))
+            s = self.compressor_tokenizer.decode(text_ids[start : start + length])
+            score = np.random.uniform()  # tie-break
+            if any(ch.isdigit() for ch in s):
+                score += 2.0
+            if any(ch.isupper() for ch in s):
+                score += 1.0
+            if score > best_score:
+                best, best_score = (start, length), score
+        return best
+
+    def prepare_for_cloze(self, text_ids: List[int]):
+        text_ids = text_ids[: self.compressor_max_length]
+        start, length = self._pick_span(text_ids)
+        span = self.compressor_tokenizer.decode(text_ids[start : start + length])
+        corrupted = (
+            self.compressor_tokenizer.decode(text_ids[:start])
+            + " ____ "
+            + self.compressor_tokenizer.decode(text_ids[start + length :])
+        )
+        compressor_input_ids, n_mems = add_memory_tokens_to_inputs(
+            [text_ids], self.compressor_tokenizer, self.compr_rate
+        )
+        # corrupted copy BEFORE the mems: mask_before_mem keeps loss on the span only
+        decoder_text = (
+            self.decoder_tokenizer.bos_token
+            + corrupted
+            + self.decoder_tokenizer.mem_token * sum(n_mems)
+            + " Missing:"
+            + span
+            + self.decoder_tokenizer.eos_token
+        )
+        return compressor_input_ids, decoder_text
+
+    # ---- task 2: multi-doc selective AE --------------------------------------
+    def prepare_for_multidoc(self, text_ids: List[int], batch_ids: List[List[int]]):
+        target = text_ids[: self.compressor_max_length]
+        k = int(np.random.randint(1, 4))  # 1-3 distractors
+        others = [b for b in batch_ids if b is not text_ids and len(b) >= 32]
+        if not others:
+            return self.prepare_for_autoencoding(
+                text=self.compressor_tokenizer.decode(target), text_ids=target
+            )
+        idx = np.random.choice(len(others), size=min(k, len(others)), replace=False)
+        docs = [others[j][: self.compressor_max_length] for j in idx]
+        docs.insert(int(np.random.randint(0, len(docs) + 1)), target)
+        compressor_input_ids, n_mems = add_memory_tokens_to_inputs(
+            docs, self.compressor_tokenizer, self.compr_rate
+        )
+        decoder_text = (
+            self.decoder_tokenizer.ae_token
+            + self.decoder_tokenizer.mem_token * sum(n_mems)
+            + self.decoder_tokenizer.bos_token
+            + self.compressor_tokenizer.decode(target)
+            + self.decoder_tokenizer.eos_token
+        )
+        return compressor_input_ids, decoder_text
+
+    # ---- task 3: mems in the middle ------------------------------------------
+    def prepare_for_midmem(self, text_ids: List[int]):
+        if len(text_ids) < 320:
+            return self.prepare_for_text_continuation(text_ids=text_ids)
+        a = int(np.random.randint(0, 129))
+        b1 = int(np.random.randint(64, self.compressor_max_length + 1))
+        c = int(np.random.randint(16, 97))
+        b2 = int(np.random.randint(64, self.compressor_max_length + 1))
+        # shrink compressed segments if the text is not long enough for a target
+        while a + b1 + c + b2 + 32 > len(text_ids) and (b1 > 64 or b2 > 64):
+            b1, b2 = max(64, b1 // 2), max(64, b2 // 2)
+        if a + b1 + c + b2 + 32 > len(text_ids):
+            return self.prepare_for_text_continuation(text_ids=text_ids)
+        p = 0
+        seg_a = text_ids[p : p + a]; p += a
+        seg_b1 = text_ids[p : p + b1]; p += b1
+        seg_c = text_ids[p : p + c]; p += c
+        seg_b2 = text_ids[p : p + b2]; p += b2
+        compressor_input_ids, n_mems = add_memory_tokens_to_inputs(
+            [seg_b1, seg_b2], self.compressor_tokenizer, self.compr_rate
+        )
+        # keep the decoder sequence within budget
+        used = a + sum(n_mems) + c + 8
+        target = text_ids[p : p + max(32, self.decoder_max_length - used)]
+        decoder_text = (
+            self.decoder_tokenizer.bos_token
+            + self.compressor_tokenizer.decode(seg_a)
+            + self.decoder_tokenizer.mem_token * n_mems[0]
+            + self.compressor_tokenizer.decode(seg_c)
+            + self.decoder_tokenizer.mem_token * n_mems[1]
+            + self.compressor_tokenizer.decode(target)
+            + self.decoder_tokenizer.eos_token
+        )
+        return compressor_input_ids, decoder_text
+
+    # ---- dispatch -------------------------------------------------------------
+    def torch_call(self, examples):
+        texts = [self.clean_text(x["text"]) for x in examples]
+        compressor_pre_inputs = self.compressor_tokenizer(
+            texts, padding="do_not_pad", return_tensors=None, truncation=False
+        )
+        batch_ids = compressor_pre_inputs["input_ids"]
+
+        all_compressor_input_ids = []
+        all_decoder_texts = []
+        for i, ids in enumerate(batch_ids):
+            task = np.random.choice(self.tasks, p=self.task_p)
+            if len(ids) < 48:  # too short for span/segment tasks
+                task = "ae"
+            if task == "ae":
+                if np.random.uniform() < self.ae_noise_p:
+                    comp, dec = self.prepare_for_noisy_autoencoding(texts[i], ids)
+                else:
+                    comp, dec = self.prepare_for_autoencoding(text=texts[i], text_ids=ids)
+            elif task == "cont":
+                comp, dec = self.prepare_for_text_continuation(text_ids=ids)
+            elif task == "cloze":
+                comp, dec = self.prepare_for_cloze(text_ids=ids)
+            elif task == "multidoc":
+                comp, dec = self.prepare_for_multidoc(text_ids=ids, batch_ids=batch_ids)
+            elif task == "midmem":
+                comp, dec = self.prepare_for_midmem(text_ids=ids)
+            else:
+                raise ValueError(f"unknown task {task}")
+            all_compressor_input_ids.extend(comp)
+            all_decoder_texts.append(dec)
+
+        compressor_inputs = self.compressor_pad(all_compressor_input_ids)
+        decoder_inputs = self.decoder_tokenizer(
+            all_decoder_texts,
+            return_tensors="pt",
+            padding="longest",
+            add_special_tokens=False,
+            max_length=self.decoder_max_length,
+            truncation=True,
+        )
+        labels = decoder_inputs["input_ids"].clone()
+        # NOTE: order differs from PretrainingCollator, where mask_special_tokens
+        # replaces mem ids with -100 first and mask_before_mem is a silent no-op.
+        # Here mask_before_mem must run first so cloze/cont losses cover only the
+        # part after the last mem group.
+        labels = mask_before_mem(labels, mem_token_id=self.decoder_tokenizer.mem_token_id)
+        labels = self.mask_special_tokens(labels)
+        self.assert_consistent_n_mems(compressor_inputs, decoder_inputs)
+        return {
+            "compressor_input_ids": compressor_inputs["input_ids"],
+            "compressor_attention_mask": compressor_inputs["attention_mask"],
+            "decoder_input_ids": decoder_inputs["input_ids"],
+            "decoder_attention_mask": decoder_inputs["attention_mask"],
+            "labels": labels,
+        }
+
+
 class AgentTrajCollator(BaseCollator):
     def __init__(
         self,
