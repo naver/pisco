@@ -39,7 +39,7 @@ def to_pisco(rec):
 
 REGEN_DIR = "/beegfs/scratch/user/hdejean/arc_ft_data/regen"
 
-def load_source(src, need, rng):
+def load_source(src, need, rng, zip_path=ZIP, regen_dir=REGEN_DIR):
     if src == "kilt":
         # stream our KILT QA; take a bit more than needed, then sample
         ds = load_dataset("maxoul/pisco_finetuning_data", split="train", streaming=True)
@@ -52,7 +52,7 @@ def load_source(src, need, rng):
     elif src.startswith("regen:"):
         # pre-generated sentence labels (scripts/gen_labels.py), already in PISCO schema
         pool = []
-        with open(f"{REGEN_DIR}/{src.split(':',1)[1]}.jsonl") as f:
+        with open(f"{regen_dir}/{src.split(':',1)[1]}.jsonl") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -61,7 +61,7 @@ def load_source(src, need, rng):
                                  "mistral_label": r["mistral_label"]})
     else:
         pool = []
-        with zipfile.ZipFile(ZIP) as z:
+        with zipfile.ZipFile(zip_path) as z:
             with z.open(f"ARC-Encoder_ft/{src}.jsonl") as f:
                 for line in io.TextIOWrapper(f, encoding="utf-8"):
                     line = line.strip()
@@ -79,6 +79,8 @@ def main():
     ap.add_argument("--total", type=int, default=100000)
     ap.add_argument("--out", required=True)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--zip", default=ZIP, help="ARC-Encoder_ft.zip path (kyutai/ARC_finetuning)")
+    ap.add_argument("--regen_dir", default=REGEN_DIR, help="dir with regen/<name>.jsonl (LOCAL, must be copied cross-cluster)")
     args = ap.parse_args()
     rng = random.Random(args.seed)
 
@@ -88,7 +90,7 @@ def main():
     rows = []
     for src, w in pairs:
         need = round(w / wsum * args.total)
-        got = load_source(src, need, rng)
+        got = load_source(src, need, rng, zip_path=args.zip, regen_dir=args.regen_dir)
         sp = system_prompt_for(src)
         for r in got:
             r["source"] = src

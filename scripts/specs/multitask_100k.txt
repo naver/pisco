@@ -20,12 +20,24 @@
 
 SPEC="kilt:35,regen:freebaseqa:6,regen:msmarco:6,regen:adversarialqa:6,regen:drop:8,regen:sciq:5,regen:asqa:4,wikisum:18,dialogsum:7,samsum:5"
 
+# build_arc_mix.py now takes --zip and --regen_dir (default to the NLE paths) so you do NOT
+# have to edit the script on NCP — point them at your local copies of the artifacts below.
+#
 # 100K build (multitask_v1):
 #   python scripts/build_arc_mix.py --spec "$SPEC" --total 100000 --seed 0 \
+#     --zip <NCP>/ARC-Encoder_ft.zip --regen_dir <NCP>/regen \
 #     --out <ARC_FT_DIR>/multitask_v1
-# 50K build (multitask_50k — the 35.7 model's data):
-#   python scripts/build_arc_mix.py --spec "$SPEC" --total 50000  --seed 0 \
-#     --out <ARC_FT_DIR>/multitask_50k
+# 50K build (multitask_50k — the 35.7 model's data): same but --total 50000 --out .../multitask_50k
+#
+# ---- NCP RUNBOOK (pulling the repo is NOT enough — you need the two data artifacts) ----
+#   1. git pull pisco `arc`  (gets build_arc_mix.py + this file).
+#   2. ARC zip: download kyutai/ARC_finetuning from HF -> ARC-Encoder_ft.zip; check md5 vs the
+#      one below. If it differs, use NLE's copy. (Provides wikisum/dialogsum/samsum.)
+#   3. regen/ (193 MB, 6 files): CANNOT be regenerated (stochastic) and is NOT in git ->
+#      transfer from NLE (see SYNC.md for the agreed channel). Verify the md5s below.
+#   4. build (command above) with --zip/--regen_dir pointing at 2 & 3.
+#   5. finetune your backbone with the recipe in section 2 (swap model_name_or_path).
+#   6. eval LongBench; compare vs your single-task 32.0 and this ref (33.9 rate16 / 35.7 rate8).
 #
 # --seed : 0 (build_arc_mix.py default; not otherwise recorded, seed does not change
 #          proportions, only WHICH rows are sampled — assume 0 for bit-for-bit rows).
