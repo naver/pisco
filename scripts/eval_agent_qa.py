@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 import re
+import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, cast
 
@@ -16,6 +17,14 @@ from transformers import (
 from pisco.collator_utils import add_memory_tokens_to_inputs, chunk_list
 from pisco.metrics import f1_single, match_single
 from pisco.model import PISCO, PISCOConfig
+
+# per-example wall-time accumulators (CUDA-synced), for the speed comparison
+_TIMINGS: Dict[str, List[float]] = {"compress": [], "decode": []}
+
+
+def _sync():
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
 
 
 SYSTEM_PROMPT = (
@@ -172,6 +181,7 @@ def _generate_with_pisco(
     compressor_max_length: int,
     decoder_max_length: int,
     max_new_tokens: int,
+    min_new_tokens: Optional[int] = None,
     chunk_overlap: int = 0,
     n_max_chunks: Optional[int] = None,
 ) -> tuple[str, Dict[str, float]]:
@@ -226,17 +236,22 @@ def _generate_with_pisco(
     decoder_input_ids = decoder_input_ids.to(device)
     decoder_attention_mask = decoder_attention_mask.to(device)
 
-    # Compression + embedding replacement
+    # Compression + embedding replacement (time compressor forward = the offline/amortizable cost)
+    _sync(); _t = time.perf_counter()
     embeddings = model.compress(compressor_input_ids, compressor_attention_mask)
+    _sync(); _TIMINGS["compress"].append(time.perf_counter() - _t)
     dec_inputs_embeds = model.replace_embeddings(embeddings, decoder_input_ids)
 
+    _sync(); _t = time.perf_counter()
     output_ids = model.decoder.generate(
         inputs_embeds=dec_inputs_embeds,
         attention_mask=decoder_attention_mask,
         do_sample=False,
         top_p=None,
         max_new_tokens=max_new_tokens,
+        min_new_tokens=min_new_tokens,
     )
+    _sync(); _TIMINGS["decode"].append(time.perf_counter() - _t)
     decoded = decoder_tok.batch_decode(output_ids, skip_special_tokens=True)[0]
 
     # Compression diagnostics: how many real (non-MEM) tokens survived into the
@@ -266,6 +281,7 @@ def _generate_with_base_decoder(
     question: str,
     device: torch.device,
     max_new_tokens: int,
+    min_new_tokens: Optional[int] = None,
     decoder_max_length: int,
 ) -> str:
     background = "\n\n" + trajectory_text
@@ -279,12 +295,15 @@ def _generate_with_base_decoder(
     )
     inputs = {k: v.to(device) for k, v in inputs.items()}
     input_len = inputs["input_ids"].shape[1]
+    _sync(); _t = time.perf_counter()
     output_ids = model.generate(
         **inputs,
         do_sample=False,
         top_p=None,
         max_new_tokens=max_new_tokens,
+        min_new_tokens=min_new_tokens,
     )
+    _sync(); _TIMINGS["decode"].append(time.perf_counter() - _t)
     # generate() with input_ids returns prompt + new tokens; keep only the new ones
     # (pisco mode uses inputs_embeds, so it already returns only generated tokens).
     gen_ids = output_ids[:, input_len:]
@@ -311,6 +330,8 @@ def main() -> None:
     parser.add_argument("--compr_rate", type=int, default=None, help="Override the checkpoint's compr_rate at eval (tokens per <MEM>). Tests how the trained compressor generalizes to a different compression rate; pisco mode only.")
     parser.add_argument("--decoder_max_length", type=int, default=2048)
     parser.add_argument("--max_new_tokens", type=int, default=32)
+    parser.add_argument("--min_new_tokens", type=int, default=None, help="force >=N generated tokens (equal decode steps for fair timing)")
+    parser.add_argument("--merge_lora", action="store_true", help="merge decoder LoRA adapters at load (deployable inference; removes per-step adapter overhead)")
     parser.add_argument("--chunk_overlap", type=int, default=0, help="Token overlap between consecutive compressor chunks (pisco mode).")
     parser.add_argument("--n_max_chunks", type=int, default=None, help="Cap the number of compressor chunks per document (pisco mode).")
     parser.add_argument("--trajectory_max_chars", type=int, default=None, help="If set, keep only the last N characters of the trajectory text (helps fit context).")
@@ -350,6 +371,11 @@ def main() -> None:
             pisco_model.compr_rate = args.compr_rate
         pisco_model.to(device)
         pisco_model.eval()
+        if args.merge_lora and hasattr(pisco_model.decoder, "merge_and_unload"):
+            pisco_model.decoder = pisco_model.decoder.merge_and_unload()
+            print("[pisco] decoder LoRA merged (merge_and_unload)")
+        print(f"[pisco] decoder attn_implementation = "
+              f"{getattr(pisco_model.decoder.config, '_attn_implementation', '?')}")
     else:
         if args.base_model_name:
             decoder_model_name = args.base_model_name
@@ -374,15 +400,22 @@ def main() -> None:
         # Mirror PISCO's decoder loader: some decoders (e.g. Ministral-3) are
         # multimodal configs that AutoModelForCausalLM rejects.
         dtype = torch.bfloat16 if device.type == "cuda" else None
+        # Match PISCO's decoder attention impl (sdpa) so a decode-speed comparison reflects
+        # token count, not an attention-kernel mismatch.
+        base_attn = os.environ.get("BASE_ATTN_IMPL", "sdpa")
         try:
             base_model = AutoModelForImageTextToText.from_pretrained(
-                decoder_model_name, torch_dtype=dtype, device_map=None
+                decoder_model_name, torch_dtype=dtype, device_map=None,
+                attn_implementation=base_attn,
             )
         except Exception as e:
             print(f"AutoModelForImageTextToText failed ({e}); falling back to AutoModelForCausalLM")
             base_model = AutoModelForCausalLM.from_pretrained(
-                decoder_model_name, torch_dtype=dtype, device_map=None
+                decoder_model_name, torch_dtype=dtype, device_map=None,
+                attn_implementation=base_attn,
             )
+        print(f"[base] attn_implementation requested = {base_attn}; "
+              f"loaded config.attn = {getattr(base_model.config, '_attn_implementation', '?')}")
         assert base_model is not None
         base_model.to(device)  # type: ignore[arg-type]
         base_model.eval()
@@ -409,6 +442,7 @@ def main() -> None:
                 compressor_max_length=args.compressor_max_length,
                 decoder_max_length=args.decoder_max_length,
                 max_new_tokens=args.max_new_tokens,
+                min_new_tokens=args.min_new_tokens,
                 chunk_overlap=args.chunk_overlap,
                 n_max_chunks=args.n_max_chunks,
             )
@@ -421,6 +455,7 @@ def main() -> None:
                 question=question,
                 device=device,
                 max_new_tokens=args.max_new_tokens,
+                min_new_tokens=args.min_new_tokens,
                 decoder_max_length=args.decoder_max_length,
             )
 
@@ -479,9 +514,22 @@ def main() -> None:
         else None
     )
 
+    def _tsum(key: str) -> Optional[Dict[str, float]]:
+        xs = _TIMINGS.get(key, [])
+        xs = xs[1:] if len(xs) > 3 else xs  # drop first (CUDA/kernel warmup)
+        if not xs:
+            return None
+        xs_s = sorted(xs)
+        return {"per_example_ms_mean": 1000 * sum(xs) / len(xs),
+                "per_example_ms_median": 1000 * xs_s[len(xs_s) // 2],
+                "n_timed": len(xs)}
+
+    timing = {"decode": _tsum("decode"), "compress": _tsum("compress")}
+
     payload = {
         "mode": args.mode,
         "data_path": args.data_path,
+        "timing": timing,
         "checkpoint_path": args.checkpoint_path,
         "base_model_name": args.base_model_name,
         "compressor_max_length": args.compressor_max_length,
