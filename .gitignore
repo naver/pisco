@@ -12,7 +12,10 @@ results/
 
 # experiment outputs & local tool state
 slurm-*.out
+*.out
 logs/
+log/
+data/
 exp3/
 exp4/
 expQ/
@@ -22,3 +25,9 @@ pretraining/
 eval_data/
 .expmon.conf
 .claude/
+
+# scratch / local run artifacts
+*.ipynb
+my_qa*.json
+uv.lock
+/eval_agent_qa.py

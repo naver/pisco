@@ -258,6 +258,79 @@ class PretrainingCollator(BaseCollator):
         }
 
 
+class ScheduledPretrainingCollator(PretrainingCollator):
+    """Pretraining collator with a FIXED compression ratio, realised as a fixed
+    (jittered) number of MEM tokens per <=compressor_max_length chunk plus a cap
+    on the number of chunks.
+
+    With compressor_max_length=512, mems_per_chunk=8, max_chunks=4 this is the
+    constant-ratio-~64 schedule: 8 / 16 / 24 / 32 mems for ~512 / 1024 / 1536 /
+    2048-token docs (chunking gives the length scaling; cap = 32). mem_jitter
+    randomises the per-chunk count in [m-jitter, m+jitter] so the model is robust
+    around the 8/16/32 inference points (one model serves the whole range).
+    """
+
+    def __init__(self, *args, mems_per_chunk: int = 8, max_chunks: int = 4,
+                 mem_jitter: int = 2, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mems_per_chunk = mems_per_chunk
+        self.max_chunks = max_chunks
+        self.mem_jitter = mem_jitter
+
+    def _fixed_mems(self, chunks):
+        """Append a (jittered) fixed number of MEM tokens to each chunk."""
+        tok = self.compressor_tokenizer
+        out, n_mems = [], []
+        for elt in chunks:
+            m = self.mems_per_chunk
+            if self.mem_jitter:
+                m = max(1, m + int(np.random.randint(-self.mem_jitter, self.mem_jitter + 1)))
+            n_mems.append(m)
+            out.append(elt + [tok.mem_token_id] * m)
+        retrieval_token_id = getattr(tok, "retrieval_token_id", None)
+        if retrieval_token_id is not None:
+            out = [elt + [retrieval_token_id] for elt in out]
+        return out, n_mems
+
+    def prepare_for_autoencoding(self, text: str, text_ids: List[int]):
+        # cap total compressed length to max_chunks * compressor_max_length
+        text_ids = text_ids[: self.compressor_max_length * self.max_chunks]
+        if len(text_ids) <= 64:
+            chunks = [text_ids]
+        else:
+            chunks = chunk_random_no_tiny_tail(
+                text_ids=text_ids, compressor_max_length=self.compressor_max_length
+            )[: self.max_chunks]
+        compressor_input_ids, n_mems = self._fixed_mems(chunks)
+        # AE target = exactly what was compressed (kept chunks) so loss matches mems
+        kept_text = self.compressor_tokenizer.decode(sum(chunks, []))
+        decoder_text = (
+            self.decoder_tokenizer.ae_token
+            + self.decoder_tokenizer.mem_token * sum(n_mems)
+            + self.decoder_tokenizer.bos_token
+            + kept_text
+            + self.decoder_tokenizer.eos_token
+        )
+        return compressor_input_ids, decoder_text
+
+    def prepare_for_text_continuation(self, text_ids):
+        text_ids = text_ids[: self.compressor_max_length + self.decoder_max_length]
+        s = np.random.randint(0, 32)
+        idx = min(s + self.compressor_max_length, len(text_ids) // 2)
+        past_text, future_text = text_ids[:idx], text_ids[idx:]
+        split_idx = min(s, len(past_text) // 2)
+        past_text_clear, past_text_compressed = past_text[:split_idx], past_text[split_idx:]
+        past_text_compressed, n_mems = self._fixed_mems([past_text_compressed])
+        decoder_text = (
+            self.decoder_tokenizer.bos_token
+            + self.compressor_tokenizer.decode(past_text_clear)
+            + self.decoder_tokenizer.mem_token * sum(n_mems)
+            + self.compressor_tokenizer.decode(future_text)
+            + self.decoder_tokenizer.eos_token
+        )
+        return past_text_compressed, decoder_text
+
+
 class MultiTaskPretrainingCollator(PretrainingCollator):
     """Pretraining collator with a mixture of self-supervised tasks beyond
     AE + continuation, each targeting a downstream skill the two base tasks
