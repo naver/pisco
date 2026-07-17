@@ -33,19 +33,13 @@ sbatch launchers/eval_longbench.sh 167198    # vs 161788 (4B→4B mt r8  = 35.7)
 ```
 
 ## Open item 2 — NCP: finish the mtPT × mt-50K factorial cell
-- In flight (`expmon jobs`): `145643|qwen35_4b_ft_mt.sh|PENDING` = mtPT-1M backbone × multitask-50K
-  cml128 ft (campaign `mtPTxmtFT`); `145644|eval_longbench|PENDING(afterok:145643)`.
-- **Agent-QA + bergen evals were NOT submitted** (QOSMaxSubmitJobPerUserLimit; the in-session
-  retry died with the session). NEXT STEP on NCP — when the queue drains:
-```
-cd /beegfs/scratch/user/hdejean/pisco
-expmon launch --exp mtPTxmtFT -p gpu-be --dependency=afterok:145643 \
-  --export=ALL,DATA=my_qa_fixed.json,SUFFIX=_fixedqa -- eval_agent_4b.sh ft_mt_4b_50k_mt1M_cml128_145643
-expmon launch --exp mtPTxmtFT -p gpu-be --dependency=afterok:145643 \
-  -- eval_bergen_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/ft_mt_4b_50k_mt1M_cml128_145643/model ftmtpt_1M
-```
-(drop `--dependency` if 145643 already COMPLETED). If the cell is flat vs `1M/mt-50K` (LB 34.2),
-mtPT is conclusively closed.
+- FULLY QUEUED (campaign `mtPTxmtFT`, all afterok-chained): `145643` ft (mtPT-1M × multitask-50K
+  cml128) → `145644` LongBench + `145680` agent-QA (my_qa_fixed) + `145681` bergen.
+- NEXT STEP on NCP: when all four are done, read the results and fill the last master-grid row —
+  LB `expQ/ft_mt_4b_50k_mt1M_cml128_145643/eval/results_lb_*.json`,
+  agentQA `outputs/ft_mt_4b_50k_mt1M_cml128_145643_fixedqa.json`,
+  bergen `~/bergen_eval/expPISCO/ftmtpt_1M_*/eval_dev_metrics.json`.
+  If the cell is flat vs `1M/mt-50K` (LB 34.2), mtPT is conclusively closed.
 - **Queued idea (user-endorsed):** rebalanced ft mix on the 2M backbone
   (`kilt:60,…,wikisum:6,dialogsum:2,samsum:2`, total 50K) — target LB ≥34 AND agentQA ≥0.5;
   build with `scripts/build_arc_mix.py`, launch `qwen35_4b_ft_mt.sh <2M abs path> <mix> 50000 128 rebal_2M_cml128`.
