@@ -1,84 +1,84 @@
 # HANDOFF — PISCO
 
-_Updated 2026-07-14._ (Full dated science record is in `EXPERIMENTS.md`.)
+_Updated 2026-07-17 by NCP (merging NLE's 07-14 handoff — their sections kept below)._
+_Full dated science record: `EXPERIMENTS.md` (`expmon ledger`)._
 
 ## Goal
-Map PISCO's quality levers, characterize its inference-speed behavior, and support NCP in
-reproducing the multitask finetune recipe.
+Map PISCO's quality levers (both clusters), characterize inference speed (NLE), and close the
+remaining factorial cells. The lever question is ANSWERED; two open items remain (one per cluster).
 
-## Status
+## Shared conclusions (both clusters converge)
+- **Finetuning diet is THE lever.** Multitask mix beats KILT-only by +3.4–3.5 LongBench
+  (NLE: 35.7; NCP replication on its own backbones: 35.5). Costs on NCP's other axes:
+  −1 RAG mean M, agent-QA collapse .64→.31 (~60% = dropped numeric IDs, abstractive style).
+  cml128 > cml256 even for doc-256 backbones.
+- **Both data axes saturate.** Pretrain volume null (NLE: 500K≈1M≈2M; NCP: 1M≈2M≈5M at rate8
+  doc256 — RAG .573/.577/.573, LB 32.0/32.0/31.7). Finetune 50K≈100K.
+- **Pretrain objective null too (NCP, new).** `MultiTaskPretrainingCollator`
+  (cloze/multidoc/midmem/noisyAE, ef40457) ≈ baseline after identical kilt-100K ft
+  (RAG .5731, LB 31.9, agentQA .468). The ~100K ft erases pretrain differences.
+- **Verbosity, not incorrectness (NLE):** LLM-judge (gpt-4.1) — compressed PISCO ties
+  uncompressed semantically (~0.58); F1/EM gap is verbosity. r8-mt ties uncompressed-9B on
+  LongBench (p=.89). Framing: ~10–14× compression, quality preserved.
+- **Benchmark fix (NCP):** `my_qa.json` had 9 stale-state golds → use **`my_qa_fixed.json`**
+  (gitignored, exists on NCP only). All agent-QA numbers before 2026-07-15 are on buggy labels
+  (incl. the 0.479 ministral ref).
 
-### A. Quality campaign — COMPLETE (numbers in EXPERIMENTS.md)
-- **Finetuning recipe is THE lever.** Multitask mix beats KILT-only by **+3.4 LongBench**.
-  `rate-8` helps LongBench (+1.5–1.8, but sig **only on KILT**, p=0.03; multitask +1.66 is
-  n.s. p=0.07), ~0 on RAG. **Both data axes saturate:** pretrain 500K≈1M≈2M; finetune
-  50K≈100K (33.9), 200K=33.0.
-- **LLM-judge (gpt-4.1, `scripts/llm_judge.py`):** compressed PISCO **ties uncompressed**
-  semantically (~0.58); the big F1/EM gap is *verbosity*, not incorrectness.
-- **Significance (`scripts/sig_test.py`, paired):** PISCO r8-mt **ties uncompressed-9B** on
-  LongBench (p=0.89) and **ties uncompressed-4B** on RAG-M (p=0.52); loses RAG-F1 (p<1e-4).
-- **Framing (agreed):** PISCO's achievement = **~10–14× compression, quality preserved**
-  (semantic-judge + LongBench). "Any-length" is a *separate, optional* extension, not a flaw.
-
-### B. Two finetunes DONE but NOT EVALUATED  ← main open item
-- **`167200`** = 4B→9B ft on multitask_v1 (decoder-size test; matches 158433 except 4B→9B).
-- **`167198`** = cml=512 rate-8 ft on multitask_50k (compression-span test; matches 161788
-  except cml 128→512).
-- Both have `expQ/<id>/model` saved. **Neither is evaluated yet.**
-
-### C. NCP multitask recipe — DONE (committed + synced)
-- Recovered spec + ft hyperparams from ground truth → **pisco `arc` 896e392**:
-  `scripts/specs/multitask_100k.txt` + `build_arc_mix.py --zip/--regen_dir`.
-- 193 MB `regen/*.jsonl` uploaded to **private HF `Herve/pisco-multitask-regen`**.
-- Replied to NCP on `~/.claude` SYNC.md `main` (c3df327 / 5c14d5b).
-
-### D. Speed investigation — COMPLETE (PISCO is NOT slow)
-- Efficiency = **throughput + max-batch**, ~1× at batch=1, growing with batch/context/compression.
-- Reproduced the paper's regime: 9B/rate16 → **3.66× @ bs256** (synthetic 5×128) and **2.59×
-  @ bs256** (real RAG), and PISCO fits **≥2–4× the batch** (uncompressed OOMs).
-- **Decode profile (`167291`):** attention (the only part PISCO cuts) is **~12%**; ~66% is
-  framework overhead at bs=1; LM-head/vocab is **2–7% (negligible)**. Ratio levers = **long
-  context + long output + high batch**.
-
-## Next step (do first)
-Evaluate the two done finetunes, then compare:
+## Open item 1 — NLE: evaluate the two done finetunes
+- `167200` = 4B→9B ft on multitask_v1 (decoder-size test) — `expQ/167200/model` saved, NOT evaluated.
+- `167198` = cml=512 rate-8 ft on multitask_50k (compression-span test) — saved, NOT evaluated.
 ```
-sbatch launchers/eval_longbench.sh 167200    # 4B→9B multitask  → vs 158433 (4B→4B mt = 33.9)
-sbatch launchers/eval_longbench.sh 167198    # cml=512 rate8    → vs 161788 (cml=128 r8 = 35.7)
+sbatch launchers/eval_longbench.sh 167200    # vs 158433 (4B→4B mt r16 = 33.9)
+sbatch launchers/eval_longbench.sh 167198    # vs 161788 (4B→4B mt r8  = 35.7)
 ```
-Read qa f1 from `expQ/<id>/eval/results_lb_*.json` (`metrics.f1`×100). Answers: does a bigger
-decoder help at the best recipe (167200)? does a bigger compression span help at rate-8
-(167198)? Optionally RAG-eval both via bergen.
+
+## Open item 2 — NCP: finish the mtPT × mt-50K factorial cell
+- In flight (`expmon jobs`): `145643|qwen35_4b_ft_mt.sh|PENDING` = mtPT-1M backbone × multitask-50K
+  cml128 ft (campaign `mtPTxmtFT`); `145644|eval_longbench|PENDING(afterok:145643)`.
+- **Agent-QA + bergen evals were NOT submitted** (QOSMaxSubmitJobPerUserLimit; the in-session
+  retry died with the session). NEXT STEP on NCP — when the queue drains:
+```
+cd /beegfs/scratch/user/hdejean/pisco
+expmon launch --exp mtPTxmtFT -p gpu-be --dependency=afterok:145643 \
+  --export=ALL,DATA=my_qa_fixed.json,SUFFIX=_fixedqa -- eval_agent_4b.sh ft_mt_4b_50k_mt1M_cml128_145643
+expmon launch --exp mtPTxmtFT -p gpu-be --dependency=afterok:145643 \
+  -- eval_bergen_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/ft_mt_4b_50k_mt1M_cml128_145643/model ftmtpt_1M
+```
+(drop `--dependency` if 145643 already COMPLETED). If the cell is flat vs `1M/mt-50K` (LB 34.2),
+mtPT is conclusively closed.
+- **Queued idea (user-endorsed):** rebalanced ft mix on the 2M backbone
+  (`kilt:60,…,wikisum:6,dialogsum:2,samsum:2`, total 50K) — target LB ≥34 AND agentQA ≥0.5;
+  build with `scripts/build_arc_mix.py`, launch `qwen35_4b_ft_mt.sh <2M abs path> <mix> 50000 128 rebal_2M_cml128`.
+
+## Key checkpoints
+- NLE: `161788` (4B→4B mt r8, LB 35.7 best), `158433` (mt r16 33.9), `149907`/`167200` (4B→9B),
+  `149314` (4B→4B bidi 500K pretrain).
+- NCP: `expQ/qwen35_4b_pt_{1M_143229,2M_143230,5M_143228,mt_1M_144649}/model` (pretrains);
+  best per-axis fts: `ft_100K_4b_5M_144096` (agentQA .638), `ft_mt_4b_50k_5M_cml128_144664`
+  (LB 35.5), `ft_100K_4b_2M_144097` (RAG .5773). Recipe going forward: 2M pretrain is the
+  cost/quality sweet spot for future retrains.
 
 ## Key files & commands
-- **Science record:** `EXPERIMENTS.md` (`expmon ledger` / `expmon note`).
-- **Recipe (committed):** `scripts/specs/multitask_100k.txt`; `scripts/build_arc_mix.py`.
-- **Quality eval:** `launchers/eval_longbench.sh <jobid>`; `scripts/eval_agent_qa.py`
-  (now has timing, `--merge_lora`, `--min_new_tokens`). Uncompressed baseline needs a large
-  `--decoder_max_length` (20000); PISCO uses 2048.
-- **Speed tooling:** `scripts/bench_throughput.py`, `scripts/bench_throughput_rag.py`,
-  `scripts/profile_decode.py` (+ their `launchers/*.sh`).
-- **LLM-judge / sig:** `scripts/llm_judge.py` (OpenAI, `$OPENAI_API_KEY`, proxy OK),
-  `scripts/sig_test.py`.
-- **Monitoring daemon:** `expmon-pisco` job **163132** (30-min scans, emails). Still running —
-  `expmon kill 163132` when done.
-- **Key checkpoints:** `161788` (4B→4B mt rate8, best LB **35.7**), `158433` (4B→4B mt rate16
-  33.9), `149907`/`167200` (4B→9B), `149314` (4B→4B bidi 500K pretrain, ft source).
-
-## Open questions / decisions pending
-- **Evaluate 167200 / 167198** (decoder-size, cml-512) — not done.
-- **"Any-length" extension** (fixed-MEM-budget / query-dependent OSCAR / hierarchical) —
-  proposed, not started. Only relevant if pushing PISCO beyond normal-length RAG.
-- **Speed crossover** — extrapolated ~25–30k input tokens where PISCO decode beats
-  uncompressed even at bs=1; not measured (would need RULER/NIAH long inputs).
+- Science record: `EXPERIMENTS.md` (`expmon note`/`ledger`). Recipe: `scripts/specs/multitask_100k.txt`.
+- NCP eval launchers (repo root, gitignored): `eval_longbench_4b.sh <expQ-run-id>`,
+  `eval_agent_4b.sh` (env `DATA`/`SUFFIX`), `eval_bergen_4b.sh <abs ckpt> <prefix>`;
+  ft: `qwen35_4b_ft.sh` (kilt-100K), `qwen35_4b_ft_mt.sh <backbone> <data> <samples> <cml> <tag>`.
+  **Backbone paths must be ABSOLUTE** (hydra chdir).
+- NCP bergen: `~/bergen_eval` (naver/bergen `pisco-eval`); data `/nfs/data/calmar/rv2/rag/*`;
+  6/7 datasets (no 2wikimultihopqa); top_200 rerank except kilt_nq top_50.
+- NCP multitask data: `/beegfs/scratch/user/hdejean/arc_ft_data/*` (md5-verified).
+- NLE speed tooling: `scripts/bench_throughput*.py`, `scripts/profile_decode.py`,
+  `scripts/llm_judge.py` (`$OPENAI_API_KEY`), `scripts/sig_test.py`.
+- Results tables: `expmon results` (LongBench grid); raw: `expQ/*/eval/results_lb_*.json`,
+  `outputs/*_fixedqa.json`, `bergen_eval/expPISCO/*/eval_dev_metrics.json` (NCP paths).
 
 ## Don't-break list
-- **`*.sh` launchers are GITIGNORED** — durable configs live in `scripts/` or `EXPERIMENTS.md`.
-- **In-session watchers/daemons don't survive session end** *except* the SLURM daemon 163132;
-  always re-check `squeue`.
-- **Decoder is LoRA, unmerged at eval by default** — use `--merge_lora` for deployable-speed
-  measurements (adapter overhead otherwise dominates bs=1 decode).
-- **`mask_before_mem` is a no-op in the base `PretrainingCollator`** (NCP finding) — do NOT
-  "fix" it mid-campaign; the new `MultiTaskPretrainingCollator` handles it internally.
-- **`regen/*.jsonl` are stochastic & local** — bit-for-bit rebuild needs the exact files
-  (private HF `Herve/pisco-multitask-regen`), not regeneration.
+- `*.sh` launchers are GITIGNORED; durable configs → `scripts/` or `EXPERIMENTS.md`.
+- `mask_before_mem` is a no-op in base `PretrainingCollator` — do NOT "fix" mid-campaign
+  (only `MultiTaskPretrainingCollator` uses the corrected order).
+- `regen/*.jsonl` are stochastic & local — exact files from private HF `Herve/pisco-multitask-regen`.
+- NCP cluster (2026-07-17): `sbatch --constraint=...` BROKEN mid-upgrade — constraint lines
+  commented out of NCP launchers; don't re-add yet.
+- NLE expmon daemon 163132 may still be running on NLE (`expmon kill 163132` when done).
+- Decoder LoRA unmerged at eval by default — `--merge_lora` for deployable-speed numbers.
+- Agent-QA numbers pre-2026-07-15 are on buggy labels — don't mix with `my_qa_fixed.json` numbers.
