@@ -371,8 +371,9 @@ def main() -> None:
             pisco_model.compr_rate = args.compr_rate
         pisco_model.to(device)
         pisco_model.eval()
-        if args.merge_lora and hasattr(pisco_model.decoder, "merge_and_unload"):
-            pisco_model.decoder = pisco_model.decoder.merge_and_unload()
+        if args.merge_lora:   # was a silent no-op: transformers-integrated adapters have no merge_and_unload
+            from pisco.model import merge_lora_inplace
+            pisco_model.decoder = merge_lora_inplace(pisco_model.decoder)
             print("[pisco] decoder LoRA merged (merge_and_unload)")
         print(f"[pisco] decoder attn_implementation = "
               f"{getattr(pisco_model.decoder.config, '_attn_implementation', '?')}")

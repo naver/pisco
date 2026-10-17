@@ -6,6 +6,7 @@ All Rights Reserved.
 
 import datasets
 import datasets.config
+import inspect
 import os
 import hydra
 from typing import cast
@@ -19,10 +20,56 @@ from hydra.utils import instantiate, get_class
 
 
 from transformers import Trainer, TrainingArguments
+from transformers.trainer_utils import get_last_checkpoint
 
 from pisco.metrics import hard_metrics
 from pisco.collator_utils import print_collated_sample
-from pisco.model import PISCO
+from pisco.model import PISCO, load_trainable_state
+
+
+class PISCOTrainer(Trainer):
+    """HF Trainer whose resume path understands PISCO's partial checkpoints.
+
+    Trainer._save -> PISCO.save_pretrained writes decoder_state.pt / compressor/compressor_state.pt /
+    connector.pt into checkpoint-N (next to optimizer.pt, scheduler.pt, trainer_state.json, rng).
+    The stock _load_from_checkpoint only knows HF weight files and raises "Can't find a valid
+    checkpoint"; this override loads our files instead. Optimizer/scheduler/RNG/trainer state are
+    restored by the parent as usual, so a requeued (preempted) job continues where it stopped.
+    """
+
+    def _load_from_checkpoint(self, resume_from_checkpoint, model=None):
+        m = model if model is not None else self.model
+        m = m.module if hasattr(m, "module") else m
+        if hasattr(self, "accelerator"):
+            m = self.accelerator.unwrap_model(m, keep_torch_compile=False)
+        if not os.path.exists(os.path.join(resume_from_checkpoint, "connector.pt")):
+            raise ValueError(f"Can't find a PISCO checkpoint (connector.pt) at {resume_from_checkpoint}")
+        load_trainable_state(m, resume_from_checkpoint,
+                             decoder=not m.config.freeze_decoder, compressor=bool(m.config.lora_compressor))
+
+    # Loss components (online distillation): PISCO.forward returns ce_loss / kd_loss next to
+    # the combined loss while training; average them between two log() calls and report them
+    # as `ce` / `kd` so the KD weight can be judged from the log (train `loss` is CE + w*KD;
+    # eval loss stays plain CE).
+    _parts = None
+
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        loss, outputs = super().compute_loss(model, inputs, return_outputs=True,
+                                             num_items_in_batch=num_items_in_batch)
+        if isinstance(outputs, dict) and "kd_loss" in outputs:
+            if self._parts is None:
+                self._parts = {"ce": 0.0, "kd": 0.0, "n": 0}
+            self._parts["ce"] += float(outputs["ce_loss"])
+            self._parts["kd"] += float(outputs["kd_loss"])
+            self._parts["n"] += 1
+        return (loss, outputs) if return_outputs else loss
+
+    def log(self, logs, *args, **kwargs):
+        if self._parts and self._parts["n"] and "loss" in logs:
+            n = self._parts["n"]
+            logs = {**logs, "ce": round(self._parts["ce"] / n, 4), "kd": round(self._parts["kd"] / n, 4)}
+            self._parts = None
+        return super().log(logs, *args, **kwargs)
 
 
 def preprocess_logits_for_metrics(logits, labels):
@@ -94,13 +141,26 @@ def main(config: DictConfig):
     print(model)
 
     # Data:
-    if os.path.exists(config.data.training_dataset):
-        try:
-            ds = datasets.load_from_disk(config.data.training_dataset)["train"]
-        except KeyError:
-            ds = datasets.load_from_disk(config.data.training_dataset)
-    else:
-        ds = datasets.load_dataset(config.data.training_dataset, split="train")
+    def _load_one(spec: str):
+        # "path" or "path:N" (N = cap on rows taken from that dataset, first N rows)
+        path, _, cap = spec.rpartition(":") if ":" in spec and spec.rsplit(":", 1)[-1].isdigit() else (spec, "", "")
+        if os.path.exists(path):
+            d = datasets.load_from_disk(path)
+            if isinstance(d, datasets.DatasetDict):   # a plain Dataset dir (e.g. one shard) is used as-is
+                d = d["train"]
+        else:
+            d = datasets.load_dataset(path, split="train")
+        if cap:
+            d = d.select(range(min(len(d), int(cap))))
+        return d
+
+    specs = [t.strip() for t in str(config.data.training_dataset).split(",") if t.strip()]
+    if len(specs) == 1:
+        ds = _load_one(specs[0])
+    else:   # joint diet: several datasets with the same schema, concatenated then shuffled
+        parts = [_load_one(t) for t in specs]
+        print("Joint training set:", {t: len(p) for t, p in zip(specs, parts)})
+        ds = datasets.concatenate_datasets(parts).shuffle(seed=42)
 
     if isinstance(ds, list):
         raise TypeError("Expected a Hugging Face Dataset, got a list instead.")
@@ -112,11 +172,22 @@ def main(config: DictConfig):
     print("Train_ds", train_ds)
     print("eval_ds", eval_ds)
 
-    collator = get_class(config.collator_class)(
+    collator_cls = get_class(config.collator_class)
+    collator_kwargs = dict(config.collator_kwargs)
+    # Multimodal collators take the model's image processor; legacy collators don't know
+    # the kwarg, so only pass it when the constructor declares it.
+    if "image_processor" in inspect.signature(collator_cls.__init__).parameters:
+        if getattr(model, "image_processor", None) is None:
+            raise ValueError(
+                f"{config.collator_class} needs an image processor but the compressor "
+                f"{model.config.compressor_model_name} has no vision tower / processor"
+            )
+        collator_kwargs["image_processor"] = model.image_processor
+    collator = collator_cls(
         compressor_tokenizer=model.compressor_tokenizer,
         decoder_tokenizer=model.decoder_tokenizer,
         compr_rate=model.compr_rate,
-        **config.collator_kwargs,
+        **collator_kwargs,
     )
 
     # We just print an item to see the data:
@@ -127,7 +198,7 @@ def main(config: DictConfig):
 
     training_args = TrainingArguments(output_dir=".", **config.hf_training)
 
-    trainer = Trainer(
+    trainer = PISCOTrainer(
         model=model,
         args=training_args,
         train_dataset=train_ds,
@@ -137,7 +208,12 @@ def main(config: DictConfig):
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
     )
 
-    trainer.train()
+    # Resume: with a FIXED run dir (hydra.run.dir) a requeued/preempted job finds its last
+    # checkpoint-N here and PISCOTrainer reloads the partial PISCO files from it.
+    resume = get_last_checkpoint(os.getcwd()) if getattr(config, "resume", True) else None
+    if resume:
+        print(f"Resuming from {resume}")
+    trainer.train(resume_from_checkpoint=resume)
 
     # save final
     if trainer.is_world_process_zero():

@@ -11,9 +11,10 @@ in front of every '<MEM>' token in its inputs
 appropriate embeddings computed by the compressor.
 """
 
+import contextlib
 import os
 import warnings
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Tuple
 from typing import cast, TYPE_CHECKING
 
 import torch
@@ -79,6 +80,12 @@ class PISCOConfig(PretrainedConfig):
         torch_dtype: str = "bfloat16",
         frozen_base_dtype: Optional[str] = None,
         bidirectional: bool = False,
+        image_processor_source: Optional[str] = None,
+        image_min_pixels: int = 65536,
+        image_max_pixels: int = 451584,
+        train_vision_lora: str = "all",
+        kd_weight: float = 0.0,
+        kd_temperature: float = 1.0,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -128,6 +135,28 @@ class PISCOConfig(PretrainedConfig):
         # stay in `torch_dtype` (fp32). Halves base-weight memory so 4B+ fits a 32GB
         # V100. None -> everything uses torch_dtype (current/default behaviour).
         self.frozen_base_dtype = frozen_base_dtype
+        # Multimodal (image) compression. The compressor backbone must be a VLM (Qwen3.5 is).
+        # image_processor_source: where to read preprocessor_config.json from; None -> the
+        #   compressor model name (resolved in from_pretrained BEFORE the <ckpt>/compressor
+        #   rewrite, since that dir has no preprocessor config). Pixel budget caps the number
+        #   of visual tokens per image: 1 token per 32x32 px -> 451584 px ~ 440 tokens.
+        # train_vision_lora: which vision-tower LoRA params stay trainable when the
+        #   compressor is LoRA-adapted with target_modules="all-linear" (which also wraps
+        #   the ViT): "all" (legacy behaviour), "merger" (only the vision->LM projection,
+        #   the official Qwen-VL recipe: ViT frozen, merger + LLM trained), "none".
+        self.image_processor_source = image_processor_source
+        self.image_min_pixels = image_min_pixels
+        self.image_max_pixels = image_max_pixels
+        if train_vision_lora not in ("all", "merger", "none"):
+            raise ValueError(f"train_vision_lora={train_vision_lora!r} not in ('all','merger','none')")
+        self.train_vision_lora = train_vision_lora
+        # Online token-level distillation (finetuning): loss = CE + kd_weight * T^2 *
+        #   KL(teacher || student) on the answer tokens, teacher = THIS decoder with its LoRA
+        #   adapters disabled reading the UNCOMPRESSED documents (raw pages / text). Active only
+        #   when kd_weight > 0 AND the batch carries `teacher_input_ids` (collator option
+        #   `teacher_inputs=True`); eval / generation / text-only batches are untouched.
+        self.kd_weight = float(kd_weight)
+        self.kd_temperature = float(kd_temperature)
 
 
 
@@ -152,6 +181,41 @@ def build_bidirectional_4d_mask(attention_mask: torch.Tensor, num_query_tokens: 
     return pad[:, None, None, :].expand(B, 1, Q, K)
 
 
+_TRAINABLE_KEY_HINTS = ("lora", "token_adapter", "modules_to_save")
+
+
+def _load_filtered_state(module: nn.Module, path: str, what: str) -> None:
+    """Load a PISCO filtered state dict (adapters + token_adapter + ...) into a live module.
+    strict=False is needed (base weights are not in the file), but a saved adapter key that
+    fails to land, or an unexpected key, means the module tree drifted (e.g. different PEFT
+    wrapping) and training would silently continue from fresh LoRA. Make that loud."""
+    res = module.load_state_dict(torch.load(path, weights_only=True, map_location="cpu"), strict=False)
+    missing = [k for k in res.missing_keys if any(h in k for h in _TRAINABLE_KEY_HINTS)]
+    if res.unexpected_keys or missing:
+        raise RuntimeError(
+            f"{what}: checkpoint/module mismatch — unexpected {res.unexpected_keys[:5]}, "
+            f"missing adapter keys {missing[:5]} (+{max(0, len(missing) - 5)} more)"
+        )
+
+
+def load_trainable_state(model: "PISCO", ckpt_dir: str, *, decoder: bool = True, compressor: bool = True) -> None:
+    """Load the trainable parts saved by PISCO.save_pretrained (decoder_state.pt,
+    compressor/compressor_state.pt, connector.pt) into an already-built model. Used by
+    from_pretrained and by the Trainer's resume-from-checkpoint path (checkpoint-N dirs hold
+    exactly these files, not HF weight files)."""
+    dec_path = os.path.join(ckpt_dir, "decoder_state.pt")
+    comp_path = os.path.join(ckpt_dir, "compressor", "compressor_state.pt")
+    if decoder and os.path.exists(dec_path):
+        _load_filtered_state(model.decoder, dec_path, "decoder")
+    if compressor and os.path.exists(comp_path):
+        _load_filtered_state(model.compressor, comp_path, "compressor")
+    conn = model.connector.load_state_dict(
+        torch.load(os.path.join(ckpt_dir, "connector.pt"), weights_only=True, map_location="cpu")
+    )
+    print(f"[pisco] loaded trainable state from {ckpt_dir} (decoder={decoder and os.path.exists(dec_path)}, "
+          f"compressor={compressor and os.path.exists(comp_path)}, connector={conn})")
+
+
 def _resolve_torch_dtype(name: Optional[str]) -> Optional[torch.dtype]:
     """Map a string like 'bfloat16' or 'float32' to torch.bfloat16 / torch.float32.
     Accepts None or 'auto' to mean 'let HF decide'."""
@@ -161,6 +225,82 @@ def _resolve_torch_dtype(name: Optional[str]) -> Optional[torch.dtype]:
     if not isinstance(dtype, torch.dtype):
         raise ValueError(f"torch_dtype={name!r} is not a valid torch dtype")
     return dtype
+
+
+def kd_loss_on_tails(
+    student_logits: torch.Tensor,
+    teacher_logits: torch.Tensor,
+    labels: torch.Tensor,
+    temperature: float = 1.0,
+    ignore_ids: Optional[List[int]] = None,
+) -> Tuple[torch.Tensor, int]:
+    """
+    Token-level KL(teacher || student) over the supervised positions of right-aligned
+    sequences. All three tensors cover the SAME trailing window of K positions:
+    student_logits / teacher_logits (B, K, V) and labels (B, K); position k's logits predict
+    labels[:, k+1] (HF shift), so the loss runs on logits[:, :-1] vs labels[:, 1:] != -100.
+    Returns (mean KL per supervised token, scaled by temperature^2; number of such tokens).
+    `ignore_ids` (e.g. <MEM>, <AE>) are removed from both distributions: the frozen base
+    decoder never trained their rows, so the teacher's mass there is noise.
+    """
+    assert student_logits.shape == teacher_logits.shape, (student_logits.shape, teacher_logits.shape)
+    assert labels.shape == student_logits.shape[:2], (labels.shape, student_logits.shape)
+    mask = labels[:, 1:] != -100                      # (B, K-1)
+    n = int(mask.sum())
+    if n == 0:
+        return student_logits.sum() * 0.0, 0
+    s = student_logits[:, :-1][mask].float()          # (n, V)
+    t = teacher_logits[:, :-1][mask].float()
+    if ignore_ids:
+        idx = torch.tensor([i for i in ignore_ids if 0 <= i < s.shape[-1]], device=s.device, dtype=torch.long)
+        if idx.numel():
+            s = s.index_fill(-1, idx, float("-inf"))
+            t = t.index_fill(-1, idx, float("-inf"))
+    T = float(temperature)
+    log_p_t = torch.log_softmax(t / T, dim=-1)
+    log_p_s = torch.log_softmax(s / T, dim=-1)
+    p_t = log_p_t.exp()
+    # Ignored ids: log_p_t = log_p_s = -inf there, and 0 * (-inf - -inf) is NaN, so zero those
+    # terms explicitly (p_t == 0 anyway). Everything else is finite.
+    term = torch.where(torch.isfinite(log_p_t), p_t * (log_p_t - log_p_s), torch.zeros_like(p_t))
+    kl = term.sum(-1)                                  # (n,)
+    return kl.mean() * (T * T), n
+
+
+def merge_lora_inplace(model: nn.Module) -> nn.Module:
+    """
+    Fold LoRA adapters into the base weights for INFERENCE (same outputs up to bf16 rounding, base-model speed).
+    PISCO's decoder/compressor carry transformers-integrated PEFT adapters (`PreTrainedModel.add_adapter`): there is
+    no `merge_and_unload` / `merge_adapter` on them, so each `LoraLayer` is merged (`layer.merge()`) and then replaced
+    by its base layer. Left unmerged, the rank-64 adapter path runs on every linear at every decode step (+60-80 %
+    per-token latency on Qwen3.5-4B, probe 2026-10-16).
+    TrainableTokens wrappers (the <AE>/<MEM> rows of embed_tokens and the tied lm_head) are left as they are: they
+    share one weight, so merging both would add the delta twice, and they cost ~1 ms/token.
+    A real `PeftModel` is handled with its own `merge_and_unload`.
+    """
+    if hasattr(model, "merge_and_unload"):
+        return model.merge_and_unload()
+    from peft.tuners.lora import LoraLayer
+    n = 0
+    for module in list(model.modules()):
+        for child_name, child in list(module.named_children()):
+            if isinstance(child, LoraLayer):
+                if not child.merged:
+                    child.merge()
+                setattr(module, child_name, child.get_base_layer())
+                n += 1
+    print(f"[merge_lora_inplace] merged + unwrapped {n} LoRA layers")
+    return model
+
+
+def _snapshot_rope_deltas(module: nn.Module) -> List[Tuple[nn.Module, object]]:
+    """[(submodule, its current `rope_deltas`)] for every submodule carrying that cache."""
+    return [(m, m.rope_deltas) for m in module.modules() if hasattr(m, "rope_deltas")]
+
+
+def _restore_rope_deltas(saved: List[Tuple[nn.Module, object]]) -> None:
+    for m, v in saved:
+        m.rope_deltas = v
 
 
 class PISCO(PreTrainedModel):
@@ -187,6 +327,23 @@ class PISCO(PreTrainedModel):
         )
 
         print("Base compressor nb parameters", self.compressor.num_parameters())
+
+        # Image processor, only when the compressor backbone has a vision tower. Failure to
+        # build one must never break a text-only run.
+        self.image_processor = None
+        self.vision_token_ids = None
+        if any(name.split(".")[-1] == "visual" for name, _ in self.compressor.named_modules()):
+            try:
+                from pisco.mm_utils import load_image_processor, get_vision_token_ids
+                self.image_processor = load_image_processor(
+                    config.image_processor_source or config.compressor_model_name,
+                    min_pixels=config.image_min_pixels,
+                    max_pixels=config.image_max_pixels,
+                )
+                self.vision_token_ids = get_vision_token_ids(self.compressor_tokenizer)
+            except Exception as e:
+                warnings.warn(f"compressor has a vision tower but no image processor could be built: {e}")
+                self.image_processor = None
 
 
         print(
@@ -378,6 +535,23 @@ class PISCO(PreTrainedModel):
                 gradient_checkpointing_kwargs={"use_reentrant": False}  # optional
             )
 
+        # Vision-tower LoRA policy. target_modules="all-linear" also wraps the ViT blocks and
+        # the merger of a VLM backbone; existing checkpoints carry those adapters with
+        # lora_B == 0 (never trained), so freezing is a pure requires_grad decision.
+        if config.train_vision_lora != "all":
+            n_frozen, n_kept = 0, 0
+            for name, p in compressor.named_parameters():
+                if ".visual." not in name or not p.requires_grad:
+                    continue
+                keep = config.train_vision_lora == "merger" and ".visual.merger." in name
+                if keep:
+                    n_kept += 1
+                else:
+                    p.requires_grad = False
+                    n_frozen += 1
+            print(f"[mm] train_vision_lora={config.train_vision_lora}: "
+                  f"froze {n_frozen} vision tensors, kept {n_kept} trainable")
+
         hidden_size = compressor.config.hidden_size if hasattr(compressor.config, "hidden_size") else compressor.config.text_config.hidden_size
 
         connector = nn.Sequential(
@@ -422,14 +596,49 @@ class PISCO(PreTrainedModel):
         self,
         input_ids: Optional[torch.LongTensor],
         attention_mask: Optional[torch.LongTensor],
+        pixel_values: Optional[torch.Tensor] = None,
+        image_grid_thw: Optional[torch.LongTensor] = None,
+        mm_token_type_ids: Optional[torch.LongTensor] = None,
     ) -> torch.Tensor:
         """
         Compresses.
         It returns a list of embeddings, one for each input_ids,
         they may have different lengths
+
+        Multimodal: when `pixel_values` is given (with `image_grid_thw` and
+        `mm_token_type_ids`, see pisco.mm_utils.collate_compressor), the VLM compressor
+        scatters the vision-tower output into the `<|image_pad|>` slots of `input_ids`
+        before running the language model; the `<MEM>` read-out is unchanged. Text-only
+        calls follow exactly the legacy code path.
         """
         if input_ids is None:
             raise ValueError("`input_ids` must not be None for compression.")
+
+        extra = {}
+        if pixel_values is not None:
+            if image_grid_thw is None or mm_token_type_ids is None:
+                raise ValueError("pixel_values requires image_grid_thw and mm_token_type_ids")
+            if getattr(self.config, "bidirectional", False):
+                raise NotImplementedError(
+                    "bidirectional compressor + images: the 4D mask breaks Qwen's get_rope_index"
+                )
+            image_token_id = int(self.compressor.config.image_token_id)
+            n_pad = int((input_ids == image_token_id).sum())
+            merge = int(self.compressor.config.vision_config.spatial_merge_size)
+            n_feat = int((image_grid_thw.prod(-1) // (merge ** 2)).sum())
+            assert n_pad == n_feat, (
+                f"{n_pad} <|image_pad|> tokens but image_grid_thw implies {n_feat} visual tokens "
+                f"(an image span was probably chunked or truncated)"
+            )
+            # PeftModelForCausalLM.forward forwards unknown kwargs to the wrapped
+            # Qwen3_5ForConditionalGeneration.forward, which accepts exactly these names.
+            # If a future PEFT stops doing so, call self.compressor.base_model.model(...).
+            # No dtype cast here: Qwen's get_image_features does pixel_values.type(visual.dtype).
+            extra = dict(
+                pixel_values=pixel_values,
+                image_grid_thw=image_grid_thw,
+                mm_token_type_ids=mm_token_type_ids,
+            )
 
         # Bidirectional: replace the 2D padding mask with a full 4D mask so the
         # compressor attends across the whole document (text tokens included,
@@ -443,6 +652,7 @@ class PISCO(PreTrainedModel):
             input_ids=input_ids,
             attention_mask=compr_attention_mask,
             output_hidden_states=True,
+            **extra,
         ).hidden_states[
             -1
         ]  # shape is B, T, hc
@@ -511,9 +721,28 @@ class PISCO(PreTrainedModel):
         decoder_input_ids: torch.LongTensor,
         decoder_attention_mask: torch.LongTensor,
         labels: Optional[torch.LongTensor] = None,
+        pixel_values: Optional[torch.Tensor] = None,
+        image_grid_thw: Optional[torch.LongTensor] = None,
+        mm_token_type_ids: Optional[torch.LongTensor] = None,
+        teacher_input_ids: Optional[torch.LongTensor] = None,
+        teacher_attention_mask: Optional[torch.LongTensor] = None,
+        teacher_pixel_values: Optional[torch.Tensor] = None,
+        teacher_image_grid_thw: Optional[torch.LongTensor] = None,
+        teacher_mm_token_type_ids: Optional[torch.LongTensor] = None,
+        teacher_kd_rows: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
+        # NOTE: named params on purpose (no **kwargs): HF Trainer injects num_items_in_batch
+        # as soon as forward accepts **kwargs.
+        # teacher_*: the UNCOMPRESSED prompt (same chat template, raw pages / text instead of
+        # <MEM>s, same answer suffix) for online distillation; see PISCOConfig.kd_weight.
         # Compression
-        embeddings = self.compress(compressor_input_ids, compressor_attention_mask)
+        embeddings = self.compress(
+            compressor_input_ids,
+            compressor_attention_mask,
+            pixel_values=pixel_values,
+            image_grid_thw=image_grid_thw,
+            mm_token_type_ids=mm_token_type_ids,
+        )
 
         # Inserting compressed reps into the decoder inputs:
         dec_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
@@ -523,10 +752,117 @@ class PISCO(PreTrainedModel):
             attention_mask=decoder_attention_mask,
             labels=labels,
         )
+        out = {"loss": decoder_outputs.loss, "logits": decoder_outputs.logits}
 
-        return {"loss": decoder_outputs.loss, "logits": decoder_outputs.logits}
+        kd_w = float(getattr(self.config, "kd_weight", 0.0) or 0.0)
+        if kd_w > 0 and self.training and teacher_input_ids is not None and labels is not None:
+            # Pretraining batches mix chat rows (with a teacher prompt) and AE / text rows (one-token dummy
+            # teacher prompt): `teacher_kd_rows` (B,) restricts the KL to the former.
+            kd_labels = labels if teacher_kd_rows is None else labels.masked_fill(
+                ~teacher_kd_rows.to(labels.device).bool().unsqueeze(1), -100)
+            kd, n_tok = self.kd_loss(
+                decoder_outputs.logits, kd_labels,
+                teacher_input_ids, teacher_attention_mask,
+                pixel_values=teacher_pixel_values, image_grid_thw=teacher_image_grid_thw,
+                mm_token_type_ids=teacher_mm_token_type_ids,
+            )
+            out["ce_loss"] = decoder_outputs.loss.detach()
+            out["kd_loss"] = kd.detach()
+            out["loss"] = decoder_outputs.loss + kd_w * kd
+        return out
 
-    def generate(self, model_input: Dict[str, torch.LongTensor], max_new_tokens: int = 128) -> List[str]:
+    @contextlib.contextmanager
+    def adapters_disabled(self, module: nn.Module):
+        """Run `module` as its frozen base model (LoRA + trainable-token layers off).
+        Handles both a PeftModel (legacy adapter-dir checkpoints) and transformers'
+        integrated PEFT (`add_adapter`, the new-format path)."""
+        if isinstance(module, PeftModel):
+            with module.disable_adapter():
+                yield
+            return
+        if getattr(module, "_hf_peft_config_loaded", False):
+            module.disable_adapters()
+            try:
+                yield
+            finally:
+                module.enable_adapters()
+            return
+        yield   # no adapters (full finetune / frozen decoder): base == current weights
+
+    def kd_loss(
+        self,
+        student_logits: torch.Tensor,
+        labels: torch.Tensor,
+        teacher_input_ids: torch.LongTensor,
+        teacher_attention_mask: torch.LongTensor,
+        *,
+        pixel_values: Optional[torch.Tensor] = None,
+        image_grid_thw: Optional[torch.LongTensor] = None,
+        mm_token_type_ids: Optional[torch.LongTensor] = None,
+    ) -> Tuple[torch.Tensor, int]:
+        """
+        Online distillation term. Teacher = the decoder backbone with adapters disabled
+        reading the uncompressed prompt (no grad). Both prompts are LEFT padded and end with
+        the identical `assistant: <answer><|im_end|>\n` suffix, so the answer occupies the
+        last K columns of both; only those K logits are computed on the teacher side
+        (`logits_to_keep`) to avoid materialising a (B, ~2000, 250k) tensor.
+        """
+        n_ans = int((labels != -100).sum(1).max())
+        K = min(n_ans + 1, student_logits.shape[1], teacher_input_ids.shape[1])
+        if K < 2:
+            return student_logits.sum() * 0.0, 0
+        # Guard the alignment assumption cheaply: supervised ids must coincide on the tails.
+        lab_tail = labels[:, -K:]
+        sup = lab_tail != -100
+        assert torch.equal(teacher_input_ids[:, -K:][sup], lab_tail[sup]), (
+            "teacher/student answer tails differ: the teacher prompt must end with the same "
+            "answer suffix as the decoder prompt (same tokenizer, same chat template)")
+        extra = {}
+        if pixel_values is not None:
+            if image_grid_thw is None or mm_token_type_ids is None:
+                raise ValueError("teacher_pixel_values requires teacher_image_grid_thw and teacher_mm_token_type_ids")
+            extra = dict(pixel_values=pixel_values, image_grid_thw=image_grid_thw,
+                         mm_token_type_ids=mm_token_type_ids)
+        # Qwen3.5 caches `rope_deltas` on its inner model when it computes M-RoPE from
+        # input_ids + image_grid_thw, and REUSES the cache in any later forward that gets only
+        # inputs_embeds (our student path). Snapshot and restore it around the teacher pass,
+        # otherwise every student step after the first runs with the teacher's position offsets.
+        saved = _snapshot_rope_deltas(self.decoder)
+        try:
+            with torch.no_grad(), self.adapters_disabled(self.decoder):
+                t_logits = self.decoder(
+                    input_ids=teacher_input_ids,
+                    attention_mask=teacher_attention_mask,
+                    logits_to_keep=K,
+                    use_cache=False,
+                    **extra,
+                ).logits
+        finally:
+            _restore_rope_deltas(saved)
+        ignore = [self.decoder_tokenizer.mem_token_id, self.decoder_tokenizer.ae_token_id]
+        return kd_loss_on_tails(
+            student_logits[:, -K:], t_logits, lab_tail,
+            temperature=float(getattr(self.config, "kd_temperature", 1.0) or 1.0),
+            ignore_ids=ignore,
+        )
+
+    def generate(
+        self,
+        model_input: Dict[str, torch.LongTensor],
+        max_new_tokens: int = 128,
+        return_ids: bool = False,
+        **gen_kwargs,
+    ) -> List[str]:
+        """
+        Greedy by default. Pass HF generation kwargs (do_sample / temperature / top_p /
+        num_return_sequences) to sample instead -- needed for rejection sampling and RL.
+
+        Two properties of the inputs_embeds path that callers rely on:
+          * with `inputs_embeds` and no `input_ids`, generate() returns ONLY the newly
+            generated tokens, so there is no prompt to slice off;
+          * with num_return_sequences=G the rows come back grouped per prompt, i.e.
+            [prompt0 x G, prompt1 x G, ...], so a .view(B, G) recovers the groups.
+        """
 
         (
             compressor_input_ids,
@@ -540,23 +876,52 @@ class PISCO(PreTrainedModel):
             model_input["decoder_attention_mask"],
         )
 
-        embeddings = self.compress(compressor_input_ids, compressor_attention_mask)
+        embeddings = self.compress(
+            compressor_input_ids,
+            compressor_attention_mask,
+            pixel_values=model_input.get("pixel_values"),
+            image_grid_thw=model_input.get("image_grid_thw"),
+            mm_token_type_ids=model_input.get("mm_token_type_ids"),
+        )
 
         decoder_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
+
+        gen_kwargs.setdefault("do_sample", False)
+        if not gen_kwargs["do_sample"]:
+            # HF warns when top_p is set but unused under greedy decoding.
+            gen_kwargs.setdefault("top_p", None)
+        gen_kwargs.setdefault("eos_token_id", self.decoder_eos_ids())
 
         output_ids = self.decoder.generate(
             inputs_embeds=decoder_inputs_embeds,
             attention_mask=decoder_attention_mask,
-            do_sample=False,
-            top_p=None,
             max_new_tokens=max_new_tokens,
+            **gen_kwargs,
         )
 
         decoded = self.decoder_tokenizer.batch_decode(
             output_ids, skip_special_tokens=True
         )
 
+        if return_ids:
+            # Callers that must distinguish a naturally-finished sample from one cut
+            # off at max_new_tokens need the raw ids (look for eos), not the text.
+            return decoded, output_ids
+
         return decoded
+
+    def decoder_eos_ids(self) -> List[int]:
+        """Stop tokens for decoder generation: the tokenizer's eos plus the chat end-of-turn
+        token when it exists. Some snapshots (Qwen3.5-4B) ship no generation_config.json, so
+        the model-level eos is only <|endoftext|> and a chat-finetuned decoder keeps writing a
+        fake next turn after <|im_end|> unless it is registered as a stop token here."""
+        ids = []
+        for t in (self.decoder_tokenizer.eos_token_id,
+                  self.decoder_tokenizer.convert_tokens_to_ids("<|im_end|>"),
+                  self.decoder_tokenizer.convert_tokens_to_ids("<|endoftext|>")):
+            if isinstance(t, int) and t >= 0 and t != self.decoder_tokenizer.unk_token_id and t not in ids:
+                ids.append(t)
+        return ids
 
     def save_pretrained(self, save_directory: str, **kwargs):
         """
@@ -569,7 +934,6 @@ class PISCO(PreTrainedModel):
         embed_tokens are tied. torch.save preserves shared tensors via pickle
         reference tracking and skips that check entirely.
         """
-        _TRAINABLE_KEY_HINTS = ("lora", "token_adapter", "modules_to_save")
         os.makedirs(save_directory, exist_ok=True)
 
         if not self.config.freeze_decoder:
@@ -595,6 +959,11 @@ class PISCO(PreTrainedModel):
             self.connector.state_dict(), os.path.join(save_directory, "connector.pt")
         )
         self.compressor_tokenizer.save_pretrained(compressor_dir)
+        if getattr(self, "image_processor", None) is not None:
+            # Makes the checkpoint self-contained for images (preprocessor_config.json
+            # next to the compressor tokenizer); from_pretrained picks it up from there.
+            os.makedirs(compressor_dir, exist_ok=True)
+            self.image_processor.save_pretrained(compressor_dir)
         self.decoder_tokenizer.save_pretrained(save_directory)
         self.config.save_pretrained(save_directory)
 
@@ -637,6 +1006,14 @@ class PISCO(PreTrainedModel):
             # Legacy path: PEFT adapter dir at the checkpoint root.
             config.decoder_adapter_path = pretrained_model_name_or_path
 
+        # Image processor source: a checkpoint saved by a multimodal-aware PISCO carries
+        # preprocessor_config.json under compressor/; older ones don't, so fall back to the
+        # backbone name. Must be decided BEFORE compressor_model_name is rewritten below.
+        if os.path.exists(os.path.join(compressor_dir, "preprocessor_config.json")):
+            config.image_processor_source = compressor_dir      # self-contained checkpoint wins
+        elif getattr(config, "image_processor_source", None) is None:
+            config.image_processor_source = config.compressor_model_name
+
         if config.lora_compressor and not new_format_compressor:
             # Legacy path: PEFT adapter dir under compressor/.
             config.compressor_adapter_path = compressor_dir
@@ -645,18 +1022,9 @@ class PISCO(PreTrainedModel):
 
         model = cls(config)
 
-        if new_format_decoder and not config.freeze_decoder:
-            model.decoder.load_state_dict(
-                torch.load(decoder_state_path, weights_only=True), strict=False
-            )
-        if new_format_compressor and config.lora_compressor:
-            model.compressor.load_state_dict(
-                torch.load(compressor_state_path, weights_only=True), strict=False
-            )
-
-        model.connector.load_state_dict(
-            torch.load(os.path.join(pretrained_model_name_or_path, "connector.pt"), weights_only=True)
-        )
+        load_trainable_state(model, pretrained_model_name_or_path,
+                             decoder=new_format_decoder and not config.freeze_decoder,
+                             compressor=new_format_compressor and config.lora_compressor)
         connector_dtype = _resolve_torch_dtype(config.torch_dtype)
         if connector_dtype is not None:
             model.connector.to(connector_dtype)

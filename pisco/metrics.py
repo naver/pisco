@@ -53,6 +53,28 @@ def f1_single(prediction, ground_truth, tokenfun=lambda x: x.split()):
     return f1, precision, recall
 
 
+def anls_single(prediction, ground_truth, threshold: float = 0.5) -> float:
+    """
+    Average Normalized Levenshtein Similarity (DocVQA metric), for one answer:
+    1 - edit_distance / max_len, zeroed below `threshold`. Strings are lower-cased and
+    whitespace-normalised like the official scorer (punctuation is kept).
+    """
+    a = " ".join(str(prediction).lower().split())
+    b = " ".join(str(ground_truth).lower().split())
+    if not a and not b:
+        return 1.0
+    if not a or not b:
+        return 0.0
+    prev = list(range(len(b) + 1))
+    for i, ca in enumerate(a, 1):
+        cur = [i]
+        for j, cb in enumerate(b, 1):
+            cur.append(min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (ca != cb)))
+        prev = cur
+    sim = 1.0 - prev[-1] / max(len(a), len(b))
+    return sim if sim >= threshold else 0.0
+
+
 def match_single(prediction, ground_truth):  # TODO: fix this
     return float(normalize(ground_truth) in normalize(prediction))
 

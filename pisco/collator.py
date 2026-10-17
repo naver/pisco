@@ -962,6 +962,46 @@ class FineTuningCollator(BaseCollator):
 
         return output
 
+class RolloutCollator(FineTuningCollator):
+    """
+    Generation-time variant of FineTuningCollator: the decoder sequence stops at the
+    assistant generation prompt instead of continuing into the answer.
+
+    Doc chunking, <MEM> insertion and the n_mems invariant are inherited unchanged,
+    so a rollout sees exactly the prompt the finetuned model was trained on. Examples
+    still need a `mistral_label` key (torch_call reads it) but its value is ignored.
+
+    The returned `labels` are all -100, since the whole sequence is prefix. This
+    collator is for generate(), not for training -- ignore that key.
+    """
+
+    def compute_prompt_and_prefix_length(
+        self, docs: str, query: str, label: Optional[str] = None,
+        system_prompt: Optional[str] = None,
+    ) -> Tuple[str, int]:
+        messages = [
+            {"role": "system", "content": system_prompt or self.system_prompt},
+            {
+                "role": "user",
+                "content": self.user_prompt.replace("[documents]", docs).replace(
+                    "[question]", query
+                ),
+            },
+        ]
+        prompt = self.decoder_tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, enable_thinking=False
+        )
+        prefix_length = len(
+            self.decoder_tokenizer.apply_chat_template(
+                messages,
+                tokenize=True,
+                add_generation_prompt=True,
+                enable_thinking=False,
+            )["input_ids"]
+        )
+        return prompt, prefix_length
+
+
 class FineTuningCollatorA(BaseCollator):
     """
     Given a query and docs, forms the compressor inputs (potentially chunking each doc)

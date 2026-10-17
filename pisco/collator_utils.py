@@ -62,6 +62,12 @@ def print_collated_sample(batch, collator):
     if "scores" in batch:
         print(batch["scores"])
 
+    if "image_grid_thw" in batch:
+        print("---- images (multimodal batch) ----")
+        print("image_grid_thw:", batch["image_grid_thw"].tolist())
+        print("pixel_values:", tuple(batch["pixel_values"].shape), batch["pixel_values"].dtype)
+        print("image_pad tokens per compressor row:", batch["mm_token_type_ids"].sum(1).tolist())
+
 
 def mask_before_mem(labels, mem_token_id):
     """

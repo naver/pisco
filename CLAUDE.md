@@ -23,10 +23,11 @@ The number of `<MEM>` tokens for a chunk is proportional to chunk length: `n_mem
   - `FineTuningCollatorA` — variant with `compressed_docs` + `uncompressed_docs` fields (hybrid context).
   - `AgentTrajCollator` — agent trajectories; compresses individual steps with probability `p_compress`.
 - [pisco/collator_utils.py](pisco/collator_utils.py) — chunking, `<MEM>` insertion, label masking (`mask_before_mem` for pretraining, prefix-length masking for finetuning).
-- [pisco/train.py](pisco/train.py) — Hydra entry point. Picks config via `--config-name=` and forwards `hf_training` kwargs to `TrainingArguments`. Sets `datasets.disable_caching()` and `IN_MEMORY_MAX_SIZE = 200 GB`.
-- [pisco/hydra_utils.py](pisco/hydra_utils.py) — registers two OmegaConf resolvers used in config interpolation: `sanitize_override_dirname` (turns long `model_name_or_path` overrides into short hashes for sweep subdir names) and `path_after_user_dir` (strips `user_dir` prefix).
-- [pisco/configs/](pisco/configs/) — Hydra configs (`pretraining.yaml`, `finetune.yaml`, `agentic.yaml`, `arc.yaml`, `arc_lora_c.yaml`, `pt_lora.yaml`). All inherit from `defaults.yaml` and optionally a gitignored `local.yaml` that sets `user_dir`.
-- [scripts/eval_agent_qa.py](scripts/eval_agent_qa.py) — standalone eval for agentic QA, with both `--mode pisco` and `--mode base` (uncompressed decoder baseline).
+- [pisco/train.py](pisco/train.py) — Hydra entry point. Picks config via `--config-name=` and forwards `hf_training` kwargs to `TrainingArguments`. Sets `datasets.disable_caching()` and `IN_MEMORY_MAX_SIZE = 200 GB` (the whole arrow dataset is loaded into host RAM — size `--mem` accordingly). Passes `image_processor=model.image_processor` to any collator whose `__init__` declares that kwarg.
+- [pisco/mm_utils.py](pisco/mm_utils.py) / [pisco/mm_collator.py](pisco/mm_collator.py) — multimodal (image) compression, see the section below.
+- [pisco/configs/](pisco/configs/) — Hydra configs (`pretraining.yaml`, `finetune.yaml`, `agentic.yaml`, `arc.yaml`, `arc_lora_c.yaml`, `pt_lora.yaml`, `pt_lora_bidi.yaml`, `pt_lora_mm.yaml`, `finetune_mm.yaml`). All inherit from `defaults.yaml`.
+- [scripts/eval_agent_qa.py](scripts/eval_agent_qa.py) — standalone eval for agentic QA and LongBench, with both `--mode pisco` and `--mode base` (uncompressed decoder baseline). [scripts/eval_mm_docqa.py](scripts/eval_mm_docqa.py) is the multimodal counterpart (page images; modes `pisco` / `base` / `pisco_text`).
+- [docs/latency.md](docs/latency.md) — latency/throughput of multimodal PISCO (HF and vLLM), how to serve the PISCO decoder in vLLM with prompt embeddings, when compression stops paying. Benchmarks: `scripts/bench_mm_latency.py`, `scripts/bench_vllm.py`, `scripts/bench_vllm_sim.py`.
 - [pisco/example.py](pisco/example.py) — minimal forward+backward example, useful as a sanity check that a checkpoint loads.
 
 ## Common commands
@@ -73,6 +74,21 @@ There is no test suite — `example.py` is the closest thing to a smoke test.
   5. **Multi-GPU to recover throughput**: a single V100 is slow (~20 s/it at bs2 fp32). Use a whole node via `pixi run accelerate launch --multi_gpu --num_processes 4 …` — confirmed ~6.9 s/it on 4×V100 (data-parallel offsets Volta's per-GPU deficit). bf16/A100 stays single-GPU `python`.
   6. **Memory (host RAM)**: multi-process DDP loads the dataset **per process** → `--mem=64G` gets `slurmstepd oom_kill`. Request `--mem=256G` for a 4-GPU node (and bump `--cpus-per-task`).
   Note: `PISCO.replace_embeddings` casts the compressed embeddings to the decoder-embedding dtype before `index_copy`, so mixed bf16/fp16 autocast no longer crashes there (no-op when dtypes already match).
+
+## Multimodal PISCO (compressing page images)
+
+The Qwen3.5 backbones are **native VLMs** (`Qwen3_5ForConditionalGeneration`; both backbones are loaded with `AutoModelForImageTextToText`), so an image can go through the *compressor* with no new module: the compressor input gets an **image span** `<|vision_start|> <|image_pad|>×N <|vision_end|>` (N = visual tokens, one per 32×32 px after `smart_resize`; 451 584 px ≈ 440 tokens) followed by `<MEM>` tokens using the usual rule `n_mems = len(span)//compr_rate + 1`. The decoder only ever sees the `<MEM>` placeholders.
+
+- `PISCO.compress/forward/generate` accept `pixel_values`, `image_grid_thw`, `mm_token_type_ids` (all three or none; `mm_token_type_ids` is required by Qwen's forward whenever `image_grid_thw` is given). Text-only batches follow the legacy code path byte for byte.
+- **Image spans are atomic**: never chunk or truncate one (the HF model raises "image features and image tokens do not match"; `compress` asserts the counts first). `compressor_max_length` bounds text chunks only. Trimming `<MEM>`s from a chunk tail is still safe.
+- Row order of image chunks == concatenation order of `pixel_values` == rows of `image_grid_thw` (`pisco.mm_utils.collate_compressor` enforces it). Don't re-sort compressor rows without re-sorting pixels.
+- Image processor: `Qwen2VLImageProcessorPil` (numpy/PIL, no torchvision; `AutoProcessor` needs torchvision for the video processor and is not used). `PISCOConfig.image_min_pixels/image_max_pixels` set the budget; `save_pretrained` writes `preprocessor_config.json` under `compressor/`.
+- `PISCOConfig.train_vision_lora ∈ {all, merger, none}`: `all-linear` LoRA also wraps the ViT; old checkpoints carry those adapters with `lora_B == 0`. mm runs use `merger` (ViT frozen, merger + LM trained — the Qwen-VL convention).
+- `bidirectional=True` + images is refused (the 4D mask breaks Qwen's `get_rope_index`).
+- Collators: `MultimodalPretrainingCollator` (rows `image`, `text`; tasks image-AE / image-continuation / text rehearsal) and `MultimodalFineTuningCollator` (rows `docs`, `doc_images`, `query`, `mistral_label`). Tests: `python test_mm_collators.py` (real modules, mocked tokenizer/processor).
+- Data builders: `scripts/build_mm_pretrain.py` (Tevatron/wiki-ss-corpus screenshots + text), `scripts/build_mm_finetune.py` (OpenDocVQA train + corpus, gold + distractor pages), `scripts/build_mm_eval.py` (OpenDocVQA infovqa/chartqa test + VisRAG SlideVQA). Pages are pre-resized to the pixel budget and stored as JPEG; `from_pretrained` loads the whole arrow into RAM.
+- Eval: `scripts/eval_mm_docqa.py` (EM/F1/ANLS/match, `--rescore`), then `scripts/judge_mm_docqa.py` (local Qwen3-8B Yes/No judge, project prompt) adds `judge` scores in place; `eval_mm_4b.sh` chains both.
+- Shake-out before training: `scripts/mm_shakeout.py` (processor shapes, token ids, one-image compress, mixed-batch M-RoPE check, fwd+bwd memory probe, generate, datasets schema).
 
 ## Reproducing paper results
 

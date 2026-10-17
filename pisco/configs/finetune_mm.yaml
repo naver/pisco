@@ -1,0 +1,44 @@
+# MULTIMODAL RAG finetuning: retrieved documents are page images (and/or text passages).
+# Rows: docs (List[str]), doc_images (List[Image|None]), query, mistral_label.
+#   python pisco/train.py --config-name=finetune_mm model_name_or_path=/abs/mm_pretrain/model \
+#       data.training_dataset=/abs/path/mm_ft_docpages_20k
+defaults:
+  - defaults
+  - _self_
+
+hf_training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 32
+  learning_rate: 1e-4
+  warmup_steps: 0.05
+  weight_decay: 0.1
+  save_strategy: steps
+  save_steps: 100                       # gpu-be preemptions: a 200-step gap lost a 2 h run
+  save_total_limit: 2
+  logging_strategy: steps
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 100
+  report_to: tensorboard
+  bf16: True
+  max_grad_norm: 1.
+  dataloader_num_workers: 4
+  remove_unused_columns: False
+  gradient_checkpointing: True
+  optim: adamw_torch
+
+data:
+  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_ft_docpages_20k
+  samples: 20000
+
+collator_class: pisco.mm_collator.MultimodalFineTuningCollator
+
+collator_kwargs:
+  compressor_max_length: 256
+  decoder_max_length: 1024              # 4 pages x 56 MEM + prompt + answer
+  topk_docs: 4
+  image_compr_rate: null
+
+model_name_or_path: null

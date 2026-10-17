@@ -1,0 +1,56 @@
+# Stage-2 MULTIMODAL pretraining: continue a text PISCO checkpoint on (page image, page text)
+# pairs. The compressor learns to put a page image into <MEM> embeddings (image autoencoding /
+# continuation) while text compression is rehearsed (p_text) so LongBench does not regress.
+# Backbone must be a VLM (Qwen3.5-*): the checkpoint below is Qwen3.5-4B -> Qwen3.5-4B, rate 8.
+#   python pisco/train.py --config-name=pt_lora_mm data.training_dataset=/abs/path/mm_pretrain_160k
+defaults:
+  - defaults
+  - _self_
+
+hf_training:
+  num_train_epochs: 1
+  per_device_train_batch_size: 8        # probe (grad-ckpt, 462-tok image rows, 1024 dec): bs8 47 GiB 2.9 s/step, bs12 62 GiB, bs16 76 GiB
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 8        # eff. batch 64
+  learning_rate: 5e-5
+  warmup_steps: 0.05
+  weight_decay: 0.1
+  save_strategy: steps
+  save_steps: 250
+  save_total_limit: 2
+  logging_strategy: steps
+  logging_steps: 10
+  eval_strategy: steps
+  eval_steps: 250
+  report_to: tensorboard
+  bf16: True
+  max_grad_norm: 1.
+  dataloader_num_workers: 4             # PIL decode + patchify is CPU work
+  remove_unused_columns: False
+  gradient_checkpointing: True
+  optim: adamw_torch
+
+data:
+  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_pretrain_160k
+  samples: 160000
+
+collator_class: pisco.mm_collator.MultimodalPretrainingCollator
+
+collator_kwargs:
+  compressor_max_length: 256            # text chunks only; an image is one atomic chunk (~443 tok + MEMs)
+  decoder_max_length: 1024              # 56 MEM + <AE> + 768 target tokens fits
+  ae_ratio: 0.5                         # within the text task
+  p_image_ae: 0.5
+  p_text: 0.3
+  p_image_cont: 0.2
+  ae_target_max_tokens: 768
+  image_compr_rate: null                # null = compr_rate (8) -> 56 MEM per 440-token page
+
+# Continue from the text PISCO checkpoint (absolute path: hydra chdir).
+model_name_or_path: /beegfs/scratch/user/hdejean/pisco/expQ/qwen35_4b_pt_5M_143228/model
+model_config_overrides:
+  train_vision_lora: merger             # ViT LoRA frozen, merger LoRA + LM LoRA + connector trained
+  # image_max_pixels deliberately NOT set: it comes from the checkpoint (451584 = PISCOConfig default, ~440 visual
+  # tokens per page), and a 1M-px run appends it with `+model_config_overrides.image_max_pixels=1003520` (a `+` on a
+  # key already here is a Hydra error: that killed the v3 shake 173500).
+  image_min_pixels: 65536

@@ -1,0 +1,24 @@
+# MULTIMODAL RAG finetuning + ONLINE DISTILLATION. The 171745 recipe (teacher labels, lr 2e-5,
+# 20K, rate 8) plus a token-level KL term to the uncompressed decoder (same backbone, LoRA
+# disabled, reading the raw pages) on the answer tokens:  loss = CE + kd_weight * T^2 * KL.
+#   python pisco/train.py --config-name=finetune_mm_kd model_name_or_path=/abs/mm_pretrain/model \
+#       [model_config_overrides.kd_weight=0.5 model_config_overrides.kd_temperature=1.0]
+defaults:
+  - finetune_mm
+  - _self_
+
+hf_training:
+  learning_rate: 2e-5
+
+data:
+  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_ft_docpages_20k_teacher
+  samples: 20000
+
+collator_kwargs:
+  teacher_inputs: True
+  teacher_max_length: 4096             # 4 raw pages x ~442 tokens + prompt + answer (8 frames fit too)
+
+# Applied to the loaded checkpoint's PISCOConfig before the model is built (train.py).
+model_config_overrides:
+  kd_weight: 0.5
+  kd_temperature: 1.0

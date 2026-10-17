@@ -34,6 +34,7 @@ tensorboard = ">=2"
 
 ### For Qwen 3.5
 causal-conv1d = ">=1.6"
+openai = ">=3.11.0,<4"
 
 [pypi-dependencies]
 pisco = {path = ".", editable = true}
@@ -43,6 +44,7 @@ flash-linear-attention = ">=0.4"
 pytrec-eval-terrier = ">=0.5.10, <0.6"
 tiktoken = ">=0.13.0, <0.14"
 sentencepiece = ">=0.2.1, <0.3"
+pypdfium2 = ">=5.14.0, <6"
 
 [tasks]
 pretrain = "python pisco/train.py --config-name=pretraining"
