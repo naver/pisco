@@ -53,3 +53,243 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-07-17 00:08 [job 144812] multi-task pretrain objective (cloze/multidoc/midmem/noisyAE, ef40457) also null after identical ft: RAG .5731, LB 31.9, agentQA .468 — objective is NOT the lever either; confirms PISCO-paper AE+cont sufficiency at rate8
 - 2026-07-17 00:08 ft diet IS the lever: multitask-50K ft (NLE spec, bit-for-bit) = LB 35.5 (+3.5, matches NLE 35.7) but RAG -1pt and agentQA collapse .64→.31 (~60% dropped numeric IDs from abstractive style; cml128 > cml256). Next candidate: rebalanced mix kilt~60/summarization~10
 - 2026-07-17 00:08 my_qa.json had 9 stale-state golds (labeler bug, verified vs trajectories) — my_qa_fixed.json is the benchmark now; old numbers (incl. 0.479 ministral ref) were measured on buggy labels
+- 2026-09-10 20:40 [job 163342] RAFT rollout probe: can the compressed model solve what the teacher failed?
+  - did: new scripts/raft_rollout.py + pisco/reward.py + RolloutCollator; G=8 rollouts on 2000 teacher-failed queries from ft_100K_4b_5M_144096
+  - saw: 46% of the 453K ft set (207853 rows) has a mistral_label that misses gold; msmarco 10% / wikiqa 0.7% correct are partly a containment-EM artifact on sentence-length gold
+  - next: if pass@8 is materially >0, build the filtered+recovered ft diet and retrain; else drop the DEX-Comp line
+- 2026-09-10 21:11 [job 163342] RAFT probe POSITIVE: compressed 4B recovers ~17% of teacher failures on short-gold sources
+  - did: G=8 rollouts on 2000 teacher-failed queries, ft_100K_4b_5M_144096, containment-EM, prompt verified token-identical to the ft prefix
+  - saw: 8.8% pass@8 overall but that is dragged by msmarco+wikiqa (59% of the S- pool, sentence-length gold, scorer under-reads): short-gold sources 142/823=17.3%, long-gold 34/1177=2.9%. Recoveries are real answers, not substring luck. 65/176 solved by only 1 of 8 samples. Median kept answer 223 chars = verbose
+  - next: rerun msmarco/wikiqa under --score_mode f1 before any full pass; watch verbosity (same abstractive-style risk that collapsed agent-QA in the multitask ft)
+- 2026-09-10 21:44 [job 163353] f1 rescore REFUTES my hypothesis: f1@0.6 is stricter than containment for long gold, not looser
+  - did: msmarco+wikiqa S- rollouts scored with token-F1>=0.6
+  - saw: 1.38% pass@8 vs 2.9% under containment; global teacher-correct collapses 54% -> 1.8%. Cause: F1 penalises length mismatch, so a correct 5-word answer vs a 25-word gold sentence scores ~0.33
+  - next: msmarco/wikiqa teacher accuracy is still UNMEASURED; needs gold-recall or an LLM judge, not F1
+- 2026-09-10 21:44 [job 163354] Token cap truncates rather than shortens; 36% of the main run's kept rows are unusable
+  - did: same 823 short-gold queries at max_new_tokens=24 vs 64
+  - saw: 12.8% vs 17.3% pass@8, median 98 vs 223 chars, but only 31% vs 64% end in sentence punctuation - the rest are cut mid-word
+  - next: added EOS-completion filter (model.generate return_ids + --allow_truncated opt-out); rerun short-gold at 64 tok to get the true usable pass@8
+- 2026-09-10 22:13 [job 163365] LLM judge: containment massively under-counts teacher correctness on sentence-gold sources
+  - did: Qwen3-8B judge, bergen judge prompt, 300 rows x 4 sources, with short-gold controls
+  - saw: msmarco 5.7%->32.3% (+26.7), wikiqa 0.3%->69.7% (+69.3). Controls split: nq_open +1.0 (judge calibrated) but triviaqa -17.0, judge overruling 57 containment-positives
+  - next: job 163367 dumps per-example disagreements to settle whether the judge or containment is wrong on triviaqa; absolute numbers not quotable until then
+- 2026-09-10 22:18 [job 163367] S+/S- split is measuring GOLD ANSWER LENGTH, not teacher correctness - the 46% figure is an artifact
+  - did: read the judge-vs-containment disagreements, then correlated containment S+ against gold-alias length/count per source
+  - saw: containment S+ tracks shortest-gold-length almost monotonically: wikiqa 21.1 words 0.7%, msmarco 12.2 -> 10.2%, squad 3.1 -> 50.8%, nq_open 2.1 -> 58.2%, triviaqa 1.4 words with 29.7 aliases -> 89.8%. Judge rescues on msmarco inspected and correct; triviaqa containment has real false positives (matched the formula echoed from the question)
+  - next: containment cannot build the split; judge must. Do not run the 41 GPU-h full pass on a length-based filter
+- 2026-09-10 22:34 Judge costing: OpenAI beats local GPU for relabelling the ft set
+  - did: tiktoken o200k count over 4000-row sample of the judge prompts; measured Qwen3-8B judge throughput from jobs 163365/163367
+  - saw: 185 input tok/row, 83.9M in + 2.3M out for all 453K. gpt-4.1 = $186 full ($93 batch), gpt-4o-mini $14. Local: Qwen3-8B 5.2 ex/s = 24 A100-h, Qwen3-32B ~4x = ~95-100 A100-h
+  - next: calibrate gpt-4.1 on the 1200 control rows (~$0.05) against containment + Qwen3-8B before any full relabel; needs OPENAI_API_KEY (unset) and pixi add openai
+- 2026-09-10 22:43 3-way judge calibration: containment validated on short gold, refuted on long gold and alias soup
+  - did: containment vs Qwen3-8B vs gpt-4.1 on identical 1200 rows ($0.49)
+  - saw: nq_open control all three agree (56.3/57.3/56.0) so judges are calibrated. Both judges agree against containment on msmarco (5.7 vs 32.3/34.7) and wikiqa (0.3 vs 69.7/77.3). triviaqa spreads 81.0/64.0/72.7 - containment overstates via alias soup. Aggregate 45.9% -> 45.3% wrong targets, but 27.8K rows swap sides
+  - next: aggregate is coincidentally stable; composition is not. Filter must use judge labels, not containment
+- 2026-10-08 18:08 mmpisco: START multimodal PISCO (page images + text -> <MEM>), decoder fully compressed
+  - did: pisco/mm_utils.py + mm_collator.py (MultimodalPretraining/FineTuning collators), model.py compress/forward/generate take pixel_values/image_grid_thw/mm_token_type_ids, train_vision_lora policy, strict adapter load; configs pt_lora_mm/finetune_mm; builders for Wiki-SS (160K), OpenDocVQA ft (20K), eval 500 (infovqa/chartqa/slidevqa)
+  - saw: Qwen3.5-4B is a native VLM; ckpt 143228 already holds vision LoRA with lora_B=0; Qwen2VLImageProcessorPil works offline; 14 unit tests
+  - next: shakeout job 170739, data jobs 170740-42; then smoke_mm, tiny train, stage-2 pretrain from 143228 (1 A100, 1-2 days)
+- 2026-10-08 18:26 [job 170748] mmpisco shakeout PASS: images flow through the compressor; bs 8x8 for stage-2
+  - did: mm_shakeout.py on ckpt 143228: processor shapes, token ids, one-image compress (25,2560), mixed-batch M-RoPE cos>=0.995, fwd+bwd probe, generate, datasets schema
+  - saw: grad-ckpt: bs4 33GiB 1.5s, bs8 47GiB 2.9s, bs12 62GiB 4.3s, bs16 76GiB 6.3s; first call per new shape 30-90s (Triton re-tune) -> collators pad to x64
+  - next: data builds (Wiki-SS pretrain, Docmatix+cauldron ft, VisRAG eval; OpenDocVQA corpus is gated), then smoke_mm + tiny train + pt_mm_4b 160K bs8 accum8 (~16h)
+- 2026-10-08 19:38 [job 170773] mmpisco smoke PASS: pt_lora_mm 2 steps -> save -> strict reload -> finetune_mm 2 steps -> eval_mm_docqa 4 rows, all green
+  - saw: pt losses 2.33/2.53, ft 3.0/2.2 (32 rows); ckpt now self-contained (preprocessor_config under compressor/); train.py fix: plain Dataset dirs load
+  - next: tiny 12-step image-AE run 170781 must show loss drop; then pt_mm_4b 160K bs8 accum8
+- 2026-10-08 20:49 [job 170744] verdict: closed — OpenDocVQA-Corpus gated; eval source switched to VisRAG test sets
+- 2026-10-08 20:49 [job 170745] verdict: closed — OpenDocVQA-Corpus gated; finetune source switched to Docmatix+the_cauldron
+- 2026-10-08 20:49 [job 170768] verdict: closed — train.py plain-Dataset load bug, fixed; smoke re-run 170773 PASS
+- 2026-10-08 20:49 [job 170781] mmpisco tiny image-AE run OK: loss 2.3->2.0 over 12 steps, grad-norm 25->1.5, 3 s/step at bs8
+  - next: full stage-2 pretrain launched (160K, bs8 x accum8)
+- 2026-10-08 20:49 resource: mm datasets built — data/mm_pretrain_160k (Wiki-SS 160K screenshot+text, 15.8 GiB), data/mm_ft_docpages_20k (Docmatix 10K + the_cauldron docvqa 7K / infographic_vqa 2K / chartqa 1K, gold+3 distractor pages, 5.6 GiB), eval_data/mm_docqa_500 (VisRAG test: slidevqa 200 / infovqa 200 / mpdocvqa 100, answers parsed to lists)
+- 2026-10-08 21:33 [job 170803] resume-on-preemption works: PISCOTrainer reloads checkpoint-N (decoder/compressor adapters + connector), optimizer/scheduler via HF
+  - did: resume_smoke: run A 2 steps -> checkpoint-2; run B same dir -> 'Resuming from checkpoint-2', steps 3-4
+  - next: stage-2 pretrain moved to gpu-be with --requeue as job 170810 (gpu partition blocked by the 8-GPU/user cap held by two Reranking lw-* jobs)
+- 2026-10-12 16:01 [job 170810] mmpisco stage-2 pretrain DONE: 2499 steps, 3 preemptions auto-resumed (~18 h GPU), model at expQ/pt_mm_4b_170810/model
+  - saw: train loss 1.95 -> 0.66; eval loss 0.90 -> 0.65 (64 rows, noisy); eval Rouge-L 0.74 -> 0.80 on the image-AE/text mix = a Wikipedia screenshot is reconstructed from 56 MEM at ~80% Rouge-L
+  - next: ft_mm_4b 171564 (20K page-QA), eval base 171565 (uncompressed Qwen3.5-4B, 500 Q), eval pisco-pretrain 171566 (100 Q), LongBench forgetting gate
+- 2026-10-12 16:14 [job 171565] mmpisco baseline: uncompressed Qwen3.5-4B on raw pages (500 Q, 4 pages/Q): ANLS .635 EM .576 match .668 (slidevqa .559/.525, infovqa .600/.510, mpdocvqa .857/.810)
+  - next: compare ft_mm_4b_171564 pisco mode against this ceiling
+- 2026-10-12 16:14 [job 171566] mmpisco stage-2 ckpt WITHOUT QA finetune (first 100 Q = slidevqa): ANLS .252 EM .190 match .380 vs ceiling .559/.525/.680 — answers from compressed pages above chance before any finetune
+  - saw: compress 0.80 s + decode 1.02 s per Q (unmerged LoRA, bs1) vs base decode 0.51 s: no speed win at 4 pages/bs1; needs --merge_lora + batching for a fair speed test
+- 2026-10-12 16:18 [job 171567] mmpisco LongBench on stage-2 ckpt (pretrain-only): F1 23.1/22.3/18.0/13.7 per bucket (mean 19.3) vs 37.0/29.0/30.1/30.8 for the QA-FINETUNED text ckpt — not comparable (no QA finetune yet)
+  - next: fair gate = LongBench on the text pretrain-only ckpt qwen35_4b_pt_5M_143228 (launched); the finetuned comparison comes after ft_mm_4b_171564
+- 2026-10-12 16:35 [job 171582] mmpisco forgetting gate FAILED: text LongBench F1 mean 23.1 (text pretrain-only init) -> 19.3 (stage-2 mm), -3.8 vs the -1 gate
+  - saw: per bucket 28.4/25.3/22.4/16.4 -> 23.1/22.3/18.0/13.7; p_text=0.3 rehearsal insufficient
+  - next: candidates for stage-2 v2: p_text 0.5, lr 2e-5, or mix text RAG rows into the mm finetune; decide after ft_mm_4b_171564 eval (doc-QA gain vs text loss)
+- 2026-10-12 17:00 mmpisco: finetune diet v2 ordered (user: follow recommendation) — 65K rows: Docmatix 30K with up to 4 gold pages, cauldron docvqa/chartqa/infographic_vqa/tat_qa/visualmrc/ai2d, +10K text RAG rows (maxoul/pisco_finetuning_data) for text rehearsal
+  - did: build job 171596 -> data/mm_ft_docpages_65k
+  - next: when ft_mm_4b_171564 (20K) is evaluated, launch ft v2 from the stage-2 ckpt with topk_docs=8 bs1 accum64; stage-2 v2 (pdfa + synthetic renders, p_text 0.5) only if stage-2 is the bottleneck
+- 2026-10-12 17:14 mmpisco capacity probe (user: lower compression as a waypoint): eval-time image_compr_rate sweep on the stage-2 ckpt, slidevqa-100
+  - did: jobs 171598/171599/171600 = rate 2/4/16 (224/112/28 MEM per page) vs rate 8 (56 MEM, ANLS .252 EM .190)
+  - next: ft v2 twice in parallel: rate 8 and rate 2 (needs collator_kwargs.image_compr_rate=2 decoder_max_length=2048 topk_docs=8); rate 2 near the .635 ceiling => gap is compression; both short => recipe/data
+- 2026-10-12 17:19 [job 171598] mmpisco capacity probe RESULT (stage-2 ckpt, eval-time rate sweep, slidevqa-100): ANLS .227 (28 MEM/page) / .252 (56, trained) / .258 (112) / .258 (224); EM .18/.19/.21/.21
+  - saw: 4x more slots = +0.5 ANLS pt, half the slots = -2.5: the pre-finetune model is not capacity-limited; the gap to the .56 ceiling is missing QA training
+  - next: keep the rate-2 ft waypoint (capacity may matter once the model uses the pages); finetune result decides
+- 2026-10-12 18:10 [job 171596] resource: data/mm_ft_docpages_65k — 65K multimodal RAG finetune rows, 14.65 GiB: Docmatix 30K (<=4 gold pages + 3 distractors), cauldron docvqa 10K / chartqa 6K / infographic_vqa 2K / tat_qa 2K / visualmrc 3K / ai2d 2K (1 gold + 3 distractors), text_rag 10K (maxoul/pisco_finetuning_data, 4 text docs, no images); built by scripts/build_mm_finetune.py --mix ...
+- 2026-10-12 18:48 mmpisco: finetunes restarted with save/eval every 100 steps (171654 v1-20K, 171655 v2-65K rate 8, 171656 v2-65K rate 2)
+  - saw: 171564 was preempted twice on gpu-be; with save_steps=200 the 2 h run had no checkpoint and restarted from scratch; v2 runs project 13.5 h (rate 8) / 21 h (rate 2)
+- 2026-10-12 19:20 mmpisco error analysis (saved predictions): base answers 1 word median, 58% exact, 45/200 infovqa misses are wrong numbers (small print at 451K px); stage-2 PISCO (no ft) 4 words median, 'Based on Document 3, ...' style, 38/100 contain gold (half buried in prose), misses split between 'cannot answer' and confident wrong facts => content loss at compression, not only format
+  - next: finetune fixes format; judge scoring for verbose answers; a higher pixel budget / lower rate may be needed for numbers
+- 2026-10-12 19:25 [job 171681] mmpisco judge scoring (Qwen3-8B, project prompt): ceiling 0.692 overall (slidevqa .750 / infovqa .550 / mpdocvqa .860); stage-2 PISCO w/o QA ft on slidevqa-100: 0.440 (rate 8) / 0.430 (rate 2) vs EM .19/.21
+  - saw: verbose-but-correct answers were under-counted ~2x by EM; pre-finetune compressed pages already give 60% of the ceiling's judged accuracy on slides
+  - next: judge is now chained into eval_mm_4b.sh; compare finetuned models on judge + EM
+- 2026-10-12 21:02 mmpisco BUG FIXED: Qwen3.5-4B ships no generation_config.json (config eos = <|endoftext|> only), so decoder.generate from inputs_embeds never stopped at <|im_end|> and finetuned models wrote a fake next user turn after the answer (EM 0, match .35). Labels were correct; fix = PISCO.decoder_eos_ids() passed as eos_token_id in PISCO.generate and eval_mm_docqa; --rescore --cut_at_user repairs old files
+  - saw: checkpoint-100 previews (slidevqa-100, truncated): 20K run EM .30 ANLS .32; 65K run EM .25 ANLS .27; ceiling .525/.559
+  - next: judge the truncated previews (job above); final evals use the fixed generate
+- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .19; ceiling .75 / .525
+  - saw: after 100 steps the finetune mostly fixed the answer FORMAT (EM x1.6) but judged correctness barely moved; the final models decide
+- 2026-10-12 21:35 [job 171696] mmpisco arm: OSCAR-style QUERY-DEPENDENT finetune (collator_kwargs.query_dependent=true: the question is prepended to every page's compressor input so the 56 MEM focus on what the question needs), 20K set, same recipe as 171654
+  - saw: early previews on the same 100 slides (compressed/uncompressed judge): 20K ft ckpt-100 .49/.77; 65K rate-8 .42/.77; 65K rate-2 .47/.77 (still verbose); 20K eval loss .92@100 -> 1.03@200 (64-row eval, noisy)
+  - next: compare 171696 vs 171654 at matching checkpoints; if query-dependent wins clearly it becomes the default mm RAG finetune
+- 2026-10-12 21:36 [job 171697] mmpisco arm: 20K finetune at lr 2e-5 (control for 171654 @1e-4) — ckpt-200 preview of 171654 DROPPED to judge .40 / EM .21 from .49 / .30 at ckpt-100 and eval loss rose .92 -> 1.03: suspect lr too high / overfitting
+  - next: compare 171654 vs this at ckpt-100/200/300 on the same 100 slides
+- 2026-10-12 21:53 mmdiag campaign (user): WHY does the mm finetune not beat the stage-2 ckpt (judge .44) and degrade by step 200? Hypotheses/arms: H1 LABEL MISMATCH — text PISCO distilled the uncompressed backbone's answers, we used dataset gold (human/GPT style) -> teacher-relabel the 20K set with Qwen3.5-4B on raw pages (relabel jobs, 4 shards) then finetune on it; H2 lr too high -> 171697 @2e-5; H3 compressor needs the question -> 171696 query-dependent; H4 eval/train prompt mismatch (eval had an extra newline after 'Background:') -> fixed, ckpt-100 re-eval launched
+  - next: teacher ft arm once shards merge; decide from the ckpt previews table (expmon results --exp mmpisco)
+- 2026-10-12 21:59 [job 171711] mmdiag H4 (eval/train prompt mismatch) RULED OUT: ckpt-100 of 20K ft judge .49 -> .50, EM .30 -> .32 with the byte-identical training prompt (~1 pt)
+  - saw: 65K rate-8 ckpt-200 also DEGRADES: judge .42 -> .36, EM .25 -> .11 — both lr 1e-4 runs get worse from step 100 to 200
+- 2026-10-12 22:00 mmdiag: answers get LONGER as the finetune proceeds (20K: median 1 -> 2 words, p90 6 -> 12 between ckpt-100 and -200; 65K: 2 -> 4, p90 11 -> 18) = drifting toward Docmatix sentence-style gold; supports H1 (label style) and explains part of the EM drop; judge drop says content also suffers
+- 2026-10-12 22:56 [job 171696] verdict: closed — Hydra: query_dependent not in finetune_mm collator_kwargs -> needs +collator_kwargs.query_dependent=true; relaunched as 171736
+- 2026-10-12 22:56 resource: data/mm_ft_docpages_20k_teacher — the 20K mm finetune set with mistral_label := uncompressed Qwen3.5-4B's answer on the raw pages (training prompt), dataset gold kept as gold_label/answers; teacher median 3 words (docmatix 10, docvqa 2, infovqa 1) vs gold 6; built by scripts/relabel_mm_teacher.py in 4 GPU shards (171712-15), ~1 h
+  - next: H1 arm = ft 171733 on it; H3 query-dependent arm relaunched as 171736 (171696 died on a Hydra '+' override)
+- 2026-10-12 23:09 [job 171697] mmdiag H2 CONFIRMED: lr 2e-5 vs 1e-4 at ckpt-100 (20K, same 100 slides): judge .58 vs .50, EM .42 vs .32, ANLS .45 vs .34 (uncompressed .77/.56/.61) — 1e-4 is too high for already-trained adapters
+  - next: watch ckpt-200/300 of 171697 for degradation; combined arm teacher-labels + lr 2e-5 launched
+- 2026-10-12 23:09 [job 171745] mmdiag combined arm: teacher labels + lr 2e-5 (20K)
+- 2026-10-12 23:11 [job 171738] mmpisco v1 finetune FINAL (20K, gold labels, lr 1e-4) on all 500 Q, compressed/uncompressed judge: all .318/.692, slidevqa .475/.750, infovqa .210/.550, mpdocvqa .220/.860; EM .222/.576
+  - saw: weakest where pages are dense (mpdocvqa, infovqa small print); this is the recipe the diagnosis arms are fixing (lr 2e-5 already +8 judge at ckpt-100)
+- 2026-10-12 23:17 [job 171739] mmpisco text LongBench F1 (mean of 4 buckets): mm 20K finetune 25.9 vs text QA-finetune 31.7 (-5.8), vs its own stage-2 init 19.3 (+6.6), vs text pretrain-only 23.1
+  - saw: the mm RAG finetune (no text rows) still recovers much of the text QA ability lost in stage-2; the 65K set adds 10K text rows and should close more of the gap
+- 2026-10-13 16:05 mmdiag VERDICT (finals, slidevqa-100, compressed/uncompressed judge | ANLS): original .50|.34; lr 2e-5 .61|.49; teacher labels .63|.49; query-dependent@1e-4 .55|.38; teacher+2e-5 .64|.54 (ceiling .77|.61); 65K@1e-4 .55|.29; rate-2@1e-4 .43|.32 at step 500
+  - saw: H1 (user's hint: distill the uncompressed backbone's answers) and H2 (lr 1e-4 too high) each close ~half the gap; H4 prompt mismatch ruled out; more slots or more data do not help at the bad lr; n=100 => +-0.05
+  - next: full 500-Q evals 172282-86 + LongBench 172287 on teacher+2e-5; round 2 at the winning recipe: 65K teacher relabel (172288-95) then 65K ft, clean rate-2 (172296), clean query-dependent (172297)
+- 2026-10-13 16:05 [job 171697] verdict: open — mmdiag round 1 winner candidates; full eval pending
+- 2026-10-13 16:05 [job 171733] verdict: open — mmdiag round 1 winner candidates; full eval pending
+- 2026-10-13 16:05 [job 171745] verdict: open — mmdiag round 1 winner candidates; full eval pending
+- 2026-10-13 16:05 [job 171654] verdict: closed — original recipe (gold labels, lr 1e-4) superseded
+- 2026-10-13 16:05 [job 171656] verdict: open — rate-2 at bad lr 1e-4; superseded by clean 172296, left running (preemptible, costs nothing)
+- 2026-10-13 16:13 [job 172285] mmdiag full 500-Q finals (judge | EM | ANLS, uncompressed .692 | .576 | .635): original .318|.222|.276; 65K@1e-4 .406|.264|.315; query-dep@1e-4 .384|.276|.305; teacher@1e-4 .466|.336|.436; lr2e-5 gold .496|.396|.424; teacher+lr2e-5 .488|.388|.501
+  - saw: lr 2e-5 is the main lever (+.18 judge); teacher labels tie on judge/EM but add +.08 ANLS (terser, closer strings). Slides nearly closed (teacher+2e-5 judge .635 vs .750, EM .46 vs .525); dense pages lag: mpdocvqa .45 vs .86, infovqa .36 vs .55. SE ~.02 at n=500
+  - next: round 2 (65K teacher+2e-5, clean rate-2, clean query-dep) decides whether capacity fixes dense pages
+- 2026-10-13 16:13 [job 171745] verdict: best — teacher+lr2e-5: best ANLS .501 on 500 Q (judge .488 ties 171697)
+- 2026-10-13 16:13 [job 171697] verdict: runner-up — lr2e-5 gold labels: judge .496 / ANLS .424 on 500 Q
+- 2026-10-13 16:13 [job 171736] verdict: closed — query-dep at lr 1e-4; re-run cleanly as 172297
+- 2026-10-13 16:13 [job 171655] verdict: closed — 65K gold at lr 1e-4; superseded by 65K teacher+2e-5
+- 2026-10-13 16:13 [job 171733] verdict: closed — teacher at lr 1e-4; superseded by 171745
+- 2026-10-13 17:16 [job 172324] mmnav probe: Habitat frames (113, 2 HM3D scenes + NLE courtyard) through the doc-trained best ckpt 171745; objects confirmed vs uncompressed: 50 MEM .72, 25 MEM .72, 13 MEM .51, 7 MEM .39 (uncompressed self-consistency .98); free object listing recall only .32 -> .23 with generic hallucinated lists / loops
+  - saw: coarse frames compress well down to 25 MEM (no loss from 50); description fails because the model was never trained frame->text on scenes, not because of capacity
+  - next: nav stage-2 with frame descriptions (teacher + HM3D semantic GT) targeting 25 MEM/frame; probe again after
+- 2026-10-13 17:27 mmnav: Embodied QA survey (agent, ~45 benchmarks) — eval shortlist OpenEQA EM-EQA HM3D 557 Q (frames via HF mirror the-Lin/openeqa, official links dead), VSI-Bench 5.73 GB, FindingDory val 96-frame 3.19 GB; train shortlist own HM3D renders (train scenes) + FindingDory train 79.2k + OST-Bench 50k; EQA v1 / MP3D-EQA / ScanQA / SQA3D / EXPRESS are weak memory tests (blind ~ best)
+- 2026-10-13 20:20 [job 172402] mmdiag round 2: 65K finetune at the winning recipe (teacher labels data/mm_ft_docpages_65k_teacher, lr 2e-5, topk_docs 8, bs2x32, 1015 steps ~13 h)
+  - did: 65K teacher relabel 172288-95 (8 shards) merged; teacher == gold on ~38 of 2000 sampled rows
+- 2026-10-13 22:16 mmdiag round 2 previews (slidevqa-100, judge|EM|ANLS; uncompressed .77|.56|.61; rate-8 best 171745 final .64|.45|.54): rate-2 172296 ckpt-100 .64|.45|.53; query-dep 172297 final .60|.42|.53; 65K teacher 172402 ckpt-100 .64|.42|.52 => on slides nothing beats the rate-8 20K recipe yet; full 500-Q evals of rate-2 ckpt-100 + qd final launched to test dense pages
+- 2026-10-13 22:16 [job 172395] mmnav probe on STAGE-2 ckpt (no QA ft): objects confirmed 50 MEM .49 / 25 .49 / 13 .40 / 7 .27 (ft model .72/.72/.51/.39); absent rejected ~.92 (ft ~.75); listing recall .38/.39/.37/.31 (ft .32/.31/.27/.23)
+  - saw: QA finetune makes it far better at confirming objects but slightly worse at free description; stage-2 is conservative (says 'no')
+- 2026-10-13 22:29 [job 172417] mmdiag round 2 full 500 Q (judge | ANLS; uncompressed .692 | .635; best rate-8 171745 .488 | .501): query-dep final 172297 .468 | .463; rate-2 ckpt-100 (1/3 of training) .474 | .454 — mpdocvqa judge .50 (qd) / .49 (r2) vs .45, infovqa lower for both
+  - saw: query-dependent compression does not help overall at the good recipe (H3 closed); rate 2 already near rate-8-final at 1/3 of training, slight edge on multi-page docs; final decides
+- 2026-10-13 22:29 [job 172297] verdict: closed — query-dependent at teacher+2e-5: .468 vs .488 judge on 500 Q, no gain
+- 2026-10-14 16:01 [job 172578] mmdiag round 2 VERDICT, full 500 Q (judge | EM | ANLS; uncompressed .692 | .576 | .635): rate-8 20K teacher 2e-5 (171745) .488 | .388 | .501 stays best; rate-2 clean (172296) .466 | .362 | .473 — 4x more MEM gives NO gain (slides tie, infovqa/mpdocvqa not better); 65K teacher 2e-5 (172402) .474 | .334 | .448, peaked at ckpt-100 then drifted; old rate-2 @1e-4 .348. Dense pages (mpdocvqa .45 vs .86, infovqa .36 vs .55) are not capacity- or data-limited at the finetune stage => the bottleneck is upstream (stage-2 compressor training on pages / pixel budget for small print)
+  - next: stage-2 v2 for dense pages: PDF-like pages (Docmatix pages as stage-2 image-AE + OCR text), higher pixel budget for small print, p_text 0.5; keep 171745 as the reference model
+- 2026-10-14 16:01 [job 172581] text LongBench F1 mean: 65K teacher ft (10K text rows) 25.0 vs 20K ft 24.3 vs text ref 31.7 — the text rows barely help
+- 2026-10-14 16:01 [job 172582] mmnav probes: rate-2 model (172296) and 65K model (172402) confirm objects at 25 MEM .77/.80 (vs .72 for 171745, uncompressed .98), 13 MEM .48/.59, 7 MEM .36; listing recall .35-.37; 197 MEM/frame (rate 2) no better than 50 => 25 MEM/frame is the sweet spot for nav frames
+- 2026-10-14 16:01 [job 172296] verdict: closed — rate 2: .466 vs .488 judge on 500 Q, no gain for 4x MEM
+- 2026-10-14 16:01 [job 172402] verdict: closed — 65K teacher: .474 vs .488, peaked at ckpt-100
+- 2026-10-14 16:01 [job 171656] verdict: closed — rate 2 at lr 1e-4: .348
+- 2026-10-14 16:34 mmnav: HM3D renderer works (scripts/nav/render_hm3d.py, habitat-sim 0.3.3 env from cosmos_nav_test; RGB 832x480 + SEMANTIC sensor -> per-frame objects with left/center/right + area; smoke 4 episodes x 31 frames in 34 s). Launched train render 172598-605 (145 semantic scenes x 10 episodes x 60 steps, 8 shards) + val 172606 (36 scenes x 5). scripts/nav/build_nav_datasets.py turns episodes into stage-2 rows (GT descriptions) and memory-QA rows (presence/order/position/final; 8 frames/window, 25 MEM/frame at rate 16)
+- 2026-10-14 16:34 mmpisco stage-2 v2 data: pypdfium2 added to pixi; scripts/build_mm_pretrain_pdfa.py renders pixparse/pdfa-eng-wds pages (>=80 words) with OCR text; smoke OK (576x736, 126-1031 words); build 172594-97 (4 x 25K pages) -> data/mm_pretrain_pdfa
+- 2026-10-14 17:13 [job 172615] resource + launch: data/nav_pretrain (44,950 HM3D frames + templated GT descriptions, 1.9 GB), data/nav_ft_train (12,830 memory-QA rows: 8-frame windows, presence/order/position/final, 4.4 GB), data/nav_ft_val (1,202 rows from 36 val scenes, 417 MB). Nav stage-2 172615 launched: continue from pt_mm_4b_170810, image_compr_rate 16 (25 MEM/frame), p_image_ae .6 / p_image_cont .2 / p_text .2, lr 3e-5, 44K rows
+- 2026-10-14 17:18 [job 172617] mmpisco stage-2 v2 launched: data/mm_pretrain_v2 (100K pdfa dense pages + 40K Wiki-SS, 12 GB), continue from pt_mm_4b_170810, lr 3e-5, p_text .5 / p_image_ae .4 / p_image_cont .1, 140K rows bs8x8 (~2190 steps, ~15 h); pixel budget unchanged (451584) to isolate the data effect
+  - next: auto: finetune with the winning recipe (20K teacher, lr 2e-5) -> full 500-Q eval; target = mpdocvqa/infovqa
+- 2026-10-14 17:28 [job 172616] mmnav ceiling v1 (uncompressed Qwen3.5-4B, 8 raw frames, nav_ft_val 1,202 Q): judge .52 overall — presence .74 (yes-recall .61, no .85), order .63 (chance .5), position .58 (chance .33), 'final' .12
+  - saw: question set v1 is partly ill-posed: 'final' (GT pixel area != perceived prominence) and presence of tiny objects (min_share .004). v2 builder: min_area .02 for asked objects, 'final' dropped, position answers one word
+  - next: rebuild nav_ft_{val,train}_v2, re-run the ceiling, point the nav finetune chain at v2
+- 2026-10-14 18:35 HANDOFF written 2026-10-14 20:00: running 172617 (stage-2 v2 dense pages, ~15 h) + 172615 (nav stage-2, ~50 min) + 172624 (nav ceiling v2); chains (LongBench/ft/eval for each) are listed as by-hand commands in HANDOFF.md in case the session's waiters die
+- 2026-10-14 19:00 did: Resume 2026-10-14 19:20: Round-3 pipeline queued as SLURM afterok chains (nav: 172668 probe, 172669 ft -> expQ/ft_nav_4b, 172672 eval TOPK=8; dense: 172670 longbench, 172671 ft, 172673 eval)
+  - saw: eval_mm_4b.sh hardcoded topk 4 while nav windows carry 8 frames -> ceiling 172624 saw only 4/8 frames, invalid for order/position
+  - next: added TOPK env knob to eval_mm_4b.sh (suffix _k<n>); ceiling re-run 172674 with TOPK=8; read results when 172672/172673/172674 land
+- 2026-10-14 20:19 [job 172738] mmkd arm: online token-level KD added (PISCOConfig.kd_weight/kd_temperature, collator teacher_inputs, config finetune_mm_kd, launcher ft_mm_kd_4b.sh). Teacher = same 4B decoder with LoRA disabled reading the raw pages; loss = CE(teacher labels) + w*T^2*KL on answer tokens (logits_to_keep=K). Prior: text PISCO found seq-level distillation enough; retry here because the mm gap (.488 vs .692 judge) is far larger and answers are short. Review caught Qwen3.5 rope_deltas cache leaking from teacher pass into the inputs_embeds student path -> snapshot/restore around the teacher call. Gate: slidevqa-100 judge must beat 171745 (.64) by >= .02 before the 500-Q run.
+- 2026-10-15 17:43 did: Round 3 done 2026-10-15: dense stage-2 v2 -> ft 172671 judge .510 vs ref .488 (mpdocvqa .45->.54, infovqa/slidevqa flat, EM/ANLS flat; LongBench F1 unchanged vs v1). Nav: ft_nav_4b (25 MEM/frame, 8 frames/Q) judge .810 EM .806 vs zero-shot uncompressed ceiling .693/.573 (presence .878/.822, position .718/.615, order .848/.604)
+  - saw: nav ceiling is zero-shot vs finetuned PISCO -> not a fair compressed-vs-uncompressed comparison; pt_nav_4b probe yes/no .81 (v1 .71) but obj recall .30 (v1 .39)
+  - next: fair nav ceiling = uncompressed backbone finetuned on nav_ft_train_v2 (no base-mode ft path yet); infovqa suspects: pixel budget, train_vision_lora=all
+- 2026-10-15 18:08 did: Round 4 queued 2026-10-15 (24 afterok jobs): A vision-LoRA ft 173014; B 1M-pixel rebuild (173017/18 builds, relabel 173025-29, ft 173030, evals 173031/32); C fair nav ceiling = base LoRA ft on raw frames (new scripts/train_base_mm.py) 173038->173039; D doc stage-2 on nav 173015->173021 + zero-shot 173016; E joint pretrain 70K pages+45K frames from 172617 173033 -> nav ft 173034/35, doc ft 173036/37
+  - saw: scratch 425 GB free (not 1.9 TB); train.py now accepts path:N,path:N joint datasets; eval_mm_4b.sh env TOPK/PX/ADAPTER
+  - next: read results; delete 142 GB old checkpoints
+- 2026-10-15 18:24 did: Disk cleanup 2026-10-15: +412 GB (444->856 GB free): 47 checkpoint-* dirs, superseded mm data sets (65k/20k gold, pretrain_160k, pdfa, nav v1), model/ of concluded mm ablations (eval json kept), HF generator caches
+  - saw: Reranking/cache/hub = 465 GB of other projects' models, untouched
+  - next: user to decide on hub cache (Qwen3-32B 62G, Qwen3.6-27B 53G, SmolLM2 64G, bge-gemma2 data 31G)
+- 2026-10-15 22:51 did: Round 4 partial: FAIR nav ceiling (base LoRA-ft on nav rows) judge .797 vs PISCO 25 MEM/frame .810; doc stage-2 -> nav ft .730 (zero-shot .599): nav diet matters. Uncompressed ceiling at 1M px: infovqa .55->.745, judge .692->.776 — pixel budget is the infographics bottleneck
+  - saw: launchers exited 0 after python failures so afterok dependents ran; 173033 died on Hydra comma parsing
+  - next: all launchers exit $RC; E relaunched 173098-173102; 1M-px PISCO ft 173030 -> eval 173032; vision-LoRA eval 173020
+- 2026-10-15 23:19 [job 173014] did: vision LoRA (train_vision_lora=all) ft from 172617
+  - saw: judge .480 EM .334 ANLS .448 vs .510/.366/.490 frozen ViT; infovqa .370 vs .365 — null, +25% train time
+  - next: keep merger; infovqa lever is the pixel budget (1M-px ft 173030 -> eval 173032)
+- 2026-10-16 15:39 did: 1M-px PISCO ft 173030: judge .508 infovqa .360 (ceiling at 1M .776/.745) — null. Joint stage-2 173098: doc .482, nav .755 vs .510/.810 single-domain — negative
+  - saw: --merge_lora was a silent no-op (no merge_and_unload on transformers-integrated adapters): PISCO decode 55 vs 31 ms/token
+  - next: merge_lora_inplace fix verifying: probe 173359, bench 173360, merged nav eval 173361; doc lever left = stage-2 at 1M px
+- 2026-10-16 15:52 did: Latency final (merged LoRA, offline compression 75 ms/img, 32 tokens): TTFT 2.6-9x faster at B=1, 9-22x at B=32; throughput flat at B=1, 3.5-10x at B=32 (nav K=16: 1.6 -> 15.9 q/s)
+  - saw: merge_lora_inplace verified: same greedy text, 34.9 vs 56.5 ms/token; 198/200 identical nav predictions, judge .800 vs .810
+  - next: doc gap: stage-2 at 1M px; nav: external evals
+- 2026-10-16 16:58 did: Real PISCO in vLLM: exported text-only Qwen3_5ForCausalLM + prompt_embeds; hybrid hooks borrowed from the image class; shake 173414 all arms pass, vLLM vs HF answers 31/32 identical
+  - saw: vLLM 4x faster than HF per request; PISCO-length prompts 6-10x more req/s than raw-length in vLLM; fixes: C_INCLUDE_PATH for Triton, VLLM_DISABLE_COMPILE_CACHE
+  - next: full bench 173437, answer-length sweep 173425 (when compression stops paying)
+- 2026-10-16 18:02 did: Round 5 queued: stage-2 v3 = 1M-px pdfa 80K + wiki 30K + natural photos 50K (the_cauldron localized_narratives, new builder) from 172617; chain shake 173500 -> pt 173501 -> LongBench 173502, doc ft 173503 -> eval 173504 (1M)
+  - saw: 1M-px finetune alone was null: stage-2 never saw >440-token spans
+  - next: natural-image QA eval + finetune rows to test the generic part
+- 2026-10-16 18:16 [job 172793] did: mmkd ft: CE(teacher labels) + 0.5*KL(teacher logits, T=1) on answer tokens, same 20K teacher set / lr 2e-5 as 171745
+  - saw: gate FAILED: slidevqa-100 judge .59 vs .64 (EM .44 vs .45, ANLS .50 vs .54); KL fell .81->.50 in the first 15% then plateaued: the MEMs lack the info, the decoder cannot imitate further
+  - next: no 500-Q run; KL belongs upstream (stage-2, long teacher descriptions), not on 1-5 answer tokens
+- 2026-10-16 18:49 did: Round 6 queued: stage-2 v4 = v3 data + desc (teacher descriptions via vLLM) + find (multi-image pointer) chat tasks; v4+KL ablation (KL on chat rows only); natural-image QA eval/ft sets; generic finetune + doc/natural evals for v3, v4, v4kd
+  - saw: gpu QOS caps 24 queued jobs/user; KD at finetune failed (MEMs lack info) -> KL moved upstream
+  - next: check natqa probe 173521 then scontrol release 173531 173532
+- 2026-10-16 22:06 did: real PISCO in vLLM final: nav K=8 N=256 raw images 3.7 / ViT-cached 6.9 / PISCO 58.5 req/s; answers identical to HF 919/928 nav, 476/500 doc. Answer-length sweep (nav): gain <1.2x after ~30-180 tokens at 1 request, never at 256 concurrent
+  - saw: earlier preliminary floors (2-4x at >=64 concurrent) were too optimistic: fitted 1.15-2.3x
+  - next: doc sweep 173425; repaired data chains (pdfa per-tar, os._exit, 200-word descriptions)
+- 2026-10-16 22:29 did: docs/latency.md written: HF + vLLM latency/throughput, real-PISCO-in-vLLM recipe, answer-length break-even, pitfalls, reproduce
+  - next: add doc sweep (173425) when done
+- 2026-10-16 22:41 mmrl START: DEX-Comp-style RL track for mm PISCO (arXiv 2609.05152: distil on teacher-correct rows, GRPO on teacher-failed)
+  - did: error profile of 172671 vs uncompressed (500 Q judge): both-right .45, PISCO-only .06, lost .24, both-wrong .25; refusals 3%, median answer 1 word; teacher labels contain gold 75/68/51% (docvqa/infovqa/chartqa)
+  - saw: errors = confident wrong values, not style; RL can only sharpen, not add info
+  - next: smoke 173654 -> judge split, PD + gold-fix finetunes, pass@8 probes
+- 2026-10-16 22:52 did: doc answer-length sweep 173425 TIMEOUT after 4/8 pages; rows recovered from log (doc_sim_glen_partial.json)
+  - saw: break-even for 1 request depends on prompt tokens SAVED, not ratio: gain <20% once answer > ~1/30 of saved tokens (one decode step = ~160 prompt tokens of prefill); doc 31/76/195 vs nav 30/72/177
+  - next: docs/latency.md updated
+- 2026-10-16 22:59 [job 173654] verdict: closed — mmrl smoke PASS: greedy invariant, judge --samples, split, 2-step ft, probe format
+- 2026-10-16 23:01 mmrl chain queued (gpu-be, afterok)
+  - did: split 173666 (Qwen3-8B judge of 20K teacher labels -> data/mmrl_ft_20k_{pd,fix}, mmrl_sminus_probe_2k); probe A 173667 (172671, 500 Q, G=8, T=1 top_p .95); ft pd 173668 / fix 173669 (172671 recipe from 172617) -> evals 173670/173671; probe B 173673 (pd model on 2K teacher-failed rows)
+  - saw: smoke 173654 PASS; judge rates docmatix teacher 61% correct vs 2% containment
+  - next: gates: pd/fix judge vs .510; pass@8-greedy >= .10; AUROC >= .75
+- 2026-10-16 23:19 [job 173667] mmrl probe A: RL headroom gate PASSED, fallback router weak
+  - did: 172671, 500 Q, G=8 T=1 top_p .95, Qwen3-8B judge per sample
+  - saw: greedy .510 / pass@2 .529 / pass@4 .616 / pass@8 .698 (uncompressed .692); same +.19 on numeric and text gold; recovered Qs median 1/8 right; maj@8 .496; AUROC .79 but least-confident 30% -> raw pages = .586 vs random .566
+  - next: RAFT diet from probe B, then GRPO; drop the router
+- 2026-10-16 23:19 [job 173666] resource: mmrl split — Qwen3-8B judge of 20K teacher labels: S+ 13598 / S- 6402 (docmatix .60, docvqa .80, infovqa .74, chartqa .53 correct)
+  - did: data/mmrl_ft_20k_pd (13598), data/mmrl_ft_20k_fix (15958 = S+ + 2360 gold-retargeted), data/mmrl_sminus_probe_2k; judge json expQ/mmrl_split/
+- 2026-10-16 23:24 did: Round 7 queued: balanced generic stage-2 (docs 28 / photos 37 / charts+diagrams 23 / nav frames 11 %, same init, rows, tasks as v4) -> pt 173701 expQ/pt_mm_bal_4b, generic ft 173703, evals 173704/173706
+  - saw: user question: doc-heavy diet (69% docs in v3/v4) may be too specific for a generic PISCO
+  - next: compare v4 vs balanced on natural QA and doc QA
+- 2026-10-16 23:30 mmrl RAFT branch queued; judge accepts some non-answers
+  - did: probe C 173708 (pd model, G=8 on the other 4402 S- rows, data/mmrl_sminus_rest) -> RAFT build 173709 (scripts/mmrl_raft_build.py: shortest judged-correct finished sample, refusals dropped via pisco.reward.is_refusal) -> ft 173710 on pd+raft from 172617 -> eval 173711
+  - saw: Qwen3-8B judge said Yes to 'The text does not provide information...' (smoke); probe A: only 3/1721 correct samples are refusals; split: 162 refusal-like teacher labels judged correct (153 docmatix, some legit) left in pd
+- 2026-10-17 18:03 [job 173710] mmrl filter + RAFT: null at 500 Q (judge vs 172671 .510, ceiling .692)
+  - did: pd 173668 (teacher-correct only) / fix 173669 (+gold-retargeted) / pd+RAFT 173710 (2323 self-recovered S- rows, median 3 words)
+  - saw: pd .510, fix .518, pd+raft .498 (infovqa .355->.310); SE ~.022, all noise; RAFT recovered 36% of S- at G=8
+  - next: GRPO is owner's call: greedy did not move despite pass@8 .698
+- 2026-10-17 18:03 [job 173953] stage-2 chain repaired: pdfa shard 3 (173639) preempted+requeued, refused its own partial output -> merge 173497 never ran, all 4 stage-2 arms blocked ~10h
+  - did: finalize the 17.5K rows already written (173953, build_stage2_v3.sh pdfa_finalize 3), merge rewired afterok:173953
+  - saw: pdfa_1m = 92.5K rows, every consumer caps at <=80K
+- 2026-10-17 18:03 [job 173522] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173523] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173526] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173642] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173686] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173687] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173688] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173689] verdict: closed — benign exit-time multiprocess ResourceTracker traceback, exit 0, outputs complete
+- 2026-10-17 18:03 [job 173639] verdict: closed — preempted shard-3 rebuild refused its partial output; partial finalized by 173953
+- 2026-10-17 18:03 [job 173669] verdict: closed — 2-min requeue resumed final checkpoint-249 and exited; training done earlier, eval 173671 valid
+- 2026-10-17 18:05 mmrl GRPO deferred (owner): wait for stage-2 v3/v4 doc-1M results first
+  - saw: filter+RAFT null at 500 Q (.498-.518 vs .510); pass@8 .698
+  - next: revisit GRPO only if stage-2 leaves the doc gap open
+- 2026-10-17 18:21 [job 173500] verdict: closed — Hydra '+' on image_max_pixels already in pt_lora_mm.yaml; key dropped from yaml, shake resubmitted as 173958
+- 2026-10-17 18:21 [job 173958] stage-2 1M pretrains had a config bug: '+model_config_overrides.image_max_pixels' refused (key already in pt_lora_mm.yaml) -> v3 shake 173500 died in 1 min
+  - did: dropped the key from pt_lora_mm.yaml (checkpoints all store 451584 = default, so default runs unchanged); shake resubmitted 173958, pt 173501 rewired
+  - saw: v4/v4kd/balanced shakes read the yaml at start, so they are fixed with no resubmit; ft jobs unaffected (finetune_mm.yaml lacks the key)
