@@ -82,7 +82,7 @@ Data (`build_stage2_v3.sh`, CPU jobs): `data/mm_pretrain_pdfa_1m` (pdfa pages re
 → merge 173497), `data/mm_pretrain_wiki_1m` (Wiki-SS at 1M, 173498), `data/mm_pretrain_natural` (NEW
 `scripts/build_mm_pretrain_natural.py`: the_cauldron `localized_narratives` photos at 451K px + human descriptions as AE
 targets; probe 173491 → build 173499, 60K rows). Training chain (afterok): shake 173958 (300 rows, mostly 1M pages; memory
-check) → pt 173501 `expQ/pt_mm_v3_4b` (from 172617; pdfa 80K + wiki 30K + natural 50K = 160K rows, bs 8×8, lr 3e-5,
+check; PASS) → pt 173501 `expQ/pt_mm_v3_4b` (started 2026-10-17 18:32 on gpu, 52 s/step × 2 499 ≈ 36 h of the 48 h limit; from 172617; pdfa 80K + wiki 30K + natural 50K = 160K rows, bs 8×8, lr 3e-5,
 p_text .5 / ae .4 / cont .1, `image_max_pixels=1003520`) → LongBench 173502 + doc ft 173503 (1M teacher set, bs 1×64)
 → eval 173504 on `eval_data/mm_docqa_500_1m` (compare: 173030 .508, 1M ceiling .776).
 Open: no natural-image QA eval or finetune rows yet (finetune set is doc-only) — needed to show the "generic" part.
