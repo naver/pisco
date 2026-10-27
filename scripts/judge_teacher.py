@@ -37,18 +37,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from pisco.reward import containment_em, source_of
 
 
-def judge_prompt(question, gold_answers, prediction):
-    """Verbatim from scripts/llm_judge.py (itself bergen's models/evaluators/openai.py)."""
-    gold = " | ".join(str(a) for a in gold_answers) if isinstance(gold_answers, list) else str(gold_answers)
-    return [
-        {"role": "system", "content": "You are an evaluation tool. Just answer by {Yes} or {No}."},
-        {"role": "user", "content": (
-            "Here is a question, a golden answer and an AI-generated answer. Can you judge "
-            "whether the AI-generated answer is correct according to the question and golden "
-            "answer, simply answer {Yes} or {No}.\n"
-            f" Question: {question}. \ngolden answer: {gold} \n Generated answer: {prediction}.\nResponse:"
-        )},
-    ]
+from judge_prompts import project_prompt as judge_prompt  # noqa: E402  (one copy of the prompt, scripts/judge_prompts.py)
 
 
 def parse_args():

@@ -66,11 +66,22 @@ def main():
     ap.add_argument("--gs", default="1,4,32")
     ap.add_argument("--max_model_len", type=int, default=8192)
     ap.add_argument("--gpu_mem", type=float, default=0.85)
+    ap.add_argument("--kv_cache_dtype", default="auto", help="fp8: quantised KV cache (the 8 full-attention layers)")
+    ap.add_argument("--mamba_ssm_cache_dtype", default="auto",
+                    help="float16: half-size linear-attention state (Qwen3.5 stores it in float32)")
+    ap.add_argument("--attention_backend", default=None, help="e.g. TRITON_ATTN (fp8 KV on A100: FA2 has no fp8)")
+    ap.add_argument("--spec_mtp", type=int, default=0,
+                    help="speculative decoding with the checkpoint's MTP head, N draft tokens (scripts/add_mtp_head.py)")
     args = ap.parse_args()
 
     B = torch.load(args.inputs, weights_only=False)
     common = dict(dtype="bfloat16", gpu_memory_utilization=args.gpu_mem, max_model_len=args.max_model_len,
-                  enable_prefix_caching=False, seed=0)
+                  enable_prefix_caching=False, seed=0, kv_cache_dtype=args.kv_cache_dtype,
+                  mamba_ssm_cache_dtype=args.mamba_ssm_cache_dtype)
+    if args.attention_backend:
+        common["attention_backend"] = args.attention_backend
+    if args.spec_mtp:
+        common["speculative_config"] = {"method": "mtp", "num_speculative_tokens": args.spec_mtp}
     if args.arm == "raw_pixels":
         llm = LLM(model=args.model, limit_mm_per_prompt={"image": max(int(k) for k in args.ks.split(","))},
                   mm_processor_cache_gb=0, **common)
@@ -133,7 +144,18 @@ def main():
                      "gen_check": len(outs[0].outputs[0].token_ids)}
                 results.append(r)
                 print(json.dumps(r), flush=True)
-    json.dump({"arm": args.arm, "model": args.model, "inputs": args.inputs, "results": results}, open(args.out, "w"), indent=1)
+    info = {"kv_cache_dtype": args.kv_cache_dtype, "spec_mtp": args.spec_mtp,
+            "mamba_ssm_cache_dtype": args.mamba_ssm_cache_dtype, "attention_backend": args.attention_backend}
+    try:   # KV capacity and speculative-decoding counters (introspection only)
+        cc = llm.llm_engine.vllm_config.cache_config
+        info.update(num_gpu_blocks=cc.num_gpu_blocks, block_size=cc.block_size)
+        info["metrics"] = {m.name: getattr(m, "value", None) for m in llm.get_metrics()
+                           if "spec_decode" in m.name or "gpu_cache" in m.name or "kv_cache" in m.name}
+    except Exception as e:
+        info["introspection_error"] = repr(e)
+    print(f"[vllm] {json.dumps(info)}", flush=True)
+    json.dump({"arm": args.arm, "model": args.model, "inputs": args.inputs, **info, "results": results},
+              open(args.out, "w"), indent=1)
     print(f"[vllm] wrote {args.out}", flush=True)
 
 

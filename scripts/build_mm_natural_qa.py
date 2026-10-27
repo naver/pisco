@@ -59,7 +59,15 @@ def main():
     ap.add_argument("--what", choices=["probe", "eval", "ft"], required=True)
     ap.add_argument("--out", default=None)
     ap.add_argument("--max_pixels", type=int, default=451584)
+    ap.add_argument("--per_source", default=None,
+                    help="eval: override the counts, e.g. vizwiz=500,realworldqa=500,textvqa=500. The stream order is "
+                         "fixed, so a larger count is an exact superset of a smaller one (same query_ids, same rows).")
     args = ap.parse_args()
+    if args.per_source:
+        for kv in args.per_source.split(","):
+            k, v = kv.split("=")
+            repo, cfg, split, _ = EVAL_SOURCES[k]
+            EVAL_SOURCES[k] = (repo, cfg, split, int(v))
     import datasets
     from build_mm_finetune import clean_question
     feats = datasets.Features({
