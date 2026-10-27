@@ -33,8 +33,24 @@ MM_TOKENS = {
     "vision_end": "<|vision_end|>",
 }
 
+MM_BATCH_KEYS = ("pixel_values", "image_grid_thw", "mm_token_type_ids")
+
 DEFAULT_MIN_PIXELS = 65536      # 256 x 256
 DEFAULT_MAX_PIXELS = 451584     # official Qwen-VL finetune default, ~440 visual tokens
+
+
+def escape_vision_tokens(text: str) -> str:
+    """Defuse a literal vision token in data ("<|image_pad|>" in scraped code or LLM docs): tokenized
+    as-is it becomes a real image slot and the image_pad / grid count check fails."""
+    for t in MM_TOKENS.values():
+        if t in text:
+            text = text.replace(t, t[:2] + " " + t[2:-2] + " " + t[-2:])
+    return text
+
+
+def image_span_text(n_visual_tokens: int) -> str:
+    """The raw image span as text, for an uncompressed (teacher / base) prompt."""
+    return MM_TOKENS["vision_start"] + MM_TOKENS["image_pad"] * n_visual_tokens + MM_TOKENS["vision_end"]
 
 
 def load_image_processor(source: Optional[str], min_pixels: int = DEFAULT_MIN_PIXELS,
@@ -167,7 +183,7 @@ def segments_to_chunks(
     out = MMChunkBatch()
     for kind, payload in segments:
         if kind == "text":
-            text = clean_text(payload) if clean_text else payload
+            text = escape_vision_tokens(clean_text(payload) if clean_text else payload)
             ids = compressor_tokenizer(
                 text, padding="do_not_pad", return_tensors=None, truncation=False
             )["input_ids"]
@@ -237,4 +253,48 @@ def collate_compressor(batches: Sequence[MMChunkBatch], collator, vision_ids: Tu
     return out
 
 
-MM_BATCH_KEYS = ("pixel_values", "image_grid_thw", "mm_token_type_ids")
+def build_teacher_inputs(
+    decoder_tokenizer,
+    teacher_texts: Sequence[str],
+    labels: torch.Tensor,
+    *,
+    image_pad_id: int,
+    grids: Sequence[Sequence[int]],
+    merge_size: int,
+    pixel_values: Optional[Union[torch.Tensor, Sequence[np.ndarray]]],
+    max_length: int,
+    pad_to_multiple_of: Optional[int],
+    **tokenizer_kwargs,
+) -> dict:
+    """The uncompressed (teacher) prompts of a KD batch, tokenized and checked. `teacher_texts` and
+    `labels` cover the SAME rows (one teacher prompt per label row); `grids` / `pixel_values` are the
+    images of those rows in prompt order (pixel_values: the compressor's tensor, or a list of arrays).
+    Checks the two contracts the KD loss relies on: every image span is intact (no truncation) and the
+    answer tails coincide with the decoder's at the same offsets from the end (both left padded).
+    An empty row set gives empty (0, 1) tensors, so a batch without KD rows still has every key."""
+    if len(teacher_texts) == 0:
+        return {"teacher_input_ids": torch.zeros((0, 1), dtype=torch.long),
+                "teacher_attention_mask": torch.zeros((0, 1), dtype=torch.long)}
+    t_inputs = decoder_tokenizer(
+        list(teacher_texts), return_tensors="pt", padding="longest", add_special_tokens=False,
+        max_length=max_length, truncation=True, pad_to_multiple_of=pad_to_multiple_of, **tokenizer_kwargs,
+    )
+    t_ids = t_inputs["input_ids"]
+    out = {"teacher_input_ids": t_ids, "teacher_attention_mask": t_inputs["attention_mask"]}
+    if len(grids):
+        expected = sum(n_image_tokens(g, merge_size) for g in grids)
+        got = int((t_ids == image_pad_id).sum())
+        assert got == expected, (
+            f"teacher prompts hold {got} <|image_pad|> tokens but their images need {expected}: "
+            f"raise teacher_max_length ({max_length}) so no image span is truncated")
+        out["teacher_pixel_values"] = (pixel_values if isinstance(pixel_values, torch.Tensor)
+                                       else torch.from_numpy(np.concatenate(list(pixel_values), axis=0)))
+        out["teacher_image_grid_thw"] = torch.tensor([list(g) for g in grids], dtype=torch.long)
+        out["teacher_mm_token_type_ids"] = (t_ids == image_pad_id).long()
+    K = min(labels.shape[1], t_ids.shape[1])
+    lab_tail = labels[:, -K:]
+    sup = lab_tail != -100
+    assert bool(sup.any()), "no supervised answer tokens"
+    assert torch.equal(t_ids[:, -K:][sup], lab_tail[sup]), (
+        "teacher/decoder answer tails differ (truncated teacher prompt or tokenizer drift)")
+    return out

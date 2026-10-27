@@ -41,4 +41,14 @@ collator_kwargs:
   topk_docs: 4
   image_compr_rate: null
 
+# Applied to the loaded checkpoint's PISCOConfig before the model is built (train.py).
+model_config_overrides:
+  # RMSNorm on the connector output (photos +.02 at 2 seeds, docs/text unchanged: 174908/176242 vs 173550/176243).
+  # Retrofitted onto a checkpoint saved without it; the gain stays at its init in bf16, so the init sets the <MEM>
+  # length: 0.461 = mean <MEM> length / sqrt(hidden) of pt_mm_v4kd_4b (23.34 / sqrt(2560)). Re-measure it for another
+  # start checkpoint (check N4 of expQ/norm_probe/norm_checks.py prints GAIN_INIT). Turn off with
+  # model_config_overrides.connector_out_norm=false (no '+': a '+' on a key already here is a Hydra error).
+  connector_out_norm: true
+  connector_out_norm_init: 0.461
+
 model_name_or_path: null

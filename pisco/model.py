@@ -86,6 +86,8 @@ class PISCOConfig(PretrainedConfig):
         train_vision_lora: str = "all",
         kd_weight: float = 0.0,
         kd_temperature: float = 1.0,
+        connector_out_norm: bool = False,
+        connector_out_norm_init: float = 0.4,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -157,7 +159,28 @@ class PISCOConfig(PretrainedConfig):
         #   `teacher_inputs=True`); eval / generation / text-only batches are untouched.
         self.kd_weight = float(kd_weight)
         self.kd_temperature = float(kd_temperature)
+        # RMSNorm on the connector OUTPUT (the <MEM> vectors the decoder reads): every <MEM> gets the same
+        #   length, a learned per-dim gain sets the scale. The gain starts at connector_out_norm_init
+        #   (RMS per dim): 0.4 -> L2 ~20 at 2560 dims, the scale trained <MEM>s reach without the norm
+        #   (norm probe 174711; word embeddings are ~0.67, and shrinking <MEM>s to that erases the
+        #   documents). A checkpoint saved without the norm loads into a model with it (retrofit).
+        self.connector_out_norm = bool(connector_out_norm)
+        self.connector_out_norm_init = float(connector_out_norm_init)
 
+
+class ConnectorRMSNorm(nn.Module):
+    """RMSNorm with a per-dim gain, computed in fp32 like Qwen's. Registered as `connector.norm` so the
+    Trainer's no-weight-decay name rule ("norm") covers the gain."""
+
+    def __init__(self, dim: int, init: float, eps: float = 1e-6):
+        super().__init__()
+        self.weight = nn.Parameter(torch.full((dim,), float(init)))
+        self.eps = eps
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        h = x.float()
+        h = h * torch.rsqrt(h.pow(2).mean(-1, keepdim=True) + self.eps)
+        return (h * self.weight.float()).to(x.dtype)
 
 
 
@@ -184,36 +207,92 @@ def build_bidirectional_4d_mask(attention_mask: torch.Tensor, num_query_tokens: 
 _TRAINABLE_KEY_HINTS = ("lora", "token_adapter", "modules_to_save")
 
 
-def _load_filtered_state(module: nn.Module, path: str, what: str) -> None:
-    """Load a PISCO filtered state dict (adapters + token_adapter + ...) into a live module.
-    strict=False is needed (base weights are not in the file), but a saved adapter key that
-    fails to land, or an unexpected key, means the module tree drifted (e.g. different PEFT
-    wrapping) and training would silently continue from fresh LoRA. Make that loud."""
+def _load_filtered_state(module: nn.Module, path: str, what: str, full: bool = False) -> None:
+    """Load a PISCO state dict into a live module. Filtered files (adapters + token_adapter + ...)
+    need strict=False (base weights are not in the file), but a saved adapter key that fails to
+    land, or an unexpected key, means the module tree drifted (e.g. different PEFT wrapping) and
+    training would silently continue from fresh LoRA. Make that loud. `full` (a whole module, saved
+    when it is trained without LoRA) tolerates no missing key at all."""
     res = module.load_state_dict(torch.load(path, weights_only=True, map_location="cpu"), strict=False)
-    missing = [k for k in res.missing_keys if any(h in k for h in _TRAINABLE_KEY_HINTS)]
+    missing = res.missing_keys if full else [k for k in res.missing_keys if any(h in k for h in _TRAINABLE_KEY_HINTS)]
     if res.unexpected_keys or missing:
         raise RuntimeError(
             f"{what}: checkpoint/module mismatch — unexpected {res.unexpected_keys[:5]}, "
-            f"missing adapter keys {missing[:5]} (+{max(0, len(missing) - 5)} more)"
+            f"missing {'' if full else 'adapter '}keys {missing[:5]} (+{max(0, len(missing) - 5)} more)"
         )
 
 
+def eos_token_ids(tokenizer) -> List[int]:
+    """Stop tokens for generation with a chat decoder: the tokenizer's eos plus the chat
+    end-of-turn token when it exists. Some snapshots (Qwen3.5-4B) ship no generation_config.json,
+    so the model-level eos is only <|endoftext|> and a chat-finetuned decoder keeps writing a fake
+    next turn after <|im_end|> unless it is registered as a stop token here."""
+    ids = []
+    for t in (tokenizer.eos_token_id,
+              tokenizer.convert_tokens_to_ids("<|im_end|>"),
+              tokenizer.convert_tokens_to_ids("<|endoftext|>")):
+        if isinstance(t, int) and t >= 0 and t != tokenizer.unk_token_id and t not in ids:
+            ids.append(t)
+    return ids
+
+
+def has_linear_attention(config) -> bool:
+    """True for hybrid backbones (Qwen3.5: GatedDeltaNet layers next to full attention)."""
+    for cfg in (config, getattr(config, "text_config", None)):
+        if cfg is not None and "linear_attention" in (getattr(cfg, "layer_types", None) or []):
+            return True
+    return False
+
+
+_HF_WEIGHT_FILES = ("model.safetensors", "model.safetensors.index.json", "pytorch_model.bin")
+
+
+def _load_full_compressor(model: "PISCO", comp_dir: str) -> bool:
+    """A non-LoRA compressor is saved in HF format under compressor/ (save_pretrained). Copy those
+    weights into the live module, keeping its wrapping (gradient checkpointing, hooks). Returns False
+    when the dir holds no HF weights. from_pretrained does not need this: it builds the compressor
+    from that dir directly."""
+    if not any(os.path.exists(os.path.join(comp_dir, f)) for f in _HF_WEIGHT_FILES):
+        return False
+    live = model.compressor
+    # Same class as the live module, so the state-dict keys match whatever renaming HF applies on save.
+    src = type(live).from_pretrained(comp_dir, torch_dtype=next(live.parameters()).dtype)
+    res = live.load_state_dict(src.state_dict(), strict=False)
+    del src
+    if res.missing_keys or res.unexpected_keys:
+        raise RuntimeError(f"compressor: checkpoint/module mismatch — missing {res.missing_keys[:5]}, "
+                           f"unexpected {res.unexpected_keys[:5]}")
+    return True
+
+
 def load_trainable_state(model: "PISCO", ckpt_dir: str, *, decoder: bool = True, compressor: bool = True) -> None:
-    """Load the trainable parts saved by PISCO.save_pretrained (decoder_state.pt,
-    compressor/compressor_state.pt, connector.pt) into an already-built model. Used by
-    from_pretrained and by the Trainer's resume-from-checkpoint path (checkpoint-N dirs hold
-    exactly these files, not HF weight files)."""
+    """Load the trainable parts saved by PISCO.save_pretrained (decoder_state.pt, the compressor:
+    compressor/compressor_state.pt for LoRA or HF weights under compressor/ otherwise, connector.pt)
+    into an already-built model. Used by from_pretrained and by the Trainer's resume-from-checkpoint
+    path (checkpoint-N dirs hold exactly these files)."""
     dec_path = os.path.join(ckpt_dir, "decoder_state.pt")
-    comp_path = os.path.join(ckpt_dir, "compressor", "compressor_state.pt")
+    comp_dir = os.path.join(ckpt_dir, "compressor")
+    comp_path = os.path.join(comp_dir, "compressor_state.pt")
     if decoder and os.path.exists(dec_path):
-        _load_filtered_state(model.decoder, dec_path, "decoder")
+        _load_filtered_state(model.decoder, dec_path, "decoder", full=not getattr(model.config, "lora_decoder", True))
+    comp_loaded = "no"
     if compressor and os.path.exists(comp_path):
         _load_filtered_state(model.compressor, comp_path, "compressor")
-    conn = model.connector.load_state_dict(
-        torch.load(os.path.join(ckpt_dir, "connector.pt"), weights_only=True, map_location="cpu")
-    )
+        comp_loaded = "lora"
+    elif compressor and not getattr(model.config, "lora_compressor", False):
+        # Full compressor training: a resumed run must not silently restart from the base weights.
+        if not _load_full_compressor(model, comp_dir):
+            raise FileNotFoundError(f"no compressor weights under {comp_dir} (full compressor, resume)")
+        comp_loaded = "full"
+    conn_state = torch.load(os.path.join(ckpt_dir, "connector.pt"), weights_only=True, map_location="cpu")
+    if hasattr(model.connector, "norm") and "norm.weight" not in conn_state:
+        # Retrofit: a checkpoint trained without the output norm; the gain keeps its init.
+        conn_state["norm.weight"] = model.connector.norm.weight.detach().cpu()
+        print(f"[pisco] connector.norm absent from {ckpt_dir}: gain initialised to "
+              f"{model.config.connector_out_norm_init}")
+    conn = model.connector.load_state_dict(conn_state)
     print(f"[pisco] loaded trainable state from {ckpt_dir} (decoder={decoder and os.path.exists(dec_path)}, "
-          f"compressor={compressor and os.path.exists(comp_path)}, connector={conn})")
+          f"compressor={comp_loaded}, connector={conn})")
 
 
 def _resolve_torch_dtype(name: Optional[str]) -> Optional[torch.dtype]:
@@ -327,6 +406,16 @@ class PISCO(PreTrainedModel):
         )
 
         print("Base compressor nb parameters", self.compressor.num_parameters())
+
+        if config.bidirectional and has_linear_attention(self.compressor.config):
+            # The 4D mask only reaches the full-attention layers. Qwen3.5's GatedDeltaNet layers
+            # stay causal and, given a 4D mask, skip their padding zeroing
+            # (apply_mask_to_padding_states expects a 2D mask), so <MEM>s would depend on the
+            # batch's padding. Bidirectional compression needs a pure-attention backbone.
+            raise NotImplementedError(
+                f"bidirectional=True is not supported for the hybrid backbone {config.compressor_model_name} "
+                "(linear-attention layers): use a full-attention compressor (e.g. Qwen2.5 / Qwen3)."
+            )
 
         # Image processor, only when the compressor backbone has a vision tower. Failure to
         # build one must never break a text-only run.
@@ -559,6 +648,9 @@ class PISCO(PreTrainedModel):
             nn.ReLU(),
             nn.Linear(config.compressor_mlp_hidden_dim, decoder_hidden_dim),
         )
+        if getattr(config, "connector_out_norm", False):
+            # Named (not index 3): keeps the legacy 0.*/2.* keys and keeps the gain out of weight decay.
+            connector.add_module("norm", ConnectorRMSNorm(decoder_hidden_dim, config.connector_out_norm_init))
 
         # Cast connector to match the model dtype so compressor hidden states pass through without fp32 promotion.
         connector_dtype = _resolve_torch_dtype(config.torch_dtype)
@@ -648,10 +740,14 @@ class PISCO(PreTrainedModel):
         if getattr(self.config, "bidirectional", False) and attention_mask is not None:
             compr_attention_mask = build_bidirectional_4d_mask(attention_mask)
 
+        # Only hidden_states[-1] is read: skip the full-vocabulary logits (B x T x ~250k) and
+        # the KV / recurrent cache, which the LM head would otherwise materialise for nothing.
         last_hidden_states: torch.Tensor = self.compressor(
             input_ids=input_ids,
             attention_mask=compr_attention_mask,
             output_hidden_states=True,
+            logits_to_keep=1,
+            use_cache=False,
             **extra,
         ).hidden_states[
             -1
@@ -756,16 +852,26 @@ class PISCO(PreTrainedModel):
 
         kd_w = float(getattr(self.config, "kd_weight", 0.0) or 0.0)
         if kd_w > 0 and self.training and teacher_input_ids is not None and labels is not None:
-            # Pretraining batches mix chat rows (with a teacher prompt) and AE / text rows (one-token dummy
-            # teacher prompt): `teacher_kd_rows` (B,) restricts the KL to the former.
-            kd_labels = labels if teacher_kd_rows is None else labels.masked_fill(
-                ~teacher_kd_rows.to(labels.device).bool().unsqueeze(1), -100)
-            kd, n_tok = self.kd_loss(
-                decoder_outputs.logits, kd_labels,
-                teacher_input_ids, teacher_attention_mask,
-                pixel_values=teacher_pixel_values, image_grid_thw=teacher_image_grid_thw,
-                mm_token_type_ids=teacher_mm_token_type_ids,
-            )
+            # Pretraining batches mix chat rows (with a teacher prompt) and AE / text rows without one:
+            # `teacher_kd_rows` (B,) marks the former, and the teacher tensors hold ONLY those rows
+            # (the student logits / labels are sliced to match). A legacy batch whose teacher tensors
+            # hold all B rows (dummy prompts on the others) is still accepted: the KL is masked instead.
+            s_logits, kd_labels = decoder_outputs.logits, labels
+            if teacher_kd_rows is not None:
+                rows = teacher_kd_rows.to(labels.device).bool()
+                if teacher_input_ids.shape[0] == labels.shape[0]:
+                    kd_labels = labels.masked_fill(~rows.unsqueeze(1), -100)
+                else:
+                    s_logits, kd_labels = decoder_outputs.logits[rows], labels[rows]
+            if kd_labels.shape[0] == 0:
+                kd = decoder_outputs.logits.sum() * 0.0
+            else:
+                kd, _ = self.kd_loss(
+                    s_logits, kd_labels,
+                    teacher_input_ids, teacher_attention_mask,
+                    pixel_values=teacher_pixel_values, image_grid_thw=teacher_image_grid_thw,
+                    mm_token_type_ids=teacher_mm_token_type_ids,
+                )
             out["ce_loss"] = decoder_outputs.loss.detach()
             out["kd_loss"] = kd.detach()
             out["loss"] = decoder_outputs.loss + kd_w * kd
@@ -911,17 +1017,8 @@ class PISCO(PreTrainedModel):
         return decoded
 
     def decoder_eos_ids(self) -> List[int]:
-        """Stop tokens for decoder generation: the tokenizer's eos plus the chat end-of-turn
-        token when it exists. Some snapshots (Qwen3.5-4B) ship no generation_config.json, so
-        the model-level eos is only <|endoftext|> and a chat-finetuned decoder keeps writing a
-        fake next turn after <|im_end|> unless it is registered as a stop token here."""
-        ids = []
-        for t in (self.decoder_tokenizer.eos_token_id,
-                  self.decoder_tokenizer.convert_tokens_to_ids("<|im_end|>"),
-                  self.decoder_tokenizer.convert_tokens_to_ids("<|endoftext|>")):
-            if isinstance(t, int) and t >= 0 and t != self.decoder_tokenizer.unk_token_id and t not in ids:
-                ids.append(t)
-        return ids
+        """Stop tokens for decoder generation (see eos_token_ids)."""
+        return eos_token_ids(self.decoder_tokenizer)
 
     def save_pretrained(self, save_directory: str, **kwargs):
         """
@@ -937,9 +1034,11 @@ class PISCO(PreTrainedModel):
         os.makedirs(save_directory, exist_ok=True)
 
         if not self.config.freeze_decoder:
+            # LoRA decoder: adapters + token_adapter only. Full finetune: every tensor, else the
+            # checkpoint would hold an empty file and reload as the base decoder.
             decoder_state = {
                 k: v for k, v in self.decoder.state_dict().items()
-                if any(hint in k for hint in _TRAINABLE_KEY_HINTS)
+                if not self.config.lora_decoder or any(hint in k for hint in _TRAINABLE_KEY_HINTS)
             }
             torch.save(decoder_state, os.path.join(save_directory, "decoder_state.pt"))
 

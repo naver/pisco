@@ -28,10 +28,13 @@ from pisco.collator_utils import (
 )
 from pisco import mm_tasks
 from pisco.mm_utils import (
-    MM_TOKENS,
+    MM_BATCH_KEYS,
     MMChunkBatch,
+    build_teacher_inputs,
     collate_compressor,
+    escape_vision_tokens,
     get_vision_token_ids,
+    image_span_text,
     merge_size_of,
     n_image_tokens,
     segments_to_chunks,
@@ -46,7 +49,14 @@ def _as_pil(x):
     return to_rgb(x)
 
 
-class MultimodalPretrainingCollator(PretrainingCollator):
+class _VisionSafeText:
+    """clean_text also defuses literal vision tokens in the data (see escape_vision_tokens)."""
+
+    def clean_text(self, text: str) -> str:
+        return escape_vision_tokens(super().clean_text(text))
+
+
+class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
     """
     Stage-2 pretraining on (page image, page text) pairs. Rows: {"image": PIL|None, "text": str}.
 
@@ -64,13 +74,16 @@ class MultimodalPretrainingCollator(PretrainingCollator):
         (the uncompressed backbone's own description, scripts/teacher_describe_vllm.py). Rows without a
         teacher_text fall back to image autoencoding.
       - find               (p_find): 2..multi_max_docs images, question 'Which document contains this text:
-        "<snippet>"?' with a 6-12 word span of the target row's text, answer "Document j". Teaches the decoder
-        to address one <MEM> block among several (multi-page QA, frame memory).
+        "<snippet>"?' with a 6-12 word span of the target row's page text (of its teacher description when
+        the page text is too short, e.g. photos), answer "Document j". Teaches the decoder to address one
+        <MEM> block among several (multi-page QA, frame memory).
       Chat rows are masked by prompt length (only the answer is a target), the others by mask_before_mem.
 
     teacher_inputs=True (KL to the uncompressed backbone, PISCOConfig.kd_weight): chat rows also get their
-    uncompressed prompt (raw image spans instead of <MEM>s, same answer suffix) as teacher_* tensors, and
-    `teacher_kd_rows` (B,) marks them; the other rows get a one-token dummy prompt and no KL.
+    uncompressed prompt (raw image spans instead of <MEM>s, same answer suffix) as teacher_* tensors.
+    `teacher_kd_rows` (B,) marks them and the teacher tensors hold ONLY those rows, in batch order
+    (PISCO.forward slices the student logits / labels to match); a batch without a chat row carries
+    empty (0, 1) teacher tensors.
 
     The image is one atomic compressor chunk; `compressor_max_length` only bounds text chunks.
     """
@@ -143,7 +156,13 @@ class MultimodalPretrainingCollator(PretrainingCollator):
 
     # ------------------------------------------------------------------ tasks
     def _image_chunks(self, image) -> MMChunkBatch:
-        return segments_to_chunks(
+        """Preprocess one image (resize + patchify) once per batch: the chat tasks reuse the other
+        rows' images as distractors, so the same page can be asked for several times per torch_call.
+        The cache is keyed by the PIL object, which torch_call keeps alive for the whole batch."""
+        cache = getattr(self, "_chunk_cache", None)
+        if cache is not None and id(image) in cache:
+            return cache[id(image)]
+        b = segments_to_chunks(
             [("image", image)],
             compressor_tokenizer=self.compressor_tokenizer,
             image_processor=self.image_processor,
@@ -152,6 +171,9 @@ class MultimodalPretrainingCollator(PretrainingCollator):
             text_chunker=lambda ids: [ids],
             vision_ids=self.vision_ids,
         )
+        if cache is not None:
+            cache[id(image)] = b
+        return b
 
     def prepare_for_image_autoencoding(self, image, text_ids: List[int]):
         chunks = self._image_chunks(image)
@@ -228,7 +250,8 @@ class MultimodalPretrainingCollator(PretrainingCollator):
             system = mm_tasks.DESC_SYSTEM_PROMPT
             snippet = None
         else:
-            snippet = self._find_snippet(teacher[i] or texts[i])
+            # the page's own text; a photo has none (or a caption too short), so its description
+            snippet = self._find_snippet(texts[i]) or self._find_snippet(teacher[i])
             if snippet is None:
                 return None
             others = [k for k in others if snippet not in texts[k] and snippet not in teacher[k]]
@@ -250,9 +273,7 @@ class MultimodalPretrainingCollator(PretrainingCollator):
                 c = chunks_of[k]
                 docs += f"Document {d}:" + self.decoder_tokenizer.mem_token * c.total_mems
                 if self.teacher_inputs:
-                    n_vis = n_image_tokens(c.image_grid_thw[0], merge)
-                    t_docs += (f"Document {d}:" + MM_TOKENS["vision_start"] + MM_TOKENS["image_pad"] * n_vis
-                               + MM_TOKENS["vision_end"])
+                    t_docs += f"Document {d}:" + image_span_text(n_image_tokens(c.image_grid_thw[0], merge))
             question = mm_tasks.desc_query(pos) if task == "desc" else mm_tasks.find_query(snippet)
             ans = answer if task == "desc" else mm_tasks.find_answer(pos)
             full, plen = self._chat_texts(system, docs, question, ans)
@@ -273,6 +294,7 @@ class MultimodalPretrainingCollator(PretrainingCollator):
         texts = [self.clean_text(x["text"]) for x in examples]
         images = [_as_pil(x.get("image")) for x in examples]
         teacher = [self.clean_text((x.get("teacher_text") or "").strip()) for x in examples]
+        self._chunk_cache = {}          # one image preprocessing per page per batch (see _image_chunks)
 
         pre = self.compressor_tokenizer(
             texts, padding="do_not_pad", return_tensors=None, truncation=False
@@ -348,54 +370,33 @@ class MultimodalPretrainingCollator(PretrainingCollator):
             "decoder_attention_mask": decoder_inputs["attention_mask"],
             "labels": labels,
         }
-        for k in ("pixel_values", "image_grid_thw", "mm_token_type_ids"):
+        for k in MM_BATCH_KEYS:
             if k in compressor_inputs:
                 out[k] = compressor_inputs[k]
         if self.teacher_inputs:
             out.update(self._teacher_batch(teacher_texts, labels, batches))
+        self._chunk_cache = None
         return out
 
     def _teacher_batch(self, teacher_texts: List[Optional[str]], labels: torch.Tensor,
                        batches: List[MMChunkBatch]) -> Dict[str, Any]:
-        """Uncompressed prompts of the chat rows (a one-token dummy for the others), their pixels in
-        prompt order, and `teacher_kd_rows`. Checks: no image span truncated, KL rows' answer tails
-        coincide with the decoder's at the same offsets from the end (both left padded)."""
-        kd_rows = torch.tensor([t is not None for t in teacher_texts], dtype=torch.bool)
-        t_inputs = self.decoder_tokenizer(
-            [t if t is not None else self.decoder_tokenizer.eos_token for t in teacher_texts],
-            return_tensors="pt", padding="longest", add_special_tokens=False,
-            max_length=self.teacher_max_length, truncation=True, pad_to_multiple_of=self.pad_to_multiple_of,
+        """Uncompressed prompts of the chat rows ONLY (the teacher forward costs a full pass through the
+        decoder + ViT, and AE / text rows have no KL), their pixels in prompt order, and `teacher_kd_rows`
+        telling PISCO.forward which student rows they belong to."""
+        kd = [i for i, t in enumerate(teacher_texts) if t is not None]
+        out = build_teacher_inputs(
+            self.decoder_tokenizer, [teacher_texts[i] for i in kd], labels[kd],
+            image_pad_id=self.decoder_vision_ids[1],
+            grids=[g for i in kd for g in batches[i].image_grid_thw],
+            merge_size=merge_size_of(self.image_processor),
+            pixel_values=[p for i in kd for p in batches[i].pixel_values],
+            max_length=self.teacher_max_length, pad_to_multiple_of=self.pad_to_multiple_of,
         )
-        t_ids = t_inputs["input_ids"]
-        out = {"teacher_input_ids": t_ids, "teacher_attention_mask": t_inputs["attention_mask"],
-               "teacher_kd_rows": kd_rows}
-        pvs, grids = [], []
-        for i, t in enumerate(teacher_texts):
-            if t is not None:
-                pvs.extend(batches[i].pixel_values)
-                grids.extend(batches[i].image_grid_thw)
-        _, ip, _ = self.decoder_vision_ids
-        if pvs:
-            merge = merge_size_of(self.image_processor)
-            expected = sum(n_image_tokens(g, merge) for g in grids)
-            got = int((t_ids == ip).sum())
-            assert got == expected, (
-                f"teacher prompts hold {got} <|image_pad|> tokens but their images need {expected}: "
-                f"raise teacher_max_length ({self.teacher_max_length}) so no image span is truncated")
-            out["teacher_pixel_values"] = torch.from_numpy(np.concatenate(pvs, axis=0))
-            out["teacher_image_grid_thw"] = torch.tensor(grids, dtype=torch.long)
-            out["teacher_mm_token_type_ids"] = (t_ids == ip).long()
-        lab_kd = labels.masked_fill(~kd_rows.unsqueeze(1), -100)
-        K = min(lab_kd.shape[1], t_ids.shape[1])
-        tail = lab_kd[:, -K:]
-        sup = tail != -100
-        if bool(sup.any()):
-            assert torch.equal(t_ids[:, -K:][sup], tail[sup]), (
-                "teacher/decoder answer tails differ (truncated teacher prompt or tokenizer drift)")
+        out["teacher_kd_rows"] = torch.tensor([t is not None for t in teacher_texts], dtype=torch.bool)
         return out
 
 
-class MultimodalFineTuningCollator(FineTuningCollator):
+class MultimodalFineTuningCollator(_VisionSafeText, FineTuningCollator):
     """
     RAG finetuning where each retrieved document is a page IMAGE or a text passage.
     Rows: docs: List[str] (text, "" when the doc is an image), doc_images: List[PIL|None]
@@ -478,6 +479,41 @@ class MultimodalFineTuningCollator(FineTuningCollator):
             )["input_ids"]
         return segs, prefix_ids
 
+    def example_chunks(self, docs: List[str], doc_images: List[Any], query: Optional[str]):
+        """Compressor chunks of one example and the two "Document j:" backgrounds that go with them:
+        (MMChunkBatch, decoder background with <MEM>s, uncompressed background with raw image spans /
+        raw text). `docs` are the raw documents (the OSCAR query prefix is added here when
+        query_dependent); `doc_images` aligns with `docs` (None = text). The eval
+        (scripts/eval_mm_docqa.py) builds its prompts through this method so that training and
+        evaluation chunk, truncate and clean the documents the same way."""
+        docs = list(docs)[: self.topk_docs] if self.topk_docs is not None else list(docs)
+        raw_docs = docs
+        if self.query_dependent and query is not None:
+            docs = self.preprend_query_to_docs([query], [docs])[0]
+        imgs = list(doc_images)[: len(docs)]
+        segs, prefix_ids = self.doc_segments(docs, imgs, query if self.query_dependent else None)
+        merge = merge_size_of(self.image_processor)
+        batch, doc_text, teacher_text = MMChunkBatch(), "", ""
+        for j, seg in enumerate(segs):
+            b = segments_to_chunks(
+                [seg],
+                compressor_tokenizer=self.compressor_tokenizer,
+                image_processor=self.image_processor,
+                compr_rate=self.compr_rate,
+                image_compr_rate=self.image_compr_rate,
+                text_chunker=self._text_chunker,
+                vision_ids=self.vision_ids,
+                clean_text=self.clean_text,
+                image_prefix_ids=prefix_ids,
+            )
+            batch.extend(b)
+            doc_text += f"Document {j}:" + self.decoder_tokenizer.mem_token * b.total_mems
+            if seg[0] == "image":
+                teacher_text += f"Document {j}:" + image_span_text(n_image_tokens(b.image_grid_thw[0], merge))
+            else:
+                teacher_text += f"Document {j}:" + self.clean_text(raw_docs[j])
+        return batch, doc_text, teacher_text
+
     def torch_call(self, examples: List[Dict[str, Any]]) -> Dict[str, Any]:
         documents = [list(elt["docs"]) for elt in examples]
         doc_images = [
@@ -487,46 +523,13 @@ class MultimodalFineTuningCollator(FineTuningCollator):
         labels_txt = [self.clean_text(elt["mistral_label"]) for elt in examples]
         sys_prompts = [elt.get("system_prompt") for elt in examples]
 
-        raw_documents = documents   # the teacher reads the docs as-is (its prompt has the query)
-        if self.query_dependent:
-            documents = self.preprend_query_to_docs(queries, documents)
-
         batches: List[MMChunkBatch] = []
         decoder_texts: List[str] = []
         prefix_lengths: List[int] = []
         teacher_texts: List[str] = []
-        merge = merge_size_of(self.image_processor)
 
         for i, docs in enumerate(documents):
-            if self.topk_docs is not None:
-                docs = docs[: self.topk_docs]
-            imgs = doc_images[i][: len(docs)]
-            segs, prefix_ids = self.doc_segments(docs, imgs, queries[i] if self.query_dependent else None)
-
-            example_batch = MMChunkBatch()
-            doc_text = ""
-            teacher_text = ""
-            for j, seg in enumerate(segs):
-                b = segments_to_chunks(
-                    [seg],
-                    compressor_tokenizer=self.compressor_tokenizer,
-                    image_processor=self.image_processor,
-                    compr_rate=self.compr_rate,
-                    image_compr_rate=self.image_compr_rate,
-                    text_chunker=self._text_chunker,
-                    vision_ids=self.vision_ids,
-                    clean_text=self.clean_text,
-                    image_prefix_ids=prefix_ids,
-                )
-                example_batch.extend(b)
-                doc_text += f"Document {j}:" + self.decoder_tokenizer.mem_token * b.total_mems
-                if self.teacher_inputs:
-                    if seg[0] == "image":
-                        n_vis = n_image_tokens(b.image_grid_thw[0], merge)
-                        teacher_text += (f"Document {j}:" + MM_TOKENS["vision_start"]
-                                         + MM_TOKENS["image_pad"] * n_vis + MM_TOKENS["vision_end"])
-                    else:
-                        teacher_text += f"Document {j}:" + self.clean_text(raw_documents[i][j])
+            example_batch, doc_text, teacher_text = self.example_chunks(docs, doc_images[i], queries[i])
             batches.append(example_batch)
 
             prompt, prefix_length = self.compute_prompt_and_prefix_length(
@@ -567,44 +570,18 @@ class MultimodalFineTuningCollator(FineTuningCollator):
             "decoder_attention_mask": decoder_inputs["attention_mask"],
             "labels": labels,
         }
-        for k in ("pixel_values", "image_grid_thw", "mm_token_type_ids"):
+        for k in MM_BATCH_KEYS:
             if k in compressor_inputs:
                 out[k] = compressor_inputs[k]
         if self.teacher_inputs:
-            out.update(self._teacher_batch(teacher_texts, labels, compressor_inputs))
-        return out
-
-    def _teacher_batch(self, teacher_texts: List[str], labels: torch.Tensor, compressor_inputs: Dict[str, Any]) -> Dict[str, Any]:
-        """Tokenize the uncompressed prompts and check the two contracts the KD loss relies on:
-        every image span is intact (no truncation) and the answer tails match the decoder's."""
-        t_inputs = self.decoder_tokenizer(
-            teacher_texts,
-            return_tensors="pt",
-            padding="longest",
-            add_special_tokens=False,
-            max_length=self.teacher_max_length,
-            truncation=True,
-            enable_thinking=False,
-            pad_to_multiple_of=self.pad_to_multiple_of,
-        )
-        t_ids = t_inputs["input_ids"]
-        _, ip, _ = self.decoder_vision_ids
-        out = {"teacher_input_ids": t_ids, "teacher_attention_mask": t_inputs["attention_mask"]}
-        if "pixel_values" in compressor_inputs:
-            grid = compressor_inputs["image_grid_thw"]
-            expected = int((grid.prod(-1) // (merge_size_of(self.image_processor) ** 2)).sum())
-            got = int((t_ids == ip).sum())
-            assert got == expected, (
-                f"teacher prompt holds {got} <|image_pad|> tokens but the pages need {expected}: "
-                f"raise teacher_max_length ({self.teacher_max_length}) so no image span is truncated")
-            out["teacher_pixel_values"] = compressor_inputs["pixel_values"]
-            out["teacher_image_grid_thw"] = grid
-            out["teacher_mm_token_type_ids"] = (t_ids == ip).long()
-        # answer tails: same tokens at the same offsets from the end (both left padded)
-        K = min(labels.shape[1], t_ids.shape[1])
-        lab_tail = labels[:, -K:]
-        sup = lab_tail != -100
-        assert bool(sup.any()), "no supervised answer tokens"
-        assert torch.equal(t_ids[:, -K:][sup], lab_tail[sup]), (
-            "teacher/decoder answer tails differ (truncated teacher prompt or tokenizer drift)")
+            # every row is a KD row here; the pixels are the compressor's own tensor (same images, same order)
+            out.update(build_teacher_inputs(
+                self.decoder_tokenizer, teacher_texts, labels,
+                image_pad_id=self.decoder_vision_ids[1],
+                grids=compressor_inputs["image_grid_thw"].tolist() if "image_grid_thw" in compressor_inputs else [],
+                merge_size=merge_size_of(self.image_processor),
+                pixel_values=compressor_inputs.get("pixel_values"),
+                max_length=self.teacher_max_length, pad_to_multiple_of=self.pad_to_multiple_of,
+                enable_thinking=False,
+            ))
         return out

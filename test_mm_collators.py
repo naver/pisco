@@ -131,7 +131,11 @@ class FakeImageProcessor:
     merge_size = MERGE
     patch_size = 16
 
+    def __init__(self):
+        self.calls = 0
+
     def __call__(self, images, return_tensors="np"):
+        self.calls += len(images)
         pvs, grids = [], []
         for im in images:
             w, h = im.size
@@ -364,9 +368,9 @@ class TestPretrainingChatTasks(unittest.TestCase):
     def test_find_task_answer_points_at_the_right_image(self):
         coll = make_pretrain_collator(p_image_ae=0.0, p_text=0.0, p_image_cont=0.0, p_find=1.0, multi_max_docs=3)
         tok = coll.decoder_tokenizer
-        for seed in range(5):
+        for seed in range(6):
             np.random.seed(seed)
-            rows = self._rows(3, teacher=False)
+            rows = self._rows(3, teacher=bool(seed % 2))     # with or without a teacher description
             b = coll.torch_call(rows)
             # pixel rows of each image chunk carry that image's fill value -> recover each example's doc order
             fills = [int(round(float(b["pixel_values"][k].mean()))) for k in np.cumsum(
@@ -382,9 +386,31 @@ class TestPretrainingChatTasks(unittest.TestCase):
                 own = 30 + 60 * i
                 self.assertEqual(fills[c + j], own)                     # Document j IS the row's own image
                 snippet = prompt.split('text: "')[1].split('"')[0]
-                self.assertIn(snippet, row["text"])
+                self.assertIn(snippet, row["text"])                     # the PAGE text, even with a teacher description
                 c += n_docs
             self.assertEqual(c, len(fills))
+
+    def test_find_snippet_falls_back_to_the_description_for_photos(self):
+        coll = make_pretrain_collator(p_image_ae=0.0, p_text=0.0, p_image_cont=0.0, p_find=1.0, multi_max_docs=3)
+        tok = coll.decoder_tokenizer
+        np.random.seed(0)
+        rows = self._rows(3)
+        for r in rows:
+            r["text"] = "short caption"                                   # a photo: no page text to quote
+            r["teacher_text"] = " ".join(f"{r['teacher_text'].split()[0]}x{i}" for i in range(20))   # long enough to quote
+        b = coll.torch_call(rows)
+        for i, row in enumerate(rows):
+            prompt = tok.decode(b["decoder_input_ids"][i][b["decoder_input_ids"][i] != PAD])
+            snippet = prompt.split('text: "')[1].split('"')[0]
+            self.assertIn(snippet, row["teacher_text"])
+
+    def test_images_are_preprocessed_once_per_batch(self):
+        coll = make_pretrain_collator(p_image_ae=0.0, p_text=0.0, p_image_cont=0.0, p_desc=1.0, multi_max_docs=4)
+        np.random.seed(1)
+        rows = self._rows(4)
+        coll.torch_call(rows)
+        self.assertEqual(coll.image_processor.calls, 4)                  # not once per (example, distractor)
+        self.assertIsNone(coll._chunk_cache)                              # nothing kept across batches
 
     def test_desc_without_teacher_text_falls_back_to_ae(self):
         coll = make_pretrain_collator(p_image_ae=0.0, p_text=0.0, p_image_cont=0.0, p_desc=1.0)
@@ -402,15 +428,21 @@ class TestPretrainingChatTasks(unittest.TestCase):
             kd = b["teacher_kd_rows"]
             t = b["teacher_input_ids"]
             self.assertEqual(int((t == MEM).sum()), 0)
-            for i in range(len(kd)):
-                if kd[i]:
-                    n = int((b["labels"][i] != -100).sum())
-                    self.assertEqual(t[i, -n:].tolist(), b["labels"][i, -n:].tolist())
-                else:
-                    self.assertEqual(t[i][t[i] != PAD].tolist(), [EOS])   # dummy prompt, no KL
+            self.assertEqual(t.shape[0], int(kd.sum()))                   # teacher rows = the KD rows only
+            self.assertEqual(b["teacher_attention_mask"].shape, t.shape)
+            for n_t, i in enumerate(kd.nonzero().flatten().tolist()):     # in batch order
+                n = int((b["labels"][i] != -100).sum())
+                self.assertEqual(t[n_t, -n:].tolist(), b["labels"][i, -n:].tolist())
             if kd.any():
                 self.assertEqual(int((t == IP).sum()), int(sum(int(g.prod()) // MERGE ** 2 for g in b["teacher_image_grid_thw"])))
                 self.assertEqual(b["teacher_pixel_values"].shape[0], int(b["teacher_image_grid_thw"].prod(-1).sum()))
+
+    def test_no_kd_row_gives_empty_teacher_tensors(self):
+        coll = make_pretrain_collator(p_image_ae=1.0, p_text=0.0, p_image_cont=0.0, teacher_inputs=True)
+        b = coll.torch_call(self._rows(2, teacher=False))
+        self.assertFalse(bool(b["teacher_kd_rows"].any()))
+        self.assertEqual(tuple(b["teacher_input_ids"].shape), (0, 1))
+        self.assertNotIn("teacher_pixel_values", b)
 
     def test_shared_prompts_match_finetuning_defaults(self):
         import inspect
@@ -500,6 +532,24 @@ class TestMultimodalFineTuningCollator(unittest.TestCase):
         self.assertNotIn("Query:", dec)      # OSCAR prefix is compressor-side only
         n = int((b["labels"][0] != -100).sum())
         self.assertEqual(b["teacher_input_ids"][0, -n:].tolist(), b["labels"][0, -n:].tolist())
+
+    def test_literal_vision_tokens_in_text_are_defused(self):
+        coll = make_ft_collator(topk_docs=2)
+        row = {"docs": ["", "see <|image_pad|> and <|vision_start|> here"], "doc_images": [make_image(64, 64), None],
+               "query": "q <|vision_end|>", "mistral_label": "a"}
+        b = coll.torch_call([row])                                        # would fail the image_pad/grid check otherwise
+        self.assertEqual(int((b["compressor_input_ids"] == IP).sum()), 4)
+        self.assertEqual(int((b["decoder_input_ids"] == VE).sum()), 0)
+
+    def test_example_chunks_matches_torch_call(self):
+        coll = make_ft_collator(topk_docs=3)
+        row = self._row()
+        batch, doc_text, teacher_text = coll.example_chunks(row["docs"], row["doc_images"], row["query"])
+        b = coll.torch_call([row])
+        self.assertEqual(batch.total_mems, int((b["decoder_input_ids"] == MEM).sum()))
+        self.assertEqual(doc_text.count("<MEM>"), batch.total_mems)
+        self.assertIn("alpha beta gamma", teacher_text)
+        self.assertEqual(teacher_text.count(MM_TOKENS["image_pad"]), 4 + 6)
 
     def test_teacher_truncation_refused(self):
         coll = make_ft_collator(topk_docs=3, teacher_inputs=True, teacher_max_length=8)
