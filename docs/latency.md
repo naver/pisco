@@ -33,7 +33,8 @@ prompt (the KV cache); the other 24 keep a fixed-size state per request. Compres
 - *Reading the prompt* (prefill) is real computation, proportional to the number of prompt tokens.
 - *Writing the answer* goes one token at a time. Each step reads all model weights from GPU memory once (shared by the
   whole batch) plus every request's stored context. With one request the weights dominate, so prompt length barely
-  matters. With many requests the stored contexts dominate, and they are 11 times smaller with PISCO.
+  matters. With many requests the stored contexts dominate. Their KV part is 11 times smaller with PISCO, but the
+  fixed state is not (about 51.5 MB per request, float32), so a whole context is only 2.5 to 3.3 times smaller.
 - *GPU memory* limits how many requests run together; smaller contexts let more of them fit.
 
 ## Results with HuggingFace generate
@@ -89,6 +90,42 @@ doc questions; the differences are near-ties from numerical noise.
 Script `scripts/bench_vllm_sim.py` (plain Qwen3.5-4B in vLLM, random prompts at the raw and at the PISCO length:
 compute depends only on length), analysis `scripts/show_vllm_glen.py`, results `expQ/bench/vllm/nav_sim_glen.json`.
 
+Slide figures, measured points only, drawn by `scripts/plot_compression_payoff.py`:
+`docs/figures/compression_payoff.{png,pdf,svg}` (8 pages; `_single` = one request only) and
+`docs/figures/compression_payoff_pages.*` (`--pages`: 1 / 8 / 16 pages × one request / many requests).
+
+**Compression rate and number of pages** (doc; `expQ/bench/vllm/lens_sim_doc{1,8,16}_rates*.json`, median of 3 runs
+except 16 pages batched; launcher `LENS=raw=..,x4=..,x8=..,x16=..,x32=.. LK=<pages> REPS=3 bench_vllm_sim_4b.sh <NS>
+1,8,32,128,512,2048`, lengths in each json; ×4/×16/×32 and all 1-page lengths computed as 434/r + 1 vectors per page).
+
+Speed-up for a 1-token answer:
+
+| pages | raw tokens | requests at once | ×4 | ×8 | ×16 | ×32 |
+|---|---|---|---|---|---|---|
+| 1 | 501 | 1 | 1.1× | 1.1× | 1.1× | 1.1× |
+| 1 | 501 | 256 | 2.7× | 3.8× | 4.7× | 5.4× |
+| 8 | 3567 | 1 | 3.0× | 3.4× | 4.4× | 4.5× |
+| 16 | 7061 | 1 | 3.6× | 6.0× | 7.2× | 9.3× |
+| 16 | 7061 | 256 | 4.0× | 7.4× | 13.0× | 20.9× |
+
+Speed-up at ×8 by answer length (8 pages × 256 requests from the sweep above):
+
+| pages | requests at once | 1 token | 8 | 32 | 128 | 512 | 2048 |
+|---|---|---|---|---|---|---|---|
+| 1 | 1 | 1.09× | 1.00× | 1.01× | 1.00× | 1.00× | 1.00× |
+| 8 | 1 | 3.44× | 2.04× | 1.41× | 1.12× | 1.04× | 1.02× |
+| 16 | 1 | 5.99× | 3.53× | 1.95× | 1.29× | 1.09× | 1.04× |
+| 1 | 256 | 3.80× | 3.45× | 2.83× | 1.85× | 1.30× | 1.11× |
+| 8 | 256 | 6.77× | 6.15× | 5.80× | 4.87× | 2.95× | 1.90× |
+| 16 | 256 | 7.43× | 7.02× | 6.49× | 6.20× | 4.55× | 2.93× |
+
+- Reading the prompt is nearly flat below about 1,000 tokens. One page (501 tokens) gains nothing for one request,
+  and more compression helps one request only while the compressed prompt is still long (16 pages: ×4 = 1,871
+  tokens, 3.6×; ×32 = 351 tokens, 9.3×).
+- Many requests and a long input: the speed-up is about how many times shorter the prompt is (16 pages, 256 requests:
+  ×4 gives 4.0× for a 3.8 times shorter prompt, ×32 gives 20.9× for 20.1 times).
+- Checks: ×8 at 8 and 16 pages repeats the sweep above within 6%; raw reading runs at about 24,000 tokens/s in every run.
+
 How many times faster PISCO is, nav with 8 frames, by answer length and number of requests at once:
 
 | requests at once | 8 tokens (a few words) | 32 (a sentence) | 128 (a paragraph) | 512 (a page) | 2048 (four pages) |
@@ -129,8 +166,8 @@ token). So PISCO stays at least 20% faster while the answer is shorter than abou
 - 16 pages save about 6000 tokens → about 200 by the rule, 195 measured.
 
 For very long answers the gain settles at 1.0× for one request and 1.2 to 2.3× for 256 requests. On a model with
-full attention in every layer the long-answer gain should be larger (all layers would keep a growing context); not
-measured here.
+full attention in every layer the gain is larger: Qwen3-4B at the same prompt lengths gives 5.0× instead of 3.0×
+(8 pages, 256 requests, 512 tokens; [architecture_review.md](architecture_review.md)).
 
 ## Running PISCO in vLLM
 

@@ -31,3 +31,5 @@ eval_data/
 my_qa*.json
 uv.lock
 /eval_agent_qa.py
+papers/*.pdf
+papers/*.txt

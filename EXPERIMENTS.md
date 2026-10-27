@@ -293,3 +293,96 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-10-17 18:21 [job 173958] stage-2 1M pretrains had a config bug: '+model_config_overrides.image_max_pixels' refused (key already in pt_lora_mm.yaml) -> v3 shake 173500 died in 1 min
   - did: dropped the key from pt_lora_mm.yaml (checkpoints all store 451584 = default, so default runs unchanged); shake resubmitted 173958, pt 173501 rewired
   - saw: v4/v4kd/balanced shakes read the yaml at start, so they are fixed with no resubmit; ft jobs unaffected (finetune_mm.yaml lacks the key)
+- 2026-10-19 18:24 did: Rounds 5/6 results (generic ft, 500 Q each): doc-1M judge v3 .558, v4 .554, v4+KL .586 (prev best .508, ceiling .776); natural v3 .642, v4 .674, v4+KL .672 (ceiling .724, doc-only 172671 .600)
+  - saw: paired: 1M stage-2 +.050 doc (2.5 SE); desc/find tasks +.032 natural (2.0 SE), 0 doc; KL +.032 doc (1.8 SE), 0 natural; photo ft rows cost docs nothing; LongBench unchanged; infovqa .415 vs .745 is the remaining gap
+  - next: balanced arm 173704/173706; then pick doc-gap lever (GRPO / charts / capacity)
+- 2026-10-19 18:31 did: handoff 2026-10-19: docs/multimodal_results.md (per-image-type results, rates, settled components, open questions) + scripts/paired_judge.py; HANDOFF.md rewritten as a short restart point
+  - next: balanced arm 173704/173706 vs v4 with paired_judge; then rate-4 finetune / GRPO decision
+- 2026-10-19 19:28 [job 174256] Compression rate barely matters for speed at 1 request (doc 8 pages, vLLM)
+  - did: measured x4/x8/x16/x32 prompt lengths, 1 request, 1-2048 generated tokens, median of 3
+  - saw: 1-token speed-up 3.0/3.4/4.4/4.5x; equal from 32 tokens; under 1.2x between 32 and 128 tokens for all rates; x8 repeats old sweep within 6%
+  - next: figure docs/figures/compression_payoff*; beyond x16 no speed gain
+- 2026-10-19 20:39 [job 174288] Speed vs pages: 1 page gains nothing for 1 request; 16 pages x 256 requests gain ~ prompt shrink (x32: 20.9x)
+  - did: LENS sweeps 1 page (174288) and 16 pages (174289 N=1, 174290 batched), x4-x32, 1-2048 tokens
+  - saw: 1 page N=1 <=1.12x; 16 pages N=1 x8 6.0x at 1 token, 1.29x at 128; 16p N=256 x8 6.2x at 128; reading flat <1k tokens
+  - next: docs/latency.md tables updated
+- 2026-10-20 19:11 paper 2610.22178 (REKI, Kyutai robotics VLA): register tokens as cached per-frame memory in the action expert; +1.5 to +5.5 success pts vs memoryless, no uncompressed-past baseline, no text; mechanism already covered by PISCO <MEM> + AgentTrajCollator. Low relevance; arms proposed: none
+- 2026-10-20 19:55 [job 174560] Multimodal code review: 15 fixes applied and verified (no result changes)
+  - did: resume of full compressor/decoder, compress() logits_to_keep, bidi guard for hybrid, find snippet from page text, KD teacher rows sliced, eval via collator example_chunks + no silent trim + ckpt pixel budget, judge rule aligned, vision-token escape, dedup
+  - saw: 33+38 unit tests pass; round trips exact; compress identical (peak mem 23.6->20.0 GB); KD sliced==legacy; eval old vs new code 60/60 identical (saved natural file differs 15/60 from BOTH = GPU noise)
+  - next: commit; find-task change alters the next v4-style pretrain
+- 2026-10-20 21:16 [job 174611] Judge study: rankings judge-independent; rubric prompt is the most accurate judge
+  - did: 7 judge conditions (Qwen3-8B/32B x project/rubric/thinking, gemma-3-4b) on 3730 pooled items
+  - saw: agreement 92-97%; every model ranking unchanged; current prompt says YES to 5-6% of wrong numbers; rubric prompt 0.3-0.9% errors on anchors (32B rubric 0.5/1.2%); natural QA is where judges differ most (base .66-.73)
+  - next: human sheet expQ/judge_study/human_sheet.md (150 items) to label; adopt rubric judge after; re-judge key files
+- 2026-10-20 21:43 [job 174618] CORRECTION: balanced stage-2 diet = v4+KL on 1500 Q (doc .598 vs .594, natural .669 vs .669, p>0.7)
+  - did: eval sets extended to 500/type (eval_data/mm_docqa_1500_1m, mm_naturalqa_1500; old 500 ids kept verbatim, predictions identical)
+  - saw: 500-Q verdict 'balanced costs docs -.03, slides p=.007' vanishes at 1500 (slides -.006); 500 Q cannot support a .03 claim; paired_judge now prints bootstrap CI + McNemar
+  - next: base evals 174646/7 on 1500; rubric re-judge 174650; rewrite docs/multimodal_results.md
+- 2026-10-20 22:30 [job 174675] Eval protocol v2: 1500 Q/family, rubric judge default; best model docs .578 vs .809, photos .665 vs .717, nav .806 vs .792
+  - did: re-judged 15 key files with the rubric prompt (old verdicts kept as judge_project); docs/multimodal_results.md and HANDOFF.md rewritten
+  - saw: rankings identical under both judges; judges differ 16-18% on VizWiz, <4% on docs/nav; balanced arm == v4+KL (p=1.0)
+  - next: commit; equal-token low-res baseline; human sheet
+- 2026-10-20 22:59 [job 174711] norm probe (v4+KL, inference edits, 40 rows/set): an RMSNorm on the connector output would be harmless, but don't shrink MEMs
+  - saw: MEM L2 ~20 vs token emb 0.67 (30x; fresh connector already 17); equal-norm edit NLL -.015 (docs/photos); x0.5 +.03/+.05; token scale +0.9/+1.2 = no-doc level (2.24)
+  - next: low expected gain; text MEMs untested (eval rows have no page text)
+- 2026-10-20 23:07 [job 174688] Compression beats resolution: at the SAME token budget PISCO > low-res raw by +.175 docs / +.117 photos / +.037 nav; raw needs ~2x the tokens to match
+  - did: base evals with pages downscaled to the MEM budget (docs 123 tok/page, photos 56, nav 28) and at 2x, 1500 Q, rubric judge
+  - saw: equal budget: docs .578 vs .403, photos .665 vs .548, nav .806 vs .769 (finetuned base); 2x budget: docs .578 vs .607 (p=.04), photos .665 vs .632
+  - next: rate-4 finetune 174693 running (118 s/step, ~14 h), evals 174694/5 chained
+- 2026-10-21 archq campaign (owner: is the architecture OK, redesign, limits, KV-cache combos): keep the architecture, add route-then-expand. Write-up docs/architecture_review.md
+  - did: lit review (4 agents, ~100 papers) + 25 inference-only jobs; eval options raw_policy / answer_style expand / gold_only / mem_quant / extra_distractors, probe_mem_recall, bench_compress_cost, vLLM backbone + serving arms; smoke 174843 PASS (default path 6/6 identical)
+  - saw: lit: same entry point as OSCAR/ARC/CLaRa/LCLM; gains come from training (RL, teacher-correct rows) and budget (adaptive/selective), not from redesign
+- 2026-10-21 [job 174850] Route-then-expand = uncompressed, no training: the model picks the answer page from its MEMs (find-style prompt), that page goes raw, the rest stay MEMs
+  - saw: 4 pages .801 vs .809 (diff -.007, CI -.021/+.007, p=.35), routing 98%, 1264 vs 3505 tokens; 8 pages .803 vs .807; 10 pages .796 vs .801 (p=.64), routing 97%, 1934 vs 8665 tokens (174873); gold page raw .811 (174849); all raw via PISCO decoder .804 (174851)
+  - next: hard negatives (same-document, retrieved pages), more than 10 pages, finetune on mixed prompts
+- 2026-10-21 [job 174875] Route-then-expand speed (vLLM sim, A100, ViT excluded): 2.0x raw at 4 pages, 2.6-2.9x at 8 pages under load; first token 1.6x / 2.3x; all-MEM 4.9-7.8x
+- 2026-10-21 [job 174861] Transcription probe (360 gold pages): infographics lose the answer in compression, multi-page docs keep it unused
+  - saw: PISCO-wrong with answer in reference = 93: rebuilt from MEMs 54 (use), lost 39; infovqa 17/25, mpdoc 27/6, slides 10/8; words rebuilt .58/.83/.70; judge .71 when rebuilt vs .52; ft compressor 47/46
+- 2026-10-21 [job 174694] Rate-4 finetune: docs .612 vs .578 (+.034, CI +.015/+.055, p=.001), photos .670 vs .665 (p=.60), 939 vs 511 tokens
+- 2026-10-21 [job 174852] Small probes vs .578 (1500 Q): evidence-then-answer prompt +.025 (p=.016); int8 MEMs +.002 (0.31 MB/page), int4 -.018; read at r4 +.011, r16 -.070 (rate is learned); gold page only +.014 n.s. (base .841): distractors not the cause
+- 2026-10-21 [job 174844] Full-attention decoder gains more: PISCO x8 speed-up Qwen3-4B vs Qwen3.5-4B, 8 pages x 256 requests: 7.6/6.8/5.0x vs 6.8/4.9/3.0x at 1/128/512 tokens; Qwen3.5 fixed 51.5 MB state is overhead once compressed; Qwen3.5 rerun = latency.md within 1% (174845)
+- 2026-10-21 [job 174846] Serving the PISCO decoder (vLLM 0.19.1, A100): fp16 linear-attention state +9-14% on 256-token answers under load (481/500 same answers); fp8 KV impossible on A100 (e4m3 only, Triton sm80; 174876); MTP refused with prompt_embeds
+  - saw: MTP on token prompts (174906): 1 request 7.1 -> 4.9 ms/token (1.45x), 16 requests 1.3x, 64 requests 0.95x; 69% of draft tokens accepted
+- 2026-10-21 [job 174862] Compression cost per 1M-px page (A100, batch 8): 4B 65.6 ms (ViT 25.5), 2B 43.2 (same ViT), 0.8B 21.0: 3x cheaper indexing
+- 2026-10-21 archq verdicts: 174843-174876 and 174906 closed; best 174850 (route1, 4 pages) and 174873 (route1, 10 pages)
+- 2026-10-21 16:49 [job 174908] norm arm launched: v4+KL recipe (173550) + RMSNorm on connector output, gain init 0.461
+  - did: shake-out 174753 all PASS (legacy keys, equal lengths, no wd on gain, exact round trip, regress C/D); retrofit on pt_mm_v4kd_4b: loss +.0007 +- .003; 2-step smoke 174762 OK
+  - next: evals 174910 docs / 174911 photos (1500 Q), paired vs 173550; expect a tie
+- 2026-10-23 01:39 [job 174908] norm arm beats v4+KL (173550) on 1500 Q: docs .599 vs .578 (+.021, p=.043), photos .685 vs .665 (+.021, p=.023)
+  - saw: VizWiz +.052 (p=.005), other sources +.002-.026; held-out loss lower at all 5 checkpoints (final .404 vs .429); eval settings and judge identical
+  - next: unproven until a seed replicate: same seed 42 + data order, run-to-run spread unknown; proposed +hf_training.seed=43, norm and no-norm
+- 2026-10-23 01:44 [job 176242] seed replicate launched for the connector-norm gain: 176242 norm s43, 176243 no-norm s43 (173550 recipe, +hf_training.seed=43)
+  - next: evals 176244/5 (norm), 176246/7 (no-norm), 1500 Q; gain is real if norm-vs-no-norm at s43 ~ +.02 and no-norm s43 ~ 173550
+- 2026-10-23 02:13 bf16 storage freezes most trainable weights: AdamW updates (~lr) are below half a bf16 step for |w| > ~0.005
+  - saw: finetune 173550: 80% connector, 83-85% LoRA-A, 32-37% LoRA-B never changed; stage-2 v4kd: 70% / 66-76% / 21-26%; norm gain 100% (174908); LoRA is bf16 because add_adapter skips PEFT's fp32 upcast
+  - next: fp32 masters via frozen_base_dtype=bfloat16 + torch_dtype=float32 (Option 2); smoke 176273
+- 2026-10-23 02:41 [job 176274] norm probes (174908 vs 173550, 60 rows): no single mechanism; MEM size already ~right
+  - saw: scale x0.8 -.011, x1.25 +.026/+.016, x1.5 +.035/+.039; norm MEMs equal + a bit longer (23.3 vs 21.8/19.5), survive slightly longer (cos L8 .54/.55 vs .52/.49), centred erank 44 vs 40 docs; equal lengths at inference on 173550 give -.009/-.011 NLL
+  - next: no larger-gain arm; fp32 run D lets the gain learn
+- 2026-10-23 02:45 [job 176295] fp32-master arms launched: 176295 C (no norm), 176296 D (norm, gain now trainable); 173550 recipe + frozen_base_dtype=bfloat16 torch_dtype=float32, seed 42
+  - did: smoke on gpu-debug killed by slurm at start (176292; partition caps 4 CPUs, also killed 176287/91); C/D start doubles as smoke
+  - next: check option2 promotion at start, weight_moves at checkpoint-100 vs pt_mm_v4kd_4b; evals 176297-300
+- 2026-10-23 03:06 [job 176276] route-then-expand on the norm model: docs .810 vs .801 (v4+KL route1, +.009, p=.09) and = uncompressed .809; routing 98.2% vs 98.3%
+  - next: norm is safe for the best doc mode; adopt with the norm if the seed replicate confirms
+- 2026-10-23 16:13 [job 176242] seed replicate: norm gain is real on photos (+.021 at both seeds), absent on docs (+.021 s42, -.016 s43; mean +.003)
+  - saw: seed spread of the SAME recipe: docs no-norm .578 vs .607 (+.029, McNemar p=.003), photos -.011; McNemar on one training run per arm ignores training noise
+  - next: training effects < ~.03 on docs need 2 seeds/arm (rate-4 +.034, KL-in-stage-2 +.03 are single-run); adopt the norm (photos +.02, docs neutral, route mode .810)
+- 2026-10-23 16:13 [job 176295] fp32 master weights at lr 2e-5 make training WORSE: train and held-out loss rise
+  - saw: C (fp32): train .50->.62, eval .49-.62 vs bf16 .45/.43; D (fp32+norm): train up to .81, grad-norm spikes 5-7.5, eval .68-.87; option2 promotion confirmed (1194 tensors)
+  - next: bf16 regime = frozen LoRA-A + small effective lr, and it works; fp32 would need an lr sweep (~2e-6..5e-6); evals 176297-300 for the record
+- 2026-10-23 17:29 [job 176428] norm on text only (LongBench multifieldqa_en, 150 Q, 2 seeds/arm): no regression, small n.s. gain: F1 .275 vs .263 (+.012, CI -.007..+.032)
+  - saw: both norm seeds (.278/.272) above both no-norm (.259/.268); seed spread F1 .006-.009; compare script expQ/norm_probe/lb_compare.py
+- 2026-10-23 17:29 [job 176297] fp32 run C docs .535 vs bf16 .578 (-.043, beyond the .029 seed spread; multi-page -.108): fp32 masters at lr 2e-5 hurt accuracy too
+  - next: photos 176298, run D evals 176299/300 pending; bf16 stays the recipe
+- 2026-10-23 18:32 [job 176296] fp32 masters settled (seed 42, lr 2e-5): C no-norm docs .535 (-.043) photos .663 (-.002); D norm docs .433 (-.167, multi-page -.274) photos .642 (-.043)
+  - saw: a trainable gain in fp32 (D) destabilises training (grad spikes 5-7.5); bf16's frozen LoRA-A / small steps is the working regime
+  - next: keep bf16; only revisit with an lr sweep 2e-6..5e-6
+- 2026-10-27 23:00 [job 176425] rate 4 (r4) vs rate 8: doc gain does NOT replicate; photos small gain at both seeds (1500 Q each, rubric judge)
+  - did: r4 seed-43 replicate 176425 (evals 176426/7) vs r8 no-norm s43 176243; s42 pair 174693 vs 173550
+  - saw: docs s42 +.034 (p=.001), s43 -.022 (p=.043): mean +.006; photos +.005 / +.029 (p=.002): mean +.017; r4 costs 1.8x tokens
+  - next: keep rate 8; rate 4 only if photos matter enough for +.017 at 1.8x
+- 2026-10-27 23:00 [job 176425] verdict: closed — rate-4 doc gain not replicated (s43 -.022); photos +.017 mean of 2 seeds
+- 2026-10-27 23:27 route-then-expand holds on same-document distractors (free re-split of existing evals): 379 Q (slides 315, multi-page 64) .818 vs uncompressed .805 (+.013, CI -.024..+.050)
+  - saw: routing 95% vs 99% with other-doc distractors; multi-page subset -.031 (n=64, CI -.109..+.047), routing 92%; infographics have no same-doc pages; VisRAG corpora: <=9 slides/deck, <=15 pages/doc
+  - next: untested: retrieved negatives, >10 pages (one-digit routing; needs original SlideVQA/MP-DocVQA docs)
