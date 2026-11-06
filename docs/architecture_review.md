@@ -58,6 +58,39 @@ The vision encoder is not in these numbers; raw runs it on every page, route-the
 over raw is larger. The expanded page must be available at query time: either the image (vision encoder at query
 time, about 25 ms per page) or its cached vision features (about 5 MB per page).
 
+### 1b. Hard test of route-then-expand (2026-10-28/29, `expQ/archq/`)
+
+Checkpoint 174908 against the uncompressed backbone on the same questions. Judge accuracy (higher is better);
+pick@1 = share of questions where the model routes to a gold page. route1 / route2 = one / two pages expanded raw,
+the rest stay `<MEM>`.
+
+| set | uncompressed | route1 | route2 | pick@1 |
+|---|---|---|---|---|
+| 4 ColQwen2-retrieved pages, 1,500 Q (`mm_docqa_retr4_1m`) | .791 | .783 | - | .90 |
+| 10 retrieved pages (`mm_docqa_retr10_1m`) | .764 | .747 | **.774** | .87 |
+| whole MP-DocVQA documents, 1-4 / 5-10 / 11-20 pages, 500 Q (`mm_docqa_longdoc_1m`) | .93 / .91 / .90 | .94 / .86 / .78 | - | .96 / .77 / .81 |
+| text, HotpotQA, 2 gold of 10 paragraphs, 1,500 Q (`text_hotpotqa_1500`) | .752 | .697 | **.751** | .92 |
+| robot frames, `ft_nav_4b` (all-`<MEM>` .804), 928 Q (`nav_ft_val_v2_gold`) | .792 | .761 | .769 | .71 |
+
+- route2 equals uncompressed on retrieved pages and on text, at about a third of the tokens. When the pick is right,
+  route1 is at or above uncompressed: the whole loss is the misses.
+- Long documents lose (11-20 pages −.115) because of picking; the second pick adds only 4-5 points there.
+- Robot frames: `<MEM>`s already match raw, so expanding only hurts (even the gold frames raw −.051).
+- Coarser `<MEM>`s (rate 32 / 64, no retraining) cut pick@1 from .87 to .66 / .55: an untrained coarse level is too
+  weak for a pyramid.
+- Expansion is modality-agnostic: a text document expands to its text (`gen_pisco_mixed`).
+
+**Retrieve-first versus self-routing (2x2, jobs 178245-178264, 1,500 Q each).** An external retriever picks as well
+as the model (ColQwen2 on pages, BGE on text). What matters is whether the unpicked pages stay as `<MEM>`s:
+
+| set | uncompressed (all raw) | top-2 raw only, ColQwen2 / model pick | top-2 raw + rest as `<MEM>` |
+|---|---|---|---|
+| 10 retrieved pages, 1 gold | .764 | .802 / .799 (1/5 of the tokens) | about −.02 below raw-only |
+| HotpotQA, 2 gold of 10 | .752 | both gold in top-2 only .42-.56 | route2 .751; the `<MEM>` rest adds +.04 to +.16 |
+
+Reading: the compressed rest is insurance against a missed pick. Keep it for multi-hop text, drop it for single-page
+document questions. An adaptive keep/drop switch added nothing.
+
 ### 2. Where the answer gets lost: compression or use?
 
 Each gold page is transcribed twice: from its pixels by the uncompressed model (reference), and from its `<MEM>`s alone
@@ -146,6 +179,96 @@ after a full prefill; PISCO also removes the prefill. Per-document KV reuse (Tur
 state too, exact with a stored transition matrix (Hypic 2607.01299) but about 50 MB per page on Qwen3.5-4B
 (8 MB on Qwen3-4B).
 
+## Architecture levers the norm result opened (archq2, 2026-10-29)
+
+The connector norm (photos +.021 at two seeds, documents unchanged) showed that the read-out path still has slack. A
+second review (ten papers from 2024 to February 2026) looked at each piece of that path. Our model reads the
+compressor's **last layer** at the `<MEM>` positions, the `<MEM>`s sit **after the chunk with consecutive position
+ids** in both compressor and decoder, and the connector is a 2-layer ReLU MLP plus the norm.
+
+| design point | our choice | finding | size of the effect |
+|---|---|---|---|
+| compressor layer read | last layer only | an LM used as a compressor: the last layer is the worst single layer, a middle layer the best (ComprExIT 2602.03784); ViTs: fusing a mid and the final layer helps every benchmark (Dense Connector 2405.13800) | ComprExIT, Llama-3.2-1B, 4×: last layer F1 49.4, middle layer 63.9, multi-layer 66.6; Dense Connector +1 to +2.7 points, no extra tokens |
+| position ids of memory tokens | consecutive, after the chunk | spread the memory tokens' ids over the chunk they compress and keep them in the decoder ("Position IDs Matter", EMNLP Findings 2025, 2409.14364) | ICAE-1B, 5×: reconstruction BLEU 31.8 → 96.0, out-of-domain QA F1 40.0 → 43.9; 500x +2.3; gains hold to 15×, gone at 31× |
+| memory tokens vs pooling | learned `<MEM>` tokens | averaging groups of hidden states beats appended memory tokens, which also degrade with length (ARC-Encoder 2510.20535; GMSA 2505.12215). GMSA cites neither PISCO nor COCOM as a baseline, so its memory-token row may be undertrained | ARC, Mistral-7B, 8×: pooled 41.7-42.1 vs memory tokens 38.4; GMSA, Qwen3-4B, 4×: merging 60.4 EM vs learnable tokens 21.9 |
+| connector | 2-layer MLP + norm | simple MLPs win over resamplers and transformer projectors (LLaVA-UHD v4 2605.08985: +3 to +7 at 4×; SeleCom 2602.15856); GMSA disagrees: one transformer block initialised from the decoder's first layer is its biggest lever, random init gives nothing | GMSA: MLP only 20.2 EM, decoder-initialised block 60.4, random 19.5 |
+| norm on the vectors | learnable-gain RMSNorm | hard or soft norm constraints are worse than none (SeleCom) | consistent with the norm probe: equalising lengths is fine, shrinking is not |
+
+Nothing new supports per-layer KV injection, cross-attention readers or gated injection for a decoder that is finetuned
+anyway. Pooling and the compressor-side position layout need a stage-2 retrain (the compressor must relearn where to
+write), so they wait for the two finetune-only arms:
+
+- **Arm 1, multi-layer read-out** (`PISCOConfig.compressor_extra_layers=[18]`, Qwen3.5-4B has 32 layers): the `<MEM>`
+  hidden states of layer 18 (unit-RMS, no gain) are concatenated with the last layer's; the connector's first Linear
+  widens and its new columns start at zero, so the retrofitted model is byte-identical to the checkpoint until
+  training moves them. Targets the "lost in compression" failures (infographics).
+- **Arm 2, spread `<MEM>` positions** (`PISCOConfig.mem_position_stride=8` = `compr_rate`): each `<MEM>` occupies 8
+  position ids, centred in its slot, and the text after a run of k `<MEM>`s continues 8k ids later, so a compressed
+  page keeps the positional footprint of its raw tokens at no token cost (decoder side only; the compressor keeps
+  the legacy layout). Built from the decoder input ids in `PISCO.decoder_position_ids`, applied in `forward` and
+  `generate`, and in every decoder call of `scripts/eval_mm_docqa.py` (including route-then-expand, where Qwen's M-RoPE
+  ids for the raw pages are computed first and the shifts added on top). Targets the "use" failures on multi-page
+  documents. Caveat: Qwen3.5 applies RoPE in its 8 full-attention layers only, so the effect may be smaller than in
+  the papers (full-attention decoders).
+- Both arms: 173550 recipe from `pt_mm_v4kd_4b` (norm on), seeds 42 and 43 (jobs 178319 / 178320 arm 1, 178321 /
+  178322 arm 2, launched 2026-10-29), paired with 174908 / 176242 (norm, same seeds) on the 1,500-question document
+  and photo sets; a gain counts when it exceeds the seed spread (~.03 on
+  documents) at both seeds. Shake-out: `mm_shakeout.sh … "--config_override compressor_extra_layers=[18]
+  --config_override mem_position_stride=8"` (retrofit equality, position footprint) and `eval_mm_4b.sh` with
+  `CFG="mem_position_stride=8 compressor_extra_layers=[18]"` on 4 questions, all-`<MEM>` and `RAW=route1`.
+  Unit tests: `run_tests_cpu.sh` (`test_positions.py`).
+- The connector itself was probed at inference before any connector arm ([connector_probe.md](connector_probe.md)):
+  a refit linear map equals the trained MLP on documents and the decoder ignores `<MEM>` order inside a page, so
+  deeper or wider MLPs are not the lever; token mixing over a chunk or a decoder-initialised block would be.
+- **Outcome of the two finetune arms (2026-10-30).** Judge accuracy on 1,500 questions, arm minus the norm run at
+  the same seed (95% CI):
+
+  | arm | documents, seed 42 | documents, seed 43 | photos, seed 42 | photos, seed 43 |
+  |---|---|---|---|---|
+  | 1 multi-layer read-out (layer 18) | −.031 (−.052 to −.009) | +.010 (−.010 to +.028) | −.019 (−.037 to −.001) | −.011 (−.027 to +.006) |
+  | 2 spread `<MEM>` positions, decoder side | −.018 (−.037 to +.001) | +.004 (−.015 to +.023) | −.026 (−.043 to −.008) | −.006 (−.022 to +.011) |
+
+  Arm 1 was a null test: the finetune left the new layer-18 columns 50× smaller than the old ones (a finetune at
+  lr 2e-5 does not train the connector), so its numbers are seed noise around an unchanged model. Arm 2 is flat to
+  slightly negative, as the position probe predicted: every `<MEM>` already encodes its place in its chunk
+  (R² .92-.97), so decoder-side ids add nothing. Both lessons point the same way: changes to what the compressor
+  writes, or where it reads, have to be trained from stage 1.
+- **archq3 VERDICT (2026-11-03): the trained position layout wins.** Compressor side: each `<MEM>` gets the
+  position id of the middle of its segment, image `<MEM>`s the 2D M-RoPE id of their tile centre
+  (`PISCOConfig.compressor_mem_layout=spread`, `compressor_spread_position_ids`); decoder side: the spread ids
+  (`mem_position_stride=8`). MLP connector in both chains, so the layout is the only variable. Reduced chain at equal
+  budget: 1M text samples (stage 1, 180486 vs the tail-layout 143229), one stage-2 pass with the v4kd recipe at 100k
+  samples (183537 vs 180487), finetune with the norm at two seeds. Judge accuracy, 1,500 Q, paired on the same questions:
+
+| set, seed | spread chain | tail chain, same budget | difference (95% CI) | full-budget norm model (160k stage 2) | difference to it (95% CI) |
+|---|---|---|---|---|---|
+| documents, s42 | .599 (183814) | .507 (183538) | +.093 (+.069 to +.115) | .599 (174908) | .000 (−.023 to +.023) |
+| documents, s43 | .618 (183816) | .543 (183539) | +.075 (+.051 to +.099) | .591 (176242) | +.027 (+.003 to +.050) |
+| photos, s42 | .671 (183814) | .648 (183538) | +.023 (+.002 to +.043) | .685 (174908) | −.015 (−.034 to +.005) |
+| photos, s43 | .671 (183816) | .649 (183539) | +.021 (+.002 to +.039) | .675 (176242) | −.004 (−.023 to +.016) |
+
+  Every document source gains at both seeds (infographics +.076 / +.062, multi-page +.116 / +.108, slides +.086 /
+  +.056). With 62% of the stage-2 data the layout chain equals the production model on documents and is within noise
+  on photos. Consequences: the spread layout is the stage-1 base of every next chain; the full-budget spread chain
+  is training (184769 → 184777 → 184778 / 184780 → evals, vs 174908 / 176242). **archq3b (coarse-to-fine slot order,
+  `spread_coarse`) is parked (2026-11-04):** it is not a hierarchy. The bit-reversal order starts at segment 0, so the
+  first kept slot sits at the start of the chunk (n = 33: start, end, middle, quarters), not at the middle as the
+  docstring says; and a position id gives a slot a point, not a span, so no order makes one slot cover the whole chunk
+  without nested-budget training (lower levels hidden from the decoder at random) and a level marker. Its stage-1
+  model also has weaker ownership than spread (.927 vs .977) and more late←early redundancy (R² .109 vs .013). Its
+  stage 2 died in the BeeGFS outage of 2026-11-04 and is not relaunched.
+- **Parked for later rounds (owner, 2026-10-30: one variable per round):** the per-slot ownership loss, pooling
+  instead of `<MEM>` tokens ([mem_tokens_review.md](mem_tokens_review.md)).
+- **Layout mechanism check (2026-11-02, text, stage-1 pair at equal budget):** with the spread layout a slot
+  predicts the words of its own segment better than another segment's in 97.7% of slots (tail layout: 81.4%); the
+  late slots stop being dead weight (keeping the first 75% costs +.060 vs +.015; keeping every second one +.054 vs
+  −.055); averaging a chunk's slots costs more (+.21 vs +.16); the HotpotQA answer NLL of the raw stage-1 model is
+  lower (1.720 vs 1.751). Late slots are not linear copies of early ones under either layout (R² ≤ .04). The layout
+  does what it was built for. **Stage-2 pair (2026-11-02, equal budget):** the raw spread model's answer loss on the
+  finetuning labels is lower on every modality (pages 1.138 vs 1.334, text 1.812 vs 1.927, photos 1.765 vs 1.802);
+  text ownership .977 vs .799; on pages the late slots are used (dropping the last quarter costs +.14 vs +.05) and
+  slot order starts to matter (shuffle +.07 vs −.07). The accuracy test is the chain comparison (finetunes 183814 /
+  183816 vs 183538 / 183539).
 ## What to change, in order
 
 | # | change | cost | expected effect |
@@ -156,6 +279,7 @@ state too, exact with a stored transition matrix (Hypic 2607.01299) but about 50
 | 4 | Store `<MEM>`s in int8; serve with a float16 linear-attention state | none | half the storage; +9-14% throughput on long answers |
 | 5 | If speed matters more than reuse of Qwen3.5: a **full-attention VLM decoder** (e.g. Qwen3-VL-4B); it must stay a VLM, since #1 shows it raw pages | stage-2 + finetune, about 2-3 GPU-days | 5.0× instead of 3.0× at 512-token answers under load |
 | 6 | A **0.8B compressor** | stage-2 + finetune | 3× cheaper indexing; risk on dense pages (smaller vision tower) |
+| 7 | **Spread `<MEM>` layout from stage 1** (section above): done 2026-11-03, +.08 on documents and +.02 on photos vs the tail layout at equal budget, 2 seeds | stage 1 + 2 + finetune (~2.5 GPU-days at the reduced budget) | adopt in the next full-budget chain; archq3b coarse-to-fine order under test |
 
 Not worth it now: per-layer KV injection, cross-attention readers, rendering text as images, per-document decoder-state
 caching on Qwen3.5 (50 MB per page), more `<MEM>`s everywhere (rate 4: +.034 for 1.8× the tokens).

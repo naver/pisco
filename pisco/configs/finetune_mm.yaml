@@ -51,4 +51,8 @@ model_config_overrides:
   connector_out_norm: true
   connector_out_norm_init: 0.461
 
+# Connector learning rate (null = hf_training.learning_rate). At 2e-5 the connector moves < 1% in a finetune, so a
+# connector change needs its own rate to be tested here; 5e-5 is the stage-2 rate it was learned with (pt_lora_mm).
+connector_lr: null
+
 model_name_or_path: null

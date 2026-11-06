@@ -2,11 +2,16 @@
 Pure Python on purpose: the vLLM env imports it without torch.
 
   project  the project's Yes/No prompt (bergen's, judge_teacher.judge_prompt); verdict = the reply contains "yes".
+  openeqa  OpenEQA's LLM-Match prompt (prompts/mmbench.txt, mmbench-extra.txt when the question has extra_answers,
+           verbatim, MIT, copied to scripts/openeqa_prompts/): the judge marks 1-5; verdict = (mark - 1) / 4, so the
+           mean verdict x 100 is LLM-Match. answers[0] is the reference answer, answers[1:] the extra answers. An
+           empty prediction is judged as "I don't know." (the campaign_eqa rule).
   rubric   an explicit rubric; the judge answers {"verdict": "yes"|"no", "reason": "..."}. In the judge study of
            2026-10-20 (expQ/judge_study, 3730 items, 7 conditions) this prompt made the fewest errors on the
            objective anchors (Qwen3-8B: 0.3% false "no" on exact matches, 0.9% false "yes" on wrong numbers,
            against 1.3% / 5.0% for `project`), while every model ranking stayed the same.
 """
+import os
 import re
 
 
@@ -33,7 +38,24 @@ RUBRIC_SYSTEM = (
     'Reply with one line of JSON: {"verdict": "yes" or "no", "reason": "<at most 15 words>"}'
 )
 
-PROMPTS = ("project", "rubric")
+PROMPTS = ("project", "rubric", "openeqa")
+
+_OPENEQA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "openeqa_prompts")
+_OPENEQA_TEMPLATES = {}
+
+
+def openeqa_prompt(question, gold_answers, prediction):
+    gold = list(gold_answers) if isinstance(gold_answers, list) else [gold_answers]
+    answer, extra = str(gold[0]), [str(a) for a in gold[1:]]
+    key = "mmbench-extra" if extra else "mmbench"
+    if key not in _OPENEQA_TEMPLATES:
+        _OPENEQA_TEMPLATES[key] = open(os.path.join(_OPENEQA_DIR, key + ".txt")).read()
+    pred = (prediction or "").strip() or "I don't know."
+    kw = dict(question=question, answer=answer, prediction=pred)
+    if extra:
+        kw["extra_answers"] = extra
+    return [{"role": "user", "content": _OPENEQA_TEMPLATES[key].format(**kw)}]
+
 
 
 def rubric_prompt(question, gold_answers, prediction):
@@ -44,12 +66,19 @@ def rubric_prompt(question, gold_answers, prediction):
 
 
 def build_prompt(kind, question, gold_answers, prediction):
-    return (project_prompt if kind == "project" else rubric_prompt)(question, gold_answers, prediction)
+    fn = {"project": project_prompt, "rubric": rubric_prompt, "openeqa": openeqa_prompt}[kind]
+    return fn(question, gold_answers, prediction)
 
 
 def parse_verdict(reply, kind):
-    """1 / 0, or None when the reply holds no verdict. A thinking model's text after </think> is used."""
+    """1 / 0 (openeqa: (mark - 1) / 4 in [0, 1]), or None when the reply holds no verdict. A thinking model's text
+    after </think> is used."""
     t = reply.split("</think>")[-1].strip().lower() if "</think>" in reply else reply.strip().lower()
+    if kind == "openeqa":   # OpenEQA's parse rule: the first integer 1-5 of the reply
+        for tok in re.findall(r"\d+", t):
+            if 1 <= int(tok) <= 5:
+                return (int(tok) - 1) / 4.0
+        return None
     if kind == "rubric":
         m = re.search(r'"verdict"\s*:\s*"(yes|no)"', t)
         if m:

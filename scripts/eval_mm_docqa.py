@@ -26,7 +26,7 @@ import re
 import sys
 import time
 from collections import defaultdict
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import torch
@@ -56,6 +56,14 @@ EXPAND_SYSTEM_PROMPT = (
 )
 
 
+
+def _cfg_value(v: str):
+    """JSON value, or the bare string when it is not JSON (so compressor_mem_layout=spread needs no quotes)."""
+    try:
+        return json.loads(v)
+    except json.JSONDecodeError:
+        return v
+
 def final_answer(text: str) -> str:
     """The part after the last 'Answer:' of an expand-style output (the whole text when there is none)."""
     i = text.rfind("Answer:")
@@ -82,6 +90,44 @@ def make_collator(model: PISCO, *, topk: int, compressor_max_length: int, image_
     )
 
 TIMINGS = defaultdict(list)
+COMPRESS_SLICE = 0   # --compress_slice: chunks per compressor forward (0 = all at once, the legacy single call)
+
+
+def compress_sliced(model: PISCO, comp: dict, is_image, slice_n: int = None) -> torch.Tensor:
+    """`model.compress` over the collated chunks of one example, `slice_n` chunk rows per forward. The output is
+    identical to one call (rows come back in chunk order and are concatenated), only the peak memory changes: a whole
+    OpenEQA tour (up to 400 frames, 11,600 <MEM>) does not fit one forward of the 4B compressor on an 80 GB A100.
+    Pixels are split with their chunks: image j of the batch owns prod(image_grid_thw[j]) rows of pixel_values."""
+    slice_n = COMPRESS_SLICE if slice_n is None else slice_n
+    ids, mask = comp["compressor_input_ids"], comp["compressor_attention_mask"]
+    n = ids.shape[0]
+    if not slice_n or slice_n >= n:
+        return model.compress(ids, mask, pixel_values=comp.get("pixel_values"), image_grid_thw=comp.get("image_grid_thw"),
+                              mm_token_type_ids=comp.get("mm_token_type_ids"))
+    is_image = list(is_image)
+    assert len(is_image) == n, (len(is_image), n)
+    grids = comp.get("image_grid_thw")
+    img_of_row = [None] * n            # chunk row -> image index
+    k = 0
+    for r in range(n):
+        if is_image[r]:
+            img_of_row[r] = k; k += 1
+    assert grids is None or k == grids.shape[0], (k, None if grids is None else grids.shape)
+    px_off = [0]
+    if grids is not None:
+        for g in grids.tolist():
+            px_off.append(px_off[-1] + g[0] * g[1] * g[2])
+    out = []
+    for a in range(0, n, slice_n):
+        b = min(n, a + slice_n)
+        imgs = [img_of_row[r] for r in range(a, b) if img_of_row[r] is not None]
+        if imgs:
+            i0, i1 = imgs[0], imgs[-1] + 1
+            out.append(model.compress(ids[a:b], mask[a:b], pixel_values=comp["pixel_values"][px_off[i0]:px_off[i1]],
+                                      image_grid_thw=grids[i0:i1], mm_token_type_ids=comp["mm_token_type_ids"][a:b]))
+        else:
+            out.append(model.compress(ids[a:b], mask[a:b]))
+    return torch.cat(out, 0)
 
 
 def with_distractors(ds, i, row, by_source, n_extra) -> Dict[str, Any]:
@@ -108,15 +154,28 @@ def with_distractors(ds, i, row, by_source, n_extra) -> Dict[str, Any]:
     return out
 
 
-def gold_only_row(row) -> Dict[str, Any]:
-    """The row with its distractor pages removed (gold pages kept in order, gold_positions renumbered)."""
-    gold = sorted({int(g) for g in (row.get("gold_positions") or [])})
+def keep_pages_row(row, positions) -> Dict[str, Any]:
+    """The row with only the pages at `positions` (kept in their order, gold_positions renumbered)."""
+    keep = sorted({int(p) for p in positions})
+    gold = {int(g) for g in (row.get("gold_positions") or [])}
     imgs = list(row.get("doc_images") or [])
     out = dict(row)
-    out["docs"] = [row["docs"][g] for g in gold]
-    out["doc_images"] = [imgs[g] if g < len(imgs) else None for g in gold]
-    out["gold_positions"] = list(range(len(gold)))
+    out["docs"] = [row["docs"][p] for p in keep]
+    out["doc_images"] = [imgs[p] if p < len(imgs) else None for p in keep]
+    out["gold_positions"] = [n for n, p in enumerate(keep) if p in gold]
     return out
+
+
+def gold_only_row(row) -> Dict[str, Any]:
+    """The row with its distractor pages removed (gold pages kept in order, gold_positions renumbered)."""
+    return keep_pages_row(row, row.get("gold_positions") or [])
+
+
+def ranked_pages(rank_scores, row, k) -> List[int]:
+    """The k page positions an external retriever ranks highest (--rank_scores: {query_id: [score per page]})."""
+    sc = rank_scores[str(row.get("query_id"))]
+    assert len(sc) == len(row["docs"]), f"{row.get('query_id')}: {len(sc)} scores for {len(row['docs'])} pages"
+    return [int(j) for j in np.argsort(sc, kind="stable")[::-1][:k]]
 
 
 def _sync():
@@ -180,7 +239,8 @@ def quantize_mems(emb: torch.Tensor, kind: str) -> torch.Tensor:
 
 @torch.inference_mode()
 def gen_pisco(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, decoder_max_length, max_new_tokens,
-              text_only=False, num_samples=0, temperature=1.0, top_p=0.95, system=None, mem_quant=None):
+              text_only=False, num_samples=0, temperature=1.0, top_p=0.95, system=None, mem_quant=None,
+              mem_keep_frac=None, mem_keep_mode="first"):
     dtok = model.decoder_tokenizer
     docs = [d if d else " " for d in row["docs"]]
     imgs = [] if text_only else list(row.get("doc_images") or [])
@@ -199,25 +259,39 @@ def gen_pisco(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, 
     comp = collate_compressor([batch], coll, coll.vision_ids)
     comp = {k: v.to(device) for k, v in comp.items()}
     _sync(); t = time.perf_counter()
-    emb = model.compress(comp["compressor_input_ids"], comp["compressor_attention_mask"],
-                         pixel_values=comp.get("pixel_values"), image_grid_thw=comp.get("image_grid_thw"),
-                         mm_token_type_ids=comp.get("mm_token_type_ids"))
+    emb = compress_sliced(model, comp, batch.is_image)
     _sync(); TIMINGS["compress"].append(time.perf_counter() - t)
     if mem_quant:
         emb = quantize_mems(emb, mem_quant)
+    if mem_keep_frac is not None and mem_keep_frac < 1.0:
+        # Budget probe: keep only the first ceil(frac * n) <MEM>s of every chunk (the connector probe found the last
+        # quarter unused), and remove the matching placeholders from the prompt (chunk order == <MEM> order).
+        if mem_keep_mode == "first":      # the first ceil(frac * n) slots of each chunk
+            keep = torch.cat([torch.arange(n) < max(1, -(-int(n * mem_keep_frac) // 1)) for n in batch.n_mems]).to(device)
+        else:                             # "even": every k-th slot, k = round(1 / frac), spread over the chunk
+            k = max(1, int(round(1.0 / mem_keep_frac)))
+            keep = torch.cat([torch.arange(n) % k == 0 for n in batch.n_mems]).to(device)
+        ids = dec["input_ids"][0]
+        mem_pos = (ids == dtok.mem_token_id).nonzero().squeeze(1)
+        drop_tok = torch.zeros(ids.shape[0], dtype=torch.bool)
+        drop_tok[mem_pos[~keep.cpu()]] = True
+        dec = {k: v[:, ~drop_tok] for k, v in dec.items()}
+        emb = emb[keep]
+        got = int(keep.sum())
     embeds = model.replace_embeddings(emb, dec["input_ids"].to(device))
     attn = dec["attention_mask"].to(device)
     eos_ids = model.decoder_eos_ids()
+    posk = _pos_kwargs(model, dec["input_ids"].to(device), attn)
     _sync(); t = time.perf_counter()
     if num_samples:   # same greedy tokens, plus the per-step logits for a confidence score
         res = model.decoder.generate(inputs_embeds=embeds, attention_mask=attn, do_sample=False, top_p=None,
                                      max_new_tokens=max_new_tokens, eos_token_id=eos_ids,
-                                     return_dict_in_generate=True, output_logits=True)
+                                     return_dict_in_generate=True, output_logits=True, **posk)
         out = res.sequences
     else:
         out = model.decoder.generate(inputs_embeds=embeds, attention_mask=attn,
                                      do_sample=False, top_p=None, max_new_tokens=max_new_tokens,
-                                     eos_token_id=eos_ids)
+                                     eos_token_id=eos_ids, **posk)
     _sync(); TIMINGS["decode"].append(time.perf_counter() - t)
     text = dtok.batch_decode(out, skip_special_tokens=True)[0].strip()
     stats = {"mems_used": got, "n_images": int(sum(batch.is_image)),
@@ -227,7 +301,7 @@ def gen_pisco(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, 
         sids = model.decoder.generate(inputs_embeds=embeds, attention_mask=attn, do_sample=True,
                                       temperature=temperature, top_p=top_p, top_k=0,   # nucleus only (no HF top-k 50)
                                       num_return_sequences=num_samples,
-                                      max_new_tokens=max_new_tokens, eos_token_id=eos_ids)
+                                      max_new_tokens=max_new_tokens, eos_token_id=eos_ids, **posk)
         stats["samples"] = [s.strip() for s in dtok.batch_decode(sids, skip_special_tokens=True)]
         # a sample that never emitted a stop token was cut at max_new_tokens (unusable as a target)
         stats["samples_finished"] = [bool(any(int(x) in eos_ids for x in r)) for r in sids]
@@ -244,29 +318,69 @@ def _reset_rope_deltas(module):
             m.rope_deltas = None
 
 
+def _pos_kwargs(model: PISCO, ids: torch.Tensor, attn: torch.Tensor, mm: Optional[dict] = None) -> dict:
+    """`position_ids=` for a decoder call on a prompt with <MEM>s when the checkpoint spreads them
+    (PISCOConfig.mem_position_stride > 1); {} for the legacy layout. `mm` = pixel kwargs of a prompt that also
+    holds raw image spans: Qwen's own M-RoPE ids are computed first and the <MEM> shifts added on top."""
+    if int(getattr(model.config, "mem_position_stride", 1) or 1) <= 1:
+        return {}
+    base = None
+    if mm:
+        rope = next(m for m in model.decoder.modules() if hasattr(m, "get_rope_index"))
+        base, _ = rope.get_rope_index(ids, image_grid_thw=mm["image_grid_thw"], attention_mask=attn,
+                                      mm_token_type_ids=mm["mm_token_type_ids"])
+    return {"position_ids": model.decoder_position_ids(ids, attn, base=base)}
+
+
 @torch.inference_mode()
 def route_logprobs(model: PISCO, background: str, emb, query: str, n_docs: int, device) -> List[float]:
     """log p("Document j") over the n_docs candidates, from the all-<MEM> context: the stage-2 `find` task
-    (pisco.mm_tasks) asked about the answer instead of a snippet. One forward: candidates differ in their last token."""
+    (pisco.mm_tasks) asked about the answer instead of a snippet. Constrained decoding over the candidates' token
+    trie, each answer closed by the end-of-turn token: one forward per branching point, i.e. one up to 10 pages (only
+    the digit differs; same scores as a softmax over the 10 digits) and two up to 20 ("1", then a digit or the end)."""
     dtok = model.decoder_tokenizer
     msgs = [{"role": "system", "content": mm_tasks.FIND_SYSTEM_PROMPT},
             {"role": "user", "content": mm_tasks.user_content(background, ROUTE_QUESTION.format(q=query))}]
     prompt = dtok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=False)
-    cands = [dtok(prompt + mm_tasks.find_answer(j), add_special_tokens=False)["input_ids"] for j in range(n_docs)]
-    assert all(len(c) == len(cands[0]) and c[:-1] == cands[0][:-1] for c in cands), "candidates differ before the digit"
-    ids = torch.tensor([cands[0][:-1]], device=device)
-    _reset_rope_deltas(model.decoder)
-    logits = model.decoder(inputs_embeds=model.replace_embeddings(emb, ids), attention_mask=torch.ones_like(ids),
-                           logits_to_keep=1).logits[0, -1].float()
-    return torch.log_softmax(logits[[c[-1] for c in cands]], -1).tolist()
+    base = dtok(prompt, add_special_tokens=False)["input_ids"]
+    end = dtok.convert_tokens_to_ids("<|im_end|>")
+    seqs = []
+    for j in range(n_docs):
+        c = dtok(prompt + mm_tasks.find_answer(j), add_special_tokens=False)["input_ids"]
+        assert c[:len(base)] == base, "the answer re-tokenizes the prompt"
+        seqs.append(tuple(c[len(base):]) + (end,))
+    lp = [0.0] * n_docs
+
+    def walk(prefix, idx):
+        nxt = {}
+        for i in idx:
+            nxt.setdefault(seqs[i][len(prefix)], []).append(i)
+        if len(nxt) > 1:
+            ids = torch.tensor([base + list(prefix)], device=device)
+            _reset_rope_deltas(model.decoder)
+            logits = model.decoder(inputs_embeds=model.replace_embeddings(emb, ids), attention_mask=torch.ones_like(ids),
+                                   logits_to_keep=1, **_pos_kwargs(model, ids, torch.ones_like(ids))).logits[0, -1].float()
+            toks = list(nxt)
+            for t, l in zip(toks, torch.log_softmax(logits[toks], -1).tolist()):
+                for i in nxt[t]:
+                    lp[i] += l
+        for t, sub in nxt.items():
+            if len(sub) > 1:
+                walk(prefix + (t,), sub)
+
+    walk((), list(range(n_docs)))
+    return lp
 
 
 @torch.inference_mode()
 def gen_pisco_mixed(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, decoder_max_length,
-                    max_new_tokens, raw_policy):
-    """Selective expansion (REFRAG-style): some pages reach the decoder as raw image spans, the others as <MEM>s.
+                    max_new_tokens, raw_policy, rank_scores=None, drop_unexpanded=False):
+    """Selective expansion (REFRAG-style): some documents reach the decoder raw (an image page as its image span, a
+    text document as its text), the others as <MEM>s.
     raw_policy: gold = the gold pages raw (oracle upper bound); routeK = the K pages the model itself ranks highest
-    (route_logprobs on the all-<MEM> context) raw; all = every page raw, through the PISCO decoder.
+    (route_logprobs on the all-<MEM> context) raw; rankK = the K pages an external retriever ranks highest
+    (`rank_scores`); all = every page raw, through the PISCO decoder. drop_unexpanded: the other pages are left out
+    instead of kept as <MEM>s (retrieve-then-read; the kept pages are renumbered "Document 0..").
     The <MEM> vectors enter through a hook on the decoder's input-embedding layer, so Qwen's own forward places the
     vision features and builds the M-RoPE positions from input_ids."""
     dtok = model.decoder_tokenizer
@@ -279,9 +393,7 @@ def gen_pisco_mixed(model: PISCO, coll: MultimodalFineTuningCollator, row, *, de
         full.extend(b)
     comp = {k: v.to(device) for k, v in collate_compressor([full], coll, coll.vision_ids).items()}
     _sync(); t = time.perf_counter()
-    emb = model.compress(comp["compressor_input_ids"], comp["compressor_attention_mask"],
-                         pixel_values=comp.get("pixel_values"), image_grid_thw=comp.get("image_grid_thw"),
-                         mm_token_type_ids=comp.get("mm_token_type_ids"))
+    emb = compress_sliced(model, comp, full.is_image)
     _sync(); TIMINGS["compress"].append(time.perf_counter() - t)
     offs = np.cumsum([0] + [b.total_mems for b in per_doc])
     gold = {int(g) for g in (row.get("gold_positions") or [])}
@@ -290,21 +402,28 @@ def gen_pisco_mixed(model: PISCO, coll: MultimodalFineTuningCollator, row, *, de
         raw = {g for g in gold if g < len(docs)}
     elif raw_policy == "all":
         raw = set(range(len(docs)))
+    elif raw_policy.startswith("rank"):   # rankK: the K pages the external retriever ranks highest
+        picks = ranked_pages(rank_scores, row, int(raw_policy[len("rank"):]))
+        raw = set(picks)
+        stats.update(route_pick=picks[0], route_picks=picks, route_hit=float(picks[0] in gold))
     else:   # routeK: the K pages the model ranks highest
         bg = "".join(f"Document {j}:" + dtok.mem_token * b.total_mems for j, b in enumerate(per_doc))
         lp = route_logprobs(model, bg, emb, query, len(docs), device)
         picks = [int(j) for j in np.argsort(lp)[::-1][: int(raw_policy[len("route"):])]]
         raw = set(picks)
         stats.update(route_logprobs=lp, route_pick=picks[0], route_picks=picks, route_hit=float(picks[0] in gold))
-    raw = {j for j in raw if per_doc[j].is_image and per_doc[j].is_image[0]}
     merge = merge_size_of(model.image_processor)
     background, pvs, grids, keep = "", [], [], []
-    for j, b in enumerate(per_doc):
-        if j in raw:
-            background += f"Document {j}:" + image_span_text(n_image_tokens(b.image_grid_thw[0], merge))
+    shown = sorted(raw) if drop_unexpanded else range(len(per_doc))
+    for n, j in enumerate(shown):
+        b, label = per_doc[j], n if drop_unexpanded else j
+        if j in raw and b.is_image[0]:
+            background += f"Document {label}:" + image_span_text(n_image_tokens(b.image_grid_thw[0], merge))
             pvs.append(b.pixel_values[0]); grids.append(list(b.image_grid_thw[0]))
+        elif j in raw:   # whole cleaned text, as the uncompressed prompt of example_chunks (not cut to one chunk)
+            background += f"Document {label}:" + coll.clean_text(docs[j])
         else:
-            background += f"Document {j}:" + dtok.mem_token * b.total_mems
+            background += f"Document {label}:" + dtok.mem_token * b.total_mems
             keep.append(emb[offs[j]:offs[j + 1]])
     prompt = _build_chat_prompt(dtok, background=background, question=query)
     dec = dtok(prompt, return_tensors="pt", add_special_tokens=False, padding=False)
@@ -336,15 +455,16 @@ def gen_pisco_mixed(model: PISCO, coll: MultimodalFineTuningCollator, row, *, de
     h = model.decoder.get_input_embeddings().register_forward_hook(put_mems)
     try:
         _reset_rope_deltas(model.decoder)
+        posk = _pos_kwargs(model, ids, kwargs["attention_mask"], mm=kwargs if pvs else None)
         _sync(); t = time.perf_counter()
         out = model.decoder.generate(**kwargs, do_sample=False, top_p=None, max_new_tokens=max_new_tokens,
-                                     eos_token_id=model.decoder_eos_ids())
+                                     eos_token_id=model.decoder_eos_ids(), **posk)
         _sync(); TIMINGS["decode"].append(time.perf_counter() - t)
     finally:
         h.remove()
     assert sel.shape[0] == 0 or fired, "the embedding hook never fired: <MEM> vectors were not injected"
     text = dtok.batch_decode(out[:, ids.shape[1]:], skip_special_tokens=True)[0].strip()
-    stats.update(mems_used=int(sel.shape[0]), n_images=len(per_doc), n_raw=len(raw),
+    stats.update(mems_used=int(sel.shape[0]), n_images=sum(bool(b.is_image[0]) for b in per_doc), n_raw=len(raw),
                  decoder_prompt_tokens=int(ids.shape[1]))
     return text, stats
 
@@ -406,18 +526,35 @@ def main():
                     help="lower bound of the pixel budget (default: the checkpoint's / processor's, 65536); needed when "
                          "--image_max_pixels is set below it, e.g. the equal-token low-resolution baseline")
     ap.add_argument("--merge_lora", action="store_true")
+    ap.add_argument("--config_override", action="append", default=[], metavar="KEY=VALUE",
+                    help="PISCOConfig field set before the model is built (JSON value), e.g. mem_position_stride=8 "
+                         "or compressor_extra_layers=[18]; for shake-outs of an option the checkpoint lacks")
+    ap.add_argument("--compress_slice", type=int, default=0,
+                    help="chunks per compressor forward (0 = one call); exact, only lowers peak memory (whole tours)")
+    ap.add_argument("--mem_keep_frac", type=float, default=None,
+                    help="budget probe: keep only the first FRAC of every chunk's <MEM>s (and placeholders); 0.75 = drop the last quarter")
+    ap.add_argument("--mem_keep_mode", choices=["first", "even"], default="first",
+                    help="with --mem_keep_frac: keep the first slots of each chunk, or every k-th slot (k = 1/frac)")
     ap.add_argument("--mem_quant", choices=["int8", "fp8", "int4"], default=None,
                     help="pisco mode: store the <MEM> vectors at this precision (storage probe, quantize_mems)")
     ap.add_argument("--extra_distractors", type=int, default=0,
                     help="add N pages of other documents of the same source, then shuffle (with_distractors); "
                          "set --topk_docs to the new page count")
     ap.add_argument("--gold_only", action="store_true", help="drop the distractor pages (both modes): distractor interference")
+    ap.add_argument("--head_scales", default=None, help="JSON from scripts/probe_seal.py: per-head output scales on the decoder's full-attention layers (SEAL probe)")
     ap.add_argument("--answer_style", choices=["brief", "expand"], default="brief",
                     help="pisco mode: expand = copy the evidence, then answer (EXPAND_SYSTEM_PROMPT); prediction = the "
                          "text after 'Answer:', the full output kept as prediction_raw")
-    ap.add_argument("--raw_policy", choices=["none", "gold", "route1", "route2", "all"], default="none",
-                    help="pisco mode: pages fed raw (image spans) instead of <MEM>s: gold pages (oracle), the page the "
-                         "model routes to, or all (selective-expansion probe, gen_pisco_mixed)")
+    ap.add_argument("--raw_policy", choices=["none", "gold", "route1", "route2", "rank1", "rank2", "all"], default="none",
+                    help="pisco mode: pages fed raw (image spans / text) instead of <MEM>s: gold pages (oracle), the "
+                         "page(s) the model routes to, the page(s) an external retriever ranks first (--rank_scores), "
+                         "or all (selective-expansion probe, gen_pisco_mixed)")
+    ap.add_argument("--rank_scores", default=None,
+                    help="JSON {query_id: [retriever score per page]}, for --raw_policy rankK and --keep_ranked")
+    ap.add_argument("--drop_unexpanded", action="store_true",
+                    help="with --raw_policy: leave the non-expanded pages out instead of keeping their <MEM>s")
+    ap.add_argument("--keep_ranked", type=int, default=0,
+                    help="base mode: keep only the K pages --rank_scores ranks first (retrieve-then-read baseline)")
     ap.add_argument("--num_samples", type=int, default=0,
                     help="pisco modes: also draw G sampled answers per question + greedy log-prob confidence")
     ap.add_argument("--temperature", type=float, default=1.0)
@@ -427,6 +564,8 @@ def main():
     ap.add_argument("--cut_at_user", action="store_true",
                     help="rescore: truncate predictions at a hallucinated next turn ('\\nuser\\n'), for files generated before <|im_end|> was a stop token")
     args = ap.parse_args()
+    global COMPRESS_SLICE
+    COMPRESS_SLICE = args.compress_slice
 
     if args.rescore:
         with open(args.rescore) as f:
@@ -463,8 +602,15 @@ def main():
         assert args.checkpoint_path, "--checkpoint_path required"
         overrides = {k: v for k, v in (("image_max_pixels", args.image_max_pixels),
                                        ("image_min_pixels", args.image_min_pixels)) if v}
+        for kv in args.config_override:
+            k, _, v = kv.partition("=")
+            overrides[k] = _cfg_value(v)
         model = PISCO.from_pretrained(args.checkpoint_path, **overrides)
         model.to(device).eval()
+        if args.head_scales:   # SEAL probe: per-head output scales on the decoder's full-attention layers
+            from pisco.head_scales import load_head_scales
+            load_head_scales(model.decoder, args.head_scales)
+            print(f"[head_scales] applied {args.head_scales}", flush=True)
         if args.merge_lora:   # fold LoRA into the weights: same outputs, ~1.8x faster per decoded token
             model.decoder = merge_lora_inplace(model.decoder)
             model.compressor = merge_lora_inplace(model.compressor)
@@ -492,6 +638,9 @@ def main():
             args.image_max_pixels = int(mp) if mp else None
         print(f"[base] {name}")
 
+    rank_scores = json.load(open(args.rank_scores)) if args.rank_scores else None
+    assert rank_scores or not (args.raw_policy.startswith("rank") or args.keep_ranked), "--rank_scores required"
+    assert not args.keep_ranked or args.mode == "base", "--keep_ranked is the base-mode baseline"
     records, agg = [], defaultdict(list)
     t0 = time.time()
     by_source = defaultdict(list)
@@ -504,11 +653,20 @@ def main():
         if args.gold_only:
             row = gold_only_row(row)
         if args.mode == "base":
+            hit = None
+            if args.keep_ranked:
+                picks = ranked_pages(rank_scores, row, args.keep_ranked)
+                hit = float(picks[0] in {int(g) for g in (row.get("gold_positions") or [])})
+                row = keep_pages_row(row, picks)
             pred, stats = gen_base(base, proc, tok, row, device=device, topk=args.topk_docs,
                                    max_new_tokens=args.max_new_tokens, decoder_max_length=args.decoder_max_length)
+            if hit is not None:
+                stats["route_hit"] = hit
+                agg["route_hit"].append(hit); agg[f"route_hit/{row.get('source', '?')}"].append(hit)
         elif args.raw_policy != "none":
             pred, stats = gen_pisco_mixed(model, coll, row, device=device, decoder_max_length=args.decoder_max_length,
-                                          max_new_tokens=args.max_new_tokens, raw_policy=args.raw_policy)
+                                          max_new_tokens=args.max_new_tokens, raw_policy=args.raw_policy,
+                                          rank_scores=rank_scores, drop_unexpanded=args.drop_unexpanded)
             if "route_hit" in stats:
                 agg["route_hit"].append(stats["route_hit"]); agg[f"route_hit/{row.get('source', '?')}"].append(stats["route_hit"])
         else:
@@ -517,7 +675,8 @@ def main():
                                     text_only=(args.mode == "pisco_text"),
                                     num_samples=args.num_samples, temperature=args.temperature, top_p=args.top_p,
                                     system=EXPAND_SYSTEM_PROMPT if args.answer_style == "expand" else None,
-                                    mem_quant=args.mem_quant)
+                                    mem_quant=args.mem_quant, mem_keep_frac=args.mem_keep_frac,
+                                    mem_keep_mode=args.mem_keep_mode)
             if args.answer_style == "expand":
                 stats["prediction_raw"], pred = pred, final_answer(pred)
         answers = list(row.get("answers") or [row.get("mistral_label", "")])
@@ -542,7 +701,9 @@ def main():
                     "image_max_pixels": args.image_max_pixels, "image_min_pixels": args.image_min_pixels,
                     "query_dependent": args.query_dependent, "raw_policy": args.raw_policy,
                     "answer_style": args.answer_style, "gold_only": args.gold_only, "mem_quant": args.mem_quant,
-                    "extra_distractors": args.extra_distractors,
+                    "mem_keep_frac": args.mem_keep_frac,
+                    "extra_distractors": args.extra_distractors, "rank_scores": args.rank_scores,
+                    "drop_unexpanded": args.drop_unexpanded, "keep_ranked": args.keep_ranked,
                     "num_samples": args.num_samples,
                     "temperature": args.temperature, "top_p": args.top_p, "top_k": 0,
                     **{f"time_{k}_mean_s": float(np.mean(v)) for k, v in TIMINGS.items()}})

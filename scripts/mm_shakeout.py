@@ -18,6 +18,7 @@ Usage:
 """
 
 import argparse
+import json
 import math
 import os
 import sys
@@ -43,6 +44,14 @@ from pisco.collator_utils import add_memory_tokens_to_inputs  # noqa: E402
 RESULTS = []
 PROBE_LINES = []
 
+
+
+def _cfg_value(v: str):
+    """JSON value, or the bare string when it is not JSON (so compressor_mem_layout=spread needs no quotes)."""
+    try:
+        return json.loads(v)
+    except json.JSONDecodeError:
+        return v
 
 def report(name, ok, detail=""):
     RESULTS.append((name, ok))
@@ -83,7 +92,14 @@ def main():
                     help="enable grad checkpointing on both backbones before the memory probe (as training does)")
     ap.add_argument("--probe_repeats", type=int, default=2,
                     help="fwd+bwd repetitions per batch size; the LAST timing is reported (first = Triton warm-up)")
+    ap.add_argument("--config_override", action="append", default=[], metavar="KEY=VALUE",
+                    help="PISCOConfig field set on the loaded checkpoint (JSON value), e.g. mem_position_stride=8, "
+                         "compressor_extra_layers=[18]; adds the archq2 checks below")
     args = ap.parse_args()
+    cfg_over = {}
+    for kv in args.config_override:
+        k, _, v = kv.partition("=")
+        cfg_over[k] = _cfg_value(v)
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device={dev}  ckpt={args.checkpoint}")
 
@@ -104,7 +120,7 @@ def main():
     # ---- load model
     t0 = time.time()
     model = PISCO.from_pretrained(
-        args.checkpoint, train_vision_lora=args.train_vision_lora, image_max_pixels=args.image_max_pixels
+        args.checkpoint, train_vision_lora=args.train_vision_lora, image_max_pixels=args.image_max_pixels, **cfg_over
     )
     model.to(dev)
     print(f"model loaded in {time.time() - t0:.0f}s; image_processor={'yes' if model.image_processor else 'NO'}")
@@ -141,6 +157,40 @@ def main():
         report("one-image compress", ok, f"emb={tuple(emb.shape)} expected n_mem={n_mem} ({198}//{rate}+1) row-std={var:.3g}")
     except Exception:
         traceback.print_exc(); report("one-image compress", False)
+
+    # ---- 3b. archq2: multi-layer read-out retrofit == old checkpoint; spread positions
+    extra = model.config.compressor_extra_layers
+    if extra:
+        try:
+            H = model.compressor_num_layers()
+            w = model.connector[0].weight.detach().float().cpu()
+            ck = torch.load(os.path.join(args.checkpoint, "connector.pt"), weights_only=True, map_location="cpu")["0.weight"].float()
+            hc = ck.shape[1]
+            same = torch.equal(w[:, :hc], ck) and bool((w[:, hc:] == 0).all())
+            with torch.no_grad():
+                hs = model.compressor(input_ids=batch["compressor_input_ids"], attention_mask=batch["compressor_attention_mask"],
+                                      pixel_values=batch["pixel_values"], image_grid_thw=batch["image_grid_thw"],
+                                      mm_token_type_ids=batch["mm_token_type_ids"], output_hidden_states=True,
+                                      logits_to_keep=1, use_cache=False).hidden_states
+                m = batch["compressor_input_ids"] == tok.mem_token_id
+                rms = {k: hs[k][m].float().pow(2).mean(-1).sqrt().mean().item() for k in list(extra) + [len(hs) - 1]}
+            report("extra-layer connector retrofit (zero columns, old weights kept)", same and len(hs) == H + 1,
+                   f"layers={extra} of {H}; hidden_states={len(hs)}; weight {tuple(ck.shape)}->{tuple(w.shape)}; "
+                   f"<MEM> RMS per layer {{{', '.join(f'{k}: {v:.1f}' for k, v in rms.items())}}}")
+        except Exception:
+            traceback.print_exc(); report("extra-layer connector retrofit", False)
+    stride = int(model.config.mem_position_stride or 1)
+    if stride > 1:
+        try:
+            dtok0 = model.decoder_tokenizer
+            ids = dtok0([dtok0.ae_token + dtok0.mem_token * 3 + "hello world"], return_tensors="pt", add_special_tokens=False)
+            pos = model.decoder_position_ids(ids["input_ids"], ids["attention_mask"])
+            n_mem = 3
+            exp_last = (ids["input_ids"].shape[1] - n_mem - 1) + n_mem * stride   # footprint of the prompt - 1
+            ok = pos is not None and int(pos[0, -1]) == exp_last and int(pos[0, 1]) == 1 + stride // 2
+            report("spread <MEM> positions", ok, f"stride={stride} ids={pos[0].tolist() if pos is not None else None}")
+        except Exception:
+            traceback.print_exc(); report("spread <MEM> positions", False)
 
     # ---- 4. mixed-batch equivalence
     try:
@@ -222,7 +272,14 @@ def main():
         mi = {k: v.to(dev) for k, v in mi.items()}
         with torch.no_grad():
             txt = model.generate(mi, max_new_tokens=24)
-        report("generate smoke", isinstance(txt, list) and len(txt) == 1, repr(txt[0][:120]))
+        detail = repr(txt[0][:120])
+        if stride > 1:   # the same prompt under the legacy layout: shows what the untrained spread does to decoding
+            model.config.mem_position_stride = 1
+            with torch.no_grad():
+                txt1 = model.generate(mi, max_new_tokens=24)
+            model.config.mem_position_stride = stride
+            detail += f"  | stride 1: {txt1[0][:120]!r}"
+        report("generate smoke", isinstance(txt, list) and len(txt) == 1, detail)
     except Exception:
         traceback.print_exc(); report("generate smoke", False)
 

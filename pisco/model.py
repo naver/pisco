@@ -88,6 +88,11 @@ class PISCOConfig(PretrainedConfig):
         kd_temperature: float = 1.0,
         connector_out_norm: bool = False,
         connector_out_norm_init: float = 0.4,
+        compressor_extra_layers: Optional[List[int]] = None,
+        mem_position_stride: int = 1,
+        connector_type: str = "mlp",
+        compressor_mem_layout: str = "tail",
+        freeze_norm_gain: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -166,6 +171,54 @@ class PISCOConfig(PretrainedConfig):
         #   documents). A checkpoint saved without the norm loads into a model with it (retrofit).
         self.connector_out_norm = bool(connector_out_norm)
         self.connector_out_norm_init = float(connector_out_norm_init)
+        # Multi-layer read-out (archq2 arm 1): the connector reads the <MEM> hidden states of the LAST layer
+        #   (as always) concatenated with those of these intermediate layers (indices into HF `hidden_states`:
+        #   0 = embeddings, k = output of layer k), each RMS-normalised without gain. For an LM used as a
+        #   compressor the last layer is the weakest single layer and a middle one the best (ComprExIT
+        #   2602.03784; Dense Connector 2405.13800 for ViTs). The connector's first Linear widens to
+        #   hidden * (1 + len(extra)); load_trainable_state zero-fills the new columns when the checkpoint
+        #   was saved without them, so a retrofitted model starts byte-identical to the old one.
+        self.compressor_extra_layers = [int(k) for k in compressor_extra_layers] if compressor_extra_layers else None
+        # Decoder position layout of the <MEM>s (archq2 arm 2): 1 = consecutive ids (legacy). S > 1 = each
+        #   <MEM> occupies S position ids (centred in its slot: id = slot start + S // 2) and the text after a
+        #   run of k <MEM>s continues k * S ids later, so a compressed chunk keeps the positional footprint
+        #   of its raw tokens (S = compr_rate reproduces it up to the "+1" <MEM>). "Position IDs Matter"
+        #   (2409.14364): memory tokens packed next to each other hurt; spread ids help up to ~15x. The ids
+        #   are built in PISCO.decoder_position_ids from the decoder input ids (one stride for text and
+        #   image <MEM>s: image_compr_rate must equal compr_rate). Costs no tokens. Applied in forward and
+        #   generate; scripts that call model.decoder.generate themselves must pass them (eval_mm_docqa does).
+        self.mem_position_stride = int(mem_position_stride)
+        if self.mem_position_stride < 1:
+            raise ValueError(f"mem_position_stride={mem_position_stride} must be >= 1")
+        # Connector shape (archq2, 2026-10-29). "mlp": the legacy Linear-ReLU-Linear (keys 0.*, 2.*). "linear": one
+        #   Linear (keys 0.*) + the output norm. The connector probe (docs/connector_probe.md) showed that the trained
+        #   MLP computes a linear map on every modality and backbone pairing (a refit linear map equals it within
+        #   .006 NLL), so the linear form is the same connector with a third of the parameters. A linear connector is
+        #   initialised from an MLP checkpoint by expQ/archq2/linearize_connector.py (ridge fit on real <MEM>
+        #   states), never by dropping the ReLU (that costs +0.8 NLL).
+        if connector_type not in ("mlp", "linear"):
+            raise ValueError(f"connector_type={connector_type!r} not in ('mlp', 'linear')")
+        self.connector_type = connector_type
+        # Where the <MEM>s sit in the COMPRESSOR's position space (archq3, 2026-10-29). "tail": consecutive ids after
+        #   the chunk (legacy: every <MEM> reads the whole chunk from the same place; the layout "Position IDs Matter"
+        #   2409.14364 shows to be the worst). "spread": <MEM> k of n gets the position id of the middle of the k-th
+        #   segment of its chunk; for an image chunk the n <MEM>s tile the image grid and get the 2D M-RoPE id of
+        #   their tile centre. The sequence order (and the causal mask) is unchanged: the <MEM>s still come last and
+        #   still see the whole chunk; only the RoPE distances change, so each <MEM> is pulled to its own region.
+        #   Built in compressor_spread_position_ids from the input ids; a change of layout means retraining from
+        #   stage 1 (the compressor learns where to write under it). Pairs with mem_position_stride on the decoder.
+        #   "spread_coarse" (archq3b, 2026-11-02): same positions as "spread" but the slots take the segment
+        #   centres in coarse-to-fine (bit-reversal / van der Corput) order: slot 1 at the middle of the chunk, slots
+        #   2-3 at the quarter points, ... so every prefix of the slot list tiles the whole chunk. "Keep the first k
+        #   slots" is then a coarse view of the page (a free hierarchical level, docs/hierarchical_video.md rules 4
+        #   and 7). The decoder side is unchanged (it ignores within-chunk order).
+        if compressor_mem_layout not in ("tail", "spread", "spread_coarse"):
+            raise ValueError(f"compressor_mem_layout={compressor_mem_layout!r} not in ('tail', 'spread', 'spread_coarse')")
+        self.compressor_mem_layout = compressor_mem_layout
+        # Keep the connector norm gain at its (measured) init. In bf16 it never moves anyway; with fp32 masters it
+        # becomes trainable and run 176296 (docs -.167, grad spikes) showed that a per-dim gain on every <MEM> fights
+        # LoRA-B / the connector over the scale. docs/training_review.md section 4.
+        self.freeze_norm_gain = bool(freeze_norm_gain)
 
 
 class ConnectorRMSNorm(nn.Module):
@@ -182,6 +235,99 @@ class ConnectorRMSNorm(nn.Module):
         h = h * torch.rsqrt(h.pow(2).mean(-1, keepdim=True) + self.eps)
         return (h * self.weight.float()).to(x.dtype)
 
+
+
+def mem_spread_position_ids(
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    mem_token_id: int,
+    stride: int,
+    base: Optional[torch.Tensor] = None,
+) -> torch.Tensor:
+    """Position ids where every <MEM> occupies `stride` ids (see PISCOConfig.mem_position_stride).
+
+    Without `base`: text positions = cumsum(attention_mask) - 1 (left padding safe), with each <MEM> adding
+    stride - 1 to everything after it and sitting at the middle of its own slot. Returns (B, L).
+    With `base` (3, B, L), the M-RoPE ids Qwen computed for a prompt with raw image spans: the same shifts are
+    added to all three axes (an image after a <MEM> run moves as a block; its internal 2D layout is kept).
+    Returns (3, B, L). Padding positions are left at 0 as HF does."""
+    mask = attention_mask.long()
+    is_mem = (input_ids == mem_token_id).long() * mask
+    extra = is_mem * (stride - 1)                                  # ids each <MEM> adds beyond its own
+    shift = torch.cumsum(extra, -1) - extra + is_mem * (stride // 2)   # slots before me, plus my centre
+    if base is None:
+        pos = torch.cumsum(mask, -1) - 1 + shift
+        return pos.masked_fill(mask == 0, 0)
+    pos = base + shift.unsqueeze(0).to(base.dtype)
+    return pos.masked_fill((mask == 0).unsqueeze(0), 0)
+
+
+def coarse_to_fine_order(n: int) -> List[int]:
+    """Permutation of range(n) in bit-reversal (van der Corput) order: 0, n/2, n/4, 3n/4, ... Every prefix of
+    length k is spread over 0..n-1 as evenly as k allows. For n = 8: [0, 4, 2, 6, 1, 5, 3, 7]."""
+    m = max(1, (n - 1).bit_length())
+    seq = [int(format(i, f"0{m}b")[::-1], 2) for i in range(1 << m)]
+    return [i for i in seq if i < n]
+
+
+def compressor_spread_position_ids(
+    input_ids: torch.Tensor,
+    attention_mask: torch.Tensor,
+    mem_token_id: int,
+    base: torch.Tensor,
+    image_token_id: Optional[int] = None,
+    image_grid_thw: Optional[torch.Tensor] = None,
+    merge_size: int = 2,
+    coarse_to_fine: bool = False,
+) -> torch.Tensor:
+    """Compressor position ids with the <MEM>s spread over the chunk they compress (PISCOConfig.compressor_mem_layout).
+
+    `base` (3, B, L): the ids the backbone would use (Qwen's get_rope_index for rows with images, cumsum of the mask
+    otherwise). Text chunk: the n trailing <MEM>s get the id of the middle of the n segments of the chunk's content
+    (all three axes). Image chunk: the n <MEM>s tile the image's (h, w) grid (after the spatial merge) and get
+    (t, h, w) = (start, start + row centre, start + column centre), i.e. the M-RoPE id of a visual token at their tile
+    centre; image rows are matched to `image_grid_thw` in order. Everything else keeps `base`. Returns (3, B, L)."""
+    pos = base.clone()
+    mask = attention_mask.bool()
+    is_mem = (input_ids == mem_token_id) & mask
+    img_row = 0
+    for b in range(input_ids.shape[0]):
+        mem_idx = is_mem[b].nonzero().squeeze(1)
+        n = int(mem_idx.numel())
+        has_img = image_token_id is not None and bool((input_ids[b] == image_token_id).any())
+        if has_img:
+            assert image_grid_thw is not None
+            grid = image_grid_thw[img_row]
+            img_row += 1
+        if n == 0:
+            continue
+        if has_img:
+            h, w = int(grid[1]) // merge_size, int(grid[2]) // merge_size
+            first_pad = int((input_ids[b] == image_token_id).nonzero()[0])
+            st = int(base[0, b, first_pad])
+            rows_t = max(1, min(h, int(round((n * h / w) ** 0.5))))
+            cols_t = -(-n // rows_t)
+            k = torch.arange(n, device=input_ids.device)
+            if coarse_to_fine:   # slot k takes tile perm[k] (raster index in bit-reversal order)
+                k = torch.tensor(coarse_to_fine_order(n), device=input_ids.device)
+            r, c = k // cols_t, k % cols_t
+            ph = (st + ((r.float() + 0.5) * h / rows_t).floor().long()).clamp(st, st + h - 1)
+            pw = (st + ((c.float() + 0.5) * w / cols_t).floor().long()).clamp(st, st + w - 1)
+            pos[0, b, mem_idx] = st
+            pos[1, b, mem_idx] = ph
+            pos[2, b, mem_idx] = pw
+        else:
+            content = mask[b] & ~is_mem[b]
+            if not content.any():
+                continue
+            p0, p1 = int(base[0, b, content].min()), int(base[0, b, content].max())
+            T = p1 - p0 + 1
+            k = torch.arange(n, device=input_ids.device)
+            if coarse_to_fine:   # slot k takes segment perm[k]
+                k = torch.tensor(coarse_to_fine_order(n), device=input_ids.device)
+            pid = (p0 + ((k.float() + 0.5) * T / n).floor().long()).clamp(p0, p1)
+            pos[:, b, mem_idx] = pid.unsqueeze(0).expand(3, -1)
+    return pos
 
 
 def build_bidirectional_4d_mask(attention_mask: torch.Tensor, num_query_tokens: Optional[int] = None) -> torch.Tensor:
@@ -290,6 +436,20 @@ def load_trainable_state(model: "PISCO", ckpt_dir: str, *, decoder: bool = True,
         conn_state["norm.weight"] = model.connector.norm.weight.detach().cpu()
         print(f"[pisco] connector.norm absent from {ckpt_dir}: gain initialised to "
               f"{model.config.connector_out_norm_init}")
+    if getattr(model.config, "connector_type", "mlp") == "linear" and "2.weight" in conn_state:
+        raise ValueError(f"{ckpt_dir} holds an MLP connector but connector_type='linear': run "
+                         "expQ/archq2/linearize_connector.py on it first (a ridge fit, not a ReLU drop)")
+    if getattr(model.config, "connector_type", "mlp") == "mlp" and "2.weight" not in conn_state:
+        raise ValueError(f"{ckpt_dir} holds a linear connector: load it with connector_type='linear'")
+    w_live = model.connector[0].weight
+    w_ckpt = conn_state.get("0.weight")
+    if w_ckpt is not None and w_ckpt.shape[1] < w_live.shape[1] and w_ckpt.shape[0] == w_live.shape[0]:
+        # Retrofit: the checkpoint's connector read the last layer only; the extra-layer columns start at 0,
+        # so the widened model computes exactly what the checkpoint did until training moves them.
+        pad = torch.zeros(w_ckpt.shape[0], w_live.shape[1] - w_ckpt.shape[1], dtype=w_ckpt.dtype)
+        conn_state["0.weight"] = torch.cat([w_ckpt, pad], 1)
+        print(f"[pisco] connector widened {tuple(w_ckpt.shape)} -> {tuple(w_live.shape)} for "
+              f"compressor_extra_layers={model.config.compressor_extra_layers}: new columns zero-initialised")
     conn = model.connector.load_state_dict(conn_state)
     print(f"[pisco] loaded trainable state from {ckpt_dir} (decoder={decoder and os.path.exists(dec_path)}, "
           f"compressor={comp_loaded}, connector={conn})")
@@ -453,6 +613,10 @@ class PISCO(PreTrainedModel):
                     n_cast += 1
             print(f"[option2] base in {config.frozen_base_dtype}; promoted "
                   f"{n_cast} trainable tensors to {config.torch_dtype}")
+
+        if getattr(config, "freeze_norm_gain", False) and hasattr(self.connector, "norm"):
+            self.connector.norm.weight.requires_grad = False
+            print("[pisco] connector.norm gain frozen (freeze_norm_gain=True)")
 
         # other settings
         self.generation_top_k = 1
@@ -643,11 +807,15 @@ class PISCO(PreTrainedModel):
 
         hidden_size = compressor.config.hidden_size if hasattr(compressor.config, "hidden_size") else compressor.config.text_config.hidden_size
 
-        connector = nn.Sequential(
-            nn.Linear(hidden_size, config.compressor_mlp_hidden_dim),
-            nn.ReLU(),
-            nn.Linear(config.compressor_mlp_hidden_dim, decoder_hidden_dim),
-        )
+        n_feat = 1 + len(getattr(config, "compressor_extra_layers", None) or [])
+        if getattr(config, "connector_type", "mlp") == "linear":
+            connector = nn.Sequential(nn.Linear(hidden_size * n_feat, decoder_hidden_dim))
+        else:
+            connector = nn.Sequential(
+                nn.Linear(hidden_size * n_feat, config.compressor_mlp_hidden_dim),
+                nn.ReLU(),
+                nn.Linear(config.compressor_mlp_hidden_dim, decoder_hidden_dim),
+            )
         if getattr(config, "connector_out_norm", False):
             # Named (not index 3): keeps the legacy 0.*/2.* keys and keeps the gain out of weight decay.
             connector.add_module("norm", ConnectorRMSNorm(decoder_hidden_dim, config.connector_out_norm_init))
@@ -740,29 +908,75 @@ class PISCO(PreTrainedModel):
         if getattr(self.config, "bidirectional", False) and attention_mask is not None:
             compr_attention_mask = build_bidirectional_4d_mask(attention_mask)
 
+        if getattr(self.config, "compressor_mem_layout", "tail") in ("spread", "spread_coarse"):
+            extra["position_ids"] = self.compressor_position_ids(input_ids, attention_mask, extra)
+
         # Only hidden_states[-1] is read: skip the full-vocabulary logits (B x T x ~250k) and
         # the KV / recurrent cache, which the LM head would otherwise materialise for nothing.
-        last_hidden_states: torch.Tensor = self.compressor(
+        hs = self.compressor(
             input_ids=input_ids,
             attention_mask=compr_attention_mask,
             output_hidden_states=True,
             logits_to_keep=1,
             use_cache=False,
             **extra,
-        ).hidden_states[
-            -1
-        ]  # shape is B, T, hc
+        ).hidden_states  # tuple: embeddings, then one (B, T, hc) per layer; [-1] is after the final norm
 
         mask = input_ids == self.compressor_tokenizer.mem_token_id
-
-        hidden_states = [
-            last_hidden_states[i, mask[i], :] for i in range(last_hidden_states.shape[0])
-        ]  # B-length list of (l_i, hc) shapes
-
-        all_hidden_states = torch.cat(hidden_states, 0)  # (sum l_i, hc) shape
+        feats = [hs[-1][mask]]  # (sum l_i, hc), rows in batch order
+        extra_layers = getattr(self.config, "compressor_extra_layers", None) or []
+        if extra_layers:
+            n_layers = self.compressor_num_layers()
+            assert len(hs) == n_layers + 1, f"{len(hs)} hidden states for {n_layers} layers"
+            for k in extra_layers:
+                # un-normalised residual stream: unit-RMS it (no gain) so the widened Linear sees the
+                # same scale as the final-norm output of the last layer
+                h = hs[k][mask].float()
+                h = h * torch.rsqrt(h.pow(2).mean(-1, keepdim=True) + 1e-6)
+                feats.append(h.to(feats[0].dtype))
+        all_hidden_states = torch.cat(feats, -1)  # (sum l_i, hc * (1 + len(extra)))
         embeddings = self.connector(all_hidden_states)
 
         return embeddings  # (sum l_i, hd) shape
+
+    def compressor_position_ids(self, input_ids, attention_mask, mm: dict) -> torch.Tensor:
+        """(3, B, L) compressor position ids under compressor_mem_layout='spread' (see compressor_spread_position_ids).
+        The base ids are Qwen's own M-RoPE ids when the batch holds images, the attention-mask cumsum otherwise."""
+        if attention_mask is None:
+            attention_mask = torch.ones_like(input_ids)
+        if mm.get("image_grid_thw") is not None:
+            rope = next(m for m in self.compressor.modules() if hasattr(m, "get_rope_index"))
+            base, _ = rope.get_rope_index(input_ids, image_grid_thw=mm["image_grid_thw"], attention_mask=attention_mask,
+                                          mm_token_type_ids=mm["mm_token_type_ids"])
+            image_token_id = int(self.compressor.config.image_token_id)
+            merge = int(self.compressor.config.vision_config.spatial_merge_size)
+        else:
+            base = (torch.cumsum(attention_mask.long(), -1) - 1).masked_fill(attention_mask == 0, 0)
+            base = base.unsqueeze(0).expand(3, -1, -1).contiguous()
+            image_token_id, merge = None, 2
+        return compressor_spread_position_ids(input_ids, attention_mask, self.compressor_tokenizer.mem_token_id, base,
+                                              image_token_id=image_token_id, image_grid_thw=mm.get("image_grid_thw"),
+                                              merge_size=merge,
+                                              coarse_to_fine=self.config.compressor_mem_layout == "spread_coarse")
+
+    def compressor_num_layers(self) -> int:
+        cfg = self.compressor.config
+        cfg = getattr(cfg, "text_config", None) or cfg
+        return int(cfg.num_hidden_layers)
+
+    def decoder_position_ids(
+        self,
+        dec_input_ids: torch.Tensor,
+        dec_attention_mask: torch.Tensor,
+        base: Optional[torch.Tensor] = None,
+    ) -> Optional[torch.Tensor]:
+        """Position ids for a decoder prompt holding <MEM>s, or None when the layout is the legacy one
+        (mem_position_stride == 1: the decoder builds its own). See mem_spread_position_ids."""
+        stride = int(getattr(self.config, "mem_position_stride", 1) or 1)
+        if stride <= 1:
+            return None
+        return mem_spread_position_ids(dec_input_ids, dec_attention_mask, self.decoder_tokenizer.mem_token_id,
+                                       stride, base=base)
 
     def get_peft_config(self, lora_r: int) -> LoraConfig:
         """
@@ -843,10 +1057,15 @@ class PISCO(PreTrainedModel):
         # Inserting compressed reps into the decoder inputs:
         dec_inputs_embeds = self.replace_embeddings(embeddings, decoder_input_ids)
 
+        dec_kwargs = {}
+        pos = self.decoder_position_ids(decoder_input_ids, decoder_attention_mask)
+        if pos is not None:
+            dec_kwargs["position_ids"] = pos
         decoder_outputs = self.decoder(
             inputs_embeds=dec_inputs_embeds,
             attention_mask=decoder_attention_mask,
             labels=labels,
+            **dec_kwargs,
         )
         out = {"loss": decoder_outputs.loss, "logits": decoder_outputs.logits}
 
@@ -997,6 +1216,10 @@ class PISCO(PreTrainedModel):
             # HF warns when top_p is set but unused under greedy decoding.
             gen_kwargs.setdefault("top_p", None)
         gen_kwargs.setdefault("eos_token_id", self.decoder_eos_ids())
+        pos = self.decoder_position_ids(decoder_input_ids, decoder_attention_mask)
+        if pos is not None:
+            # HF generate keeps given position ids and continues each row from its last one (+1 per step)
+            gen_kwargs["position_ids"] = pos
 
         output_ids = self.decoder.generate(
             inputs_embeds=decoder_inputs_embeds,

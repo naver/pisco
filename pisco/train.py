@@ -47,6 +47,35 @@ class PISCOTrainer(Trainer):
         load_trainable_state(m, resume_from_checkpoint,
                              decoder=not m.config.freeze_decoder, compressor=bool(m.config.lora_compressor))
 
+    # Connector learning rate (archq2, 2026-10-29). At the finetune rate (2e-5) the connector moves by <1% and a
+    # connector change tested in a finetune is a null test (ledger 2026-10-29). `connector_lr` (Hydra top-level key,
+    # None = same rate as everything else) puts the connector parameters in their own group; the norm gain stays
+    # out of weight decay as before.
+    connector_lr = None
+
+    def create_optimizer(self):
+        if self.optimizer is not None or not self.connector_lr:
+            return super().create_optimizer()
+        model = self.model
+        decay_names = set(self.get_decay_parameter_names(model))
+        conn = {n for n, _ in model.named_parameters() if n.startswith("connector.")}
+        groups = []
+        for is_conn in (False, True):
+            for decay in (True, False):
+                params = [p for n, p in model.named_parameters()
+                          if p.requires_grad and (n in conn) == is_conn and (n in decay_names) == decay]
+                if params:
+                    groups.append({"params": params,
+                                   "weight_decay": self.args.weight_decay if decay else 0.0,
+                                   "lr": float(self.connector_lr) if is_conn else self.args.learning_rate})
+        cls, kwargs = self.get_optimizer_cls_and_kwargs(self.args, model)
+        kwargs = {k: v for k, v in kwargs.items() if k != "lr"}
+        self.optimizer = cls(groups, **kwargs)
+        n_conn = sum(p.numel() for g in groups for p in g["params"] if g["lr"] == float(self.connector_lr))
+        print(f"[trainer] connector_lr={self.connector_lr} on {n_conn / 1e6:.1f}M connector params, "
+              f"{self.args.learning_rate} elsewhere")
+        return self.optimizer
+
     # Loss components (online distillation): PISCO.forward returns ce_loss / kd_loss next to
     # the combined loss while training; average them between two log() calls and report them
     # as `ce` / `kd` so the KD weight can be judged from the log (train `loss` is CE + w*KD;
@@ -207,6 +236,7 @@ def main(config: DictConfig):
         data_collator=collator.torch_call,
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
     )
+    trainer.connector_lr = getattr(config, "connector_lr", None)
 
     # Resume: with a FIXED run dir (hydra.run.dir) a requeued/preempted job finds its last
     # checkpoint-N here and PISCOTrainer reloads the partial PISCO files from it.

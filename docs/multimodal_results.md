@@ -55,6 +55,28 @@ At an equal token budget compression wins everywhere; the raw model needs about 
 low resolution hurts least. Files: `expQ/base_qwen35_4b/eval/mm_docqa_base_px{125952,251904,57344,114688}_*.json`,
 `expQ/ft_nav_base_4b/eval/mm_docqa_base_k8_px28672_nav_ft_val_v2.json` (`PX`/`MINPX` of `eval_mm_4b.sh`).
 
+## How much can we compress? (inference curve, 2026-11-02)
+
+Best model (rate 8), slots removed at inference, judge accuracy on 1,500 questions, difference to the full set:
+
+| kept slots per chunk (effective rate) | documents, first slots | documents, every k-th | photos, first slots | photos, every k-th |
+|---|---|---|---|---|
+| 75% (10.7×) | −.023 | | −.024 | |
+| 50% (16×) | −.128 | −.130 | −.087 | −.043 |
+| 25% (32×) | −.283 | −.254 | −.233 | −.159 |
+
+Without retraining, 16× costs .13 on documents and .04 to .09 on photos; 32× is destructive. Spreading the kept slots
+over the chunk beats keeping the first ones on photos (coverage), not on documents. Trained at rate 16 the text model
+tied rate 8 on RAG, so a trained rate-16 image chain would recover part of this; rate 4 (twice the vectors) gave
+nothing and made dense pages worse. Files: `expQ/ft_mm_4b_174908/eval/*keep0*` (`eval_mm_4b.sh` env `KEEPF`, `KEEPM`).
+
+**Trained rate 16 (2026-11-06, spread layout, reduced-budget chain, label `rate`):** judge accuracy, 1,500 Q, paired
+vs the spread rate-8 chain at equal budget: documents .535 / .544 vs .599 / .618 (s42 / s43) = −.065 (CI −.087 to −.043)
+/ −.074 (−.095 to −.053); photos .643 / .642 vs .671 / .671 = −.027 (−.047 to −.007) / −.029 (−.048 to −.007). Vs the
+tail rate-8 chain: documents +.028 / +.001, photos −.005 / −.007 (n.s.): the spread layout at rate 16 equals the old
+layout at rate 8, at half the tokens. Halving the budget costs about .07 on documents and .03 on photos, so the rate
+curve is not flat on images, unlike text RAG. Weakest source: infographics (.40 / .43). Rate 32 chain in progress.
+
 ## How the evaluation is done
 
 - **Eval sets:** `eval_data/mm_docqa_1500_1m` (SlideVQA, InfographicVQA, MP-DocVQA from the VisRAG test sets, 500
@@ -113,6 +135,49 @@ The uncompressed model itself gains from more pixels: doc .692 → .776 from 451
 **Reinforcement-learning track (separate session):** filtering finetune data on teacher correctness and RAFT
 self-training gave .498 to .518 against .510, all within noise. GRPO was deferred until these stage-2 results.
 
+## External navigation test: OpenEQA (2026-10-30)
+
+OpenEQA EM-EQA, HM3D half: 557 human-written questions (object recognition, attributes, state, localization, spatial,
+functional, world knowledge) over 63 house tours of 69 to 400 frames (163 on average); memory only, no walking.
+Regime label for every number: **"OpenEQA EM-EQA HM3D 557 Q, memory only"**. Metric: LLM-Match (0-100, mean of
+(mark−1)/4 over a 1-5 mark, OpenEQA's own prompt), judge Qwen3-14B, every arm judged in the same pass; k = frames per
+question, evenly spaced over the tour (OpenEQA's rule). The uncompressed arms show the raw frames to the same Qwen3.5-4B.
+Paired against the uncompressed backbone with 16 frames (sign test on the non-zero per-question differences).
+
+| arm (regime above) | tokens per question | LLM-Match ↑ | vs uncompressed 16 frames (95% CI) | p |
+|---|---|---|---|---|
+| uncompressed Qwen3.5-4B, 16 frames | 7,200 | 50.0 | — | — |
+| uncompressed Qwen3.5-4B, 32 frames | 14,400 | **57.0** | +7.0 (+4.3, +10.0) | <.001 |
+| uncompressed, nav-finetuned (`ft_nav_base_4b`), 16 frames | 7,200 | 54.3 | +4.3 (+1.0, +7.6) | .036 |
+| generic PISCO 174908 (57 `<MEM>`/frame), 16 frames | 920 | 48.2 | −1.8 (−5.4, +1.9) | .94 |
+| generic PISCO 174908, 64 frames | 3,650 | 49.6 | −0.4 (−4.4, +3.5) | .84 |
+| generic PISCO 174908, 32 frames / whole tour (69-400 frames, `--compress_slice 32`) | 1,830 / 4,000-23,000 | 50.9 / **51.9** | +1.0 (−2.9, +4.7) / +2.0 (−1.7, +5.8) | .30 / .03 (sign test) |
+| nav PISCO `ft_nav_4b` (29 `<MEM>`/frame), 16 / 32 / 64 frames | 470 / 930 / 1,860 | 35.0 / 34.7 / 37.3 | −15.0 / −15.2 / −12.6 | <.001 |
+| silver-nav `campaign_eqa`, Qwen3-VL-2B: blind / 15 even / 15 retrieved frames | 0 / ~12k / ~12k | 29.5 / 46.1 / 54.0 | | |
+| silver-nav `campaign_eqa`, Qwen3-VL-4B: 15 even / 15 retrieved frames | ~12k | 54.2 / **59.3** | +4.2 / +9.4 | .002 / <.001 |
+
+What it says:
+- **The generic compressor keeps what 16 raw frames give, at an eighth of the tokens** (48.2 vs 50.0, not
+  distinguishable on 557 questions). The compressed decoder reads 64 frames in half the tokens of 16 raw frames.
+- **A longer compressed memory is not exploited.** Raw frames gain +7 from 16 to 32; `<MEM>`s gain +1.4 from 16 to
+  64 and +3.7 from 16 to the whole tour (every frame, 51.9: the only compressed arm above raw 16 frames, and still 5
+  points under raw 32). The decoder was finetuned on 4-8 documents; reading 64-400 compressed frames is out of its
+  training range.
+- **Retrieval still wins on this task**: 15 frames picked by an embedding retriever reach 54.0 (2B) / 59.3 (4B
+  answerer). The compressed memory is cheaper, not better, until the decoder learns to use many `<MEM>`s.
+- **The nav-specific finetune is a dead end for open questions**: trained on templated yes/no, order and side
+  questions, `ft_nav_4b` answers in 1.1 words and loses 29 points on object recognition (22 vs 51). It is the right
+  model for the templated memory QA (.806) and the wrong one for human questions.
+- Per category (uncompressed 16 → generic PISCO 16): attributes 64 → 62, object state 66 → 64, world knowledge 55 → 56,
+  functional 36 → 40, object recognition 51 → 43, localization 41 → 38, spatial 35 → 34. Fine object identity is
+  what compression loses, as on documents (infographics).
+
+Files: `eval_data/openeqa_hm3d_k{16,32,64,all}` (`scripts/build_mm_eval_openeqa.py`), results
+`expQ/*/eval/mm_docqa_*_openeqa_hm3d_k*.json`, the campaign's cells re-judged under `expQ/openeqa/campaign/`,
+table `scripts/openeqa_results.py table … --ref <uncompressed k16 json>`; judge prompt `openeqa` in
+`scripts/judge_prompts.py` (`eval_mm_4b.sh` env `JPROMPT=openeqa JMODEL=Qwen/Qwen3-14B`). Frames:
+`/beegfs/scratch/user/hdejean/open-eqa/data/frames/hm3d-v0` (HF mirror `the-Lin/openeqa`).
+
 ## Open questions
 
 1. **Documents.** Expanding the routed page reaches the uncompressed score at 4, 8 and 10 candidate pages
@@ -120,7 +185,9 @@ self-training gave .498 to .518 against .510, all within noise. GRPO was deferre
    than 10 pages, a decoder finetuned on mixed raw + `<MEM>` prompts.
 2. **GRPO with an evidence-then-answer format**, for the multi-page questions where the answer is in the `<MEM>`s but
    is not used (the prompt alone gives +.025).
-3. **External nav benchmarks** (OpenEQA, VSI-Bench): not started.
+3. **External nav benchmarks.** OpenEQA done (section above): next is a decoder that uses many `<MEM>`s (finetune
+   with 32-64 compressed frames per question, or route-then-expand over the tour), then VSI-Bench and place retrieval
+   over the silver-nav memrep bank.
 4. **Human check of the judge:** label `expQ/judge_study/human_sheet.md`, then
    `python3 scripts/judge_agreement.py --pool expQ/judge_study/pool.json expQ/judge_study/q*.json expQ/judge_study/gemma*.json --human <sheet>`.
 
