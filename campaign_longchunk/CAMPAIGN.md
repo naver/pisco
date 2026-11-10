@@ -2,7 +2,10 @@
 
 created 2026-11-10 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-08** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5-5`
 
-DRAFT written by Claude on 2026-11-10 from HANDOFF.md and docs/training_plan.md; the owner reviews every section before `arm`.
+Armed 2026-11-11 00:10 by the owner. Audits on this campaign: the read-only verifier after every wake that changes a claim
+(VERIFY.md), the escalation check on every new BLOCKED.md question, and `expmon review` every Monday, which reads the wake
+transcripts and reports law breaks, guard mistakes, wasted turns and claims beyond the log. The licences below (patching,
+previews) were widened on 2026-11-11 because those audits exist; a review finding narrows them again.
 
 ## Mission
 Does training stage 1 (text pretraining of the compressor + connector + decoder LoRA) with LONG compressor chunks
@@ -72,10 +75,10 @@ arm − the SmolLM2 reference: the corpus differs).
 - A NEW metric closes nothing until its row here states its n and a known-positive control it recovers.
 
 ## Budget and caps
-- GPU-days for the whole campaign: **35** (C256 ≈ 5, L1024 ≈ 8, L2048 ≈ 13 GPU-days at the estimates above; a third seed ≈ 3; slack for the smoke and relaunches)
+- GPU-days for the whole campaign: **38** (raised from 35 by the owner 2026-11-11, +3 of slack so L2048 can run; C256 ≈ 5, L1024 ≈ 8, L2048 ≈ 13 GPU-days at the estimates above; a third seed ≈ 3; slack for the smoke and relaunches)
 - MEASURED 2026-11-11 (gate b): stage 1 C256 ≈ 67 GPU-h, L1024 ≈ 244, L2048 ≈ 339; downstream ≈ 61 per arm (stage 2 19 +
   finetunes 22 + evals 20); smokes 7 → the full plan projects to ≈ 841 GPU-h = 35.0 GPU-days, the WHOLE budget with no
-  slack (a tie's third seed ≈ 3 more). Rule (tightened): launch L2048 stage 1 only if GPU-h spent + projected left ≤ 35
+  slack before the raise (a tie's third seed ≈ 3 more). Rule: launch L2048 stage 1 only if GPU-h spent + projected left ≤ 38
   GPU-days at that moment; otherwise BLOCKED.md for the owner (raise the budget, or close L2048 as over budget).
 - at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
 - every launch: `--time` from measured s/step × steps × 1.25; `--mem`/`--cpus` as the recipe files state (profiled on the control)
@@ -102,6 +105,8 @@ is the last row (documents .809, photos .717, MRQA .807 — ledger). `expmon dis
 | a job PENDING > 6 h for Resources on `gpu` | resubmit with `--partition gpu-be` (preemptible; if preempted, relaunch counts as transient) | 1 move per cell |
 | the expmon daemon is gone | `expmon daemon` | — |
 | an eval / judge straggler FAILED in seconds with a benign signature (known_issues.md) | relaunch once, note | 1 |
+| a finetune of a listed arm has written its checkpoint at about a quarter of the run (step ~100 of 437) | PREVIEW: `eval_mm_4b.sh <checkpoint> pisco 300 eval_data/mm_docqa_1500_1m` and the same on `text_hotpotqa_1500_g10` with `CML=4096 TOPK=10`, judge chained, paired against C256's finetune at the same step and seed; report as `provisional:` with n = 300 | one preview per finetune cell; a preview never closes or adopts an arm (small cells show the code ran, nothing more) |
+| a reproduced crash in a campaign file whose fix is ≤ CAMP_PATCH_LINES lines inside a "## Patchable" path | apply it, smoke on the cheapest cell (≤ 50 steps), record `<file> — <traceback line> — <lines changed>` in STATE.md; the tick commits it (CAMP_COMMIT_PATHS) | 1 patch per symptom, then BLOCKED.md |
 Anything else: BLOCKED.md and stop. In particular: no change to the collator, the chunking, the data, the rate, the
 layout, the stage-2 or finetune recipes — those are other campaigns.
 
