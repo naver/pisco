@@ -1,0 +1,79 @@
+== verifier 2026-11-11_0400  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 3594a192-b74d-428b-b0c5-fbef44929379  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+236 lines)
+→ Glob: {"pattern": "campaign_probes/**"}
+→ Glob: {"pattern": "expQ/probes/**/*.json"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes"}
+  ↳ campaign_probes/ticks/.keep (+19 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/attn_route_185579/summary.json (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0400.log
+  ↳ 1	== campaign probes wake 2026-11-11_0400  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+218 lines)
+→ Grep: {"pattern": "\"summary\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 2:"summary"
+Checking the numbers in STATE.md against the result files, one claim at a time.
+→ Grep: {"pattern": "\"(judge|em|n|mems_used|unparseable)\": [0-9.]+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json", "output_mode": "content", "-o": true, "head_limit…
+  ↳ 3:"em": 0.49 (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json
+  ↳ 1	{ (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+59 lines)
+→ Grep: {"pattern": "188458|188419|188456|188445|188465", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 551:- 2026-11-11 02:02 [job 188419] intent: feasibility gate of campaign probes — re-run of the reference document cell (model 184778 via symlink expQ/probes/rep_184778/model so the recorded file is n (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 560	- 2026-11-11 02:06 [job 185783] verdict: closed — pre-campaign slot-ownership probe (probe_mixer) on a spread text pretraining checkpoint; results in the ledger; the <MEM> mixer is a dead end for  (+56 lines)
+→ Grep: {"pattern": "def gen_base|system=|expand.*raw_policy|raw_policy.*expand|Answer:", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 55:    "Then give the final answer, as briefly as possible, after 'Answer:'." (+14 lines)
+Still checking: now the text-benchmark (MRQA) numbers and the long-chunk baselines.
+→ Grep: {"pattern": "^  \"(judge[^\"]*|n|em|f1|judge_unparseable|mems_used[^\"]*|checkpoint|compressor_max_length|chunk[^\"]*)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/c_plain_s42/eval/attempt2_0357_mm_docqa_pisco_px1003520_cml4…
+  ↳ 3:  "em": 0.45866666666666667, (+13 lines)
+→ Glob: {"pattern": "*mrqa*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval"}
+  ↳ expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json (+1 lines)
+→ Grep: {"pattern": "^  \"(judge[^\"]*|n|em|checkpoint)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json", "output_mode": "content"}
+  ↳ 3:  "em": 0.3893333333333333, (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/c_plain_s42/eval/attempt2_0357_mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json
+  ↳ 1	{ (+52 lines)
+→ Grep: {"pattern": "\\[(710|1110)/1500\\]", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188445.out", "output_mode": "content"}
+  ↳ 802:[710/1500] em=0.424 f1=0.594 anls=0.539 match=0.599  324s (+1 lines)
+→ Grep: {"pattern": "homer-0\\d\\d", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_18{4781,4784,8419,8458,8456}.out", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188458.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-b4371a23-95ba-115a-f59d-59ca47399e96) (+30 lines)
+→ Glob: {"pattern": "probes_*/**/state.json", "path": "/beegfs/scratch/user/hdejean/pisco/eval_data"}
+  ↳ eval_data/probes_hotpot_distr_joined/train/state.json (+2 lines)
+→ Glob: {"pattern": "build_groups_18846*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+Checking the build log of the long-chunk grouped sets, then the page-picking self-test.
+→ Read: /beegfs/scratch/user/hdejean/pisco/build_groups_188465.out
+  ↳ 1	FACTORS kind=build_groups args=--kinds,gold_joined,distr_joined,g10_shuf (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest/fusion.json
+  ↳ 1	{ (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185577/summary.json
+  ↳ 1	{ (+45 lines)
+→ Glob: {"pattern": "run_tests_cpu_188455.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "Ran \\d+ tests|OK|FAILED|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/run_tests_cpu_188455.out", "output_mode": "content"}
+  ↳ 6:Ran 12 tests in 0.156s (+4 lines)
+→ Grep: {"pattern": "^  \"(em|n|checkpoint|answer_style|judge)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500_lim300.json", "output_mode": "content"}
+  ↳ 3:  "em": 0.36666666666666664, (+4 lines)
+→ Grep: {"pattern": "^  \"(judge|n|checkpoint)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/eval", "glob": "*hotpot*", "output_mode": "content"}
+  ↳ expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json:15:  "n": 1500, (+8 lines)
+→ Grep: {"pattern": "^  \"(judge|n|em|gold_only)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/a_gold_s42/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json", "output_mode": "content"}
+  ↳ 3:  "em": 0.5346666666666666, (+3 lines)
+→ Grep: {"pattern": "\\[1500/1500\\]|Saved|wrote|judge", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188440.out", "output_mode": "content", "head_limit": 10}
+  ↳ 1671:[1500/1500] em=0.535 f1=0.626 anls=0.641 match=0.587  1000s (+11 lines)
+I'm nearly done: checking the second-seed baseline file, then writing the verdicts.
+→ Grep: {"pattern": "^  \"(judge|n|checkpoint)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content"}
+  ↳ 19:  "n": 1500, (+2 lines)
+→ StructuredOutput: {"claims": [{"claim": "The instrument reproduces on the SAME node: re-running the reference model 184778 on documents (1,500 questions, PX=1003520) on homer-011, the node of the recorded run 184781, gives judge .610 = .610, 1,500/1,500 answ…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4992 turns=35 is_error=False denials=0
+== declared: {"claims": [{"claim": "The instrument reproduces on the SAME node: re-running the reference model 184778 on documents (1,500 questions, PX=1003520) on homer-011, the node of the recorded run 184781, gives judge .610 = .610, 1,500/1,500 answers identical, 0 discordant pairs. Job 188419, verdict closed (PASS).", "status": "supported", "reason": "The summaries of expQ/probes/rep_184778/eval/...1500_1m.json and expQ/ft_mm_4b_184778/eval/...1500_1m.json match: judge 0.61, em .5073, slides .684 / infographics .480 / multi-page .666, n=1500, judge_unparseable 0. Verdict 188419 says closed PASS with CI [+.000,+.000] and 0 discordant pairs, which meets the feasibility gate (±.01, CI inside .02). The nodes come from the wake's sacct in ledger line 609; I could not re-check them read-only."}, {"claim": "On ANOTHER node it does not reproduce for image inputs: the same cell on homer-008 (older system image, kernel el9_7), first 300 questions: judge .623 vs .610 recorded, 14/300 discordant (9 up, 5 down), 243/300 answers identical, EM .490 vs .477, mems_used 118,147 both. Job 188458, verdict closed. The eval fix of the last wake is not the cause: its diff touches only the uncompressed reader + one assert, and that cell runs the compressed path.", "status": "provisional", "reason": "The numbers check out: reg_184778 lim300 file has judge .6233, em .490, n=300; ledger line 609 has 9 up / 5 down and 243/300 identical. But this is one LIMIT=300 cell, which the law calls plumbing, with no repea
+== final:
+{"claims":[{"claim":"The instrument reproduces on the SAME node: re-running the reference model 184778 on documents (1,500 questions, PX=1003520) on homer-011, the node of the recorded run 184781, gives judge .610 = .610, 1,500/1,500 answers identical, 0 discordant pairs. Job 188419, verdict closed (PASS).","status":"supported","reason":"The summaries of expQ/probes/rep_184778/eval/...1500_1m.json and expQ/ft_mm_4b_184778/eval/...1500_1m.json match: judge 0.61, em .5073, slides .684 / infographics .480 / multi-page .666, n=1500, judge_unparseable 0. Verdict 188419 says closed PASS with CI [+.000,+.000] and 0 discordant pairs, which meets the feasibility gate (±.01, CI inside .02). The nodes come from the wake's sacct in ledger line 609; I could not re-check them read-only."},{"claim":"On ANOTHER node it does not reproduce for image inputs: the same cell on homer-008 (older system image, kernel el9_7), first 300 questions: judge .623 vs .610 recorded, 14/300 discordant (9 up, 5 down), 243/300 answers identical, EM .490 vs .477, mems_used 118,147 both. Job 188458, verdict closed. The eval fix of the last wake is not the cause: its diff touches only the uncompressed reader + one assert, and that cell runs the compressed path.","status":"provisional","reason":"The numbers check out: reg_184778 lim300 file has judge .6233, em .490, n=300; ledger line 609 has 9 up / 5 down and 243/300 identical. But this is one LIMIT=300 cell, which the law calls plumbing, with no repeat. 9 vs 5 discordant gives McNemar p≈.42, so the judge gap is noise; only the 57 changed answers show non-reproduction. Two causes are not separated by any run. First, 188458 ran the patched code (after 03:36) while 188419 ran 43f9c0e, so 'not the fix' rests on reading the diff. Second, node image vs homer-008 alone waits on 188476/188477. The bullet also lacks the 'provisional:' prefix the law requires."},{"claim":"Data for arm B exists and is checked: scripts/probes/build_groups.py rebuilds the old one-chunk HotpotQA set (text_hotpotqa_1500_g10) on 1,500/1,500 rows identical, then writes three grouped sets of 1,500 rows. Job 188465, verdict closed. (First try 188464 stopped itself on a missing separator; nothing written; closed.)","status":"supported","reason":"build_groups_188465.out says '[check] separator=' \\n\\n': 1500/1500 rows identical to the existing g10 set'. It writes gold_joined (9 chunks on 1487 rows), distr_joined (3 chunks on 1495, 7 unjoined) and g10_shuf (1 chunk on 1500), 1500 rows each, EXIT CODE 0. All three state.json files exist under eval_data/. Verdicts 188464 and 188465 are both closed."},{"claim":"plumbing only: page-picking fusion reproduces the saved route numbers exactly — route .8607, attention .8853, n=1,500 rows, model 183814 (selftest 188427 vs 185577). Eval-fix unit tests 45/45 (188455) and the uncompressed reader's default path unchanged, 300/300 answers identical to 185542 (188456); both verdict closed.","status":"supported","reason":"fusion_selftest
+== rc=0

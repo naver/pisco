@@ -1,0 +1,219 @@
+== campaign probes wake 2026-11-11_0400  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794337202 live=188457:RUNNING,188445:PENDING,188461:PENDING,188460:PENDING,188459:PENDING,188458:PENDING,188443:PENDING,188444:PENDING,188446:RUNNING,188442:RUNNING,188441:RUNNING,188440:RUNNING,188439:RUNNING running=6 pending=7 problems=1 problems_other=0 new=0 gpuh24=1.4 idle_h=0.0 min_util=- alert=1 unpushed=9 cron=2 daemon=1 disk_gb=13272 sig=cafb3631 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188445,188446,188457_job:188439,188440,188441_job:188442,188443,188444_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session 5e2da485-25f5-4248-b226-32b3a409487f  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+15 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/5e2da485-25f5-4248-b226-32b3a409487f/tool-results/b1b5ii21e.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0400   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+219 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat CAMPAIGN.md && echo ======= && cat STATE.md
+  ↳ Exit code 1 (+100 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && sed -n 40,80p CAMPAIGN.md
+  ↳ | C. reasoning vs reading on text | `CML=4096 eval_mm_4b.sh <ref model> pisco "" eval_data/text_mrqa_ood_1500` with `STYLE=expand`, and the same with the model's thinking mode on (`scripts/probes/` fl (+40 lines)
+→ Bash: sed -n 80,100p CAMPAIGN.md; echo =======; cat STATE.md
+  ↳ Exit code 1 (+22 lines)
+Reading the campaign law and state before acting.
+→ Bash: sed -n 100,115p CAMPAIGN.md; echo '---'; cat STATE.md
+  ↳ | a cell FAILED / NODE_FAIL / TIMEOUT for a transient cause (node failure, a wall-time misestimate, PREEMPTED) | relaunch the same cell, `--time` re-derived from measured cells | max 2 relaunches per  (+122 lines)
+→ Bash: cat known_issues.md; echo '---'; ls -la; cat VERIFY.md 2>/dev/null | head -50
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+58 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | head -30; date
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+30 lines)
+→ Bash: for j in 188439 188440 188441 188446 188457 188442; do echo "== $j"; f=$(ls expQ/$j/*.out expQ/$j/*.log 2>/dev/null | head -1); ls expQ/$j 2>/dev/null | head; done
+  ↳ == 188439 (+11 lines)
+→ Bash: expmon logs 188439 25 2>&1 | head -40
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188439.out (last 25) <== (+25 lines)
+→ Bash: for j in 188439 188440 188441 188446 188457 188442; do f=$(ls eval_mm_4b_$j.out probe_attn_route_$j.out 2>/dev/null|head -1); echo "== $j $f"; grep -v pad_token_id "$f" | head -12 | cut -c1-300; grep -v pad_token_id "$f" | grep -E '^\[[0-9]…
+  ↳ == 188439 eval_mm_4b_188439.out (+111 lines)
+Cells are running and healthy; the log FACTORS lines confirm each cell's probe setting. Checking whether the chunk cap (CML) shows up in the logs.
+→ Bash: grep -n 'CML\|FACTORS' eval_mm_4b.sh | head; grep -c . eval_mm_4b_188446.out; grep -m3 -i 'compressor_max\|cml\|max_length' eval_mm_4b_188446.out | cut -c1-200; sacct -j 188446,188439,188440,188441,188442,188457 -X -o JobID,State,Start,Node…
+  ↳ Exit code 1 (+5 lines)
+→ Bash: sacct -j 188446,188439,188440,188441,188442,188457,188443,188445 -X -o JobID,State,Start,NodeList,Partition -n; squeue -j 188443,188444,188445,188458,188459,188460,188461 -o '%i %T %r %S %P' -h
+  ↳ 188439          RUNNING 2026-11-11T03:43:13       homer-016     gpu-be  (+14 lines)
+All 12 cells are now running (the fusion step waits on its two inputs). Next: see if arm B (the long-chunk mechanism) can be prepared while they run.
+→ Bash: grep -n 'g10\|g3\b\|grouped\|_g1\b\|groups' EXPERIMENTS.md | tail -25 | cut -c1-400; ls eval_data | grep -i -E 'hotpot|group|probe'
+  ↳ 509:- 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same conte (+21 lines)
+→ Bash: sed -n 509,511p EXPERIMENTS.md | cut -c1-2500; ls -la eval_data/text_hotpotqa_1500_g10 eval_data/text_hotpotqa_1500; ls scripts/probes/; ls scripts | grep -i group
+  ↳ - 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same content t (+21 lines)
+→ Bash: grep -rl '_g10\|gold_positions' --include=*.py --include=*.sh --include=*.sbatch . 2>/dev/null | grep -v '^./expQ\|\.pixi' | head; grep -n 'gold_positions' scripts/eval_mm_docqa.py pisco/mm_collator.py | head
+  ↳ (eval):1: no matches found: --include=*.py (+10 lines)
+→ Bash: grep -rl 'hotpotqa_1500_g' scripts *.sh launchers 2>/dev/null | head; ls *.sh | head -50 | tr '\n' ' '
+  ↳ bench_combo_4b.sh bench_compress_4b.sh bench_mm_4b.sh bench_vllm_4b.sh bench_vllm_sim_4b.sh build_bench_eval.sh build_mm_1m.sh build_mm_data.sh build_pdfa_4b.sh build_stage2_v3.sh build_stage2_v4.sh c
+→ Bash: ls -la eval_data/text_hotpotqa_1500_g10/train eval_data/text_hotpotqa_1500/train; cat eval_data/text_hotpotqa_1500_g10/train/state.json 2>/dev/null | head -20
+  ↳ eval_data/text_hotpotqa_1500_g10/train: (+36 lines)
+→ Bash: grep -n 'doc_images' scripts/eval_mm_docqa.py | head -20; grep -n 'def example_chunks' -A30 pisco/mm_collator.py | grep -n 'doc_images\|docs' | head
+  ↳ 3:Data: a datasets dir (build_mm_eval.py / build_mm_finetune.py schema): docs, doc_images, (+16 lines)
+Writing a small builder for arm B's grouped passage sets (gold passages joined vs distractors joined), with a self-check that it rebuilds the existing ten-in-one set exactly.
+→ Bash: cat scripts/probes/route_fusion.sbatch; cat run_tests_cpu.sh 2>/dev/null | head -20
+  ↳ #!/bin/bash (+36 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/probes/build_groups.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/probes/build_groups.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/probes/build_groups.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/probes/build_groups.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: sacct -j 188427,188455 -X -o JobID,Elapsed,State -n; ls -d eval_data/probes_* 2>&1; python3 -c "import ast,sys; ast.parse(open('scripts/probes/build_groups.py').read()); print('syntax ok')"
+  ↳ 188427         00:00:10  COMPLETED  (+3 lines)
+→ Bash: expmon launch --exp probes --stage build --dry-run --time 0:06:00 scripts/probes/build_groups.sbatch 2>&1 | tail -15
+  ↳ launch: REFUSED — this cell (exp='probes', same factors) was closed as a dead arm by run 188455. (+1 lines)
+→ Bash: expmon launch --exp probes --stage build --dry-run --time 0:06:00 scripts/probes/build_groups.sbatch --kinds gold_joined,distr_joined,g10_shuf 2>&1 | tail -15
+  ↳ launch: REFUSED — this cell (exp='probes', same factors) was closed as a dead arm by run 188455. (+1 lines)
+→ Bash: expmon lineage 188455 2>&1 | head -20; grep -n '"188455"\|"188427"' .expmon/runs.jsonl 2>/dev/null | head -3 | cut -c1-600; ls .expmon/ | head
+  ↳ lineage of 188455: (+13 lines)
+→ Bash: expmon launch --exp probes --stage build --force --dry-run --time 0:06:00 scripts/probes/build_groups.sbatch --kinds gold_joined,distr_joined,g10_shuf 2>&1 | tail -15
+  ↳ would submit: sbatch --time 0:06:00 scripts/probes/build_groups.sbatch --kinds gold_joined,distr_joined,g10_shuf (+3 lines)
+→ Bash: expmon launch --exp probes --stage build --force --time 0:06:00 scripts/probes/build_groups.sbatch --kinds gold_joined,distr_joined,g10_shuf 2>&1 | tail -6
+  ↳ job id:  188464 (+5 lines)
+→ Bash: expmon note -j 188464 "intent: arm B data build (CPU, gpu-be gres:0): scripts/probes/build_groups.py first rebuilds the 2026-11-06 ad hoc set text_hotpotqa_1500_g10 from text_hotpotqa_1500 and must match it on 1500/1500 rows (also detects i…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: ls -la docs/probe_campaign_2026-11.md 2>&1; squeue -j 188464 -h -o '%T %r %N'; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ -rw-r--r-- 1 hdejean hdejean 3255 Nov 11 03:41 docs/probe_campaign_2026-11.md (+18 lines)
+→ Bash: cat docs/probe_campaign_2026-11.md
+  ↳ # Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+36 lines)
+→ Bash: squeue -j 188464 -h -o '%T %r %N'; echo "HF_HOME=$HF_HOME"; ls ${HF_HOME:-~/.cache/huggingface}/hub 2>/dev/null | grep -i textvqa; ls ${HF_HOME:-~/.cache/huggingface}/datasets 2>/dev/null | grep -i textvqa; grep -n 'textvqa\|TextVQA' script…
+  ↳ RUNNING None homer-010 (+6 lines)
+→ Bash: sleep 45; cd /beegfs/scratch/user/hdejean/pisco && squeue -j 188464 -h -o '%T %M'; tail -20 build_groups_188464.out 2>/dev/null | cut -c1-400
+  ↳ <tool_use_error>Blocked: sleep 45 followed by: cd /beegfs/scratch/user/hdejean/pisco squeue -j 188464 -h -o '%T %M' tail -20 build_groups_188464.out cut -c1-400. To wait for a condition, use Monitor w
+Waiting for the build job to finish (the builder runs for about a minute).
+→ Bash: timeout 300 bash -c 'until ! squeue -j 188464 -h | grep -q .; do sleep 10; done'; sacct -j 188464 -X -o State,Elapsed,ExitCode -n; grep -v '^Loading\|it/s' build_groups_188464.out | tail -20 | cut -c1-500
+  ↳ FAILED   00:00:25      1:0  (+8 lines)
+The self-check caught it: the old ten-in-one set joins passages with a space plus a blank line. Adding that separator and rerunning.
+→ Bash: sed -i 's/^SEP_CANDIDATES = \["\\n\\n", "\\n", " ", ""\]/SEP_CANDIDATES = [" \\n\\n", "\\n\\n", "\\n", " ", ""]/' scripts/probes/build_groups.py && grep -n '^SEP_CANDIDATES' scripts/probes/build_groups.py && expmon launch --exp probes --sta…
+  ↳ 31:SEP_CANDIDATES = [" \n\n", "\n\n", "\n", " ", ""] (+1 lines)
+→ Bash: expmon note -j 188464 "result: FAILED by design in 25 s: the g10 self-check found no separator in its list; the 2026-11-06 g10 set joins passages with ' \\n\\n' (space + blank line). Nothing written. Relaunched as 188465 with that separator…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+26 lines)
+The builder reproduced the old ten-in-one set on 1,500/1,500 rows and wrote the three new sets. Now finding the arm B baseline files and their measured run times.
+→ Bash: ls expQ/ft_mm_4b_183814/eval/ | grep -i hotpot; sacct -j 185505,185506,185507,185509,185510,185511 -X -o JobID,JobName%20,Elapsed,State -n
+  ↳ mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json (+8 lines)
+→ Bash: grep 'hotpotqa_1500' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     r=json.loads(l); print(r['jobid'], r.get('stage'), ' '.join(r.get('argv',[]))[:120])" | tail -15; sacct -j 185600,185601,185602,185603 -X -…
+  ↳ 185502 probe expQ/ft_mm_4b_183538/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/text_hotpotqa_1500 (+21 lines)
+→ Bash: grep '"188445"\|"188419"' .expmon/runs.jsonl | cut -c1-700; python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json')) ⏎ print(list(d.keys())[:10]); sm=d.get('summary',…
+  ↳ {"ts": "2026-11-11 02:02", "jobid": "188419", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/rep_184778/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "43f9c0e+dirty", "outdir": "/beeg (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && ls -la c_plain_s42/; for c in b_gold_joined b_distr_joined b_g10_shuf; do mkdir -p $c && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/model $c/model; ls -la $c/; done
+  ↳ total 2 (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && CML=4096 TOPK=10 expmon launch --exp probes --stage B --parent 185505 --force --dry-run --time 1:01:00 eval_mm_4b.sh expQ/probes/b_gold_joined/model pisco "" eval_data/probes_hotpot_gold_joined 2>&1 …
+  ↳ would submit: sbatch --time 1:01:00 eval_mm_4b.sh expQ/probes/b_gold_joined/model pisco  eval_data/probes_hotpot_gold_joined (+4 lines)
+→ Bash: for c in gold_joined distr_joined; do CML=4096 TOPK=10 expmon launch --exp probes --stage B --parent 185505 --force --time 1:01:00 eval_mm_4b.sh expQ/probes/b_$c/model pisco "" eval_data/probes_hotpot_$c 2>&1 | grep 'job id'; done; CML=4096…
+  ↳ job id:  188471 (+2 lines)
+Three arm B cells submitted. Recording their intent and gates in the ledger now.
+→ Bash: expmon note -j 188465 "result: arm B data built and checked: the builder rebuilds text_hotpotqa_1500_g10 on 1500/1500 rows identical (separator ' \\n\\n'); all 1500 rows have 2 gold passages, 1487/1500 have 10 passages. Wrote eval_data/prob…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+8 lines)
+→ Bash: sacct -j 188445 -D -o JobID,State,Start,End,NodeList -n | head; ls -la --time-style=+%H:%M expQ/probes/c_plain_s42/eval/; grep -v pad_token eval_mm_4b_188445.out | grep -E '^\[|judge|Saved|wrote' | tail -5
+  ↳ 188445        PREEMPTED 2026-11-11T03:12:50 2026-11-11T03:22:06       homer-008  (+14 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/probes/c_plain_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json')) ⏎ s=d['summary']; print({k:v for k,v in s.items() if k.startswith('judge') or k in ('n','em','f1')}) ⏎ p…
+  ↳ {'em': 0.45866666666666667, 'f1': 0.6217049562714876, 'n': 1500, 'judge': 0.718, 'judge/mrqa_BioASQ': 0.912, 'judge/mrqa_DROP': 0.58, 'judge/mrqa_DuoRC': 0.6, 'judge/mrqa_RACE': 0.528, 'judge/mrqa_Rel (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes/c_plain_s42/eval && cp -p mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json attempt2_0357_mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json && md5sum *.json; cd /beegfs/scratch…
+  ↳ d9cdb3138b07065997e7e21aa0960bbb  attempt2_0357_mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+3 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep mrqa; python3 -c " ⏎ import json ⏎ s=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['summary'] ⏎ print({k:round(v,3) for k,v in s.items() if k.startswith('judg…
+  ↳ mm_docqa_base_px1003520_text_mrqa_ood_1500.json (+2 lines)
+Updating the deliverable page and STATE.md now. First a quick progress read of every running cell.
+→ Bash: for j in 188439 188440 188441 188445 188446 188457 188458 188459 188460 188461; do printf "%s " $j; grep -v pad_token eval_mm_4b_$j.out 2>/dev/null | grep -E '^\[[0-9]+/' | tail -1; echo; done; for j in 188442 188443; do printf "%s " $j; ta…
+  ↳ 188439 [370/1500] em=0.484 f1=0.577 anls=0.568 match=0.546  1355s (+27 lines)
+The regression check for last wake's eval fix is at 280/300 rows. Waiting a few minutes for it to write its file, then comparing its exact-match score to the recorded run.
+→ Bash: timeout 420 bash -c 'until ls expQ/probes/reg_184778/eval/*.json >/dev/null 2>&1; do sleep 15; done'; ls expQ/probes/reg_184778/eval/
+  ↳ mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json
+→ Bash: python3 -c " ⏎ import json ⏎ a=json.load(open('expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json')) ⏎ b=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json')) ⏎ ra, rb = a…
+  ↳ 300 EM 0.49 0.4767 identical preds 243 mems (118147, 118147) judge in file False
+→ Bash: head -1 eval_mm_4b_188458.out eval_mm_4b_188419.out; sacct -j 188419,188458,184781 -X -o JobID,NodeList,Start -n; grep -n 'batch_size\|sort(\|sorted(' scripts/eval_mm_docqa.py | head -20; git diff --stat; git log --oneline -3 -- scripts/eva…
+  ↳ ==> eval_mm_4b_188458.out <== (+23 lines)
+→ Bash: git diff scripts/eval_mm_docqa.py
+  ↳ diff --git a/scripts/eval_mm_docqa.py b/scripts/eval_mm_docqa.py (+51 lines)
+→ Bash: sacct -j 185542,188456 -X -o JobID,NodeList,Start -n; for n in homer-008 homer-011 homer-016 homer-013; do echo "== $n"; scontrol show node $n | grep -E 'OS=|AvailableFeatures|Gres=' | sed 's/^ *//' | cut -c1-200; done
+  ↳ 185542             homer-008 2026-11-06T22:26:08  (+17 lines)
+→ Bash: grep -n 'args.limit\|--limit\|cudnn\|deterministic\|manual_seed' scripts/eval_mm_docqa.py | head; grep -n 'LIMIT\|LIM=' eval_mm_4b.sh | head -5; sacct -j 188439,188440,188441,188442,188443,188445,188446,188457,188458,188459,188460,188461,18…
+  ↳ 12:      --data_path eval_data/mm_docqa_500 --output_path expQ/<run>/eval/mm_docqa_pisco.json [--limit 50] (+9 lines)
+→ Bash: git diff --stat 43f9c0e a2da4a9 -- pisco scripts '*.py' | tail -5; git diff --stat 43f9c0e HEAD -- pisco scripts | tail -3; git status --short pisco scripts | head
+  ↳ scripts/probes/probe_attn_route.py |   4 +- (+9 lines)
+The only remaining difference between the identical re-run and this one is the node. Checking which nodes the baselines ran on, and which nodes carry the older image.
+→ Bash: sacct -j 184781,184784,185505,185601,185600,185775,185577,185580,185542,174908 -X -o JobID,NodeList,State -n | tr -s ' '; scontrol show node 2>/dev/null | awk '/NodeName=/{n=$1} /OS=/{print n, $2}' | sed 's/NodeName=//' | sort -k2 | awk '{p…
+  ↳ 174908 homer-019 COMPLETED  (+11 lines)
+→ Bash: sacct -j 185505 -D -o JobID,State,NodeList,Start,End -n | grep -v '\.' ; grep -l 'Driver Version' *.out 2>/dev/null | head -200 | while read f; do j=$(echo $f | grep -oE '[0-9]{6}'); n=$(sacct -j $j -X -o NodeList -n 2>/dev/null | tr -d ' '…
+  ↳ 185505        PREEMPTED       homer-020 2026-11-06T18:43:48 2026-11-06T19:05:00  (+2 lines)
+→ Bash: ls -la --time-style='+%m-%d %H:%M' expQ/ft_mm_4b_183814/eval/ | grep hotpot; ls -la --time-style='+%m-%d %H:%M' expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ | grep '1500_1m.json'
+  ↳ -rw-rw-r-- 1 hdejean hdejean 814042 11-07 04:23 mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json (+4 lines)
+→ Bash: squeue -j 188458,188445 -h -o '%i %T %M'; tail -c 400 eval_mm_4b_188458.out | tr '\r' '\n' | tail -3
+  ↳ 188445 RUNNING 10:53 (+3 lines)
+→ Bash: ls /beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py && grep -n 'add_argument' scripts/paired_judge.py | head; python3 -c " ⏎ import json ⏎ a=json.load(open('expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim…
+  ↳ /beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py (+7 lines)
+→ Bash: sinfo -p gpu-be -N -h -o '%N %T' | sort -u | tr '\n' ' '; echo; gpucap free a100 2>&1 | tail -12
+  ↳ homer-005 allocated homer-006 allocated homer-007 mixed homer-008 mixed- homer-009 allocated homer-010 mixed homer-011 allocated homer-012 mixed homer-013 allocated homer-014 allocated homer-016 alloc (+5 lines)
+→ Bash: for c in reg_h016 reg_h007; do mkdir -p expQ/probes/$c && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model expQ/probes/$c/model; done; ls -la expQ/probes/reg_h016 expQ/probes/reg_h007 | grep model; expmon launch --exp p…
+  ↳ lrwxrwxrwx  1 hdejean hdejean 61 Nov 11 04:12 model -> /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model (+5 lines)
+→ Bash: grep -m1 FACTORS eval_mm_4b_188458.out; grep -n '^PX=\|PX:-' eval_mm_4b.sh | head -3
+  ↳ FACTORS kind=eval_mm mode=pisco ckpt=reg_184778 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_qu (+2 lines)
+→ Bash: PX=1003520 expmon launch --exp probes --stage reg --parent 184781 --force --nodelist=homer-016 --time 1:00:00 eval_mm_4b.sh expQ/probes/reg_h016/model pisco 300 eval_data/mm_docqa_1500_1m 2>&1 | grep 'job id'; PX=1003520 expmon launch --exp…
+  ↳ job id:  188476 (+1 lines)
+→ Bash: expmon note -j 188458 "result: the law's fix check FAILS its letter but not on the fix: reference model plain, first 300 document questions, on homer-008 (kernel el9_7): EM .490 vs .477 recorded (184781, homer-011, el9_8), +.013 > the .01 b…
+  ↳ expmon note: 102 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+→ Bash: expmon verdict 188458 closed "fix check: EM .490 vs .477 on 300/300 rows (+.013), judge .623 vs .610, 14/300 discordant; cause = node homer-008 (el9_7) vs homer-011, not the patch (base-only diff); 243/300 predictions identical" | tail -1; …
+  ↳ verdict recorded: 188458 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+6 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ r=json.load(open('expQ/probes/c_plain_s42/eval/attempt2_0357_mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json'))['records'] ⏎ for n in (710,1110): ⏎   print(n, round(sum(x['em'] for x in r[:n])/n,3), rou…
+  ↳ 710 0.424 0.594 0.599 (+3 lines)
+→ Bash: grep -n 'PASSED 2026-11-11\|pairs. The pipeline is deterministic\|Health number per cell' campaign_probes/CAMPAIGN.md
+  ↳ 66:  PASSED 2026-11-11 (job 188419): judge .610 = .610, 1,500/1,500 predictions identical (greedy decoding), 0 discordant (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: expmon gripe -c gap "runs.jsonl / grid record no NODE per cell: a cell and its baseline can land on nodes with different system images (homer-008 el9_7 vs homer-011 el9_8) and greedy image evals then differ (57/300 answers, judge +.013); I …
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+5 lines)
+→ Bash: grep -v pad_token eval_mm_4b_188445.out | grep -E '^\[[0-9]+/' | tail -1; tail -c 300 eval_mm_4b_188445.out | tr '\r' '\n' | tail -3; squeue -j 188445 -h -o '%T %M'
+  ↳ [1110/1500] em=0.407 f1=0.574 anls=0.507 match=0.564  539s (+4 lines)
+The text cell was preempted again (third time) and is requeued; its finished copy from homer-016 is safe. Adding the two new symptoms to the known-issues table.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat >> known_issues.md <<'EOF' ⏎ | a re-run of a recorded IMAGE cell (same model, set, env) gives other answers (57/300 differ, judge +.013, 188458) while a re-run on the original nod…
+  ↳ | a probe env (`STYLE=expand`, …) set on a mode or path never used with it befor (+2 lines)
+→ Bash: sacct -j 184784,184781 -D -o JobID,State,NodeList,Start,End -n | grep -v '\.'; squeue -j 188476,188477,188472,188473,188471 -h -o '%i %T %r %N'
+  ↳ 184781        PREEMPTED       homer-008 2026-11-09T02:51:23 2026-11-09T03:06:26  (+18 lines)
+→ Bash: squeue -u hdejean -h -o '%i %T %M %N %r' | sort; scontrol show node homer-007 | grep -E 'State=|Reason' | sed 's/^ *//'
+  ↳ 162472 RUNNING 7:20:27 homer-014 None (+25 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep '"188461"' .expmon/runs.jsonl | cut -c1-400; grep -m1 FACTORS eval_mm_4b_188461.out
+  ↳ {"ts": "2026-11-11 03:36", "jobid": "188461", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/a_mq8_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "a2da4a9+dirty", "outdir": "/beegf (+1 lines)
+→ Bash: expmon note -j 188461 "intent: cancel while PENDING (preempted on homer-008 at 04:11, requeued, no file written) and relaunch the same command with --exclude=homer-[005-009]: this cell measures how many answers a tiny slot perturbation flip…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Bash: squeue -j 188461 -h -o '%T' 2>&1; sacct -j 188461 -X -o State -n; MQ=int8 PX=1003520 expmon launch --exp probes --stage A --parent 184781 --force --dry-run --exclude=homer-[005-009] --time 4:54:00 eval_mm_4b.sh expQ/probes/a_mq8_s42/model p…
+  ↳ CANCELLED+  (+1 lines)
+→ Bash: MQ=int8 PX=1003520 expmon launch --exp probes --stage A --parent 184781 --force --dry-run '--exclude=homer-[005-009]' --time 4:54:00 eval_mm_4b.sh expQ/probes/a_mq8_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | tail -3
+  ↳ factors:       (+2 lines)
+→ Bash: MQ=int8 PX=1003520 expmon launch --exp probes --stage A --parent 184781 --force '--exclude=homer-[005-009]' --time 4:54:00 eval_mm_4b.sh expQ/probes/a_mq8_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | grep 'job id'
+  ↳ job id:  188478
+→ Bash: expmon note -j 188478 "intent: relaunch of 188461 (cancelled while pending), same command (MQ=int8 PX=1003520, a_mq8_s42 -> 184778, mm_docqa_1500_1m, 1500 Q), plus --exclude=homer-[005-009] (Same node rule). Gate unchanged: mems_used = 646,…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Submission cap for this wake reached (8 of 8). Now rewriting the results page and STATE.md.
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: squeue -u hdejean -h -o '%i %T %N' | sort | grep -E '^18(84[3-7][0-9])' ; expmon grid probes 2>&1 | awk '{print $1,$2,$3,$4,$5}' | head -40
+  ↳ 188439 RUNNING homer-016 (+55 lines)
+→ Bash: sed -i 's/- 17 probe cells are open (6 running, 11 queued). No arm has decided. The `gpu-be` partition keeps taking GPUs back/- 17 probe cells are open (7 running, 10 queued). No arm has decided. The `gpu-be` partition keeps taking GPUs bac…
+  ↳ 13:- 17 probe cells are open (7 running, 10 queued). No arm has decided. The `gpu-be` partition keeps taking GPUs back (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && python3 - <<'EOF' ⏎ p='STATE.md'; s=open(p).read() ⏎ s=s.replace("- budget: 25 of 60 cells committed; GPU-hours spent ≈ 2 of 40 (preempted attempts included); the 17 open cells add ≈ …
+  ↳ 101:- budget: 25 of 60 cells committed (17 before this wake + 8 submissions); GPU-hours of 40: the tick's sensor reports (+1 lines)
+Writing the wake-up condition for the next wake.
+→ Bash: echo 'wake-when job:188476,188477 job:188439,188440,188441 job:188445,188446,188457 job:188471,188472,188473 job:188442,188443,188444 max 6h' > NEXT && cat NEXT && git -C /beegfs/scratch/user/hdejean/pisco status --short | head -20
+  ↳ wake-when job:188476,188477 job:188439,188440,188441 job:188445,188446,188457 job:188471,188472,188473 job:188442,188443,188444 max 6h (+12 lines)
+I did not decide any arm this wake. I did find a flaw in how the campaign measures: on page images, the eval gives different answers depending on which node it runs on.
+
+**What I found**
+- **Node effect on images.** I re-ran the reference model's plain cell on 300 document questions on node homer-008 (older system image). It scored judge accuracy .623 against .610 for the recorded run. 14 of 300 verdicts flipped (9 up, 5 down), and 57 of 300 answers changed. The recorded run and the earlier identical re-run were both on homer-011. Over 1,500 questions this alone could move a paired difference by about ±.011, about half the campaign's ±.02 noise band.
+- **The eval fix from the last wake is not the cause.** Its change only touches the uncompressed reader and adds one check. So I kept it, even though this check missed its ±.01 exact-match limit (+.013).
+- **Text inputs look safe so far.** The uncompressed reader gave 300/300 identical answers across two nodes. A compressed text run on homer-008 matched the homer-016 run's scores at rows 710 and 1,110, then was stopped before the end. This is not yet a full-file comparison.
+- **The +.037 long-chunk gain mixes node images.** It compares a run on homer-006 (older image) with one on homer-017 (newer image). It is text, so it is probably safe, but that is not proven.
+- **First text number (provisional).** The compressed reference model scores .718 on MRQA (1,500 questions) against .807 uncompressed. The biggest gaps are DROP (reasoning) −.20, RACE −.15 and DuoRC −.08. SLURM restarted that job after it had finished, so I kept a copy of the finished file.
+
+**What I launched (8 of 8 allowed)**
+- **Arm B (why one long chunk beats ten short ones).** I wrote a builder that first rebuilds the old ten-in-one set exactly (1,500/1,500 rows), then makes three new HotpotQA sets: gold passages joined, distractors joined, all ten joined in shuffled order. One cell per set is queued, each with its gate written down first. The builder's first try stopped itself on a wrong separator and wrote nothing.
+- **Two 300-question checks:** one on homer-016 (same image as the recorded run), one on homer-007 (older image). Together they tell whether the image causes the effect or only homer-008.
+- **The int8 cell:** I cancelled it while it was queued (no work lost) and resubmitted it on newer-image nodes only. It measures noise, so a node change would corrupt it directly.
+- **New rule in the campaign rules (`CAMPAIGN.md`):** image cells count only when paired with a baseline from the same node image. The old "the pipeline is deterministic" claim stays in the file, marked as wrong.
+
+**Other things**
+- I fixed the wrong cell count the checker flagged in STATE.md. 17 cells are open now: 7 running, 10 queued. The gpu-be partition took GPUs back from 14 cells today, and SLURM requeues them from zero.
+- Every launch needed `--force` because of an expmon bug: it treats any new job as a repeat of a closed test job. I filed that as a gripe, plus one asking for a node column in the grid.
+- The next wake starts when the first group of cells leaves the queue, or after 6 hours at most.
+
+Nothing needed from you for the plan. When convenient: clear the old ALERT lines about the failed 01:00 / 01:30 wakes (they hit the account's 5-hour usage limit), and force-add `eval_mm_4b.sh`, `probe_attn_route.sh` and `run_tests_cpu.sh` to git.
+→ StructuredOutput: {"next": "wake-when", "summary": "Found node-dependent numerics on image evals: the reference document cell on homer-008 (el9_7) gives judge .623 vs .610 recorded (14/300 discordant, 57/300 answers differ, job 188458), while the same-node r…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.9409 turns=88 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Found node-dependent numerics on image evals: the reference document cell on homer-008 (el9_7) gives judge .623 vs .610 recorded (14/300 discordant, 57/300 answers differ, job 188458), while the same-node re-run was byte-identical; the eval patch is not the cause (base-mode-only diff); text inputs did not move. Added a Same node rule to CAMPAIGN.md, launched two pinned 300-question determinism checks (homer-016, homer-007), relaunched the int8 cell off el9_7 nodes. Started arm B: wrote scripts/probes/build_groups.py (rebuilds g10 1500/1500, then writes gold_joined / distr_joined / g10_shuf sets) and launched the three cells. Provisional arm C baseline: compressed MRQA .718 vs raw .807 (DROP -.20, RACE -.15, DuoRC -.08). Fixed the verifier's unsupported cell count in STATE.md.", "launched": ["188464", "188465", "188471", "188472", "188473", "188476", "188477", "188478"], "verdicts": [{"jobid": "188458", "verdict": "closed", "note": "fix check: EM .490 vs .477, judge .623 vs .610, 14/300 discordant on homer-008; cause = node, not patch"}, {"jobid": "188464", "verdict": "closed", "note": "builder self-check stopped it (separator missing); nothing written"}, {"jobid": "188465", "verdict": "closed", "note": "arm B data build PASS: g10 rebuilt 1500/1500 identical; 3 sets written"}, {"jobid": "188461", "verdict": "closed", "note": "cancelled while pending after preemption; relaunched as 188478 off el9_7 nodes"}], "gripes": ["defect: launch dead-arm 
+== final:
+{"next":"wake-when","summary":"Found node-dependent numerics on image evals: the reference document cell on homer-008 (el9_7) gives judge .623 vs .610 recorded (14/300 discordant, 57/300 answers differ, job 188458), while the same-node re-run was byte-identical; the eval patch is not the cause (base-mode-only diff); text inputs did not move. Added a Same node rule to CAMPAIGN.md, launched two pinned 300-question determinism checks (homer-016, homer-007), relaunched the int8 cell off el9_7 nodes. Started arm B: wrote scripts/probes/build_groups.py (rebuilds g10 1500/1500, then writes gold_joined / distr_joined / g10_shuf sets) and launched the three cells. Provisional arm C baseline: compressed MRQA .718 vs raw .807 (DROP -.20, RACE -.15, DuoRC -.08). Fixed the verifier's unsupported cell count in STATE.md.","launched":["188464","188465","188471","188472","188473","188476","188477","188478"],"verdicts":[{"jobid":"188458","verdict":"closed","note":"fix check: EM .490 vs .477, judge .623 vs .610, 14/300 discordant on homer-008; cause = node, not patch"},{"jobid":"188464","verdict":"closed","note":"builder self-check stopped it (separator missing); nothing written"},{"jobid":"188465","verdict":"closed","note":"arm B data build PASS: g10 rebuilt 1500/1500 identical; 3 sets written"},{"jobid":"188461","verdict":"closed","note":"cancelled while pending after preemption; relaunched as 188478 off el9_7 nodes"}],"gripes":["defect: launch dead-arm refusal matches on empty pre-launch factors, so every launch after a closed factor-less run needs --force","gap: runs.jsonl/grid record no node per cell; cross-node image evals differ, had to sacct -D by hand"],"wake_when":"job:188476,188477 job:188439,188440,188441 job:188445,188446,188457 job:188471,188472,188473 job:188442,188443,188444 max 6h"}
+== rc=0 secs=1214
+== verify: 7/12

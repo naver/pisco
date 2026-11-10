@@ -64,7 +64,17 @@ wait for the whole grid. Every claim carries n (questions, pairs), the paired CI
   must be within ±.01 with the CI inside the noise band; otherwise the instrument does not register changes of the size
   this campaign looks for, and the campaign STOPS with "the judge is not reproducible at the .02 level" as its finding.
   PASSED 2026-11-11 (job 188419): judge .610 = .610, 1,500/1,500 predictions identical (greedy decoding), 0 discordant
-  pairs. The pipeline is deterministic: a paired difference between two cells comes from the probe, not from re-running.
+  pairs. WRONG GENERALISATION, kept and marked: the wake then wrote "the pipeline is deterministic". It is
+  deterministic on ONE node (188419 and 184781 both ran on homer-011). On homer-008 (older system image, kernel el9_7)
+  the same cell gives other answers on IMAGE inputs: 57/300 predictions differ, judge .623 vs .610, 14/300 discordant
+  (job 188458). Text inputs did not move (uncompressed 300/300, 188456 vs 185542; compressed MRQA identical running
+  scores at 1,110 rows, 188445 attempt 3 vs 2).
+- **Same node rule (added 2026-11-11):** a paired difference between two cells with IMAGE inputs counts only when both
+  ran on the same node image, or on nodes a determinism check showed to agree (`LIMIT=300` plain cell, predictions
+  identical). Nodes: el9_7 = homer-005..009, el9_8 = homer-010..020 (`scontrol show node <n> | grep OS=`). Record
+  the node of every cell and of its baseline (`sacct -j <id> -D -o NodeList` — the attempt that wrote the file).
+  Until the checks 188476 (homer-016) / 188477 (homer-007) say otherwise, launch image cells with
+  `--exclude=homer-[005-009]`, and pair a cell that ran there only with a baseline from the same image.
 - **Health number per cell:** `unparseable: 0` in the eval log, 1,500 rows in the result file, and the total `mems_used`
   within 1% of the baseline cell's (a different slot total is a different budget, not a probe result). A cell failing
   any of these is `closed "health"` and relaunched once. Exception: a probe whose purpose is to change what is compressed
