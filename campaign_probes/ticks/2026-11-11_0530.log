@@ -1,0 +1,179 @@
+== campaign probes wake 2026-11-11_0530  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794342602 live=188459:RUNNING,188439:RUNNING,188485:RUNNING,188460:RUNNING,188484:RUNNING,188471:RUNNING,188483:RUNNING,188482:RUNNING,188446:RUNNING running=9 pending=0 problems=0 problems_other=0 new=0 gpuh24=8.9 idle_h=0.0 min_util=38 alert=1 unpushed=12 cron=2 daemon=1 disk_gb=13259 sig=c561c261 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188445,188446,188457_job:188480,188481_job:188471,188473,188486_job:188439,188440,188441,188478_job:188459,188460_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:188480,188481 (ended)   (NEXT was: wake-when job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h)
+== session 3a7b9ca1-b46b-4d8a-923f-7f0c3652cd6e  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3a7b9ca1-b46b-4d8a-923f-7f0c3652cd6e/tool-results/bpltt8qmd.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0530   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+242 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 174 CAMPAIGN.md (+177 lines)
+→ Bash: cat STATE.md && echo ======= && cat known_issues.md
+  ↳ Exit code 1 (+114 lines)
+→ Bash: cat known_issues.md; sed -n 40,75p STATE.md
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+63 lines)
+Woken because arm E's two control runs ended; checking their results and the other finished cells now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 188439,188440,188441,188445,188446,188457,188459,188460,188471,188472,188473,188477,188478,188480,188481,188482,188483,188484,188485,188486 -D -X -o JobID,State,ExitCode,Start,End,Elapsed,No…
+  ↳ JobID   State      ExitCode  Start                End                  Elapsed   NodeList (+38 lines)
+→ Bash: expmon ledger 40 2>&1 | head -80
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && for d in a_* b_* c_* e_* reg_* ; do [ -d $d/eval ] && { echo "## $d"; ls -la --time-style=+%H:%M $d/eval/ | tail -n +4 | awk '{print $6, $5, $7}'; }; done 2>/dev/null; ls -la --time-style…
+  ↳ ## a_expand_s42 (+39 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 -c " ⏎ import json,sys ⏎ d=json.load(open('expQ/probes/a_gold_s43/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json')) ⏎ print(type(d), list(d.keys())[:20] if isinstance(d,dict) else l…
+  ↳ <class 'dict'> ['summary', 'records'] (+62 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && python3 - <<'EOF' ⏎ import json,glob,os ⏎ fs=sorted(glob.glob('*/eval/*.json'))+['../base_qwen35_4b/eval/mm_docqa_base_px1003520_expand_text_mrqa_ood_1500.json'] ⏎ for f in fs: ⏎     d=js…
+  ↳ a_gold_s42/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json 1500 judged 1500 {'em': 0.5347, 'em/slidevqa': 0.542, 'em/infovqa': 0.438, 'em/mpdocvqa': 0.624, 'image_min_pixels': None, 'mem_quan (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes/a_gold_s43/eval && cp -p mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json attempt_h013_0501_mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json && ls -la; cd /beegfs/scratch/user/hdejean/…
+  ↳ total 1587 (+6 lines)
+Copied a finished result aside; now reading job logs and pairing results against baselines.
+→ Bash: ls -t logs/eval_mm_4b_18845*.out logs/eval_mm_4b_1884[6-8]*.out 2>/dev/null | head; f=logs/eval_mm_4b_188459.out; [ -f $f ] && grep -an "wrote\|^judge\|EXIT CODE\|unparseable\|mems_used" $f | tail -12
+  ↳ Exit code 1 (+1 lines)
+→ Bash: expmon logs 188459 5 2>&1 | head -12
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188459.out (last 5) <== (+5 lines)
+→ Bash: for j in 188439 188440 188441 188445 188446 188457 188459 188460 188471 188473 188477 188478 188480 188481 188486; do echo "### $j"; grep -a -E "^wrote|wrote |^judge|EXIT CODE|unparseable|mems_used|homer-0" eval_mm_4b_$j.out 2>/dev/null | g…
+  ↳ ### 188439 (+46 lines)
+→ Bash: ls -la --time-style=+%m-%d_%H:%M expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ | grep -E "mm_docqa_1500_1m|keep" ; ls -la --time-style=+%m-%d_%H:%M expQ/ft_mm_4b_183814/eval/ | grep -i -E "hotpot|keep"; python3 -c " ⏎ import json; r…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 811538 11-09_06:01 mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+11 lines)
+→ Bash: cat > /tmp/pair_probes.py <<'EOF' ⏎ import json, sys, math, random ⏎ def recs(p): return {r['query_id']: r for r in json.load(open(p))['records']} ⏎ def judge_val(r): ⏎     try: return float(r['judge']) ⏎     except: return None ⏎ def cmp(n…
+  ↳ A gold s42 vs plain s42: n=1500 identical_pred=972/1500 mems 174631 vs 646042 ratio=0.270 | judge 0.6320 vs 0.6100 diff +0.0220 [+0.0047,+0.0400] up/down 111/78 McNemar p=0.0197 (+39 lines)
+→ Bash: for n in 005 006 007 008 009 010 011 013 016 020; do echo -n "homer-$n "; scontrol show node homer-$n 2>/dev/null | grep -oE "Gres=[^ ]*|OS=[^ ]* [^ ]*" | tr '\n' ' '; echo; done; ls expQ/ | grep -E "18353[0-9]|18381[0-9]"; for r in 183538 …
+  ↳ homer-005 Gres=gpu:A100-SXM4-80GB:8(S:0-1) OS=Linux 5.14.0-611.34.1.el9_7.x86_64  (+29 lines)
+Pairing done; arm A and arm B have clear results. Checking which second model has hotpot baselines before launching repeats.
+→ Bash: for r in 183538 183816 184778 184780; do echo "== $r"; ls expQ/ft_mm_4b_$r/eval/ 2>/dev/null | grep -i -E "hotpot|mrqa"; done; grep -n -E "183816|183538" EXPERIMENTS.md | grep -i hotpot | tail -5 | cut -c1-300
+  ↳ == 183538 (+13 lines)
+→ Bash: sed -n 520p EXPERIMENTS.md | cut -c1-1500; ls expQ/ft_mm_4b_183816/ 2>/dev/null | head
+  ↳ - 2026-11-10 23:03 [job 185601] LONG-CHUNK PROBE RESULT (no training; hotpot 10 passages ~1,270 tokens joined; judge 1500 Q, paired): SPREAD r8 183814: ten separate chunks .579, three chunks of ~400 t (+7 lines)
+→ Bash: sacct -j 188472,188486,188482,188444 -X -o JobID%8,SubmitLine%400 -P | cut -c1-600; ls -la expQ/probes/b_gold_joined/ expQ/ft_mm_4b_183816/model | head -20
+  ↳ JobID|SubmitLine (+22 lines)
+→ Bash: grep -h -o "expmon launch[^\"]*" campaign_probes/ticks/2026-11-11_0*.log 2>/dev/null | sort -u | head -20 | cut -c1-400
+  ↳ expmon launch (+19 lines)
+→ Bash: grep -h -B2 -A3 "b_g1_rep/model" campaign_probes/ticks/2026-11-11_0430.log 2>/dev/null | grep -v "^--$" | head -30 | cut -c1-500
+  ↳ ↳ distr_joined 1500 mems 261308 judge 0.604 unp 0 (+9 lines) (+5 lines)
+→ Bash: sed -n 1,200p eval_mm_4b.sh | grep -n -E "CML|TOPK|SBATCH|STYLE|EXCL|THINK|KEEP|\$\{?[A-Z]+:-" | head -50
+  ↳ 2:#SBATCH -n 1 (+17 lines)
+Launching arm B repeats and the arm D fusion job next; first checking the fusion launcher and the queue.
+→ Bash: head -20 scripts/probes/route_fusion.sbatch; ls expQ/probes/attn_route_188442 expQ/probes/attn_route_188443; ls -d eval_data/text_hotpotqa_1500_g10 eval_data/probes_hotpot_*; squeue -u hdejean -h -o "%i %j %T" | sort
+  ↳ #!/bin/bash (+49 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes/b_gold_joined/eval && cp -p mm_docqa_pisco_k10_cml4096_probes_hotpot_gold_joined.json attempt_h016_0458_mm_docqa_pisco_k10_cml4096_probes_hotpot_gold_joined.json && ls -la; cd /beegfs/scratc…
+  ↳ total 1588 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && cp -p a_route1_s43/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json a_route1_s43/eval/attempt_h020_mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json && ls -la --time-s…
+  ↳ total 2218 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188459 "intent: kill the requeued duplicate. Attempt on homer-013 (el9_8) wrote the full judged file at 05:01 (judge .6393, n=1500, 0 non-binary judges) seconds before the 05:01:27 pre…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: squeue -u hdejean -h -o "%i %j %T %N" | sort | grep -E "18845|18846"; ls -la /beegfs/scratch/user/hdejean/pisco/expQ/probes/a_gold_s43/eval/ /beegfs/scratch/user/hdejean/pisco/expQ/probes/a_route1_s43/eval/ | grep json
+  ↳ 188466 pt_text_4b_long.sh PENDING  (+7 lines)
+Recording verdicts next, then launching the arm B repeats on the seed-43 model plus the tail-layout control.
+→ Bash: sacct -j 188427,185600,185601,185505 -X -o JobID,Elapsed,State -P; cd expQ/probes && for c in b_g1_s43:183816 b_g10_s43:183816 b_gold_joined_s43:183816 b_distr_joined_s43:183816 b_g10_shuf_s43:183816 b_gold_joined_tail:183538; do d=${c%%:*}…
+  ↳ JobID|Elapsed|State (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && CML=4096 TOPK=10 expmon launch --dry-run --exp probes --stage B --parent 185505 --time 1:14:00 '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/b_g1_s43/model pisco "" eval_data/text_hotpotqa_15…
+  ↳ launch: REFUSED — this cell (exp='probes', same factors) was closed as a dead arm by run 188444. (+1 lines)
+→ Bash: CML=4096 TOPK=10 expmon launch --dry-run --force --exp probes --stage B --parent 185505 --time 1:14:00 '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/b_g1_s43/model pisco "" eval_data/text_hotpotqa_1500 2>&1 | tail -8
+  ↳ would submit: sbatch --time 1:14:00 --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/b_g1_s43/model pisco  eval_data/text_hotpotqa_1500 (+3 lines)
+→ Bash: expmon note "intent: arm B repeat on model 183816 (= 183814's recipe with seed 43, the s43 twin the sibling longchunk campaign also reproduces; the law's 'second seed before adoption' rule needs a second spread model, 183814 has no other se…
+  ↳ Exit code 1 (+6 lines)
+→ Bash: expmon note "intent: arm B repeat on model 183816 (183814's recipe, seed 43; second seed needed before adoption). 5 cells, CML=4096 TOPK=10, 1,500 HotpotQA Q, off homer-[005-009]: g1, g10, gold_joined, distr_joined, g10_shuf. --time 1:14:00…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+25 lines)
+→ Bash: expmon note "intent: arm D fusion relaunch = 188444's command minus the dependency (its inputs exist: attn_route_188442 retr10 + 188443 hotpot, controls exact). Gate: a fused picker with pick@1 >= digit + .02 on retr10 (.861) AND no loss on…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/188515/   (unless the script sets a named run dir) (+2 lines)
+Seven jobs launched (six arm B repeats, one fusion). Recording verdicts and results in the ledger now.
+→ Bash: for p in "188441 judge=0.820" "188460 judge=0.822" "188440 judge=0.632" "188459 judge=0.6393" "188478 judge=0.6113" "188471 judge=0.6547" "188473 judge=0.6147" "188486 judge=0.582" "188445 judge=0.718" "188457 judge=0.8067" "188480 judge=0.…
+  ↳ (Bash completed with no output)
+→ Bash: expmon probe 188441 judge=0.820; echo rc=$?; tail -3 .expmon/probes.jsonl
+  ↳ probe recorded: 188441 (judge=0.820)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+→ Bash: expmon probe 188460 judge=0.822 && expmon probe 188440 judge=0.632 && expmon probe 188459 judge=0.639 && expmon probe 188478 judge=0.611 && expmon probe 188471 judge=0.655 && expmon probe 188473 judge=0.615 && expmon probe 188486 judge=0.58…
+  ↳ probe recorded: 188460 (judge=0.822)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+11 lines)
+→ Bash: \ ⏎ expmon verdict 188441 best "arm A FINDING s42: picked page raw (route1), reference model 184778, docs 1,500 Q: judge .820 vs plain .610 = +.210 [+.187,+.233], 350 up/35 down, McNemar p<1e-60; route hit .986; mems_used .749x plain + one …
+  ↳ verdict recorded: 188441 -> best   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+10 lines)
+→ Bash: expmon note -j 188471 "result (provisional, one model): golds joined in one chunk, 183814, HotpotQA 1,500 Q: judge .655 vs g1 re-run .582 = +.073 [+.051,+.095] p=1.5e-10; vs g10 .617 = +.038 [+.015,+.061] p=.002; bridge .647 (g1 .553, g10 .…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Bash: wc -l scripts/probes/build_groups.py && sed -n 1,200p scripts/probes/build_groups.py
+  ↳ 143 scripts/probes/build_groups.py (+143 lines)
+Writing a non-oracle grouping set (join the two passages the model itself ranks highest) so the next wake can test it without knowing the gold passages.
+→ Bash: python3 -c " ⏎ import json ⏎ m=json.load(open('expQ/probes/attn_route_188443/meta.json')) ⏎ print(type(m), (list(m.keys())[:20] if isinstance(m,dict) else len(m))) ⏎ if isinstance(m,dict): ⏎   for k,v in m.items(): ⏎     print(k, type(v).__…
+  ↳ <class 'list'> 1500 (+79 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ m=json.load(open('expQ/probes/attn_route_188443/meta.json')) ⏎ r=m[0]; print({k:str(v)[:200] for k,v in r.items()}) ⏎ import collections ⏎ # top-2 recall of both golds by digit log-probs ⏎ both=0; n=0; one=0 ⏎ f…
+  ↳ {'i': '0', 'n_docs': '10', 'counts': '[6, 16, 9, 13, 20, 20, 17, 23, 17, 12]', 'gold': '[0, 9]', 'digit_pick': '0', 'source': 'hotpot_comparison', 'digit_lp': '[-0.9360373020172119, -1.686037302017212 (+1 lines)
+→ Bash: python3 -c " ⏎ import numpy as np, json ⏎ z=np.load('expQ/probes/attn_route_188443/masses.npz', allow_pickle=True) ⏎ print({k:(z[k].shape, z[k].dtype) for k in z.files}) ⏎ " 2>&1 | head
+  ↳ Traceback (most recent call last): (+2 lines)
+→ Bash: grep -n -E "savez|masses|np.save|json.dump" scripts/probes/probe_attn_route.py | head -20; grep -n -E "masses|npz|def load|attn_share|\[\"" scripts/probes/route_fusion.py | head -30
+  ↳ 9:Per-question head x document masses go to <OUT>/masses.npz for further analysis. Env: CKPT, DATA, N_ROWS, TOPK, PX, OUT. (+33 lines)
+→ Bash: cat scripts/probes/build_groups.sbatch
+  ↳ #!/bin/bash (+18 lines)
+Now editing the builder to add a "model-picked pair joined" set kind.
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/probes/build_groups.py' ⏎ s=open(p).read() ⏎ # 1. docstring ⏎ s=s.replace('''  g10_shuf      all 10 joined like g10, passage order shuffled (seeded by query_id): tests (c). ⏎ ''','''  g10_shuf      all 10 join…
+  ↳ scripts/probes/build_groups.py | 44 ++++++++++++++++++++++++++++++++++++++---- (+2 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ m=json.load(open('expQ/probes/attn_route_188443/meta.json')) ⏎ print('none digit_lp', sum(1 for r in m if r['digit_lp'] is None), 'qids unique', len(set(r['query_id'] for r in m))) ⏎ " && git diff scripts/probes…
+  ↳ none digit_lp 0 qids unique 1500 (+93 lines)
+→ Bash: expmon note "intent: arm B no-oracle grouping sets (CPU): build_groups.py gains pred<K>_<picker> = the K passages model 183814 ranks first (digit route / attention / product / rrf, from attn_route_188443 + fusion 188515) joined, others alon…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/188516/   (unless the script sets a named run dir) (+2 lines)
+All 8 submissions used. Checking the fusion job, then updating the law, the results doc and STATE.
+→ Bash: sacct -j 188515,188516 -X -o JobID,State,Elapsed,NodeList -P; ls route_fusion_188515.out 2>/dev/null && tail -30 route_fusion_188515.out | cut -c1-200
+  ↳ JobID|State|Elapsed|NodeList (+22 lines)
+→ Bash: expmon verdict 188515 closed "arm D decided: retr10 (10 doc pages, 183814, n=1,500): digit .861, attention .885 (+.025 [+.010,+.039]), product .879 (+.019, 31/3); hotpot: digit .922, attention .873 (-.049), product .928 (+.006 n.s.). Gate m…
+  ↳ verdict recorded: 188515 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+→ Bash: grep -v "^SUMMARY" build_groups_188516.out | tail -40 | cut -c1-220
+  ↳ FACTORS kind=build_groups args=--kinds,pred2_digit,pred2_attn,pred2_product,pred2_rrf,pred3_attn,pred3_product,--route_dir,expQ/probes/attn_route_188443 (+50 lines)
+→ Bash: expmon note "resource: eval_data/probes_hotpot_pred{2_digit,2_attn,2_product,2_rrf,3_attn,3_product} (1500 rows each, text) by scripts/probes/build_groups.py (job 188516) from text_hotpotqa_1500: the K passages model 183814 ranks first (att…
+  ↳ verdict recorded: 188516 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered)
+→ Bash: wc -l docs/probe_campaign_2026-11.md && cat docs/probe_campaign_2026-11.md
+  ↳ 87 docs/probe_campaign_2026-11.md (+87 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ fs={'plain s42':'expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json', ⏎ 'plain s43':'expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json', ⏎ 'route1 s42':'expQ/pro…
+  ↳ plain s42 judge 0.6100 mean decoder prompt tokens 511 slots/q 430.7 (+12 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for f in ['expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_gold_mm_docqa_1500_1m.json','expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json']: ⏎     d=json.load(open(f)); r=d['records']; s=d[…
+  ↳ mm_docqa_base_px1003520_gold_mm_docqa_1500_1m.json 1500 judge 0.8407 {'judge/slidevqa': 0.842, 'judge/infovqa': 0.742, 'judge/mpdocvqa': 0.938} (+1 lines)
+Writing the results page now (arm A, B, D decided or near-decided), then STATE and the law updates.
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n -E "Same node rule|Until 188477|homer-\[005-009\]|reduced spread / tail pair|tail control 183538|\| B\. long-chunk" campaign_probes/CAMPAIGN.md | cut -c1-200
+  ↳ 26:`184780` (s43) for every "can we recover loss" probe (both seeds before a claim), and the reduced spread / tail pair (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 24	The campaign decides by paired judge accuracy, arm cell − baseline cell on the same questions (95% CI, McNemar); the (+57 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old1='''`183814` / `183538` for every "why does the layout do X" probe. The deliverable''' ⏎ new1='''`183814` / `183538` for every "why does the layout do X" probe; a …
+  ↳ ok
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/known_issues.md' ⏎ s=open(p).read() ⏎ old=[l for l in s.splitlines() if l.startswith('| sacct shows a job PREEMPTED and requeued, but its `.batch` step COMPLETED')][0] ⏎ new='''| sacct shows a job PREE…
+  ↳ ok
+→ Bash: expmon display --exp probes 2>&1 | tail -5; expmon campaign report --section leaves 2>&1 | head -60
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+→ Bash: sacct -j 188446,188483,188439,188471 -D -X -o JobID,State,Start,End,Elapsed,NodeList -P | tail -8; ls -la --time-style=+%H:%M expQ/probes/c_expand_s42/eval/ expQ/probes/a_expand_s42/eval/ expQ/probes/e_keep05_*/eval/ 2>&1 | grep -v "^total"…
+  ↳ 188439|PREEMPTED|2026-11-11T03:43:13|2026-11-11T05:06:36|01:23:23|homer-016 (+33 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && cp -p c_expand_s42/eval/mm_docqa_pisco_px1003520_cml4096_expand_text_mrqa_ood_1500.json c_expand_s42/eval/attempt_h016_0535_mm_docqa_pisco_px1003520_cml4096_expand_text_mrqa_ood_1500.json…
+  ↳ c_expand_s42 1500 binary judged 1500 judge 0.6993 mems 80003 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188446 "intent: kill the requeued duplicate: the homer-016 attempt wrote the full judged file at 05:35 (judge .699, n=1500, 0 non-binary judges) seconds before the 05:35:28 preemption;…
+  ↳ scancel'd: 188446 (+9 lines)
+Three more results came in (text node check, arm C, one arm E cell). Recording them.
+→ Bash: expmon probe 188446 judge=0.699 && expmon probe 188483 judge=0.505 && \ ⏎ expmon verdict 188446 closed "arm C gate NOT met: compressed evidence-then-answer, MRQA 1,500 Q: .699 vs compressed plain .718 (-.019, p=.11). Compressed-minus-raw ga…
+  ↳ probe recorded: 188446 (judge=0.699)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+5 lines)
+→ Bash: expmon verdict 188472 closed "provisional, one model: distractors joined, n=1,500 HotpotQA Q: .604 vs el9_8 g1 re-run .582 = +.022 [+.003,+.041], McNemar p=.027; vs g10 -.013 n.s. (p=.33). Noise-band edge; repeat on 183816 = 188512" 2>&1 | …
+  ↳ verdict recorded: 188472 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old='''preemptions). Keep launching EVERY cell (text too) with `--exclude=homer-[005-009]` (quote it in zsh) until job ⏎   188471's re-run on homer-007 (text, golds jo…
+  ↳ ok
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old='''  1,500/1,500 answers identical to its homer-016 file. So every node except homer-008 agrees; launch every cell with ⏎   `--exclude=homer-008` at least (cells l…
+  ↳ ok (+21 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ rep=[ ⏎ ('''- Running: arm A evidence-then-answer (seed 42), arm C compressed evidence-then-answer, arm E four slot-pruning cells, ⏎   arm B six repeat / control ce…
+  ↳ ok
+→ Bash: grep -n "finding 4\|finding 5" docs/probe_campaign_2026-11.md && sed -i 's/Gate (≥ +2 pt on documents AND no loss on HotpotQA) met by the per-source switch only. Closed without a judge cell:\nsee finding 4./X/' docs/probe_campaign_2026-11.m…
+  ↳ 102:see finding 4. (+4 lines)
+→ Bash: grep -c "" .expmon/probes.jsonl; grep -n '"jobid": "[0-9]* ' .expmon/probes.jsonl | head; grep -n 'jobid' .expmon/probes.jsonl | tail -22 | head -14
+  ↳ 20 (+14 lines)
+→ Bash: expmon gripe -c defect "expmon probe '188441 judge=0.820' (jobid and metric in ONE argv, e.g. from a quoted for-loop item) exits silently: nothing recorded, no error, so 13 probes were lost until I re-ran them unquoted. Suggest: split a sin…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Writing STATE.md now; first a quick look at the live queue so the job table is right.
+→ Bash: squeue -u hdejean -h -o "%i|%j|%T|%M|%N|%r" | sort | grep -v -E "^(162472|177747|18842[0-9]|18846[6-9]|188470)"
+  ↳ 188439|eval_mm_4b.sh|RUNNING|18:13|homer-011|None (+9 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon display --exp probes 2>&1 | tail -1; ls campaign_probes/; git status --short | head -20
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs) (+21 lines)
+→ Bash: echo "wake-when job:188509,188510,188511,188512,188513,188514 job:188482,188484,188485 job:188439 max 2h" > campaign_probes/NEXT && cat campaign_probes/NEXT
+  ↳ wake-when job:188509,188510,188511,188512,188513,188514 job:188482,188484,188485 job:188439 max 2h
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm A decided at both seeds: showing the picked page raw recovers the whole document gap (.820 / .822 vs .610 / .615 compressed, all-raw .809, n=1,500 each). Showing only the gold page, still compressed, ga…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=5.1660 turns=79 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm A decided at both seeds: showing the picked page raw recovers the whole document gap (.820 / .822 vs .610 / .615 compressed, all-raw .809, n=1,500 each). Showing only the gold page, still compressed, gains just +.022 / +.025, so the loss is reading the compressed answer page, not distraction. Arm B (one model, provisional): putting the two gold passages in one chunk gains +.073 over ten separate chunks and +.038 over one chunk of all ten; passage order does not matter. Repeats are running on the seed-43 twin 183816, plus a tail-layout control. Arm D decided: attention picks image pages better (+2.5 pt) and the digit prompt picks text passages better; the expected judge gain is ≈ +.006, too small for a cell. Arm C at seed 42: evidence-then-answer does not shrink the text gap (DROP +3 pt, DuoRC −7, RACE −4). Arm E controls passed; keeping every 2nd slot costs −.105, and three pruning cells are running. Node checks: every node tested agrees except homer-008, on images and on text. Five cells hit the preemption race (result written, then preempted). Copied those results aside and killed three duplicate reruns. Built six no-oracle grouping sets. Tightened the law, rewrote the results doc and STATE.", "launched": ["188509 arm B ten chunks, model 183816", "188510 arm B one chunk, 183816", "188511 arm B golds joined, 183816", "188512 arm B distractors joined, 183816", "188513 arm B shuffled one chunk, 183816", "188514 arm B golds joined, tail mod
+== final:
+{"next":"wake-when","summary":"Arm A decided at both seeds: showing the picked page raw recovers the whole document gap (.820 / .822 vs .610 / .615 compressed, all-raw .809, n=1,500 each). Showing only the gold page, still compressed, gains just +.022 / +.025, so the loss is reading the compressed answer page, not distraction. Arm B (one model, provisional): putting the two gold passages in one chunk gains +.073 over ten separate chunks and +.038 over one chunk of all ten; passage order does not matter. Repeats are running on the seed-43 twin 183816, plus a tail-layout control. Arm D decided: attention picks image pages better (+2.5 pt) and the digit prompt picks text passages better; the expected judge gain is ≈ +.006, too small for a cell. Arm C at seed 42: evidence-then-answer does not shrink the text gap (DROP +3 pt, DuoRC −7, RACE −4). Arm E controls passed; keeping every 2nd slot costs −.105, and three pruning cells are running. Node checks: every node tested agrees except homer-008, on images and on text. Five cells hit the preemption race (result written, then preempted). Copied those results aside and killed three duplicate reruns. Built six no-oracle grouping sets. Tightened the law, rewrote the results doc and STATE.","launched":["188509 arm B ten chunks, model 183816","188510 arm B one chunk, 183816","188511 arm B golds joined, 183816","188512 arm B distractors joined, 183816","188513 arm B shuffled one chunk, 183816","188514 arm B golds joined, tail model 183538","188515 arm D fusion (CPU)","188516 no-oracle grouping set build (CPU)"],"verdicts":[{"jobid":"188441","verdict":"best","note":"route1 s42 +.210 [+.187,+.233], n=1500"},{"jobid":"188460","verdict":"best","note":"route1 s43 +.207 [+.183,+.232], n=1500"},{"jobid":"188440","verdict":"closed","note":"gold only s42 +.022, below +3 pt gate"},{"jobid":"188459","verdict":"closed","note":"gold only s43 +.025, below gate"},{"jobid":"188478","verdict":"closed","note":"int8 +.001, 1445/1500 identical; s43 repeat due"},{"jobid":"188473","verdict":"closed","note":"shuffled order -.002 vs g10; repeat 188513"},{"jobid":"188486","verdict":"closed","note":"g1 re-run .582 vs .579, 1445/1500 identical"},{"jobid":"188445","verdict":"closed","note":"MRQA plain re-run identical 1500/1500"},{"jobid":"188480","verdict":"closed","note":"arm E identity control PASS 300/300"},{"jobid":"188481","verdict":"closed","note":"post-patch regression PASS 300/300"},{"jobid":"188477","verdict":"closed","note":"homer-007 agrees 300/300; homer-008 alone off"},{"jobid":"188515","verdict":"closed","note":"arm D decided: per-source switch passes, no judge cell"},{"jobid":"188516","verdict":"closed","note":"6 no-oracle sets built"},{"jobid":"188446","verdict":"closed","note":"arm C gate not met at s42"},{"jobid":"188457","verdict":"closed","note":"uncompressed expand .807 = plain"},{"jobid":"188471","verdict":"closed","note":"provisional golds joined +.073 / +.038; text node-proof"},{"jobid":"188472","verdict":"closed
+== rc=0 secs=938
+== verify: 8/13

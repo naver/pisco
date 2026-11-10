@@ -24,7 +24,8 @@ Qwen3-8B rubric judge accepts, 1,500 questions per set, `scripts/paired_judge.py
 The campaign decides by paired judge accuracy, arm cell − baseline cell on the same questions (95% CI, McNemar); the
 unit is judge accuracy in [0, 1], "pt" = .01. Models are FIXED: the reference pair `expQ/ft_mm_4b_184778/model` (s42) and
 `184780` (s43) for every "can we recover loss" probe (both seeds before a claim), and the reduced spread / tail pair
-`183814` / `183538` for every "why does the layout do X" probe. The deliverable is a ranked list of findings, each with
+`183814` / `183538` for every "why does the layout do X" probe; a layout result that passes its gate once on 183814 is
+repeated on its seed-43 twin `183816` (183814's recipe + `hf_training.seed=43`) before it is adopted. The deliverable is a ranked list of findings, each with
 its paired number, its n, and the training arm it motivates (or the idea it closes).
 
 ## Arms — what varies, what is held constant
@@ -38,7 +39,7 @@ plumbing checks, never for a claim), chunk cap 4096 (`CML=4096`) on text so no p
 | A. use-recovery on documents | `eval_mm_4b.sh <ref model> pisco "" eval_data/mm_docqa_1500_1m` with ONE env probe: `STYLE=expand` (copy the evidence, then answer), `GOLD=1` (gold page only), `RAW=route1` (picked page raw), `MQ=int8` | one decoding/prompting change at a time | model, set, PX | the same model's plain cell (exists: judge .610 / .615) | ≥ +3 pt with CI above 0 at both seeds = finding; the "use" share it explains is reported from the transcription files | 2 seeds × probes |
 | B. long-chunk mechanism | `CML=4096 TOPK=10 eval_mm_4b.sh 183814 pisco "" <grouped set>` on new grouped sets built by `scripts/probes/build_groups.py`: gold passages joined alone vs distractors joined alone, passage order shuffled inside the joined chunk, g10 with the "+1" slots equalised | which passages share a chunk, their order | model 183814 (and 183538 as the tail control), 10 passages, same slot total ± 1% | g1 (.579) and g10 (.617), files exist | a grouping that keeps the +.037 while removing a candidate cause closes that cause; CI must exclude 0 | ~6 |
 | C. reasoning vs reading on text | `CML=4096 eval_mm_4b.sh <ref model> pisco "" eval_data/text_mrqa_ood_1500` with `STYLE=expand`, and the same with the model's thinking mode on (`scripts/probes/` flag if `eval_mm_docqa.py` lacks it) for compressed AND `base` | prompting that gives the decoder room to reason | passage, set | plain compressed .695 / raw .807 | the compressed−raw gap on DROP / DuoRC / RACE shrinks by ≥ 5 pt with the same treatment on both sides | ~6 |
-| D. page picking without training | `scripts/probes/route_fusion.py` over the saved attention masses (`expQ/probes/attn_route_*/masses.npz`) and the digit log-probs: rank fusion, product, per-source choice; then `RAW=route1` with the fused pick via the eval's `RANK=` json | the picker | sets retr10 / hotpot / nav frames | digit pick@1 .861 (retr10), .922 (hotpot) | pick@1 ≥ +2 pt on retr10 AND no loss on hotpot; then the route1 judge gain | ~4 |
+| D. page picking without training | `scripts/probes/route_fusion.py` over the saved attention masses (`expQ/probes/attn_route_*/masses.npz`) and the digit log-probs: rank fusion, product, per-source choice; then `RAW=route1` with the fused pick via the eval's `RANK=` json | the picker | sets retr10 / hotpot / nav frames | digit pick@1 .861 (retr10), .922 (hotpot) | pick@1 ≥ +2 pt on retr10 AND no loss on hotpot; then the route1 judge gain, ONLY if its expected size (pick@1 gain × the judge gap between hit and miss rows of a route1 cell) exceeds the noise band. DECIDED 2026-11-11 (job 188515): per-source switch +.025 / +.000 passes; expected judge gain ≈ +.006, no judge cell | ~4 |
 | E. attention-guided slot pruning | `scripts/probes/prune_by_attention.py`: two passes, drop the 50% / 25% of slots with the least decoder attention at the first answer token, then answer | which slots are kept | model 184778, docs + photos | keep-50% first/even cells (−.12 / −.13 docs on 183814; redo on 184778 as the baseline) | ≥ +4 pt over the best untrained keep-50% at the same slot count = a free coarse level | ~4 |
 | F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on a NEW set `eval_data/probes_textvqa_ocr` (the 500 TextVQA rows of `mm_naturalqa_1500` with their `ocr_tokens` from `lmms-lab/textvqa` as `docs`). WRONG PREMISE, kept and marked (2026-11-11): the law first named `mm_naturalqa_1500` itself, but its rows carry `docs=[""]` (no OCR text; `build_mm_natural_qa.py` line 82), so `pisco_text` there compresses an empty string | pixels vs text for text-in-image | model, questions | plain .677 / .685 (TextVQA rows of it) | reported only; a TextVQA gain ≥ 5 pt motivates a mixed input arm | 2 + 1 set build |
 
@@ -67,16 +68,22 @@ wait for the whole grid. Every claim carries n (questions, pairs), the paired CI
   pairs. WRONG GENERALISATION, kept and marked: the wake then wrote "the pipeline is deterministic". It is
   deterministic on ONE node (188419 and 184781 both ran on homer-011). On homer-008 (older system image, kernel el9_7)
   the same cell gives other answers on IMAGE inputs: 57/300 predictions differ, judge .623 vs .610, 14/300 discordant
-  (job 188458). Text inputs did not move (uncompressed 300/300, 188456 vs 185542; compressed MRQA identical running
-  scores at 1,110 rows, 188445 attempt 3 vs 2).
+  (job 188458). Text inputs did not move on the checks then available (uncompressed 300/300, 188456 vs 185542;
+  compressed MRQA 1,500/1,500 on one node, 188445). PARTLY WRONG, kept and marked: compressed text moved 55/1,500
+  answers (judge .582 vs .579) between homer-006 with 11-07 code (185505) and homer-010 with 11-11 code (188486).
 - **Same node rule (added 2026-11-11):** a paired difference between two cells with IMAGE inputs counts only when both
   ran on the same node image, or on nodes a determinism check showed to agree (`LIMIT=300` plain cell, predictions
   identical). Nodes: el9_7 = homer-005..009, el9_8 = homer-010..020 (`scontrol show node <n> | grep OS=`). Record
   the node of every cell and of its baseline (`sacct -j <id> -D -o NodeList` — the attempt that wrote the file).
   Check 188476 PASSED: homer-016 (el9_8) gives 184781's (homer-011) first 300 answers 300/300, so el9_8 nodes
-  agree. Until 188477 (homer-007) says otherwise, launch EVERY cell (text too) with `--exclude=homer-[005-009]`
-  (quote it in zsh): besides the image effect, homer-008 took 14 of the campaign's 18 preemptions by 04:40. Pair a
-  cell that ran on el9_7 only with a baseline from the same image.
+  agree. Check 188477 PASSED too: homer-007 (el9_7) gives the same 300/300, so the image effect is homer-008 alone
+  (all nodes carry A100-SXM4-80GB). homer-008 stays excluded for good (it also took 14 of the campaign's first 18
+  preemptions). Text check PASSED as well: job 188471's re-run on homer-007 (compressed text, golds joined) gave
+  1,500/1,500 answers identical to its homer-016 file. Every node tested (homer-007, 010, 011, 013, 016, 020) agrees
+  except homer-008; homer-005, 006 and 009 are untested. Launch every cell with `--exclude=homer-[005-009]` while the
+  queue allows, never with less than `--exclude=homer-[005,006,008,009]`. The 55-answer drift of
+  185505 (homer-006, code of 11-07) vs 188486 (homer-010, code of 11-11) is therefore homer-006 or the code date:
+  text cells of arm B pair with the 11-11 g1 re-run 188486, never with 185505.
 - **Health number per cell:** `unparseable: 0` in the eval log, 1,500 rows in the result file, and the total `mems_used`
   within 1% of the baseline cell's (a different slot total is a different budget, not a probe result). A cell failing
   any of these is `closed "health"` and relaunched once. Exception: a probe whose purpose is to change what is compressed

@@ -10,6 +10,12 @@ the same passages and changes only which ones share a chunk:
   distr_joined  the distractors joined into one chunk (at the first distractor's place), each gold alone.
                 Slot total close to g10's: tests (b) with the golds kept apart.
   g10_shuf      all 10 joined like g10, passage order shuffled (seeded by query_id): tests (c).
+  pred<K>_<picker>  NO ORACLE: the K passages the model itself ranks first joined into one chunk (at the first one's
+                place, original order), the others alone. Ranks come from an attention-route dir (--route_dir, written
+                by probe_attn_route.py on the g1 layout + route_fusion.py): picker `digit` = meta.json digit_lp,
+                `attn` / `product` / `rrf` = fused_<picker>.json. Tests whether a two-pass pipeline (compress
+                separately, rank, re-compress the top K together) gets the gold_joined gain without knowing the golds.
+                Prints, per picker and K, the share of rows whose top K holds every gold passage.
 
 gold_positions are remapped to the chunks that hold a gold passage. Every other column is copied.
 
@@ -52,7 +58,7 @@ def regroup(row, groups, sep):
     return out
 
 
-def groups_for(kind, row):
+def groups_for(kind, row, top=None):
     n = len(row["docs"])
     gold = sorted({int(g) for g in (row.get("gold_positions") or [])})
     if kind == "g10":
@@ -61,8 +67,11 @@ def groups_for(kind, row):
         order = list(range(n))
         random.Random(zlib.crc32(str(row["query_id"]).encode())).shuffle(order)
         return [order]
-    if kind in ("gold_joined", "distr_joined"):
-        joined = gold if kind == "gold_joined" else [i for i in range(n) if i not in gold]
+    if kind in ("gold_joined", "distr_joined") or kind.startswith("pred"):
+        if kind.startswith("pred"):
+            joined = sorted(top)
+        else:
+            joined = gold if kind == "gold_joined" else [i for i in range(n) if i not in gold]
         if len(joined) <= 1:
             return [[i] for i in range(n)]  # nothing to join (logged in the summary)
         out, placed = [], False
@@ -105,6 +114,7 @@ def main():
     ap.add_argument("--g10", default="eval_data/text_hotpotqa_1500_g10")
     ap.add_argument("--out_prefix", default="eval_data/probes_hotpot_")
     ap.add_argument("--kinds", default="gold_joined,distr_joined,g10_shuf")
+    ap.add_argument("--route_dir", default=None, help="attention-route dir for pred<K>_<picker> kinds")
     args = ap.parse_args()
 
     base = load_train(args.base)
@@ -117,10 +127,34 @@ def main():
         print("[check] g10 not reproduced: nothing written"); sys.exit(1)
 
     summary = {"base": args.base, "separator": sep, "rows": len(base), "gold_per_row": dict(ng), "sets": {}}
+    ranks = {}
+    if any(k.startswith("pred") for k in args.kinds.split(",")):
+        meta = json.load(open(os.path.join(args.route_dir, "meta.json")))
+        by_qid = {str(m["query_id"]): m for m in meta}
+        for r in base:  # the route dir must be this base set, row for row
+            m = by_qid[str(r["query_id"])]
+            assert sorted(int(g) for g in m["gold"]) == sorted(int(g) for g in r["gold_positions"]), r["query_id"]
+            assert int(m["n_docs"]) == len(r["docs"]), r["query_id"]
+        ranks["digit"] = {q: m["digit_lp"] for q, m in by_qid.items()}
+        for pk in ("attn", "product", "rrf"):
+            f = os.path.join(args.route_dir, f"fused_{pk}.json")
+            if os.path.exists(f):
+                ranks[pk] = {str(q): v for q, v in json.load(open(f)).items()}
+        for pk, rk in ranks.items():
+            for K in (1, 2, 3, 4):
+                full = sum(1 for r in base if {int(g) for g in r["gold_positions"]} <=
+                           set(sorted(range(len(r["docs"])), key=lambda i: -rk[str(r["query_id"])][i])[:K]))
+                print(f"[recall] picker={pk} K={K}: top K holds every gold on {full}/{len(base)} rows = {full / len(base):.3f}")
+                summary.setdefault("recall_all_golds", {})[f"{pk}@{K}"] = full / len(base)
     for kind in args.kinds.split(","):
         rows, nchunks, unjoined = [], Counter(), 0
         for r in base:
-            groups = groups_for(kind, r)
+            top = None
+            if kind.startswith("pred"):
+                K, pk = kind[4:].split("_", 1)
+                sc = ranks[pk][str(r["query_id"])]
+                top = sorted(range(len(r["docs"])), key=lambda i: -sc[i])[:int(K)]
+            groups = groups_for(kind, r, top)
             if all(len(g) == 1 for g in groups):
                 unjoined += 1
             new = regroup(r, groups, sep)
@@ -128,6 +162,8 @@ def main():
             assert sorted(i for g in groups for i in g) == list(range(len(r["docs"])))
             assert sum(len(d) for d in new["docs"]) == sum(len(d) for d in r["docs"]) + len(sep) * (len(r["docs"]) - len(groups))
             assert new["gold_positions"], f"row {r['query_id']}: no gold chunk"
+            if kind.startswith("pred"):
+                assert len(groups) == len(r["docs"]) - len(top) + 1
             rows.append(new); nchunks[len(groups)] += 1
         ds = Dataset.from_list(rows, features=base.features)
         out = f"{args.out_prefix}{kind}"

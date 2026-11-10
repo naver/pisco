@@ -1,0 +1,59 @@
+== verifier 2026-11-11_0530  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 92a989d5-9e40-4f88-80ad-cd2254cb5855  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+292 lines)
+→ Glob: {"pattern": "expQ/probes/*/eval/*.json"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+181 lines)
+  ↳ expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+22 lines)
+→ Grep: {"pattern": "\"(judge|mems_used|n|em|route_hit|summary)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/a_route1_s42/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 20}
+  ↳ 2: "summary": { (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/a_route1_s42/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/a_route1_s43/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+52 lines)
+Checking the result files behind each STATE.md claim. The two "picked page raw" files match: .820 and .822, n=1,500. Next I'm checking the node records and the other cells.
+→ Glob: {"pattern": "**/eval_mm_4b_1847{81,84}*.out"}
+→ Grep: {"pattern": "184784|184781", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes", "output_mode": "content", "head_limit": 40}
+  ↳ campaign_probes/CAMPAIGN.md:69:  deterministic on ONE node (188419 and 184781 both ran on homer-011). On homer-008 (older system image, kernel el9_7) (+41 lines)
+  ↳ eval_mm_4b_184781.out (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0400.log
+  ↳ 120	  ↳ 185542             homer-008 2026-11-06T22:26:08  (+17 lines) (+49 lines)
+→ Grep: {"pattern": "homer-0\\d\\d", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_{184784,184781,188440,188478,188483,188446,188445,188473,185601,185505,188486,188472}.out", "output_mode": "content", "head_limit": 60}
+  ↳ eval_mm_4b_188446.out:22:slurmstepd: error: *** JOB 188446 ON homer-007 CANCELLED AT 2026-11-11T05:42:36 ***
+→ Grep: {"pattern": "184784", "path": "/beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md", "output_mode": "content"}
+  ↳ 45:Baselines: plain compressed cells of the same model (seed 42: job 184781, homer-011; seed 43: job 184784, homer-016).
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+147 lines)
+→ Grep: {"pattern": "185601", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_probes/ticks/2026-11-11_0530.verify.log:22:→ Grep: {"pattern": "homer-0\\d\\d", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_{184784,184781,188440,188478,188483,188446,18 (+5 lines)
+→ Grep: {"pattern": "\"(judge|n|judge_unparseable|mem_keep_frac|mem_keep_mode|em)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/e_keep05_even/eval/mm_docqa_pisco_px1003520_keep05_even_mm_docqa_1500_1m.json", "output_mode": "content",…
+  ↳ 3:  "em": 0.41, (+9 lines)
+→ Glob: {"pattern": "*188516*"}
+→ Grep: {"pattern": "hit.?(vs|-|minus).?miss|\\.25 |gap \\.25|0\\.25", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0530.log", "output_mode": "content", "head_limit": 15}
+  ↳ No matches found
+  ↳ build_groups_188516.out
+→ Read: /beegfs/scratch/user/hdejean/pisco/build_groups_188516.out
+  ↳ 1	FACTORS kind=build_groups args=--kinds,pred2_digit,pred2_attn,pred2_product,pred2_rrf,pred3_attn,pred3_product,--route_dir,expQ/probes/attn_route_188443 (+53 lines)
+→ Grep: {"pattern": "miss", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks", "output_mode": "content", "head_limit": 15}
+  ↳ campaign_probes/ticks/2026-11-11_0530.log:110:All 8 submissions used. Checking the fusion job, then updating the law, the results doc and STATE. (+14 lines)
+→ Glob: {"pattern": "*188515*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "route_fusion*.out"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/route_fusion_188515.out
+  ↳ 1	FACTORS kind=route_fusion args=expQ/probes/attn_route_188442,expQ/probes/attn_route_188443 (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/b_gold_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_gold_joined.json
+  ↳ 1	{ (+49 lines)
+Numbers match so far. Now checking whether nodes homer-013 and homer-020 were ever tested on image inputs, since the seed-43 document cells ran there.
+→ Grep: {"pattern": "homer-01[3]|homer-020", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes", "glob": "*.md", "output_mode": "content"}
+  ↳ campaign_probes/STATE.md:67:| 188482 | E keep first half | RUNNING | homer-013 | `e_keep05_first` |
+→ Grep: {"pattern": "homer-013|homer-020", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0530.log", "output_mode": "content", "head_limit": 20}
+  ↳ 62:→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188459 "intent: kill the requeued duplicate. Attempt on homer-013 (el9_8) wrote the full judged file at 05:01 (judge .6393, n=1500, 0
+→ StructuredOutput: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds: seed 42 judge .820 vs plain .610 = +.210 [+.187, +.233], 350 up / 35 down, McNemar p<1e-60 (job 188441); seed 43 .822 vs .615 = +.207 [+.183,…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3724 turns=26 is_error=False denials=0
+== declared: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds: seed 42 judge .820 vs plain .610 = +.210 [+.187, +.233], 350 up / 35 down, McNemar p<1e-60 (job 188441); seed 43 .822 vs .615 = +.207 [+.183, +.232], 349 / 38 (job 188460). The pick is right on 98.6% / 98.9%; the all-raw reader scores .809.", "status": "supported", "reason": "Both result files exist and match the claim. a_route1_s42 has judge .820, n=1500, route_hit .986, judge_unparseable 0. a_route1_s43 has .822, n=1500, route_hit .9893, unparseable 0. The CIs, counts and p come from the verdicts of 188441 and 188460 (both 'best'). The slot ratio (.749x / .748x plus one raw page) is reported, as the rule for probes that change the input requires. Node rule holds: 188441 ran on homer-016 against a homer-011 baseline (shown to agree by 188476); 188460 ran on homer-020 against homer-016 (same el9_8 image). The gate (≥ +3 pt, CI above 0, both seeds) is cleared by about 7×. One caveat: 'the whole gap' compares to the raw .809, an older cell not paired on node."}, {"claim": "Removing the distractor pages instead gains only about 2 pt, below the +3 pt gate at both seeds: gold page only, compressed, seed 42 .632 vs .610 = +.022 [+.005, +.040], p=.020 (job 188440); seed 43 .639 vs .615 = +.025 [+.006, +.043], p=.010 (job 188459). So the document loss is reading the compressed answer page, not distraction.", "status": "supported", "reason": "The numbers match the verdicts of 188440 (111
+== final:
+{"claims":[{"claim":"Showing the routed page raw recovers the whole document gap, at both seeds: seed 42 judge .820 vs plain .610 = +.210 [+.187, +.233], 350 up / 35 down, McNemar p<1e-60 (job 188441); seed 43 .822 vs .615 = +.207 [+.183, +.232], 349 / 38 (job 188460). The pick is right on 98.6% / 98.9%; the all-raw reader scores .809.","status":"supported","reason":"Both result files exist and match the claim. a_route1_s42 has judge .820, n=1500, route_hit .986, judge_unparseable 0. a_route1_s43 has .822, n=1500, route_hit .9893, unparseable 0. The CIs, counts and p come from the verdicts of 188441 and 188460 (both 'best'). The slot ratio (.749x / .748x plus one raw page) is reported, as the rule for probes that change the input requires. Node rule holds: 188441 ran on homer-016 against a homer-011 baseline (shown to agree by 188476); 188460 ran on homer-020 against homer-016 (same el9_8 image). The gate (≥ +3 pt, CI above 0, both seeds) is cleared by about 7×. One caveat: 'the whole gap' compares to the raw .809, an older cell not paired on node."},{"claim":"Removing the distractor pages instead gains only about 2 pt, below the +3 pt gate at both seeds: gold page only, compressed, seed 42 .632 vs .610 = +.022 [+.005, +.040], p=.020 (job 188440); seed 43 .639 vs .615 = +.025 [+.006, +.043], p=.010 (job 188459). So the document loss is reading the compressed answer page, not distraction.","status":"supported","reason":"The numbers match the verdicts of 188440 (111/78, mems .270x) and 188459 (116/79, mems .270x), n=1500 each. Grid judges are .632 and .639. The slot ratio is reported, as the rule requires. Nodes: 188440 on homer-011, same node as its baseline; 188459 on homer-013 against homer-016, both el9_8. 'Below the +3 pt gate' holds at both seeds. Nuance: the ~2 pt distractor cost is itself above the .02 noise band with CI above 0 at both seeds, so 'not distraction' means 'not mainly distraction'."},{"claim":"Page picking without training (arm D, model 183814, n=1,500 per set, job 188515): 10-page documents digit .861, attention .885 (+.025 [+.010, +.039]), product .879; HotpotQA digit .922, attention .873 (−.049), product .928. The gate passes only with a per-source switch. No judge cell: the expected judge gain is ≈ +.006, under the .02 noise band.","status":"provisional","reason":"route_fusion_188515.out matches every pick@1 number (n=1500 each; attention +.025 [+.010,+.039] p=.00108; HotpotQA per_source +.000). But the per-source rule (attention on images, digit on text) gives exactly the attention numbers on retr10 and the digit numbers on HotpotQA. That rule was chosen knowing the earlier same-set probes (185577 / 185580), so the gate pass is in-sample. The output shows no held-out half, although docs/probe_campaign_2026-11.md says 'chosen on the other half'. The CI lower bound (.010) is under the +2 pt gate. There is one model and one set per source. The .25 hit-minus-miss judge gap behind '+.006' cites no job or file that I could find
+== rc=0
