@@ -1,0 +1,81 @@
+== campaign probes wake 2026-11-11_0830  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794353402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=14.5 idle_h=0.3 min_util=- alert=1 unpushed=25 cron=3 daemon=1 disk_gb=13052 sig=db96a1cc same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188580_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:188580 (ended)   (NEXT was: wake-when job:188580 max 2h)
+== session 6e4d6713-79f6-476d-a8b4-653754223129  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+23 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/6e4d6713-79f6-476d-a8b4-653754223129/tool-results/bmoipl4mr.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+281 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md BLOCKED.md && ls -la
+  ↳ 191 CAMPAIGN.md (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+191 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+129 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 1	# Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+31 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_probes/BLOCKED.md; echo ----; ls -la expQ/probes/ | head -80; echo; find . -maxdepth 3 -name 'g_checks_188580*' 2>/dev/null
+  ↳ # BLOCKED — campaign probes (2026-11-11 07:50 KST) (+78 lines)
+Reading the arm G re-check result (job 188580) to decide whether the two rate-4 cells can launch.
+→ Bash: wc -l g_checks_188580.out && tail -60 g_checks_188580.out; sacct -j 188580 -D -o JobID,State,ExitCode,NodeList,Start,End -P
+  ↳ 923 g_checks_188580.out (+67 lines)
+→ Bash: cat campaign_probes/VERIFY.md; echo ----; grep -nE "OK|PASS|FAIL|Ran|passed|failed|Error" g_checks_188580.out | head -30
+  ↳ # VERIFY — campaign probes — 2026-11-11_0730   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+37 lines)
+→ Bash: git status --short | head; git diff --stat; git log --oneline -3 -- scripts/eval_mm_docqa.py eval_mm_4b.sh; echo ----; expmon runs 2>/dev/null | grep -E "188525|188541|188542|188538|188580" | head
+  ↳ M HANDOFF.md (+20 lines)
+→ Bash: stat -c '%y %n' scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/probes/g_checks.sbatch pisco/model.py pisco/mm_collator.py; git diff eval_mm_4b.sh; git diff scripts/eval_mm_docqa.py | head -150
+  ↳ 2026-11-11 06:45:22.000000000 +0900 scripts/eval_mm_docqa.py (+179 lines)
+→ Bash: expmon ledger 40 2>/dev/null | grep -vE "^\s*$" | cut -c1-400 | head -60
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+40 lines)
+→ Bash: grep -rhoE "expmon launch[^\"]{0,400}g_dense4[^\"]{0,200}" campaign_probes/ticks/ 2>/dev/null | head -5; echo ---; grep -rhoE "expmon launch[^\"]{0,300}e_keep025_attng[^\"]{0,200}" campaign_probes/ticks/ 2>/dev/null | head -3
+  ↳ ---
+Re-check passed (300/300 identical). Now finding the exact launch command used earlier so the two rate-4 cells repeat it.
+→ Bash: ls campaign_probes/ticks/ | tail -5; grep -lE "g_dense4" campaign_probes/ticks/* 2>/dev/null | head; grep -rn "g_dense4" campaign_probes/*.md docs/probe_campaign_2026-11.md 2>/dev/null | head -5; ls -la expQ/probes/g_dense4_s42/ expQ/probes…
+  ↳ 2026-11-11_0730.log (+21 lines)
+→ Bash: grep -oE "expmon launch[^\n]{0,500}" campaign_probes/ticks/2026-11-11_0630.log | grep -E "dense|DENSE" | head -5 | cut -c1-600
+  ↳ (Bash completed with no output)
+→ Bash: grep -n "DENSE=4" campaign_probes/ticks/2026-11-11_0630.log | head -5 | cut -c1-700; grep -c "" campaign_probes/ticks/2026-11-11_0630.log
+  ↳ 55:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; L='--exclude=homer-[005-009]'; D=eval_data/mm_docqa_1500_1m ⏎ RAW=route1 DENSE=4 PX=1003520 expmon launch --force --exp probes --stage G --parent 1847 (+2 lines)
+→ Bash: L='--exclude=homer-[005-009]'; D=eval_data/mm_docqa_1500_1m; RAW=route1 DENSE=4 PX=1003520 expmon launch --dry-run --force --exp probes --stage G --parent 184781 --time 4:54:00 "$L" eval_mm_4b.sh expQ/probes/g_dense4_s42/model pisco "" $D 2…
+  ↳ would submit: sbatch --time 4:54:00 --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/g_dense4_s42/model pisco  eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: L='--exclude=homer-[005-009]'; D=eval_data/mm_docqa_1500_1m; RAW=route1 DENSE=4 PX=1003520 expmon launch --force --exp probes --stage G --parent 184781 --time 4:54:00 "$L" eval_mm_4b.sh expQ/probes/g_dense4_s42/model pisco "" $D 2>&1 | tail…
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=4:54:00 (+9 lines)
+→ Bash: expmon note -j 188580 "verdict-ready: arm G re-check PASS on homer-013 (exit 0): tests 12/12 + 33/33 + 5/5; plain 300-Q regression 300/300 identical to 184781, EM .477 = .477, judge .610 = .610, slots 118,147 both; RAW=route1 DENSE=8 contro…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: grep -c 188546 .expmon/verdicts.jsonl; grep 188546 .expmon/verdicts.jsonl | cut -c1-200; sacct -j 188485 -D -o JobID,State,NodeList,Start,End -P | grep -v "\.ext\|\.bat"; ls -la --time-style=full-iso expQ/probes/e_keep05_attng/eval/; squeue…
+  ↳ 3 (+12 lines)
+→ Bash: wc -l docs/probe_campaign_2026-11.md && grep -n "^#\|arm G\|Arm G\|G\." docs/probe_campaign_2026-11.md | head -40
+  ↳ 226 docs/probe_campaign_2026-11.md (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 168	adopted.** Quarter (gate written before the cell: within .02 of plain → three quarters unused per question): met at (+59 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ rep=[ ⏎ ("## Status (2026-11-11 07:50 KST)","## Status (2026-11-11 08:45 KST)"), ⏎ ("  gains nothing (+.001, seed 42). Slots stored","  gains nothing (+.001, seed 4…
+  ↳ (Bash completed with no output)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ rep=[ ⏎ ("""full cells `DENSE=4` (`--time 4:54:00`) are submitted only AFTER it passes, never chained on it: with 3 cells left, a failed check must not burn them |""",…
+  ↳ 127:## Pre-authorised actions (the agent may do these without asking) and their loop guards
+Re-check passed and both rate-4 cells are running. Now updating the owner question (cell cap) to reflect that all 60 cells are used.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cat >> campaign_probes/known_issues.md <<'EOF' ⏎ | a probe flag that re-compresses one page/chunk changes answers at the model's own rate (233/300 identical, 188525) while the plain path is exact | the page was compressed ALONE (batch of on…
+  ↳ logged (wish) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: expmon campaign report --section leaves 2>&1 | head -60 | cut -c1-300
+  ↳ **Settled** (+11 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: squeue -j 188590,188591 -o "%i %T %M %R"; for j in 188590 188591; do f=$(ls eval_mm_4b_$j.out 2>/dev/null); echo "== $j $f"; [ -n "$f" ] && grep -E "FACTORS|Traceback|Error|^\[" $f | tail -3 | cut -c1-300; done
+  ↳ JOBID STATE TIME NODELIST(REASON) (+10 lines)
+→ Bash: grep -E "FACTORS" eval_mm_4b_188590.out eval_mm_4b_188591.out | cut -c1-400
+  ↳ eval_mm_4b_188590.out:FACTORS kind=eval_mm mode=pisco ckpt=g_dense4_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_styl (+1 lines)
+Both cells are correctly configured (route1, dense rate 4, full 1,500 questions). Writing the wait contract and finishing.
+→ Bash: echo "wake-when job:188590,188591 max 5h" > campaign_probes/NEXT && cat campaign_probes/NEXT
+  ↳ wake-when job:188590,188591 max 5h
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188590,188591 max 5h", "summary": "Arm G re-check (188580) PASSED: tests 12+33+5 OK, plain 300-Q regression 300/300 identical (EM .477, judge .610), rate-8 control 300/300 identical to plain (was 233/…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.9919 turns=34 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188590,188591 max 5h", "summary": "Arm G re-check (188580) PASSED: tests 12+33+5 OK, plain 300-Q regression 300/300 identical (EM .477, judge .610), rate-8 control 300/300 identical to plain (was 233/300 before the patch) -> batch-of-one compression confirmed as the cause; verdict closed. Submitted the last 2 of 60 cells: rate-4 picked-page cells 188590 (s42, homer-011) and 188591 (s43, homer-012), both RUNNING with dense_rate=4 confirmed in FACTORS. Applied verifier corrections (evidence-then-answer s42 tie -> provisional; node claim provisional naming homer-006; 188546 verdict located; 188485 node homer-016; gold-only slots .270x). Updated CAMPAIGN.md (arm G re-check result, budget 60/60, no relaunch without owner), docs/probe_campaign_2026-11.md, BLOCKED.md (cap question refreshed), known_issues.md (+1 row), STATE.md rewritten.", "launched": ["188590", "188591"], "verdicts": [{"jobid": "188580", "verdict": "closed", "note": "arm G re-check PASS: DENSE=8 control 300/300 identical to plain, judge .610=.610, slots 118,147; regression 300/300; tests OK"}], "blocked": "BLOCKED.md: owner asked to raise the cell cap 60 -> 65 (recommended) so the keep-a-quarter result gets its seed-43 repeat; all 60 cells are now used.", "gripes": ["wish: launch --dry-run prints argv unquoted, so an empty positional arg is invisible; print shlex-quoted argv"]}
+== final:
+{"next":"wake-when","wake_when":"job:188590,188591 max 5h","summary":"Arm G re-check (188580) PASSED: tests 12+33+5 OK, plain 300-Q regression 300/300 identical (EM .477, judge .610), rate-8 control 300/300 identical to plain (was 233/300 before the patch) -> batch-of-one compression confirmed as the cause; verdict closed. Submitted the last 2 of 60 cells: rate-4 picked-page cells 188590 (s42, homer-011) and 188591 (s43, homer-012), both RUNNING with dense_rate=4 confirmed in FACTORS. Applied verifier corrections (evidence-then-answer s42 tie -> provisional; node claim provisional naming homer-006; 188546 verdict located; 188485 node homer-016; gold-only slots .270x). Updated CAMPAIGN.md (arm G re-check result, budget 60/60, no relaunch without owner), docs/probe_campaign_2026-11.md, BLOCKED.md (cap question refreshed), known_issues.md (+1 row), STATE.md rewritten.","launched":["188590","188591"],"verdicts":[{"jobid":"188580","verdict":"closed","note":"arm G re-check PASS: DENSE=8 control 300/300 identical to plain, judge .610=.610, slots 118,147; regression 300/300; tests OK"}],"blocked":"BLOCKED.md: owner asked to raise the cell cap 60 -> 65 (recommended) so the keep-a-quarter result gets its seed-43 repeat; all 60 cells are now used.","gripes":["wish: launch --dry-run prints argv unquoted, so an empty positional arg is invisible; print shlex-quoted argv"]}
+== rc=0 secs=247
+== verify: 15/22

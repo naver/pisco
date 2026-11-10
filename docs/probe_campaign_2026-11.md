@@ -6,11 +6,11 @@ cell on the same questions (95% bootstrap CI, exact McNemar p). Compression: 1 s
 (`compr_rate: 8` in every model here). Document set (`mm_docqa_1500_1m`, PX=1003520, 4 pages per question): the plain
 cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per question): about 177 slots per question.
 
-## Status (2026-11-11 07:50 KST)
+## Status (2026-11-11 08:45 KST)
 - **Arm A decided at both seeds.** Showing the one page the model picks as raw pixels, the other three as slots,
   recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
   Removing the three distractor pages gains only about 2 pt; asking the decoder to copy the evidence before answering
-  gains nothing (+.001, seed 42). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
+  gains nothing (+.001, seed 42; provisional: a tie needs the seed-43 repeat, not run for the cell cap). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
 - **Arm E decided at both seeds: given the question, half the slots carry everything the decoder uses.** Keeping the
   half the decoder attends to most gives the plain score (.610 = .610, .615 = .615) and beats a blind half by +.105 /
   +.107. provisional (seed 42 only): keeping a QUARTER still gives the plain score (.611 vs .610, slots .246×).
@@ -22,8 +22,9 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
 - **Arm D decided:** attention picks image pages better than the digit prompt (+2.5 pt), the digit prompt picks text
   passages better (+4.9 pt); the end-to-end judge effect of either is too small to measure.
 - **Arm C (evidence-then-answer on text) did not close the text gap** at seed 42.
-- Running: arm G re-check of the patched "picked page at twice the slots" flag (job 188580). Arm F (TextVQA as text):
-  set built, no cell (cell cap).
+- Running: arm G, the picked page at twice the slots, both seeds (jobs 188590 / 188591, 1,500 questions each). Its
+  re-check passed (job 188580). That uses the last 2 of the 60 cells. Arm F (TextVQA as text): set built, no cell
+  (cell cap).
 
 ## Findings (ranked)
 1. **The document loss is reading the compressed answer page — route-then-expand removes it.** Picked page raw:
@@ -177,8 +178,10 @@ recorded). The flag at rate 8 on 300 questions FAILED its check (job 188525): 23
 (needed ≥ 97%), same slot total (118,147), EM .487 vs .477, pick right on .983. Suspected cause: the flag re-compressed
 the picked page alone, the plain path compresses the four pages in one padded batch. The two rate-4 cells were
 cancelled before they started. Patch (9 lines): the page is re-compressed inside its example's batch, so at rate 8
-its slots should be the plain slots exactly. Re-check running (job 188580, `scripts/probes/g_checks.sbatch`: tests,
-the 300-question regression, the rate-8 control, same criteria); the rate-4 cells follow only if it passes. Gate:
+its slots should be the plain slots exactly. Re-check PASSED (job 188580, `scripts/probes/g_checks.sbatch`, homer-013):
+tests 12 / 12, 33 / 33, 5 / 5; plain 300-question regression 300 / 300 identical (EM .477, judge .610); the flag at
+rate 8 now gives 300 / 300 answers identical to plain (judge .610 = .610, slots 118,147 both), so the batch-of-one
+compression was the cause. Rate-4 cells running: seed 42 job 188590 (homer-011), seed 43 job 188591 (homer-012). Gate:
 gain over plain ≥ +.14 (2/3 of picked-page-raw's +.21) with CI above 0, at ≤ 1/3 of its extra decoder tokens, both seeds.
 
 ## Arm F — photo text vs pixels (TextVQA, 500 questions)
