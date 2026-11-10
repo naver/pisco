@@ -1,0 +1,68 @@
+== campaign freeze wake 2026-11-11_0630  reasons=first  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794346201 live=188528:RUNNING,188529:PENDING running=1 pending=1 problems=0 problems_other=0 new=0 gpuh24=0.3 idle_h=0.0 min_util=- alert=0 unpushed=20 cron=3 daemon=1 disk_gb=13182 sig=0a67fc71 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session 383acbbf-b9b8-4ebd-b103-5a05ccd83674  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ # Wake brief — campaign freeze — 2026-11-11_0630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+192 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat STATE.md; echo '-----'; cat known_issues.md; echo '-----'; ls -la; ls -la ../expQ/freeze/
+  ↳ ## Decision gates (+65 lines)
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat expQ/freeze/ft_freeze.sh; echo '-----'; cat expQ/freeze/check_module_move.sh; echo '-----'; ls -la expQ/freeze/ft_frozen_s42_smoke expQ/188528 2>&1 | head -30
+  ↳ #!/bin/bash (+103 lines)
+→ Bash: tail -c 3000 ft_freeze_188528.out; echo '-----'; grep -E "freeze_compressor|froze|trainable param" ft_freeze_188528.out | head; echo '-----'; diff <(sed 's/^ *//' expQ/ft_mm_4b_184778/training_config.yaml) <(sed 's/^ *//' expQ/freeze/ft_fro…
+  ↳ default): Buffer containing: [torch.BFloat16Tensor of size 1x2560]) (+71 lines)
+Checking the frozen smoke run (step 11 of 20, config diff clean) against the reference run's loss at step 10.
+→ Bash: ls ft_mm_4b_184778.out ft_mm_4b_184780.out 2>&1; grep -o "{'loss'[^}]*}" ft_mm_4b_184778.out | head -3; grep -o "{'eval_loss'[^}]*}" ft_mm_4b_184778.out | head -6; grep -oE "[0-9]+/438 \[[0-9:]+<[0-9:]+, *[0-9.]+s/it\]" ft_mm_4b_184778.out …
+  ↳ ft_mm_4b_184778.out (+9 lines)
+→ Bash: expmon ledger 40 2>&1 | grep -iE "freeze|188526|188527|188528|188529|188517" ; echo '-----'; head -5 ft_freeze_188528.out; grep -E "warmup|lr_scheduler|logging_steps|eval_steps|save_steps" expQ/freeze/ft_frozen_s42_smoke/training_config.yam…
+  ↳ - 2026-11-11 06:10 [job 188526] verdict: closed — recipe bug: max_steps needs +append; fixed, relaunched (+21 lines)
+→ Bash: expmon help 2>&1 | head -60; gpucap land a100 1 2>&1 | tail -15
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+64 lines)
+→ Bash: grep -E '"(188528|188529|188527)"' .expmon/runs.jsonl | python3 -c "import sys,json; [print({k:v for k,v in json.loads(l).items() if k in ('jobid','argv','args','cmd','launcher','stage','parent','slurm','time')}) for l in sys.stdin]" 2>&1 |…
+  ↳ {'jobid': '188527', 'launcher': 'expQ/freeze/check_module_move.sh', 'argv': ['/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model', '/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_ (+3 lines)
+→ Bash: ls -la expQ/archq3/pt_mm_5M_spread/model expQ/archq3/pt_mm_5M_spread/model/compressor 2>&1 | head -40; echo '-----'; ls expQ/ft_mm_4b_184778/model expQ/ft_mm_4b_184778/model/compressor 2>&1 | head -30
+  ↳ expQ/archq3/pt_mm_5M_spread/model: (+36 lines)
+→ Bash: timeout 90 expmon occupancy 188528 2>&1 | tail -8; sacct -j 188528 -o JobID,Start,State -n | head -2; grep -n "Output directory" ft_freeze_188528.out | head -2
+  ↳ 188528     ft_freeze.sh         gpu0 49733/81920MiB 98%   (+3 lines)
+→ Bash: expmon launch --dry-run --exp freeze --stage smoke --parent 184777 --time 0:50:00 expQ/freeze/ft_freeze.sh unfrozen 42 20 2>&1 | tail -15
+  ↳ would submit: sbatch --time 0:50:00 expQ/freeze/ft_freeze.sh unfrozen 42 20 (+3 lines)
+→ Bash: sacct -j 184778,184780,188528 -X -o JobID,NodeList,Elapsed,AllocTRES%60 -n; head -2 ft_mm_4b_184778.out
+  ↳ 184778             homer-010   11:02:12  billing=8,cpu=8,gres/gpu:a100-sxm4-80gb=1,gres/gpu=1,node=1  (+4 lines)
+→ Bash: expmon note "intent: feasibility gate, loss criterion. The 20-step smoke's lr schedule is not the full run's (warmup_steps .05 = 1 step of 20 vs 22 of 438; lr at step 10: 1.16e-5 vs 8.2e-6), so frozen smoke step-10 loss .594 vs reference fu…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+6 lines)
+→ Bash: expmon launch --dry-run --exp freeze --stage check --parent 188534 --time 0:20:00 --dependency=afterok:188534 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch/user/hdejean…
+  ↳ would submit: sbatch --time 0:20:00 --dependency=afterok:188534 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch/user/hdejean/pisco (+3 lines)
+→ Bash: expmon launch --exp freeze --stage check --parent 188534 --time 0:20:00 --dependency=afterok:188534 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch/user/hdejean/pisco/exp…
+  ↳ job id:  188535 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && grep -n "loss at step 10" CAMPAIGN.md
+  ↳ 56:  `connector.*` row shows **changed 0.0%**; `decoder.lora_B` shows changed > 0%; the loss at step 10 is within .05 of
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 52	(`scripts/paired_judge.py <frozen json> <reference json>`: bootstrap 95% CI + McNemar), same seed, n = 1,500 per set. (+7 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon probe 188528 --step 0.0229 loss=0.594 2>&1 | tail -1; expmon note -j 188528 "probe: frozen smoke at 640 rows (.023 epoch): train loss .594, grad_norm .079, 49.7 GB GPU, util 98%, ~73-76 s/step…
+  ↳ probe recorded: 188528 @0.0229 (loss=0.594)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat >> known_issues.md <<'EOF' ⏎ | a 20-step smoke's logged `'loss'` at step 10 is far (here .086 lower) from the full run's step-10 loss | `warmup_steps: .05` is a RATIO of max_steps…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon campaign report --section leaves 2>&1 | head -30
+  ↳ **Settled** (+9 lines)
+→ Bash: expmon logs 188517 15 2>&1 | grep -iE "pass|fail|error|exit|ok" | tail -8; sacct -j 188527,188517 -X -o JobID,State,ExitCode -n
+  ↳ OK (+9 lines)
+→ Bash: expmon verdict 188517 closed "unit tests of freeze_compressor pass (test_freeze.py: only decoder trainable, no gradient to frozen side, frozen side stays in eval mode, flag off = old behaviour), exit 0, commit d167725" 2>&1 | tail -1; expmo…
+  ↳ ⚠ the note states no n (cells / pairs / queries, e.g. n=12, 12/12, 12 of 12, 12 clips), p or control — a closing number without its denominator is not a result (law: Decision gates; VOID / superseded  (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+STATE.md is rewritten. Last step: set the wake condition so the next wake comes when both module-move checks finish.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && echo "wake-when job:188529,188535 max 2h" > NEXT && cat NEXT && squeue -j 188528,188529,188534,188535 -o "%i %T %M %R" -h
+  ↳ wake-when job:188529,188535 max 2h (+4 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188529,188535 max 2h", "summary": "Feasibility gate in flight. Frozen 20-step smoke 188528 is healthy: the freeze is live (506 compressor+connector tensors frozen, compressor trainable params 0), conf…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4133 turns=29 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188529,188535 max 2h", "summary": "Feasibility gate in flight. Frozen 20-step smoke 188528 is healthy: the freeze is live (506 compressor+connector tensors frozen, compressor trainable params 0), config diff vs reference 184778 is clean (max_steps + freeze_compressor only), loss .594 after 640 rows, ~75 s/step vs reference 90.7, 49.7 GB, util 98%. The law's loss criterion compared the smoke with the full run, but a 20-step run warms up in 1 step instead of 22 (warmup_steps .05 is a ratio), so that comparison is confounded (gap .086, frozen lower). Amended CAMPAIGN.md: compare with an unfrozen 20-step smoke instead, original reading kept. Launched that control (188534) plus its module-move check (188535) as the positive control for the check script. Closed 188517 (unit tests pass) and 188527 (never ran). Added a known_issues row. Next wake: read both checks and both smoke losses, decide the gate, then launch the two full frozen finetunes with their checks and evals chained.", "launched": ["188534", "188535"], "verdicts": [{"jobid": "188517", "verdict": "closed", "note": "freeze_compressor unit tests pass, exit 0, commit d167725"}, {"jobid": "188527", "verdict": "closed", "note": "never ran: dependency of failed smoke 188526; replaced by 188529"}], "gripes": ["gap: smoke cells show RESULT '-' in expmon grid; HF Trainer loss dicts had to be grepped and copied into expmon probe by hand — suggest expmon probe --from-log <jid>"]}
+== final:
+{"next":"wake-when","wake_when":"job:188529,188535 max 2h","summary":"Feasibility gate in flight. Frozen 20-step smoke 188528 is healthy: the freeze is live (506 compressor+connector tensors frozen, compressor trainable params 0), config diff vs reference 184778 is clean (max_steps + freeze_compressor only), loss .594 after 640 rows, ~75 s/step vs reference 90.7, 49.7 GB, util 98%. The law's loss criterion compared the smoke with the full run, but a 20-step run warms up in 1 step instead of 22 (warmup_steps .05 is a ratio), so that comparison is confounded (gap .086, frozen lower). Amended CAMPAIGN.md: compare with an unfrozen 20-step smoke instead, original reading kept. Launched that control (188534) plus its module-move check (188535) as the positive control for the check script. Closed 188517 (unit tests pass) and 188527 (never ran). Added a known_issues row. Next wake: read both checks and both smoke losses, decide the gate, then launch the two full frozen finetunes with their checks and evals chained.","launched":["188534","188535"],"verdicts":[{"jobid":"188517","verdict":"closed","note":"freeze_compressor unit tests pass, exit 0, commit d167725"},{"jobid":"188527","verdict":"closed","note":"never ran: dependency of failed smoke 188526; replaced by 188529"}],"gripes":["gap: smoke cells show RESULT '-' in expmon grid; HF Trainer loss dicts had to be grepped and copied into expmon probe by hand — suggest expmon probe --from-log <jid>"]}
+== rc=0 secs=245
+== verify: 3/5

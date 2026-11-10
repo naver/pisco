@@ -53,8 +53,12 @@ Metric unit: judge accuracy in [0, 1]; "pt" = .01. Every difference is PAIRED pe
 - **Feasibility gate (first, alone):** `expQ/freeze/ft_freeze.sh frozen 42 20` (20 steps), then
   `expQ/freeze/check_module_move.sh <stage-2 model> expQ/freeze/ft_frozen_s42_smoke/model` (CPU, `gpu-be`). PASS =
   the log says `freeze_compressor=True: froze N` and `Compressor trainable parameters: 0`; every `compressor.*` and
-  `connector.*` row shows **changed 0.0%**; `decoder.lora_B` shows changed > 0%; the loss at step 10 is within .05 of
-  the reference's (`'loss'` lines of `ft_mm_4b_184778.out`); the config diff above is clean. Record s/step and peak GPU
+  `connector.*` row shows **changed 0.0%**; `decoder.lora_B` shows changed > 0%; the loss at steps 10 AND 20 is within .05 of
+  the UNFROZEN 20-step smoke's (`ft_freeze.sh unfrozen 42 20`, same rows, same lr schedule); that smoke's own
+  module-move check must show `compressor.*` / `connector.*` changed > 0% (positive control of the check); the config
+  diff above is clean. (Amended wake 1, 2026-11-11: the law first compared with the full run 184778, whose lr schedule
+  differs — `warmup_steps: .05` = 1 warm-up step of 20 vs 22 of 438, lr at step 10 1.16e-5 vs 8.2e-6. That reading,
+  kept: frozen smoke .594 vs 184778 .680, gap .086, confounded, not a failure signal.) Record s/step and peak GPU
   memory; `--time` of the full cells = s/step × 438 steps × 1.25. FAIL on the frozen rows = BLOCKED.md with the output
   (the flag lives in `pisco/model.py`, never patchable here). The smoke may already have been run by the owner's chat:
   look for it in `expmon grid freeze` before relaunching.
