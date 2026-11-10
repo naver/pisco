@@ -111,8 +111,16 @@ Anything else: BLOCKED.md and stop. In particular: no change to the collator, th
 layout, the stage-2 or finetune recipes — those are other campaigns.
 
 ## Patchable
-`none`. CAMP_PATCH_LINES=0: the wake edits no code. A crash in `pisco/` or a launcher is BLOCKED.md with the traceback;
-`expQ/longchunk/*.sh` are the campaign's recipe files and are frozen once a cell has used them.
+CAMP_PATCH_LINES=20 (campaign.conf; the conf wins). Three settings:
+- **freely patchable** (≤ 20 lines per symptom): `expQ/longchunk/*.sbatch` (data and check jobs) and `scripts/expmon_notify.sh`.
+- **patchable IF an invariant holds**: `expQ/longchunk/pt_text_4b_long.sh` — only its SLURM header, paths, env plumbing or
+  logging; NEVER a training argument (lengths, batch, accum, lr, rate, layout, data, model). Invariant: after the patch,
+  `bash -n` passes and a 50-step smoke's `training_config.yaml` differs from the control's (188422) only in the four
+  documented fields; paste that diff in STATE.md. A recipe file a running or finished cell has used is frozen for THAT
+  cell: a patched recipe is a new cell version, named in the arms table.
+- **never**: `pisco/`, `scripts/eval_mm_docqa.py`, `scripts/judge_*.py`, `scripts/paired_judge.py`, `eval_mm_4b.sh`,
+  `pt_mm_4b.sh`, `ft_mm_4b.sh`, data under `data/`, eval sets under `eval_data/`. A crash there is BLOCKED.md with the
+  traceback and the owner's chats fix it.
 
 ## The wake owns the science
 The arms table is a starting hypothesis, not a work order: read the evidence, launch the cells (the owner does not),
