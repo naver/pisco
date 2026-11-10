@@ -1,0 +1,141 @@
+== campaign probes wake 2026-11-11_0300  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794333601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.5 idle_h=0.4 min_util=- alert=1 unpushed=7 cron=2 daemon=1 disk_gb=13323 sig=db96a1cc same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188419_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:188419 (ended)   (NEXT was: wake-when job:188419 max 6h)
+== session c407da22-f128-436c-9d1e-387c6c4edf25  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ # Wake brief — campaign probes — 2026-11-11_0300   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+163 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+100 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && sed -n '/^| D\./,/^## Patchable/p' CAMPAIGN.md
+  ↳ | D. page picking without training | `scripts/probes/route_fusion.py` over the saved attention masses (`expQ/probes/attn_route_*/masses.npz`) and the digit log-probs: rank fusion, product, per-source  (+60 lines)
+→ Bash: cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+51 lines)
+→ Bash: cat known_issues.md; echo '-----'; ls -la; echo '-----'; expmon ledger 40 2>&1 | head -80
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+80 lines)
+Woken because the feasibility-gate job (re-run of the reference document cell, to check the judge is reproducible) left the queue. Checking its outcome now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_probes/VERIFY.md; echo '-----'; sacct -j 188419 -o JobID,State,ExitCode,Elapsed,Start,End,NodeList -X 2>&1; echo '-----'; expmon logs 188419 60 2>&1 | tail -70
+  ↳ # VERIFY — campaign probes — 2026-11-11_0200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+78 lines)
+→ Bash: cat /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/never-compute-on-frontend.md; echo '-----'; head -60 scripts/paired_judge.py; ls -la expQ/probes/ expQ/probes/rep_184778/eval/ expQ/ft_mm_4b_184778/eval/ | head -5…
+  ↳ --- (+103 lines)
+→ Bash: python3 scripts/paired_judge.py expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json --names rerun recorded; python3 - <<'EOF' ⏎ import json ⏎ a=…
+  ↳ judge: rerun = expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+11 lines)
+Gate passed: the re-run reproduces the recorded run exactly (all 1,500 answers identical, judge .610 = .610). Now reading the eval launcher to set up the first probe cells.
+→ Bash: cat eval_mm_4b.sh; echo '-----'; cat scripts/probes/*.sbatch 2>/dev/null | head -80; ls scripts/probes/; cat probe_attn_route.sh 2>/dev/null || ls scripts/probes/*.sh
+  ↳ #!/bin/bash (+112 lines)
+→ Bash: head -3 eval_mm_4b_188419.out; for pat in 'answer_style=expand' 'raw_policy=route1' 'gold_only=1' 'mem_quant=int8'; do echo "== $pat"; grep -l "FACTORS.*$pat" eval_mm_4b_*.out 2>/dev/null | while read f; do j=${f#eval_mm_4b_}; j=${j%.out}; …
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-541aafad-a28d-31d6-ebe9-5646bc9e384d) (+28 lines)
+→ Bash: sinfo -p gpu-be -o '%N %G %f %t' 2>&1 | head -20; echo; gpucap free a100 2>&1 | tail -5; gpucap free v100 2>&1 | tail -3; squeue -p gpu-be -t PD -h | wc -l
+  ↳ NODELIST GRES AVAIL_FEATURES STATE (+12 lines)
+→ Bash: expmon help 2>&1 | grep -iE 'runs|cmd|show|launch' | head; for j in 185577 185580; do grep -h "$j" .expmon/runs*.jsonl .expmon/*.tsv 2>/dev/null | head -2; done; ls .expmon/ | head -30
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+33 lines)
+→ Bash: grep -n "pisco_text" scripts/eval_mm_docqa.py | head -20; grep -n "enable_thinking\|thinking" scripts/eval_mm_docqa.py | head; ls eval_data/ | head -50
+  ↳ 9:  pisco_text  text PISCO on `docs` text (only meaningful when rows carry OCR text) (+26 lines)
+→ Bash: grep -rln "naturalqa" scripts/*.py | head; grep -n "ocr\|OCR" scripts/build_mm_natural*.py scripts/build_mm_eval.py 2>/dev/null | head -20; ls eval_data/mm_naturalqa_1500; cat eval_data/mm_naturalqa_1500/*.json 2>/dev/null | head -c 1500
+  ↳ scripts/build_mm_natural_qa.py (+4 lines)
+→ Bash: grep -n "docs\|text" scripts/build_mm_natural_qa.py | head -30; python3 -c " ⏎ import json;d=json.load(open('eval_data/mm_naturalqa_1500/train/dataset_info.json'));print(list(d['features'].keys()))"
+  ↳ 2:docs=[""], doc_images=[img], query, answers, mistral_label, source, query_id). (+12 lines)
+Photo set has no OCR text, so the pixels-vs-text probe can't run as written; noting that. Now checking which text baselines exist for the reasoning probe.
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -i mrqa; ls expQ/*/eval/ 2>/dev/null | grep -i mrqa | sort | uniq -c | head; grep -l mrqa expQ/*/eval/*.json 2>/dev/null | head -20; grep -n "185775" EXPERIMENTS.md | head -5
+  ↳ mm_docqa_base_px1003520_text_mrqa_ood_1500.json (+15 lines)
+→ Bash: sed -n 1,40p scripts/probes/route_fusion.py; grep -n "add_argument\|argv" scripts/probes/route_fusion.py; grep -n "environ\|digit_lp\|query_id" scripts/probes/probe_attn_route.py | head -30
+  ↳ """Page picking without training (campaign probes, arm D): fuse the digit route prompt with the decoder's attention mass. (+50 lines)
+→ Bash: grep -vE '^\s*#|^\s*$' campaign_probes/campaign.conf | head -40; expmon runs --running 2>&1 | tail -5; squeue -u hdejean -h -o '%i %j %T %P' 
+  ↳ CAMP_LABEL='probes'            # the expmon --exp label every campaign run carries (grid/sweep/verdict key) (+48 lines)
+Recording the gate result first.
+→ Bash: expmon verdict 188419 closed "feasibility gate PASS: re-run of the reference document cell (model 184778, PX=1003520, mm_docqa_1500_1m) judge .610 vs recorded .610 (job 184781), paired diff +.000 CI [+.000,+.000], 0 discordant pairs, n=1500…
+  ↳ verdict recorded: 188419 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && ls -la rep_184778/; for c in a_expand_s42 a_gold_s42 a_route1_s42 c_plain_s42 c_expand_s42; do mkdir -p $c && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model $c/mode…
+  ↳ total 2 (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep '"188419"' .expmon/runs.jsonl; grep -n "188419\|expmon launch" campaign_probes/ticks/2026-11-11_0200.log | head -10
+  ↳ {"ts": "2026-11-11 02:02", "jobid": "188419", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/rep_184778/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "43f9c0e+dirty", "outdir": "/beeg (+10 lines)
+→ Bash: STYLE=expand PX=1003520 expmon launch --dry-run --exp probes --stage A --parent 184781 --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | tail -12
+  ↳ would submit: sbatch --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco  eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: STYLE=expand PX=1003520 expmon launch --exp probes --stage A --parent 184781 --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | grep -E "Submitted|refus|error" ; GOLD=1 PX=1003520 expmon l…
+  ↳ Submitted batch job 188439 (+2 lines)
+→ Bash: expmon note -j 188439 "intent: arm A (use-recovery on documents), seed 42: STYLE=expand (copy the evidence, then answer; max 256 new tokens) on model 184778 via expQ/probes/a_expand_s42/model, mm_docqa_1500_1m, PX=1003520, 1500 Q, rubric ju…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Three document probes submitted. Now the two page-picking probes and their fusion job.
+→ Bash: expmon launch --dry-run --exp probes --stage D --parent 185577 --time 2:03:00 probe_attn_route.sh /beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_retr10_1m expQ/ft_mm_4b_183814/model 10 2>&1 | tail -8
+  ↳ would submit: sbatch --time 2:03:00 probe_attn_route.sh /beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_retr10_1m expQ/ft_mm_4b_183814/model 10 (+3 lines)
+→ Bash: expmon launch --exp probes --stage D --parent 185577 --time 2:03:00 probe_attn_route.sh /beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_retr10_1m expQ/ft_mm_4b_183814/model 10 2>&1 | tail -4
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/*_188442.out   (err: /beegfs/scratch/user/hdejean/pisco/*_188442.out) (+3 lines)
+→ Bash: expmon launch --exp probes --stage D --parent 185580 --time 0:36:00 probe_attn_route.sh /beegfs/scratch/user/hdejean/pisco/eval_data/text_hotpotqa_1500 expQ/ft_mm_4b_183814/model 10 2>&1 | grep -E "Submitted|refus"; 
+  ↳ Submitted batch job 188443
+→ Bash: expmon launch --dry-run --exp probes --stage fusion --time 0:20:00 --dependency afterok:188442:188443 scripts/probes/route_fusion.sbatch expQ/probes/attn_route_188442 expQ/probes/attn_route_188443 2>&1 | tail -4
+  ↳ would submit: sbatch --time 0:20:00 --dependency afterok:188442:188443 scripts/probes/route_fusion.sbatch expQ/probes/attn_route_188442 expQ/probes/attn_route_188443 (+3 lines)
+→ Bash: expmon launch --exp probes --stage fusion --time 0:20:00 --dependency afterok:188442:188443 scripts/probes/route_fusion.sbatch expQ/probes/attn_route_188442 expQ/probes/attn_route_188443 2>&1 | grep -E "Submitted|refus"
+  ↳ Submitted batch job 188444
+→ Bash: expmon note -j 188442 "intent: arm D, re-run of the 2026-11-06 attention-route probe 185577 (model 183814, mm_docqa_retr10_1m, 10 pages, 1500 rows) with probe_attn_route.py now saving the full digit log-probs + query_id per row (needed for …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Six submitted. Now the two text-reasoning cells; looking up measured wall times for text cells first.
+→ Bash: grep -l "FACTORS.*data=text_mrqa_ood_1500" eval_mm_4b_*.out 2>/dev/null | while read f; do j=${f#eval_mm_4b_}; j=${j%.out}; echo "$j $(grep -o 'mode=[^ ]*\|ckpt=[^ ]*\|limit=[^ ]*\|answer_style=[^ ]*' $f | head -4 | tr '\n' ' ') $(grep -c c…
+  ↳ 185528 mode=pisco ckpt=ft_mm_4b_183814 limit=all answer_style=brief  0   00:17:09  COMPLETED  (+9 lines)
+→ Bash: CML=4096 PX=1003520 expmon launch --exp probes --stage C --parent 185775 --time 0:52:00 eval_mm_4b.sh expQ/probes/c_plain_s42/model pisco "" eval_data/text_mrqa_ood_1500 2>&1 | grep -E "Submitted|refus"; STYLE=expand CML=4096 PX=1003520 exp…
+  ↳ Submitted batch job 188445 (+1 lines)
+→ Bash: expmon note -j 188445 "intent: arm C baseline on the reference model (no MRQA cell exists for 184778): CML=4096 (one chunk per passage, nothing cut) on text_mrqa_ood_1500, model 184778 via c_plain_s42, 1500 Q, judge; expected near the 18381…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+14 lines)
+All 8 submissions for this wake are in (cap reached). Now checking how the grouped HotpotQA sets were built, so the long-chunk mechanism probe can be prepared for the next wake.
+→ Bash: grep -rln "hotpotqa_1500_g\|_g10\|group" scripts/*.py | head; grep -n "text_hotpotqa_1500_g10" EXPERIMENTS.md | head -3; python3 -c " ⏎ import json;d=json.load(open('eval_data/text_hotpotqa_1500_g10/train/dataset_info.json'));print(list(d['…
+  ↳ scripts/eval_phase2_grid.py (+13 lines)
+→ Bash: grep -n "g10\|g3\|grouped\|185499" EXPERIMENTS.md | grep -v "verdict: closed" | head -10; ls -la eval_data/ | grep hotpot; grep -rln "text_hotpotqa_1500_g" scripts/ *.sh 2>/dev/null | head
+  ↳ 509:- 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same conte (+5 lines)
+→ Bash: ls -la docs/probe_campaign_2026-11.md 2>&1; expmon campaign report --section leaves 2>&1 | head -30; expmon display --help 2>&1 | head -5
+  ↳ -rw-r--r-- 1 hdejean hdejean 872 Nov 11 02:06 docs/probe_campaign_2026-11.md (+18 lines)
+→ Bash: cat docs/probe_campaign_2026-11.md
+  ↳ # Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+15 lines)
+Updating the law (two clarifications: the photo-text probe lacks OCR data; slot-count health rule for probes that change slots by design), then the state file and the results page.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && grep -n "^| F\.\|Health number per cell\|Feasibility gate (first" CAMPAIGN.md
+  ↳ 43:| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on `mm_naturalqa_1500`, TextVQA rows | pixels vs text for text-in-image | model, set | plain .67 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 55	still needs the second seed (or the second set) to be "adopted". Decide arms as soon as their cells complete — do not (+9 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='CAMPAIGN.md'; s=open(p).read() ⏎ old_f='| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on `mm_naturalqa_1500`, TextVQA rows | pixels vs text for text-in-image | mo…
+  ↳ 43:| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on a NEW set `eval_data/probes_textvqa_ocr` (the 500 TextVQA rows of `mm_naturalqa_1500` with th (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 -c " ⏎ import json,collections ⏎ d=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json')) ⏎ print(collections.Counter(r['source'] for r in d['records']))…
+  ↳ Counter({'vizwiz': 500, 'realworldqa': 500, 'textvqa': 500}) (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon display --exp probes 2>&1 | tail -3
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs)
+Writing the state file now (what ran, what is queued, what comes next).
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon gripe -c defect "expmon display --exp probes writes 'display -> display_probes.html (0 table rows, 0 media files from 0 runs)' while 'expmon grid probes' lists 11 probes runs (10 ended, verdicts set). Suggest: display should read the…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md has been updated successfully.
+→ Bash: echo 'wake-when job:188440 max 6h' > campaign_probes/NEXT && cat campaign_probes/NEXT && squeue -u hdejean -h -o '%i %T %R' | grep -E '18843|18844'
+  ↳ wake-when job:188440 max 6h (+8 lines)
+The judge check passed, so I've started the real probes: 8 cells are queued (the most one wake may submit), all still waiting for GPUs.
+
+**Judge check: passed.** I re-ran the reference model on the 1,500 document questions. The judge accuracy (share of answers the Qwen3-8B judge accepts) came out .610, the same as the recorded run. All 1,500 answers were byte-identical, because decoding is greedy (always the most likely token). So when two runs differ later, the difference comes from the probe, not from noise.
+
+**Queued, nothing measured yet** (start estimates 08:00–16:30; the judge check started much earlier than its estimate):
+
+| Question | Cells (reference model, seed 42) | Training decision it feeds |
+|---|---|---|
+| Document loss: reading, page choice, or using the content? | answer after copying the evidence; correct page only; chosen page given uncompressed | add evidence-then-answer labels; send the chosen page uncompressed at serving |
+| Text loss: no room to reason, or missing content? | plain long-chunk baseline (none existed for this model); evidence-then-answer | evidence-then-answer labels for text |
+| Can the decoder's attention pick the right page better than the digit prompt, with no training? | attention re-runs on 10-page documents and on HotpotQA, then a CPU job combining the two scores | whether page-picking needs training |
+
+**Problems found:**
+- **The photo text-vs-pixels probe cannot run as planned.** The photo set has no OCR text (every row's document text is empty). It needs a new set of the 500 TextVQA questions with their OCR tokens. I marked the plan as wrong in CAMPAIGN.md (kept, not deleted) and pointed it at the new set.
+- **The results page is empty.** `expmon display` shows 0 rows even though the grid lists the campaign's runs. I filed this as an expmon defect. Until it is fixed, results go to `docs/probe_campaign_2026-11.md`.
+
+I also changed one rule in CAMPAIGN.md: probes that change what gets compressed (correct page only, a page left uncompressed) now report their slot count next to the result. Before, a slot total off by more than 1% marked a cell unhealthy.
+
+**Next:** the next wake starts when the correct-page-only cell ends, or in 6 hours at most. It will compare finished cells against the baseline. Then it will submit the seed-43 repeats, the uncompressed-reader version of the text probe, and build the inputs for the long-chunk probe and the OCR set.
+
+Nothing needed from you. Optional: clear the old alert about the 01:00 and 01:30 failed wakes; they hit the usage quota and need no fix.
+→ StructuredOutput: {"next": "wake-when", "summary": "Feasibility gate PASSED (job 188419: judge .610 = recorded .610, n=1500, 0 discordant pairs, all predictions identical — the eval is deterministic). Verdict closed on 188419. Submitted 8 cells (cap): arm A …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.6179 turns=51 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Feasibility gate PASSED (job 188419: judge .610 = recorded .610, n=1500, 0 discordant pairs, all predictions identical — the eval is deterministic). Verdict closed on 188419. Submitted 8 cells (cap): arm A seed 42 on model 184778 (expand 188439, gold-only 188440, route1 188441), arm D attention-route re-runs on 183814 (retr10 188442, hotpot 188443) + chained CPU fusion 188444, arm C on 184778 text MRQA (plain CML4096 baseline 188445, expand 188446). All PENDING on gpu-be. Law amended: gate marked passed, health rule clarified for probes that change the slot total by design, arm F premise marked wrong (photo set has no OCR text) and re-pointed to a new set. STATE.md, docs/probe_campaign_2026-11.md, known_issues.md rewritten/updated.", "launched": ["188439", "188440", "188441", "188442", "188443", "188444", "188445", "188446"], "verdicts": [{"jobid": "188419", "verdict": "closed", "note": "feasibility gate PASS: judge .610 vs recorded .610, diff +.000 CI [0,0], n=1500, predictions byte-identical"}], "gripes": ["defect: expmon display --exp probes shows 0 table rows from 0 runs while grid lists 11 probes runs", "gap: wake-when job:<a>,<b> waits for ALL jobs; want job-any:<a>,<b> to wake on the first that ends"], "wake_when": "job:188440 max 6h"}
+== final:
+{"next":"wake-when","summary":"Feasibility gate PASSED (job 188419: judge .610 = recorded .610, n=1500, 0 discordant pairs, all predictions identical — the eval is deterministic). Verdict closed on 188419. Submitted 8 cells (cap): arm A seed 42 on model 184778 (expand 188439, gold-only 188440, route1 188441), arm D attention-route re-runs on 183814 (retr10 188442, hotpot 188443) + chained CPU fusion 188444, arm C on 184778 text MRQA (plain CML4096 baseline 188445, expand 188446). All PENDING on gpu-be. Law amended: gate marked passed, health rule clarified for probes that change the slot total by design, arm F premise marked wrong (photo set has no OCR text) and re-pointed to a new set. STATE.md, docs/probe_campaign_2026-11.md, known_issues.md rewritten/updated.","launched":["188439","188440","188441","188442","188443","188444","188445","188446"],"verdicts":[{"jobid":"188419","verdict":"closed","note":"feasibility gate PASS: judge .610 vs recorded .610, diff +.000 CI [0,0], n=1500, predictions byte-identical"}],"gripes":["defect: expmon display --exp probes shows 0 table rows from 0 runs while grid lists 11 probes runs","gap: wake-when job:<a>,<b> waits for ALL jobs; want job-any:<a>,<b> to wake on the first that ends"],"wake_when":"job:188440 max 6h"}
+== rc=0 secs=471
+== verify: 5/6

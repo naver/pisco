@@ -40,7 +40,7 @@ plumbing checks, never for a claim), chunk cap 4096 (`CML=4096`) on text so no p
 | C. reasoning vs reading on text | `CML=4096 eval_mm_4b.sh <ref model> pisco "" eval_data/text_mrqa_ood_1500` with `STYLE=expand`, and the same with the model's thinking mode on (`scripts/probes/` flag if `eval_mm_docqa.py` lacks it) for compressed AND `base` | prompting that gives the decoder room to reason | passage, set | plain compressed .695 / raw .807 | the compressed−raw gap on DROP / DuoRC / RACE shrinks by ≥ 5 pt with the same treatment on both sides | ~6 |
 | D. page picking without training | `scripts/probes/route_fusion.py` over the saved attention masses (`expQ/probes/attn_route_*/masses.npz`) and the digit log-probs: rank fusion, product, per-source choice; then `RAW=route1` with the fused pick via the eval's `RANK=` json | the picker | sets retr10 / hotpot / nav frames | digit pick@1 .861 (retr10), .922 (hotpot) | pick@1 ≥ +2 pt on retr10 AND no loss on hotpot; then the route1 judge gain | ~4 |
 | E. attention-guided slot pruning | `scripts/probes/prune_by_attention.py`: two passes, drop the 50% / 25% of slots with the least decoder attention at the first answer token, then answer | which slots are kept | model 184778, docs + photos | keep-50% first/even cells (−.12 / −.13 docs on 183814; redo on 184778 as the baseline) | ≥ +4 pt over the best untrained keep-50% at the same slot count = a free coarse level | ~4 |
-| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on `mm_naturalqa_1500`, TextVQA rows | pixels vs text for text-in-image | model, set | plain .677 / .685 | reported only; a TextVQA gain ≥ 5 pt motivates a mixed input arm | 2 |
+| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on a NEW set `eval_data/probes_textvqa_ocr` (the 500 TextVQA rows of `mm_naturalqa_1500` with their `ocr_tokens` from `lmms-lab/textvqa` as `docs`). WRONG PREMISE, kept and marked (2026-11-11): the law first named `mm_naturalqa_1500` itself, but its rows carry `docs=[""]` (no OCR text; `build_mm_natural_qa.py` line 82), so `pisco_text` there compresses an empty string | pixels vs text for text-in-image | model, questions | plain .677 / .685 (TextVQA rows of it) | reported only; a TextVQA gain ≥ 5 pt motivates a mixed input arm | 2 + 1 set build |
 
 Rules: every arm is a committed launcher + a committed cell spec, never raw overrides on the launch line. A
 comparison with a difference not listed here is not a result. A relaunch repeats the original command exactly.
@@ -58,9 +58,14 @@ wait for the whole grid. Every claim carries n (questions, pairs), the paired CI
   (`expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json`, judge .610). The judge-on-judge difference
   must be within ±.01 with the CI inside the noise band; otherwise the instrument does not register changes of the size
   this campaign looks for, and the campaign STOPS with "the judge is not reproducible at the .02 level" as its finding.
+  PASSED 2026-11-11 (job 188419): judge .610 = .610, 1,500/1,500 predictions identical (greedy decoding), 0 discordant
+  pairs. The pipeline is deterministic: a paired difference between two cells comes from the probe, not from re-running.
 - **Health number per cell:** `unparseable: 0` in the eval log, 1,500 rows in the result file, and the total `mems_used`
   within 1% of the baseline cell's (a different slot total is a different budget, not a probe result). A cell failing
-  any of these is `closed "health"` and relaunched once.
+  any of these is `closed "health"` and relaunched once. Exception: a probe whose purpose is to change what is compressed
+  (`GOLD=1`, `RAW=*`, `XD=*`, a pruning or grouping cell) changes the slot total by design; its health check is the
+  mems_used ratio REPORTED in the arm table next to the result, and the comparison it supports is "same questions, this
+  input instead of that one", never "same budget".
 - **Small cells are plumbing:** a `LIMIT=300` cell proves the code path runs; it never decides an arm, even when it agrees.
 - A NEW metric (one the wake designs itself) closes nothing until its row here states its n and a known-positive control it
   recovers (the attention-mass picker recovering .885 on retr10 is such a control for arm D).

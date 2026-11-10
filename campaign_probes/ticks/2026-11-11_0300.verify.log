@@ -1,0 +1,57 @@
+== verifier 2026-11-11_0300  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session c990d8af-e942-446c-bc5b-e3190deae427  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+147 lines)
+→ Glob: {"pattern": "expQ/probes/**/*.json"}
+→ Glob: {"pattern": "expQ/probes/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval"}
+  ↳ expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest"}
+  ↳ expQ/probes/fusion_selftest/meta.json (+4 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185577"}
+  ↳ expQ/probes/attn_route_185577/summary.json (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest/fusion.json
+  ↳ 1	{ (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185577/summary.json
+  ↳ 1	{ (+45 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest/meta.json
+  ↳ File content (543.3KB) exceeds maximum allowed size (256KB). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file. To
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778"}
+  ↳ expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+Checking the two Settled claims against result files; the fusion selftest numbers match so far.
+→ Grep: {"pattern": "\"(judge|mems_used|n|unparseable|n_rows|accuracy)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 40}
+  ↳ 19:  "n": 1500, (+41 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+57 lines)
+→ Grep: {"pattern": "\"judge\"\\s*:\\s*0\\.\\d+,|\"judge_unparseable\"|\"n\": 1500|\"checkpoint\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "he…
+  ↳ 19:  "n": 1500, (+3 lines)
+→ Grep: {"pattern": "646[,]?042|discordant|identical|paired_judge|McNemar|mcnemar", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0300.log", "output_mode": "content", "head_limit": 40}
+  ↳ 19:→ Bash: cat /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/never-compute-on-frontend.md; echo '-----'; head -60 scripts/paired_judge.py; ls -la expQ/probes/ expQ/probes/re (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0300.log
+  ↳ 1	== campaign probes wake 2026-11-11_0300  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+59 lines)
+→ Grep: {"pattern": "mems_used|unparseable|judge|rows", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188419.out", "output_mode": "content", "head_limit": 30}
+  ↳ 3:[eval] 1500 rows from eval_data/mm_docqa_1500_1m; mode=pisco (+16 lines)
+→ Grep: {"pattern": "\"jobid\": \"(184781|188427|188439|188440|188441|188442|188443|188444|188445|188446)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 742:[Omitted long matching line] (+9 lines)
+Checking the launch lines in the wake log to confirm each queued cell carries the probe setting it claims.
+→ Grep: {"pattern": "expmon launch --exp probes", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0300.log", "output_mode": "content"}
+  ↳ 54:→ Bash: STYLE=expand PX=1003520 expmon launch --exp probes --stage A --parent 184781 --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | grep -E " (+4 lines)
+→ Grep: {"pattern": "digit_lp|masses\\.npz|savez", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probes/probe_attn_route.py", "output_mode": "content", "head_limit": 15}
+  ↳ 9:Per-question head x document masses go to <OUT>/masses.npz for further analysis. Env: CKPT, DATA, N_ROWS, TOPK, PX, OUT. (+2 lines)
+→ Grep: {"pattern": "attn_route_|probe_attn_route\\.py|OUT", "path": "/beegfs/scratch/user/hdejean/pisco/probe_attn_route.sh", "output_mode": "content"}
+  ↳ 9:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/probe_attn_route_%j.out (+3 lines)
+→ Grep: {"pattern": "intent: arm (A|C|D).*(188440|188441|188446|188442|188443|188444|188445)|\\[(188440|188441|188445|188446|188442|188443|188444)\\].*intent", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "…
+  ↳ 573:- 2026-11-11 03:05 [job 188444] intent: arm D fusion (CPU), chained afterok on 188442+188443: route_fusion.py on both dirs -> pick@1 of digit / attn / product / rrf / per_source, each paired with  (+1 lines)
+→ Grep: {"pattern": "\\[job 1884(39|40|41|42|43|45|46)\\]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 12}
+  ↳ 568:[Omitted long matching line] (+6 lines)
+→ Glob: {"pattern": "*mrqa*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval"}
+  ↳ No files found
+→ StructuredOutput: {"claims": [{"claim": "The instrument is reproducible: re-running the reference document cell (model 184778, 1,500 questions, PX=1003520) gives judge accuracy .610 = the recorded .610 (job 184781), paired difference +.000, CI [+.000, +.000]…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.7090 turns=25 is_error=False denials=0
+== declared: {"claims": [{"claim": "The instrument is reproducible: re-running the reference document cell (model 184778, 1,500 questions, PX=1003520) gives judge accuracy .610 = the recorded .610 (job 184781), paired difference +.000, CI [+.000, +.000], 0 discordant pairs, n=1,500; all 1,500 answers byte-identical, mems_used 646,042 both. Job 188419, verdict closed (PASS).", "status": "supported", "reason": "Checked directly: expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json has judge 0.61, n 1500, judge_unparseable 0, image_max_pixels 1003520, rubric prompt. The recorded expQ/ft_mm_4b_184778/eval/ file has judge 0.61, n 1500. eval_mm_4b_188419.out shows 1500 rows, judge 0.6100, unparseable 0. 184781 is in runs.jsonl. The verdict for 188419 is closed PASS. The diff (+.000, inside ±.01) meets the feasibility gate exactly as the law states it. The 0-discordant, byte-identical and 646,042 figures come from the wake's paired_judge run, which the verdict records; the tick log truncates its output (line 22), and read-only tools cannot re-sum them."}, {"claim": "Consequence: decoding is greedy and the whole eval is deterministic, so any paired difference between two cells comes from the probe itself.", "status": "provisional", "reason": "One re-run on one model and one set (188419, documents, brief answers) supports it. It is not shown for probes that change the decoding path: STYLE=expand (256 new tokens), RAW=route1 (decoder max length 6144 per the 188441 intent note)
+== final:
+{"claims":[{"claim":"The instrument is reproducible: re-running the reference document cell (model 184778, 1,500 questions, PX=1003520) gives judge accuracy .610 = the recorded .610 (job 184781), paired difference +.000, CI [+.000, +.000], 0 discordant pairs, n=1,500; all 1,500 answers byte-identical, mems_used 646,042 both. Job 188419, verdict closed (PASS).","status":"supported","reason":"Checked directly: expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json has judge 0.61, n 1500, judge_unparseable 0, image_max_pixels 1003520, rubric prompt. The recorded expQ/ft_mm_4b_184778/eval/ file has judge 0.61, n 1500. eval_mm_4b_188419.out shows 1500 rows, judge 0.6100, unparseable 0. 184781 is in runs.jsonl. The verdict for 188419 is closed PASS. The diff (+.000, inside ±.01) meets the feasibility gate exactly as the law states it. The 0-discordant, byte-identical and 646,042 figures come from the wake's paired_judge run, which the verdict records; the tick log truncates its output (line 22), and read-only tools cannot re-sum them."},{"claim":"Consequence: decoding is greedy and the whole eval is deterministic, so any paired difference between two cells comes from the probe itself.","status":"provisional","reason":"One re-run on one model and one set (188419, documents, brief answers) supports it. It is not shown for probes that change the decoding path: STYLE=expand (256 new tokens), RAW=route1 (decoder max length 6144 per the 188441 intent note), text sets, or a different GPU. For those cells this is an inference, not a measured fact."},{"claim":"plumbing only: the page-picking fusion script reproduces the saved route numbers exactly — route .8607, attention .8853, n=1,500 rows, model 183814, 10-page document set (selftest job 188427 vs probe 185577's summary.json).","status":"supported","reason":"Supported as a plumbing check only, as the claim itself says. expQ/probes/fusion_selftest/fusion.json has n 1500, digit 0.86067, attn 0.88533, n_skipped 0. expQ/probes/attn_route_185577/summary.json has digit_pick@1 0.86067 and attn_mean_all_pick@1 0.88533, ckpt ft_mm_4b_183814, mm_docqa_retr10_1m, topk 10. runs.jsonl shows 188427 = route_fusion.sbatch --selftest on 185577, and its verdict is closed. The product/rrf numbers in that file come from synthetic scores and mean nothing, as the 188427 verdict says."},{"claim":"arm A (use-recovery on documents), seed 42, model 184778, 1,500 questions each, baseline .610: evidence-then-answer (188439), gold page only (188440), picked page raw = route-then-expand (188441).","status":"supported","reason":"This is a status claim (queued), not a result. Grid rows 188439/188440/188441 show stage A, parent 184781, PENDING. runs.jsonl argv points to expQ/probes/a_{expand,gold,route1}_s42/model on mm_docqa_1500_1m. The probe settings (STYLE/GOLD/RAW env) appear only in the ledger intent notes (EXPERIMENTS.md lines 568-570) and the launch line (tick log line 54), not in the grid factors, which read '-'
+== rc=0
