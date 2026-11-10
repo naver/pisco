@@ -1,0 +1,113 @@
+== campaign freeze wake 2026-11-11_0730  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794349802 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=1.5 idle_h=0.4 min_util=- alert=0 unpushed=22 cron=3 daemon=1 disk_gb=13102 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188529,188535_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: job:188529,188535 (ended)   (NEXT was: wake-when job:188529,188535 max 2h)
+== session e6c86311-4bec-4e3d-a90a-dcf3fecb94f3  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ # Wake brief — campaign freeze — 2026-11-11_0730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+184 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat CAMPAIGN.md; echo =====; cat STATE.md; echo ====; cat known_issues.md
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; ls; cat STATE.md; echo; echo =====KI; cat known_issues.md
+  ↳ ## Decision gates (+69 lines)
+  ↳ Exit code 1 (+66 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat known_issues.md; echo; echo ===VERIFY; cat VERIFY.md; echo ===; cat campaign.conf; expmon ledger 40 2>&1 | grep -iE 'freeze|1885(17|26|27|28|29|34|35)' | tail -30
+  ↳ Exit code 1 (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat campaign.conf; echo '-- ledger'; expmon ledger 60 2>&1 | grep -iE 'freeze|1885(17|26|27|28|29|34|35)' | tail -30
+  ↳ # campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-11. (+55 lines)
+Checking the logs of the frozen smoke, the unfrozen control smoke, and their two module-move checks (all four have ended).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 188528,188529,188534,188535 -X -o JobID,JobName%22,State,ExitCode,Elapsed,NodeList,Start,End 2>&1; ls -la expQ/freeze/ | head -40
+  ↳ JobID                       JobName      State ExitCode    Elapsed        NodeList               Start                 End  (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls *188529* *188535* *188528* *188534* 2>/dev/null; ls logs 2>/dev/null | grep -E '18852[89]|18853[45]'; find . -maxdepth 3 -name '*188535*' -o -maxdepth 3 -name '*188529*' 2>/dev/null | head
+  ↳ check_move_freeze_188529.out (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat check_move_freeze_188529.out; echo '-----------'; cat check_move_freeze_188535.out
+  ↳ FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s42_smoke (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat expQ/freeze/check_module_move.sh; echo '-----'; cat expQ/freeze/ft_freeze.sh
+  ↳ #!/bin/bash (+93 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'connector_out_norm|freeze|max_steps|warmup|learning_rate|seed' expQ/freeze/ft_unfrozen_s42_smoke/training_config.yaml expQ/archq3/pt_mm_5M_spread/model/*.json 2>/dev/null | head -30; ls -la e…
+  ↳ expQ/freeze/ft_unfrozen_s42_smoke/training_config.yaml:7:  learning_rate: 2.0e-05 (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in ft_freeze_188528.out ft_freeze_188534.out; do echo "## $f"; grep -E "'loss'|train_runtime|froze|trainable param|Total trainable|eval_loss|max_memory|peak|EXIT" $f | head -20; done
+  ↳ ## ft_freeze_188528.out (+84 lines)
+Both smokes and both checks finished cleanly. Now checking whether the freeze also covers the connector's norm gain, which the check script currently skips.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "freeze_compressor" pisco/model.py | head; grep -n -i "norm" test_freeze.py | head -20; grep -n "connector_out_norm_init\|def load_trainable_state" pisco/model.py | head
+  ↳ 96:        freeze_compressor: bool = False, (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 228,250p pisco/model.py; sed -n 600,625p pisco/model.py; grep -n "class ConnectorRMSNorm" -A 12 pisco/model.py | head -16
+  ↳ def freeze_compressor_side(model: nn.Module) -> int: (+59 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; bash -n expQ/freeze/check_module_move.sh && echo syntax ok; grep -E 'connector_out_norm|freeze_compressor' expQ/freeze/ft_frozen_s42_smoke/model/config.json expQ/freeze/ft_unfrozen_s42_smoke/model/conf…
+  ↳ syntax ok (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"(188529|188534|188535)"' .expmon/runs.jsonl | python3 -c "import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print({k:d[k] for k in d if k in ('jobid','cmd','argv','stage','parent','s…
+  ↳ {'jobid': '188529', 'argv': ['/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model', '/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/model'], 'parent': '188528', 's (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco/expQ; expmon launch --exp freeze --stage check --parent 188528 --dry-run --time 0:05:00 expQ/freeze/check_module_move.sh $R/archq3/pt_mm_5M_spread/model $R/freeze/f…
+  ↳ would submit: sbatch --time 0:05:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_s (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco/expQ; expmon launch --exp freeze --stage check --parent 188528 --time 0:05:00 expQ/freeze/check_module_move.sh $R/archq3/pt_mm_5M_spread/model $R/freeze/ft_frozen_s…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/*_188578.out   (err: /beegfs/scratch/user/hdejean/pisco/*_188578.out) (+7 lines)
+Both checks are queued. Meanwhile I'm preparing the two full frozen finetunes: GPU capacity, node features, and wall time.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; gpucap land a100 1 2>&1 | tail -12; sinfo -p gpu -o '%N %G %f' 2>&1 | head -20; squeue -u hdejean -p gpu -o '%i %j %T %b %N' 2>&1
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+14 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; until [ -n "$(sacct -n -X -j 188578,188579 -o State 2>/dev/null | grep -vE 'PENDING|RUNNING' | wc -l | grep -v '^0$')" ] && [ "$(sacct -n -X -j 188578,188579 -o State | grep -cE 'PENDING|RUNNING')" = 0…
+  ↳ Command running in background with ID: b9bn1p01y. Output is being written to: /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/e6c86311-4bec-4e3d-a90a-dcf3fecb94f3/tasks/b9bn1p01y.output. You (+1 lines)
+While the checks run, dry-run the two full frozen finetunes (seed 42 and 43).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42 43; do expmon launch --exp freeze --stage ft --parent 184777 --dry-run --time 13:00:00 --constraint=gpu_a100 expQ/freeze/ft_freeze.sh frozen $s 2>&1 | tail -4; done; ls expQ/freeze/
+  ↳ would submit: sbatch --time 13:00:00 --constraint=gpu_a100 expQ/freeze/ft_freeze.sh frozen 42 (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la --time-style=+%m-%d_%H:%M expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ 2>&1 | grep -vE 'results_lb' | head -40; git log -3 --format='%h %ci %s' -- scripts/eval_mm_docqa.py; stat -c '%y'…
+  ↳ expQ/ft_mm_4b_184778/eval/: (+16 lines)
+→ Bash: sleep 45; cat /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/e6c86311-4bec-4e3d-a90a-dcf3fecb94f3/tasks/b9bn1p01y.output; sacct -X -j 188578,188579 -o JobID,State,Elapsed,NodeList,Reason 2>&1 | tail -2
+  ↳ <tool_use_error>Blocked: sleep 45 followed by: cat /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/e6c86311-4bec-4e3d-a90a-dcf3fecb94f3/tasks/b9bn1p01y.output sacct -X -j 188578,188579 -o Jo
+→ Bash: sacct -X -j 188578,188579 -o JobID,State,Elapsed,NodeList,Reason 2>&1 | tail -2; ls /beegfs/scratch/user/hdejean/pisco/check_move_freeze_18857*.out 2>&1
+  ↳ 188578        COMPLETED   00:00:47       homer-010                   None  (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat check_move_freeze_188578.out; echo '-----'; cat check_move_freeze_188579.out
+  ↳ FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s42_smoke (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo 'frozen smoke vs 184778:'; diff expQ/ft_mm_4b_184778/training_config.yaml expQ/freeze/ft_frozen_s42_smoke/training_config.yaml | grep -vE 'run\.dir|output_dir'; echo 'unfrozen smoke vs 184778:'; d…
+  ↳ frozen smoke vs 184778: (+13 lines)
+→ Bash: sacct -j 188534 -o JobID%14,MaxRSS,TRESUsageInMax%120 2>&1 | grep batch
+  ↳ 188534.batch  22277308K             cpu=00:38:55,energy=0,fs/disk=16349885536,gres/gpumem=31938M,gres/gpuutil=85,mem=22277308K,pages=6966,vmem=0
+Launching the two full frozen finetunes (seed 42 and 43, 28k rows = 1 epoch each, 13 h wall time).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "intent: feasibility gate PASS -> launch arm F full: ft_freeze.sh frozen 42 and frozen 43 (28k rows = 1 epoch, 438 steps of 64 rows), --time 13:00:00 = 85.1 s/step (frozen smoke train_runti…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco/expQ; for p in 188582:42 188583:43; do j=${p%:*}; s=${p#*:}; expmon launch --exp freeze --stage check --parent $j --time 0:05:00 --dependency=afterok:$j expQ/freeze…
+  ↳ Submitted batch job 188584 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon grid freeze 2>&1 | cut -c1-200
+  ↳ RUN        STG  PARENT   STATE     VERDICT    launcher kind     arm      seed     smoke    init     samples  bs       accum    lr       max_pixels trained  RESULT (final, or latest probe) (+13 lines)
+→ Bash: expmon help 2>&1 | grep -iE 'factor|rescan|refresh|scan' | head -10
+  ↳ kill   <jobid ...>        scancel, then re-print status; records the jobids so check/scan/sensors (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs --backfill-factors --dry-run 2>&1 | grep -E '18853[45]|1885(7[89]|8[2-5])|would|rows' | head -12
+  ↳ 188534     kind=ft_mm arm=unfrozen seed=42 smoke=20 init=pt_mm_5M_spread samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs --backfill-factors --dry-run 2>&1 | grep -vE 'no factors' | cut -c1-120
+  ↳ 188422     kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=256 dml=512 bs=24 accum=2 rate=8 lay (+12 lines)
+Gate passed and the two full finetunes are queued. Now recording the verdicts, probes and notes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 188528 closed "feasibility gate PASS (frozen 20-step smoke, 1,280 rows = .046 epoch): log froze 506 compressor+connector tensors, compressor trainable 0, total trainable = decoder 155…
+  ↳ verdict recorded: 188528 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tail -3 .expmon/verdicts.jsonl | cut -c1-120
+  ↳ {"ts": "2026-11-11 07:35", "jobid": "188535", "verdict": "closed", "note": "positive control PASS: unfrozen smoke moves  (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'save_steps|save_total|eval_steps|save_strategy|eval_strategy' pisco/configs/finetune_mm.yaml pisco/configs/defaults.yaml expQ/ft_mm_4b_184778/training_config.yaml 2>/dev/null; ls expQ/ft_mm_4…
+  ↳ expQ/ft_mm_4b_184778/training_config.yaml:10:  save_strategy: steps (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -oE "\{'eval_loss': '[0-9.]+'[^}]*'epoch': '[0-9.]+'" ft_mm_4b_184778.out | sed -E "s/, 'eval_Rouge.*'epoch'/ epoch/"; grep -oE "\{'eval_loss': '[0-9.]+'[^}]*'epoch': '[0-9.]+'" ft_mm_4b_184780.ou…
+  ↳ {'eval_loss': '0.5131' epoch: '0.2291' (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat >> known_issues.md <<'EOF' ⏎ | `check_module_move.sh` prints no `connector.norm_gain` row | the gain is absent from the stage-2 init (`connector_out_norm: false`) and retrofitted at…
+  ↳ | a 20-step smoke's logged `'loss'` at step 10 is far (here .086 lower) from the (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188582 "intent: arm F frozen seed 42 full run (28k rows = 1 epoch, 438 steps x 64 rows), module-move check 188584 afterok. Health: eval_loss every 100 steps vs 184778 (.513/.455/.393/.39…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+6 lines)
+Both finetunes are running (seed 42 on homer-010, seed 43 on homer-006). Recording the decision, then refreshing the results page and STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "decision: freeze feasibility gate PASS on all six criteria (freeze log; module move 188578: compressor/connector/norm gain 0.0%, decoder lora_B 76.3%; loss vs unfrozen smoke 188534: step 1…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -i 's/8; ~125 per 1M-px page/8; 123 per 1M-px page (980 visual tokens)/' STATE.md; grep -n '123 per' STATE.md | cut -c1-80; echo 'wake-when file:/beegfs/scratch/user/hdejean/pisco/e…
+  ↳ 52:| R reference (11-09/11-10 files, old eval code) | compressor LoRA + merger + (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188582 188583; do echo "## $j"; grep -E 'FACTORS|froze|Compressor trainable|Total trainable|Error|Traceback' ft_freeze_$j.out | head -6; done; squeue -j 188582,188583 -o '%i %T %M %N'
+  ↳ ## 188582 (+12 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100 max 4h", "summary": "Feasibility gate PASSED on all six criteria; both full frozen finetunes launched. Freezing works: ever…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.4497 turns=49 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100 max 4h", "summary": "Feasibility gate PASSED on all six criteria; both full frozen finetunes launched. Freezing works: every compressor and connector weight, the norm gain included, stayed at 0.0% change (188578), while the decoder LoRA moved (lora_B 76.3%). The positive control shows the check catches movement: in the unfrozen smoke the compressor LoRA moved 25-76% and the connector MLP 25.4% (188579). Train loss matches the unfrozen 20-step smoke: step 10 .594 vs .639, step 20 .584 vs .580, both within the .05 allowed. Config diff vs reference 184778 = max_steps + freeze_compressor only. Side finding: under bf16 at lr 2e-5 the connector norm gain does not move even when trainable (bf16 lost update), so freezing it changes nothing in this recipe. Patched check_module_move.sh (6 lines, freely patchable): it skipped the norm gain because the gain is retrofitted at load. Launched frozen seed 42 (188582) and seed 43 (188583): 28k rows = 1 epoch each, --time 13:00 = 85.1 s/step x 438 x 1.25, A100-80GB. Each has a module-move check chained (188584/188585). GPU cap on gpu: 6 of 8 in use. Next wake, at the seed-42 step-100 checkpoint: probe eval_loss against the reference curves, submit the one preview, and chain the reference re-evals; the reference judged files predate the 11-11 eval-code change. STATE.md rewritten; two known_issues rows added.", "launched": ["18857
+== final:
+{"next":"wake-when","wake_when":"file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100 max 4h","summary":"Feasibility gate PASSED on all six criteria; both full frozen finetunes launched. Freezing works: every compressor and connector weight, the norm gain included, stayed at 0.0% change (188578), while the decoder LoRA moved (lora_B 76.3%). The positive control shows the check catches movement: in the unfrozen smoke the compressor LoRA moved 25-76% and the connector MLP 25.4% (188579). Train loss matches the unfrozen 20-step smoke: step 10 .594 vs .639, step 20 .584 vs .580, both within the .05 allowed. Config diff vs reference 184778 = max_steps + freeze_compressor only. Side finding: under bf16 at lr 2e-5 the connector norm gain does not move even when trainable (bf16 lost update), so freezing it changes nothing in this recipe. Patched check_module_move.sh (6 lines, freely patchable): it skipped the norm gain because the gain is retrofitted at load. Launched frozen seed 42 (188582) and seed 43 (188583): 28k rows = 1 epoch each, --time 13:00 = 85.1 s/step x 438 x 1.25, A100-80GB. Each has a module-move check chained (188584/188585). GPU cap on gpu: 6 of 8 in use. Next wake, at the seed-42 step-100 checkpoint: probe eval_loss against the reference curves, submit the one preview, and chain the reference re-evals; the reference judged files predate the 11-11 eval-code change. STATE.md rewritten; two known_issues rows added.","launched":["188578 check: module move of frozen smoke, patched script (norm gain row)","188579 check: module move of unfrozen smoke, patched script","188582 ft: arm F frozen seed 42 full (28k rows, 1 epoch)","188583 ft: arm F frozen seed 43 full (28k rows, 1 epoch)","188584 check: module move of 188582, afterok","188585 check: module move of 188583, afterok"],"verdicts":[{"jobid":"188528","verdict":"closed","note":"feasibility gate PASS: frozen rows 0.0% incl. norm gain, decoder lora_B 76.3%, loss within .05 of unfrozen smoke at steps 10 and 20, config diff clean"},{"jobid":"188534","verdict":"closed","note":"unfrozen 20-step control: loss .639/.580, eval_loss .488 (frozen .527)"},{"jobid":"188529","verdict":"closed","note":"superseded by 188578 (norm gain row was skipped)"},{"jobid":"188535","verdict":"closed","note":"positive control PASS: compressor + connector moved 25-76%"},{"jobid":"188578","verdict":"closed","note":"frozen smoke: all compressor/connector rows incl. norm gain 0.0%"},{"jobid":"188579","verdict":"closed","note":"unfrozen smoke: compressor/connector moved; trainable norm gain 0.0% (bf16 lost update)"}],"gripes":["gap: grid factors blank until daemon rescan; runs --backfill-factors lacks --exp/jobid filter so a campaign cannot backfill only its own rows"]}
+== rc=0 secs=451
+== verify: 7/10

@@ -1,0 +1,90 @@
+== verifier 2026-11-11_0730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session e51bed18-fe19-49bd-bfe5-5587bbf9d60b  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+184 lines)
+→ Glob: {"pattern": "expQ/freeze/**/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_freeze.sh (+78 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/checkpoint-20/trainer_state.json
+  ↳ 1	{ (+62 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_unfrozen_s42_smoke/checkpoint-20/trainer_state.json
+  ↳ 1	{ (+62 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+→ Glob: {"pattern": "training_config.yaml", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780"}
+  ↳ expQ/ft_mm_4b_184780/training_config.yaml
+Checking the full-run configs and the smoke logs now; then the module-move logs.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+→ Grep: {"pattern": "freeze_compressor|Compressor trainable|trainable param|froze", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "freeze_compressor|Compressor trainable|trainable param|froze", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_unfrozen_s42_smoke/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/train.log
+  ↳ 1	[2026-11-11 06:12:12,854][httpx][INFO] - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect" (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh
+  ↳ 1	#!/bin/bash (+50 lines)
+→ Grep: {"pattern": "freeze_compressor|Compressor trainable|trainable|froze|EXIT CODE|^[0-9a-f]{7}$|A100|FACTORS", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188528.out", "output_mode": "content"}
+  ↳ 1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-88f1017a-8678-54bb-776f-d321dfc902ea) (+20 lines)
+→ Grep: {"pattern": "freeze_compressor|Compressor trainable|trainable|froze|EXIT CODE|^[0-9a-f]{7}$|A100|FACTORS|train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188534.out", "output_mode": "content"}
+  ↳ 1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/ft_freeze_188528.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-88f1017a-8678-54bb-776f-d321dfc902ea) (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/ft_freeze_188534.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+24 lines)
+→ Grep: {"pattern": "GPU 0|FACTORS|^[0-9a-f]{7}$|freeze_compressor=True|Compressor trainable|Total trainable|Traceback|Error", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out", "output_mode": "content"}
+  ↳ 1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+5 lines)
+→ Grep: {"pattern": "GPU 0|FACTORS|^[0-9a-f]{7}$|freeze_compressor=True|Compressor trainable|Total trainable|Traceback|Error", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188583.out", "output_mode": "content"}
+  ↳ 1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-88f1017a-8678-54bb-776f-d321dfc902ea) (+5 lines)
+→ Glob: {"pattern": "*1885[37]?*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh
+  ↳ 1	#!/bin/bash (+48 lines)
+Reading the module-move check outputs (jobs 188535, 188578, 188579) to confirm the 0.0% / 25.4% / 76.3% figures.
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188578.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s42_smoke (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188579.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_unfrozen_s42_smoke (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188535.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_unfrozen_s42_smoke (+9 lines)
+Checking the unit-test job 188517 (its commit differs between STATE and the verdict) and the frozen smoke's runtime.
+→ Grep: {"pattern": "train_runtime|it/s|s/it", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188528.out", "output_mode": "content", "head_limit": 5, "-o": true}
+  ↳ 75:it/s (+6 lines)
+→ Grep: {"pattern": "188517", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze", "output_mode": "content", "head_limit": 20}
+  ↳ campaign_freeze/VERIFY.md:9:[Omitted long matching line] (+18 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign freeze — 2026-11-11_0630   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/run_tests_cpu_188517.out
+  ↳ 1	FACTORS kind=unit_tests (+133 lines)
+Now checking the full-run launches (git state, chained checks, `--time`) in the run log.
+→ Read: /beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+15 lines)
+→ Grep: {"pattern": "\"jobid\": \"18858[2-5]\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 893:{"ts": "2026-11-11 07:35", "jobid": "188582", "launcher": "expQ/freeze/ft_freeze.sh", "argv": ["frozen", "42"], "git": "554b8a3+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/188582",  (+3 lines)
+→ Grep: {"pattern": "max_steps|EXIT CODE", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188526.out", "output_mode": "content"}
+  ↳ 14:Could not override 'hf_training.max_steps'. (+4 lines)
+→ Grep: {"pattern": "\"jobid\": \"1885(78|79|35|29)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 879:[Omitted long matching line] (+3 lines)
+→ Grep: {"pattern": "\"jobid\": \"1885(78|79)\".{0,400}\"time\": \"[^\"]*\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ 890:"jobid": "188578", "launcher": "expQ/freeze/check_module_move.sh", "argv": ["/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model", "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ (+1 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778"}
+  ↳ expQ/ft_mm_4b_184778/checkpoint-400/compressor/tokenizer_config.json (+21 lines)
+Last check: the reference eval_loss curve that sets the kill threshold (.513 for seed 42).
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.5130845308303833, (+4 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.47135603427886963, (+4 lines)
+→ StructuredOutput: {"claims": [{"claim": "The `freeze_compressor` flag's unit tests pass: only the decoder trains, no gradient reaches the frozen side, the frozen side stays in eval mode, flag off = old behaviour (test_freeze.py 5/5, job 188517, ran on git 9d…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1584 turns=40 is_error=False denials=0
+== declared: {"claims": [{"claim": "The `freeze_compressor` flag's unit tests pass: only the decoder trains, no gradient reaches the frozen side, the frozen side stays in eval mode, flag off = old behaviour (test_freeze.py 5/5, job 188517, ran on git 9dd687d+dirty; verdict closed).", "status": "provisional", "reason": "The tests did pass. run_tests_cpu_188517.out:121-133 has the 5 named test_freeze tests, 'Ran 5 tests … OK' and 'EXIT CODE 0'. But they ran on an uncommitted working copy (runs.jsonl:867 git 9dd687d+dirty), so no commit reproduces them. The recorded verdict still cites commit d167725, which contradicts STATE."}, {"claim": "Feasibility gate PASS (frozen 20-step smoke, job 188528, 1,280 rows = .046 epoch, against the unfrozen 20-step smoke, job 188534, same rows and lr schedule)", "status": "supported", "reason": "Every element of the amended law is in the files. ft_freeze_188528.out:106-107 reads 'froze 506 compressor + connector tensors' and 'Compressor trainable parameters: 0'. Movement and loss checks are in the sub-claims below. Both trainer_state.json files show the same lr at steps 10/20 (1.158e-5, 1.05e-6) and epoch .0458. s/step and gpumem are recorded. One gap: STATE describes the config diff in words instead of pasting it."}, {"claim": "the freeze holds: every compressor and connector weight, the norm gain included, changed 0.0% (job 188578); the decoder LoRA moved (lora_B 76.3% of entries changed);", "status": "supported", "reason": "check_move_freeze_188578.out sh
+== final:
+{"claims":[{"claim":"The `freeze_compressor` flag's unit tests pass: only the decoder trains, no gradient reaches the frozen side, the frozen side stays in eval mode, flag off = old behaviour (test_freeze.py 5/5, job 188517, ran on git 9dd687d+dirty; verdict closed).","status":"provisional","reason":"The tests did pass. run_tests_cpu_188517.out:121-133 has the 5 named test_freeze tests, 'Ran 5 tests … OK' and 'EXIT CODE 0'. But they ran on an uncommitted working copy (runs.jsonl:867 git 9dd687d+dirty), so no commit reproduces them. The recorded verdict still cites commit d167725, which contradicts STATE."},{"claim":"Feasibility gate PASS (frozen 20-step smoke, job 188528, 1,280 rows = .046 epoch, against the unfrozen 20-step smoke, job 188534, same rows and lr schedule)","status":"supported","reason":"Every element of the amended law is in the files. ft_freeze_188528.out:106-107 reads 'froze 506 compressor + connector tensors' and 'Compressor trainable parameters: 0'. Movement and loss checks are in the sub-claims below. Both trainer_state.json files show the same lr at steps 10/20 (1.158e-5, 1.05e-6) and epoch .0458. s/step and gpumem are recorded. One gap: STATE describes the config diff in words instead of pasting it."},{"claim":"the freeze holds: every compressor and connector weight, the norm gain included, changed 0.0% (job 188578); the decoder LoRA moved (lora_B 76.3% of entries changed);","status":"supported","reason":"check_move_freeze_188578.out shows compressor lora_A/B, token_adapter, connector linear and norm_gain all at 'changed 0.0%', and decoder.lora_B at 76.3%. Caveat: the token-row and norm-gain rows also read 0.0% in the unfrozen smoke, so the check has no positive control for those two rows. The token row's 2,560 entries are diluted in 1,270M. The trainable count of 0 covers both rows independently."},{"claim":"the check can see movement: in the unfrozen smoke the compressor LoRA (25.4% / 76.4%) and the connector MLP (25.4%) moved (jobs 188535, 188579);","status":"supported","reason":"check_move_freeze_188579.out:5,6,8 (and 188535.out the same) read compressor.lora_A 25.4%, lora_B 76.4%, connector.linear 25.4%. ft_freeze_188534.out:101 reads 'Compressor trainable parameters: 130812416'."},{"claim":"train loss: step 10 .594 frozen vs .639 unfrozen (−.045), step 20 .584 vs .580 (+.004): both within the .05 the law allows;","status":"supported","reason":"From the two smokes' checkpoint-20/trainer_state.json: frozen loss .59397 / .58387 and unfrozen .63925 / .57989 at steps 10 / 20. The gaps are .0453 and .0040, both under .05. The step-10 gap is close to the limit, but the law's test is met."},{"claim":"config diff vs the reference finetune 184778: only `max_steps` and `freeze_compressor`.","status":"supported","reason":"I compared expQ/freeze/ft_frozen_s42_smoke/training_config.yaml with expQ/ft_mm_4b_184778/training_config.yaml. The smoke adds only `max_steps: 20` and `freeze_compressor: true`. The full runs also match: ft_froz
+== rc=0

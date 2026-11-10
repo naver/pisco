@@ -13,8 +13,9 @@ source ~/.bashrc; cd /beegfs/scratch/user/hdejean/pisco
 INIT=${1:?init model dir} TRAINED=${2:?trained model dir}
 echo "FACTORS kind=check_module_move init=$(basename $(dirname $INIT)) trained=$(basename $(dirname $TRAINED))"
 INIT=$INIT TRAINED=$TRAINED pixi run python - <<'PY'
-import os, torch
+import os, json, torch
 from collections import defaultdict
+cfg = json.load(open(os.path.join(os.environ["TRAINED"], "config.json")))
 def load(d, f):
     p = os.path.join(d, f)
     return torch.load(p, weights_only=True, map_location="cpu") if os.path.exists(p) else {}
@@ -29,6 +30,10 @@ for part, f in (("decoder", "decoder_state.pt"), ("compressor", "compressor/comp
     a, b = load(os.environ["INIT"], f), load(os.environ["TRAINED"], f)
     if not a or not b:
         print(f"{part}: missing in init or trained"); continue
+    if part == "connector" and cfg.get("connector_out_norm"):   # gain retrofitted at load (init lacks it): compare
+        for k in b:                                              # with the retrofit value, else it is silently skipped
+            if k not in a and group(k) == "connector.norm_gain":
+                a[k] = torch.full_like(b[k], cfg["connector_out_norm_init"])
     acc = defaultdict(lambda: [0, 0, 0.0, 0.0, 0.0])   # n, changed, |d|^2, |x|^2, |x| sum for RMS
     for k in a:
         if k not in b or a[k].shape != b[k].shape or not a[k].is_floating_point(): continue
