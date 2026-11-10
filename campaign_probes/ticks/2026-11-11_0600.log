@@ -1,0 +1,200 @@
+== campaign probes wake 2026-11-11_0600  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794344402 live=188439:RUNNING,188514:RUNNING,188513:RUNNING,188512:RUNNING running=4 pending=0 problems=0 problems_other=0 new=0 gpuh24=10.2 idle_h=0.0 min_util=38 alert=0 unpushed=14 cron=2 daemon=1 disk_gb=13232 sig=8e93bf43 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188509,188510,188511,188512,188513,188514_job:188482,188484,188485_job:188439_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:188482,188484,188485 (ended)   (NEXT was: wake-when job:188509,188510,188511,188512,188513,188514 job:188482,188484,188485 job:188439 max 2h)
+== session eb92bd5c-7a3d-420f-a673-486dcac4115a  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/eb92bd5c-7a3d-420f-a673-486dcac4115a/tool-results/b6ya4lxvp.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0600   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+233 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 182 CAMPAIGN.md (+185 lines)
+→ Bash: cat STATE.md && echo ------- && cat known_issues.md
+  ↳ # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+132 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -30; ls -la campaign_probes/; cat campaign_probes/campaign.conf | head -40
+  ↳ - 2026-11-11 04:39 [job 188479] verdict: closed — invariant tests PASS for the attn keep-mode patch: 45/45 OK (12 + 33), exit 0 (+79 lines)
+Reading the verifier's notes, then pairing the six arm B / arm E cells that just ended.
+→ Bash: cat campaign_probes/VERIFY.md; ls campaign_probes/ticks | tail -5
+  ↳ # VERIFY — campaign probes — 2026-11-11_0530   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+25 lines)
+→ Bash: for j in 188482 188484 188485 188509 188510 188511 188512 188513 188514 188439 188483; do echo "== $j"; sacct -j $j -D -X -o JobID,State,ExitCode,NodeList,Start,End,Elapsed -n 2>/dev/null; done
+  ↳ == 188482 (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && ls -la --time-style=+%m-%d_%H:%M | head -80
+  ↳ total 19 (+37 lines)
+→ Bash: for c in e_keep05_first e_keep05_attn e_keep05_attng e_keep05_even b_g1_s43 b_g10_s43 b_gold_joined_s43 b_g1_rep b_gold_joined b_distr_joined b_g10_shuf; do echo "== $c"; ls -la --time-style=+%m-%d_%H:%M $c/eval/ 2>/dev/null; done
+  ↳ == e_keep05_first (+55 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -o 'paired_judge[^"]\{0,200\}' campaign_probes/ticks/2026-11-11_0530.log | head -5; ls scripts/probes/; head -40 scripts/paired_judge.py
+  ↳ build_groups.py (+46 lines)
+→ Bash: P=expQ/probes; PL=expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; ls -la $PL; for c in "e_keep05_first/eval/mm_docqa_pisco_px1003520_keep05_first_mm_docqa_1500_1m.json" "e_keep05_attn/eval/mm_docqa_pisco_px1003520_…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 811538 Nov  9 06:01 expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+32 lines)
+Arm E (keep half the slots, chosen by decoder attention) came back at no loss. Checking slot counts before believing it.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='expQ/probes/' ⏎ files={'plain':'expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json', ⏎ 'first':P+'e_keep05_first/eval/mm_docqa_pisco_px1003520_keep05_first_mm_docqa_1500_1m.json', ⏎…
+  ↳ plain 1500 {'summary': '...'} (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='expQ/probes/' ⏎ files={'plain':'expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json', ⏎ 'first':P+'e_keep05_first/eval/mm_docqa_pisco_px1003520_keep05_first_mm_docqa_1500_1m.json', ⏎…
+  ↳ plain mems_used 646042 ratio 1.000 dec_tok 1.000 identical 1500 {'em': 0.5073333333333333, 'em/slidevqa': 0.494, 'f1': 0.5991203620230745, 'f1/slidevqa': 0.6325488593786076, 'anls': 0.6161575668740203 (+9 lines)
+Arm E holds: same slot count (0.496×) as the blind cuts, 1,230–1,289 of 1,500 answers unchanged. Now pairing the arm B seed-43 cells.
+→ Bash: P=expQ/probes; G1=$P/b_g1_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; G10=$P/b_g10_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json; GJ=$P/b_gold_joined_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_gold_…
+  ↳ ===  vs  (+11 lines)
+→ Bash: P=expQ/probes; G1=$P/b_g1_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; G10=$P/b_g10_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json; GJ=$P/b_gold_joined_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_gold_…
+  ↳ === GJ vs g1 (+18 lines)
+Arm B repeats on the second seed: putting the two answer passages in one chunk beats ten separate chunks by +.067 (n=1,500). Next: recover the exact launch commands of the cells I want to repeat.
+→ Bash: expmon help 2>&1 | grep -iE 'runs|launch|show' | head; ls .expmon/ 2>/dev/null | head; 
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+19 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ want={'188484','188485','188483','188486','188472','188478','188509','188510','188514','188441','188445','188446','188439'} ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: co…
+  ↳ 188439 {'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/probes/a_expand_s42/model', 'pisco', '', 'eval_data/mm_docqa_1500_1m'], 'exp': 'probes', 'slurm': {'partition': 'gpu-be', 'time': '5:12:00'}, 'paren (+12 lines)
+→ Bash: grep -oE '[A-Z_]+=[^ "]+ [A-Z_=0-9a-z. ]*expmon launch[^"\\]{0,300}' campaign_probes/ticks/2026-11-11_0530.log campaign_probes/ticks/2026-11-11_0430.log 2>/dev/null | sort -u | head -20
+→ Bash: ls -la campaign_probes/ticks/ ; grep -l 'keep05' campaign_probes/ticks/* .expmon/campaign/probes/* 2>/dev/null | head
+  ↳ (Bash completed with no output)
+  ↳ total 241 (+28 lines)
+→ Bash: grep -E 'expmon launch' .expmon/campaign/probes/hook.log | tail -25 | cut -c1-400
+  ↳ 2026-11-11 03:35:50	full	Bash	allow		expmon launch --exp probes --stage test --time 0:06:00 run_tests_cpu.sh 2>&1 | grep -E "Submitted|refus|error|Error" (+24 lines)
+→ Bash: grep -nE 'KEEP|CML|TOPK|STYLE|RAW|MQ|GOLD|PX|naturalqa|outname|suffix|tag' eval_mm_4b.sh | head -50; ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/
+  ↳ 12:#   expmon launch --exp mmpisco --stage eval --parent <jid> eval_mm_4b.sh <CKPT_MODEL_DIR> [MODE=pisco] [LIMIT] [DATA] [IMAGE_RATE] (+25 lines)
+→ Bash: grep -nE 'mem_keep_mode|attn_global' scripts/eval_mm_docqa.py | head -20; for f in expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json expQ/ft_m…
+  ↳ 241:    """Arm E probe (--mem_keep_mode attn*): one eager forward of the full prompt; the attention of the last prompt (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 236	    scale = emb.float().abs().amax(-1, keepdim=True).clamp_min(1e-8) / q (+79 lines)
+→ Bash: grep -nE 'naturalqa' EXPERIMENTS.md | grep -E '18477[89]|18478[0-9]' | tail -8 | cut -c1-300
+  ↳ (Bash completed with no output)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     a=' '.join(map(str,r.get('argv') or [])) ⏎     if 'naturalqa' in a and ('18477' in a or '18478' in a): print(r.ge…
+  ↳ 184774 eval_mm_4b.sh expQ/ft_mm_4b_184771/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/mm_naturalqa_1500 {'partition': 'gpu-be', 'time': '4:00:00'} (+4 lines)
+→ Bash: grep -nE 'raw_policy|route1|def route|image_compr_rate|compr_rate' scripts/eval_mm_docqa.py | head -40
+  ↳ 83:def make_collator(model: PISCO, *, topk: int, compressor_max_length: int, image_compr_rate, query_dependent: bool, chunk_docs: bool = False): (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 405	 (+89 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 80	    return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False) (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 494	        _sync(); t = time.perf_counter() (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 640	        overrides = {k: v for k, v in (("image_max_pixels", args.image_max_pixels), (+119 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     a=' '.join(map(str,r.get('argv') or [])) ⏎     if ('183538' in a or '183814' in a) and 'hotpot' in a: print(r.get…
+  ↳ 185499 expQ/ft_mm_4b_183814/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/text_hotpotqa_1500 {'partition': 'gpu-be', 'time': '4:00:00'} (+24 lines)
+→ Bash: ls -d eval_data/probes_hotpot_pred2_attn eval_data/probes_hotpot_pred3_attn eval_data/text_hotpotqa_1500_g10 && for c in b_g10_rep:183814 b_pred2_attn:183814 b_pred3_attn:183814 b_g1_tail_rep:183538 e_keep05_attng_s43:184780; do n=${c%%:*};…
+  ↳ eval_data/probes_hotpot_pred2_attn (+7 lines)
+Recording intents, then a dry run.
+→ Bash: expmon note "intent: arm B, gate met at seed 43 (golds joined +.067 vs g1, +.053 vs g10) -> launch the no-oracle cells on 183814: pred2_attn (the 2 passages the model's attention ranks first joined, others alone) and pred3_attn. Gate (writt…
+  ↳ expmon note: 98 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+→ Bash: CML=4096 TOPK=10 expmon launch --dry-run --force --exp probes --stage B --parent 185601 --time 1:14:00 '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/b_g10_rep/model pisco "" eval_data/text_hotpotqa_1500_g10 2>&1 | tail -6
+  ↳ would submit: sbatch --time 1:14:00 --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/b_g10_rep/model pisco  eval_data/text_hotpotqa_1500_g10 (+3 lines)
+→ Bash: L="expmon launch --force --exp probes --stage B --time 1:14:00 --exclude=homer-[005-009]";  ⏎ CML=4096 TOPK=10 expmon launch --force --exp probes --stage B --parent 185601 --time 1:14:00 '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes…
+  ↳ job id:  188518 (+4 lines)
+Five cells submitted (b_g10_rep 188518, b_g1_tail_rep 188519, b_pred2_attn 188520, b_pred3_attn 188521, e_keep05_attng_s43 188522). Now the arm G patch.
+→ Bash: grep -nE 'image_compr_rate' pisco/mm_collator.py | head -8; sed -n 550,600p scripts/eval_mm_docqa.py
+  ↳ 106:        image_compr_rate: Optional[int] = None, (+57 lines)
+→ Bash: sed -n 495,515p pisco/mm_collator.py; grep -n 'image_compr_rate' pisco/mm_utils.py | head -5
+  ↳ merge = merge_size_of(self.image_processor) (+24 lines)
+→ Bash: git diff --stat scripts/eval_mm_docqa.py; git diff scripts/eval_mm_docqa.py | head -60; sed -n 625,640p scripts/eval_mm_docqa.py
+  ↳ scripts/eval_mm_docqa.py | 57 +++++++++++++++++++++++++++++++++++++++++------- (+77 lines)
+→ Bash: cp scripts/eval_mm_docqa.py /tmp/eval_mm_docqa.pre_armG.py && python3 - <<'EOF' ⏎ import re ⏎ p='scripts/eval_mm_docqa.py' ⏎ s=open(p).read() ⏎ def rep(old,new,count=1): ⏎     global s ⏎     assert s.count(old)==count, (old[:60], s.count(ol…
+  ↳ COMPILE_OK (+1 lines)
+→ Bash: diff /tmp/eval_mm_docqa.pre_armG.py scripts/eval_mm_docqa.py | grep -c '^>'; sed -n 36,40p eval_mm_4b.sh; sed -n 56,64p eval_mm_4b.sh
+  ↳ 22 (+14 lines)
+→ Bash: cp eval_mm_4b.sh /tmp/eval_mm_4b.pre_armG.sh && python3 - <<'EOF' ⏎ p='eval_mm_4b.sh' ⏎ s=open(p).read() ⏎ old='DROPARG=""; [[ "${DROP:-0}" == "1" ]]' ⏎ assert s.count(old)==1 ⏎ s=s.replace(old,'DENSEARG=""; [[ -n "${DENSE:-}" ]] && { DENSE…
+  ↳ SH_OK (+10 lines)
+→ Bash: for n in reg_g_plain g_dense8_ctrl; do test -e expQ/probes/$n && echo "EXISTS $n" || { mkdir -p expQ/probes/$n && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model expQ/probes/$n/model; }; done; expmon note "intent: arm …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: expmon launch --force --exp probes --stage test --time 0:06:00 run_tests_cpu.sh 2>&1 | grep -E 'job id|REFUS|rror'
+  ↳ job id:  188523
+→ Bash: PX=1003520 expmon launch --force --exp probes --stage reg --parent 184781 --time 1:00:00 '--exclude=homer-[005-009]' --dependency afterok:188523 eval_mm_4b.sh expQ/probes/reg_g_plain/model pisco 300 eval_data/mm_docqa_1500_1m 2>&1 | grep -E…
+  ↳ job id:  188524 (+4 lines)
+→ Bash: RAW=route1 DENSE=8 PX=1003520 expmon launch --force --exp probes --stage G --parent 184781 --time 1:00:00 '--exclude=homer-[005-009]' --dependency afterok:188523 eval_mm_4b.sh expQ/probes/g_dense8_ctrl/model pisco 300 eval_data/mm_docqa_150…
+  ↳ job id:  188525
+All 8 submissions used (188518–188525). Now recording verdicts, and computing the arm D number the verifier said had no source.
+→ Bash: python3 - <<'EOF' ⏎ import json,glob ⏎ for f in glob.glob('expQ/probes/a_route1_s4*/eval/*.json'): ⏎     if 'attempt' in f: continue ⏎     r=json.load(open(f))['records'] ⏎     h=[x['judge'] for x in r if x.get('route_hit')==1.0]; m=[x['jud…
+  ↳ a_route1_s43 hit n=1484 judge 0.825 | miss n=16 judge 0.500 | gap 0.325 (+2 lines)
+→ Bash: expmon probe 188482 judge=0.495 && expmon probe 188484 judge=0.606 && expmon probe 188485 judge=0.610 && expmon probe 188509 judge=0.601 && expmon probe 188510 judge=0.615 && expmon probe 188511 judge=0.669 2>&1 | tail -2 ⏎ expmon verdict 1…
+  ↳ probe recorded: 188482 (judge=0.495)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+9 lines)
+→ Bash: expmon verdict 188509 closed "arm B s43 baseline: ten separate chunks, model 183816, HotpotQA 1,500 Q, 11-11 code, homer-010: judge .601, unparseable 0, mems 265,880" 2>&1 | tail -1 ⏎ expmon verdict 188510 closed "arm B s43: one chunk of al…
+  ↳ verdict recorded: 188509 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+Now amending the law (arm B, D, E, G rows) and rewriting the deliverable doc and STATE.
+→ Bash: grep -n '^| [A-G]\. ' campaign_probes/CAMPAIGN.md | cut -c1-80; grep -n 'cells for the whole campaign' campaign_probes/CAMPAIGN.md
+  ↳ 39:| A. use-recovery on documents | `eval_mm_4b.sh <ref model> pisco "" eval_dat (+7 lines)
+→ Bash: sed -n 40p campaign_probes/CAMPAIGN.md; echo; sed -n 43p campaign_probes/CAMPAIGN.md
+  ↳ | B. long-chunk mechanism | `CML=4096 TOPK=10 eval_mm_4b.sh 183814 pisco "" <grouped set>` on new grouped sets built by `scripts/probes/build_groups.py`: gold passages joined alone vs distractors join (+2 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ L=open(p).read().split('\n') ⏎ def row(prefix): ⏎     for i,l in enumerate(L): ⏎         if l.startswith(prefix): return i ⏎     raise SystemExit('no '+prefix) ⏎ i=row('| B. long-chunk m…
+  ↳ 1's (≥ +.14) with CI above 0, at ≤ 1/3 of route1's extra decoder tokens (report both token counts) → a serving mode and a stage-2 target; both seeds before "adopted". Caveat to report: the models were
+→ Bash: grep -c 'Flag written 2026-11-11' campaign_probes/CAMPAIGN.md; grep -c 'AMENDED 2026-11-11' campaign_probes/CAMPAIGN.md; grep -c 'WRONG PREDICTION, kept and marked: the law took' campaign_probes/CAMPAIGN.md; grep -c 'CAVEAT, kept and marked…
+  ↳ 1 (+5 lines)
+→ Bash: grep -n 'one long chunk beats ten short ones' campaign_probes/CAMPAIGN.md && sed -i 's/- under the spread layout one long chunk beats ten short ones (+.037 on HotpotQA, no training); the compressor sees the/- under the spread layout one lon…
+  ↳ 19:- under the spread layout one long chunk beats ten short ones (+.037 on HotpotQA, no training); the compressor sees the (+2 lines)
+→ Bash: wc -l docs/probe_campaign_2026-11.md && cat docs/probe_campaign_2026-11.md
+  ↳ 147 docs/probe_campaign_2026-11.md (+147 lines)
+Rewriting the results page with the new arm B and arm E numbers. First checking one claim the verifier disputed (whether the per-source picker was chosen on held-out data).
+→ Bash: f=$(ls expQ/188515/*.out 2>/dev/null || ls logs/*188515* 2>/dev/null | head -1); echo $f; expmon logs 188515 200 2>/dev/null | grep -iE 'half|split|held|persource|per_source|chosen' | head -12
+  ↳ (eval):1: no matches found: expQ/188515/*.out (+9 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='expQ/probes/' ⏎ fs={'plain':'expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json','attng':P+'e_keep05_attng/eval/mm_docqa_pisco_px1003520_keep05_attn_global_mm_docqa_1500_1m.json','f…
+  ↳ plain slots/q 430.7 dec tok/q 511 (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ start=s.index('## Status (2026-11-11 05:45 KST)') ⏎ end=s.index('## Arm A — use-recovery') ⏎ new_head='''## Status (2026-11-11 06:45 KST) ⏎ - **Arm A decided at bot…
+  ↳ 9:## Status (2026-11-11 06:45 KST) (+11 lines)
+→ Bash: python3 -c " ⏎ from math import comb ⏎ def p(a,b): ⏎     n=a+b;k=min(a,b);return min(1,2*sum(comb(n,i) for i in range(k+1))/2**n) ⏎ for a,b in [(186,85),(200,120),(46,219),(49,207),(152,131)]: print(a,b,'%.2g'%p(a,b))"
+  ↳ 186 85 8e-10 (+4 lines)
+→ Bash: sed -i 's/| <1e-9 (186 \/ 85) |/| 8e-10 (186 \/ 85) |/; s/| <1e-5 (200 \/ 120) |/| 9e-6 (200 \/ 120) |/; s/| <1e-20 (46 \/ 219) |/| 4e-28 (46 \/ 219) |/' docs/probe_campaign_2026-11.md && grep -c '8e-10\|9e-6\|4e-28' docs/probe_campaign_202…
+  ↳ 3
+Doc rewritten. Now the gripe, display refresh, STATE and NEXT.
+→ Bash: expmon gripe -c defect "launch refuses every new probes cell as 'same factors, closed as dead arm by run 188444' because the manifest factors of these cells are empty (eval_mm_4b.sh FACTORS line omits CML/KEEPF/KEEPM/DENSE and the stage/arg…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: timeout 60 expmon campaign report --section leaves 2>&1 | head -40; squeue -u hdejean -h -o '%i %T %R' | grep -E '1885[12][0-9]|188439' 
+  ↳ **Settled** (+27 lines)
+Two arm B cells (188512, 188513) left the queue, and an unknown job 188527 shows up. Checking both.
+→ Bash: for j in 188512 188513 188518 188527; do sacct -j $j -D -X -n -o JobID,JobName%22,State,NodeList,Start,End 2>/dev/null; done; squeue -j 188527 -h -o '%i %j %T %R %E' 2>/dev/null; ls -la --time-style=+%H:%M expQ/probes/b_distr_joined_s43/eva…
+  ↳ 188512                eval_mm_4b.sh  COMPLETED       homer-016 2026-11-11T05:42:12 2026-11-11T06:04:33  (+15 lines)
+Both finished cleanly. Pairing them; 188518 was preempted after 5 minutes and requeued on its own (no file written, nothing to do).
+→ Bash: P=expQ/probes; G1=$P/b_g1_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; G10=$P/b_g10_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json; D=$P/b_distr_joined_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr…
+  ↳ == distr vs g1 (+9 lines)
+→ Bash: expmon probe 188512 judge=0.617 >/dev/null && expmon probe 188513 judge=0.618 >/dev/null && expmon verdict 188512 closed "arm B s43: distractors joined, golds alone, 183816 HotpotQA 1,500 Q: .617 vs ten chunks .601 = +.016 [-.003,+.035], 11…
+  ↳ verdict recorded: 188512 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+Updating the arm B table in the results page with these two rows, then writing STATE.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ old='| all 10 joined, shuffled order (job 188473, homer-011) | 42 | 1,500 | .615 | g10 .617 (11-07) | −.002 [−.023, +.020] | .91 (141 / 144) | 0, 1,500, 1.000 | 1, …
+  ↳ (Bash completed with no output)
+Writing STATE.md now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cat >> campaign_probes/known_issues.md <<'EOF' ⏎ | `expmon launch` says `REFUSED — this cell (exp='probes', same factors) was closed as a dead arm by run 188444` for a cell never run before | expmon keys cells on manifest factors, and these…
+  ↳ wake-when job:188523,188524,188525 job:188520,188521 job:188522 job:188439 max 2h
+This wake's main new result: keeping only the half of the slots that the decoder attends to most, once it has seen the question, costs nothing on documents. It scored .610, the same as with all slots (1,500 questions, seed 42 only). The second seed is queued.
+
+## Done this wake
+- **Long-chunk question settled at both seeds (arm B).** The gain comes from putting the two answer passages in the same chunk:
+  - Answer passages joined, all others in their own chunks, against ten separate chunks: +.073 at seed 42 and +.067 at seed 43 (n=1,500 each, same slot count). The gain is on "bridge" questions, where the answer needs facts from both passages.
+  - One chunk holding all ten passages gains only +.014 at seed 43, and that is not significant. The "+.037" the campaign set out to explain is about half noise; the law now marks it.
+  - Passage order inside a chunk does not matter at either seed. Joining the distractor passages is below the noise band at both seeds.
+- **Slot pruning by decoder attention (arm E, seed 42)**, 1,500 document questions, half the slots kept (slot = one compressed vector):
+
+  | which half is kept | judge accuracy ↑ | vs all slots (.610) |
+  |---|---|---|
+  | most-attended, over all pages | .610 | +.000 [−.009, +.010] |
+  | most-attended, per chunk | .606 | −.004 |
+  | every 2nd slot | .505 | −.105 |
+  | first half of each chunk | .495 | −.115 |
+
+  The selection needs one full pass over every slot first. So it saves decoder context, not storage.
+- **Arm G (re-compress the picked page at twice the slots, instead of showing it raw):** wrote the option, 25 lines across the eval script and its launcher; the default path is unchanged. It passes a syntax check only. The real tests are queued behind it.
+- **Verifier fixes:**
+  - The results page claimed the per-modality page picker was chosen on held-out data. That was false, and it is corrected.
+  - The ".25" figure behind arm D now cites its source file and row counts.
+  - The every-2nd-slot cell has its verdict.
+- Rewrote `docs/probe_campaign_2026-11.md`, STATE.md and the arm rows of the law. Logged 9 verdicts.
+
+## Running now (8 new jobs, the per-wake cap)
+- **Arm B:**
+  - two cells that join the 2 or 3 passages the model itself ranks highest (no oracle);
+  - a re-run of the one-long-chunk baseline on today's code (preempted once and requeued; nothing was lost);
+  - a ten-chunk baseline for the older-layout model.
+- **Arm E:** the seed-43 repeat.
+- **Arm G:** invariant tests, a 300-question plain regression, and a 300-question run at the current rate (8 tokens per slot), which must give the plain answers.
+
+## Next
+- If the arm G checks pass: launch the two full rate-4 cells.
+- If the arm E repeat holds: run photos, then keep only a quarter of the slots.
+- The next wake starts when one of these groups of jobs ends, or in 2 hours at most.
+- 49 of the 60 cells in the budget are used and about 11–12 are still wanted. If they don't fit, the second-seed text-reasoning repeat goes first.
+
+Nothing needed from you. When convenient, force-add `eval_mm_4b.sh` to git: `.gitignore` drops every `*.sh` file, and this wake changed it by 3 lines.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm B decided at both seeds: joining the two answer passages in one chunk beats ten chunks by +.073 / +.067 (n=1,500 each); one chunk of all ten gains only +.014 n.s. at seed 43 (the campaign's +.037 starti…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.3680 turns=69 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm B decided at both seeds: joining the two answer passages in one chunk beats ten chunks by +.073 / +.067 (n=1,500 each); one chunk of all ten gains only +.014 n.s. at seed 43 (the campaign's +.037 starting fact is half noise); order and distractor joining are under the noise band. Arm E seed 42: keeping the most-attended half of slots overall = plain (.610 vs .610), blind halves lose .105-.115; seed-43 repeat queued. Arm G flag (--dense_rate / DENSE) written (25 lines), checks queued. Verifier findings fixed; law, STATE, results doc rewritten; 8 submissions.", "launched": ["188518", "188519", "188520", "188521", "188522", "188523", "188524", "188525"], "verdicts": [{"jobid": "188482", "verdict": "closed", "note": "keep first half per chunk: .495 vs .610, -.115"}, {"jobid": "188483", "verdict": "closed", "note": "keep every 2nd slot: .505 vs .610, -.105"}, {"jobid": "188484", "verdict": "closed", "note": "provisional s42: most-attended half per chunk .606, -.004 n.s."}, {"jobid": "188485", "verdict": "closed", "note": "provisional s42: most-attended half overall .610 = plain; gate met at s42; s43 = 188522"}, {"jobid": "188509", "verdict": "closed", "note": "arm B s43 ten-chunk baseline .601"}, {"jobid": "188510", "verdict": "closed", "note": "one chunk of ten s43 +.014 n.s."}, {"jobid": "188511", "verdict": "best", "note": "golds joined s43 +.067 vs ten chunks, +.053 vs one chunk of ten"}, {"jobid": "188512", "verdict": "closed", "note": "d
+== final:
+{"next":"wake-when","summary":"Arm B decided at both seeds: joining the two answer passages in one chunk beats ten chunks by +.073 / +.067 (n=1,500 each); one chunk of all ten gains only +.014 n.s. at seed 43 (the campaign's +.037 starting fact is half noise); order and distractor joining are under the noise band. Arm E seed 42: keeping the most-attended half of slots overall = plain (.610 vs .610), blind halves lose .105-.115; seed-43 repeat queued. Arm G flag (--dense_rate / DENSE) written (25 lines), checks queued. Verifier findings fixed; law, STATE, results doc rewritten; 8 submissions.","launched":["188518","188519","188520","188521","188522","188523","188524","188525"],"verdicts":[{"jobid":"188482","verdict":"closed","note":"keep first half per chunk: .495 vs .610, -.115"},{"jobid":"188483","verdict":"closed","note":"keep every 2nd slot: .505 vs .610, -.105"},{"jobid":"188484","verdict":"closed","note":"provisional s42: most-attended half per chunk .606, -.004 n.s."},{"jobid":"188485","verdict":"closed","note":"provisional s42: most-attended half overall .610 = plain; gate met at s42; s43 = 188522"},{"jobid":"188509","verdict":"closed","note":"arm B s43 ten-chunk baseline .601"},{"jobid":"188510","verdict":"closed","note":"one chunk of ten s43 +.014 n.s."},{"jobid":"188511","verdict":"best","note":"golds joined s43 +.067 vs ten chunks, +.053 vs one chunk of ten"},{"jobid":"188512","verdict":"closed","note":"distractors joined s43 +.016 n.s."},{"jobid":"188513","verdict":"closed","note":"shuffled order s43 +.003 n.s.; order closed both seeds"}],"gripes":["expmon launch refuses every new probes cell as closed by 188444 because manifest factors are empty; --force needed each time"],"wake_when":"job:188523,188524,188525 job:188520,188521 job:188522 job:188439 max 2h"}
+== rc=0 secs=708
+== verify: 8/15
