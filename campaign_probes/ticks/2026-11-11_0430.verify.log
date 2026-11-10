@@ -1,0 +1,96 @@
+== verifier 2026-11-11_0430  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 4cc1d970-d965-4344-990b-c06d18201537  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+274 lines)
+→ Glob: {"pattern": "expQ/probes/*/eval/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "campaign_probes/**/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/attn_route_185579/summary.json (+31 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_188442/attempt1_0438_summary.json
+  ↳ 1	{ (+45 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185577/summary.json
+  ↳ 1	{ (+45 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_188443/summary.json
+  ↳ 1	{ (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185580/summary.json
+  ↳ 1	{ (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_188442/summary.json
+  ↳ 1	{ (+45 lines)
+→ Grep: {"pattern": "\"(judge|mems_used|n|unparseable|em|f1|match|summary|args|cml|compressor_max_length|topk)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/b_distr_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr_joine…
+  ↳ 2: "summary": { (+61 lines)
+Checking the claims against the result files now. Arm D's control numbers match exactly. Next I'm checking the arm B, arm C and node-check files.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/b_distr_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr_joined.json
+  ↳ 1	{ (+49 lines)
+→ Glob: {"pattern": "*hotpot*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/eval"}
+  ↳ expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g3.json (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json
+  ↳ 1	{ (+44 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json
+  ↳ 1	{ (+44 lines)
+→ Grep: {"pattern": "(\\+\\.005|0\\.005|p=\\.012|0\\.012|261,?308|80,?003|McNemar)", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0430.log", "output_mode": "content", "head_limit": 40}
+  ↳ 115:  ↳ distr_joined 1500 mems 261308 judge 0.604 unp 0 (+9 lines) (+3 lines)
+→ Grep: {"pattern": "(\\+\\.005|p=\\.012|261,?308|80,?003|distr_joined)", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 30}
+  ↳ 383:  - saw: docs s42 +.034 (p=.001), s43 -.022 (p=.043): mean +.006; photos +.005 / +.029 (p=.002): mean +.017; r4 costs 1.8x tokens (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0430.log
+  ↳ 60	Trimming the helper so the patch stays within the 40-line cap. (+117 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/c_plain_s42/eval/attempt2_0357_mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json
+  ↳ 1	{ (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/c_plain_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json
+  ↳ 1	{ (+69 lines)
+Arm C's attempt-2 file matches the claimed numbers (judge .718; DROP .580, DuoRC .600, RACE .528). Now checking the uncompressed baseline and the .695 figure in the arms table.
+→ Glob: {"pattern": "*mrqa*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval"}
+  ↳ expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json (+1 lines)
+→ Grep: {"pattern": "\\.695", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 15}
+  ↳ 520:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "\"judge(/mrqa_(DROP|DuoRC|RACE))?\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json", "output_mode": "content", "head_limit": 6}
+  ↳ 53:  "judge": 0.8066666666666666, (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 519	- 2026-11-10 23:03 [job 184817] RATE 32 RESULT (spread layout, reduced budget, judge 1500 Q paired): docs .427/.420 (s42/s43) vs spread r8 .599/.618 = -.172 [-.197,-.147] / -.198; photos .587/.585 (+2 lines)
+→ Grep: {"pattern": "c_plain_s42", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 10}
+  ↳ 574:- 2026-11-11 03:05 [job 188445] intent: arm C baseline on the reference model (no MRQA cell exists for 184778): CML=4096 (one chunk per passage, nothing cut) on text_mrqa_ood_1500, model 184778 vi
+→ Grep: {"pattern": "\"(judge|em|n|judge_unparseable)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/reg_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json", "output_mode": "content", "head_limit": 5}
+  ↳ 3:  "em": 0.49, (+6 lines)
+→ Grep: {"pattern": "\"(judge|em|n|judge_unparseable)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/reg_h016/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json", "output_mode": "content", "head_limit": 5}
+  ↳ 3:  "em": 0.4766666666666667, (+6 lines)
+→ Grep: {"pattern": "\"(judge|em|n|judge_unparseable)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 5}
+  ↳ 3:  "em": 0.5073333333333333, (+6 lines)
+→ Grep: {"pattern": "(Ran \\d+ tests|^OK|FAIL|EXIT|===)", "path": "/beegfs/scratch/user/hdejean/pisco/run_tests_cpu_188479.out", "output_mode": "content"}
+  ↳ 3:=== test_positions.py === (+6 lines)
+→ Grep: {"pattern": "(Ran \\d+ tests|^OK|FAIL|EXIT|===)", "path": "/beegfs/scratch/user/hdejean/pisco/run_tests_cpu_188455.out", "output_mode": "content"}
+  ↳ 3:=== test_positions.py === (+6 lines)
+→ Glob: {"pattern": "*1884[5-8]*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+Tests check out (45/45, exit 0). Still checking the arm B data build log and the fusion selftest. Then I'll write up the verdicts.
+→ Grep: {"pattern": "(identical|rows|wrote|PASS|g10)", "path": "/beegfs/scratch/user/hdejean/pisco/build_groups_188465.out", "output_mode": "content", "head_limit": 15}
+  ↳ 1:FACTORS kind=build_groups args=--kinds,gold_joined,distr_joined,g10_shuf (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest/fusion.json
+  ↳ 1	{ (+79 lines)
+→ Grep: {"pattern": "\"(judge|em|n|judge_unparseable|gold_only|raw_policy)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/a_gold_s42/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit"…
+  ↳ 3:  "em": 0.5346666666666666, (+9 lines)
+→ Grep: {"pattern": "\"(judge|em|n|judge_unparseable|gold_only|raw_policy)\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/a_route1_s42/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json", "output_mode": "content", "head…
+  ↳ 5:  "em": 0.7246666666666667, (+9 lines)
+Found something unexpected: complete result files (1,500 questions, judged) exist for two arm A cells that STATE.md calls "queued, no file written". Checking when and by which job they were written.
+→ Grep: {"pattern": "\\[job 18844[01]\\]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 10}
+  ↳ 569:- 2026-11-11 03:04 [job 188440] intent: arm A seed 42: GOLD=1 (distractor pages removed) on 184778 via a_gold_s42, mm_docqa_1500_1m, PX=1003520, 1500 Q; baseline .610. Measures how much of the los (+1 lines)
+→ Grep: {"pattern": "(\\[1500/1500\\]|judge|wrote|saved|CANCELLED|PREEMPT|Requeue|DUE TO|^\\s*judge\\s)", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188441.out", "output_mode": "content", "head_limit": 30}
+  ↳ 1671:[1500/1500] em=0.725 f1=0.793 anls=0.779 match=0.791  1668s (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188441.out
+  ↳ 1690	  route_hit/infovqa            0.9960 (+33 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188441.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-947b1b3a-8cfb-4441-2957-64546f26d7a3) (+29 lines)
+→ Grep: {"pattern": "(\\[1500/1500\\]|^wrote|unparseable|EXIT CODE|^\\s+judge\\s|FACTORS)", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188440.out", "output_mode": "content", "head_limit": 15}
+  ↳ 2:FACTORS kind=eval_mm mode=pisco ckpt=a_gold_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_ (+5 lines)
+Two arm A cells (gold page only, picked page raw, seed 42) finished and wrote judged results before the wake ended. STATE.md still lists both as queued. Last check is the seed-43 baseline number.
+→ Grep: {"pattern": "\"judge\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 1}
+  ↳ 42:  "judge": 0.6146666666666667, (+2 lines)
+→ Grep: {"pattern": "(homer-0\\d\\d|NodeList)", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md", "output_mode": "content", "head_limit": 10}
+  ↳ 27:[Omitted long matching line]
+→ StructuredOutput: {"claims": [{"claim": "The instrument reproduces on nodes with the same system image (el9_8): 188419 on homer-011 judge .610 = .610, 1,500/1,500 identical, 0 discordant; 188476 on homer-016, first 300 questions 300/300 identical, judge .610…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3784 turns=43 is_error=False denials=0
+== declared: {"claims": [{"claim": "The instrument reproduces on nodes with the same system image (el9_8): 188419 on homer-011 judge .610 = .610, 1,500/1,500 identical, 0 discordant; 188476 on homer-016, first 300 questions 300/300 identical, judge .610 / EM .477, mems_used 118,147 both.", "status": "supported", "reason": "The file `expQ/probes/rep_184778/eval/...1500_1m.json` has judge .610 on 1,500 rows, and the 188419 verdict says 0 discordant. The file `reg_h016/...lim300.json` has judge .61, EM .4767, 300 rows, 0 unparseable, and the tick log at 0430 line 83 reads 'identical 300 mems 118147 118147'. The law itself defines the 300-question node check, so a 300-row cell is the right size for this claim."}, {"claim": "Arm D's controls are recovered exactly: retr10 digit .861 / attention .885 equal to 185577 (188442); HotpotQA digit .922 / attention .873 equal to 185580 (188443); n=1,500 each; fusion inputs written.", "status": "supported", "reason": "The two summary.json files of 188442 (`attempt1_0438_summary.json`) and 185577 match key for key: digit .8607, attention .8853, n=1500. The files of 188443 and 185580 also match: digit .922, attention .8733, n=1500. masses.npz exists for both runs. Both verdicts are closed."}, {"claim": "Invariant tests pass with this wake's eval patch (attention-ranked slot keep modes): 45/45 OK (test_positions 12, test_mm_collators 33), exit 0 (job 188479).", "status": "supported", "reason": "`run_tests_cpu_188479.out` shows 'Ran 12 tests ... OK' at line 
+== final:
+{"claims":[{"claim":"The instrument reproduces on nodes with the same system image (el9_8): 188419 on homer-011 judge .610 = .610, 1,500/1,500 identical, 0 discordant; 188476 on homer-016, first 300 questions 300/300 identical, judge .610 / EM .477, mems_used 118,147 both.","status":"supported","reason":"The file `expQ/probes/rep_184778/eval/...1500_1m.json` has judge .610 on 1,500 rows, and the 188419 verdict says 0 discordant. The file `reg_h016/...lim300.json` has judge .61, EM .4767, 300 rows, 0 unparseable, and the tick log at 0430 line 83 reads 'identical 300 mems 118147 118147'. The law itself defines the 300-question node check, so a 300-row cell is the right size for this claim."},{"claim":"Arm D's controls are recovered exactly: retr10 digit .861 / attention .885 equal to 185577 (188442); HotpotQA digit .922 / attention .873 equal to 185580 (188443); n=1,500 each; fusion inputs written.","status":"supported","reason":"The two summary.json files of 188442 (`attempt1_0438_summary.json`) and 185577 match key for key: digit .8607, attention .8853, n=1500. The files of 188443 and 185580 also match: digit .922, attention .8733, n=1500. masses.npz exists for both runs. Both verdicts are closed."},{"claim":"Invariant tests pass with this wake's eval patch (attention-ranked slot keep modes): 45/45 OK (test_positions 12, test_mm_collators 33), exit 0 (job 188479).","status":"supported","reason":"`run_tests_cpu_188479.out` shows 'Ran 12 tests ... OK' at line 6, 'Ran 33 tests ... OK' at line 117 and 'EXIT CODE 0' at line 121. Caveats: these tests do not run the new attn branch of eval_mm_docqa.py; the identity control 188480 is what checks it. The job also ran on homer-008, although the rule now says every cell excludes homer-005..009 (CPU-only job, so no effect on the result)."},{"claim":"Data for arm B exists and is checked: build_groups.py rebuilds text_hotpotqa_1500_g10 on 1,500/1,500 rows identical, then writes three grouped sets of 1,500 rows (job 188465).","status":"supported","reason":"`build_groups_188465.out` line 4: '1500/1500 rows identical to the existing g10 set'. Lines 6, 8 and 10 show gold_joined, distr_joined and g10_shuf, 1500 rows each. The 188465 verdict is closed."},{"claim":"plumbing only: fusion selftest reproduces route .8607 / attention .8853 at n=1,500 (188427); unit tests 45/45 for the expand-in-base patch (188455); uncompressed reader default path 300/300 identical to 185542 (188456).","status":"supported","reason":"`fusion_selftest/fusion.json` has digit .8607, attn .8853, n=1500. `run_tests_cpu_188455.out` has 12 OK + 33 OK and exit 0. The 188456 verdict says 300/300 identical with EM .367. All three are correctly labelled plumbing."},{"claim":"provisional: arm B distractors joined (3 chunks), model 183814, HotpotQA 1,500: judge .604 vs g1 .579 = +.025 [+.005,+.044], McNemar p=.012; vs g10 .617 = −.013 [−.037,+.011], p=.33; unparseable 0, 1,500 rows, mems_used 261,308 (0.983 × g1, 1.005 × g10). Job 188472.","status":"p
+== rc=0

@@ -1,0 +1,177 @@
+== campaign probes wake 2026-11-11_0430  reasons=problems  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794339002 live=188457:RUNNING,188477:PENDING,188473:PENDING,188471:PENDING,188460:PENDING,188459:PENDING,188445:PENDING,188478:PENDING,188440:PENDING,188441:PENDING,188444:PENDING,188476:RUNNING,188443:RUNNING,188472:RUNNING,188446:RUNNING,188442:RUNNING,188439:RUNNING running=7 pending=10 problems=5 problems_other=0 new=0 gpuh24=4.6 idle_h=0.0 min_util=- alert=1 unpushed=11 cron=2 daemon=1 disk_gb=13271 sig=5545f025 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188476,188477_job:188439,188440,188441_job:188445,188446,188457_job:188471,188472,188473_job:188442,188443,188444_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session 22b9b889-dd20-42b5-80e8-25ad98c2a166  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/22b9b889-dd20-42b5-80e8-25ad98c2a166/tool-results/boagqh08v.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0430   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+252 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 172 CAMPAIGN.md (+175 lines)
+→ Bash: cat STATE.md && echo ======= && cat known_issues.md && echo ===== && cat VERIFY.md 2>/dev/null | head -80; ls -la
+  ↳ Exit code 1 (+114 lines)
+→ Bash: cat known_issues.md; echo '-----'; cat VERIFY.md 2>/dev/null | head -60; echo '-----'; ls -la
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+61 lines)
+Checking why I was woken: one attention-routing probe (188443) has left the queue, and a seed-42 arm A cell was preempted.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 188443,188441,188445,188440,188459,188460,188471 -D -X -o JobID,State,ExitCode,Start,End,Elapsed,NodeList%12 2>&1 | head -40; date
+  ↳ JobID             State ExitCode               Start                 End    Elapsed     NodeList  (+21 lines)
+→ Bash: ls -la expQ/probes/attn_route_188443/ 2>&1; cat expQ/probes/attn_route_188443/summary.json 2>/dev/null | head -50; echo; echo CONTROL; cat expQ/probes/attn_route_185580/summary.json 2>/dev/null | head -50
+  ↳ total 7038 (+88 lines)
+→ Bash: ls -la expQ/probes/attn_route_185580/ expQ/probes/attn_route_185577/ 2>&1 | head; grep -n "188443\|188442\|188444" EXPERIMENTS.md | tail -8
+  ↳ expQ/probes/attn_route_185577/: (+13 lines)
+→ Bash: grep -nE "TIMEOUT|MAX_SUBMIT|PATCH|RETRY|TURNS" campaign_probes/campaign.conf; ls scripts/probes/; ls scripts/ | grep -i -E "attn|prune|keep|drop" 
+  ↳ 11:CAMP_RETRY_MIN=30                 # cool-down before the LLM re-wakes on STANDING problems or an idle campaign with work left (NEXT absent) (+11 lines)
+→ Bash: for j in 188439 188446 188457 188472 188442 188476 188445 188459; do f=$(ls -t logs/*_$j.out expQ/*/*_$j.out 2>/dev/null | head -1); [ -z "$f" ] && f=$(ls -t $(find . -maxdepth 3 -name "*_$j.out" 2>/dev/null) 2>/dev/null | head -1); echo "=…
+  ↳ (eval):1: no matches found: logs/*_188439.out (+19 lines)
+→ Bash: tail -5 eval_mm_4b_188472.out; echo; tail -3 probe_attn_route_188442.out; echo; tail -3 eval_mm_4b_188476.out; squeue -u hdejean -h -o "%i %T %M %N" | sort
+  ↳ time_compress_mean_s         0.3048 (+36 lines)
+Arm D's hotpot control reproduced exactly; now checking whether the eval script already has a slot-dropping option for arm E.
+→ Bash: grep -n "add_argument" scripts/eval_mm_docqa.py | head -80; git diff --stat; git diff scripts/eval_mm_docqa.py | head -60
+  ↳ 510:    ap.add_argument("--mode", choices=["pisco", "base", "pisco_text"], default="pisco") (+90 lines)
+→ Bash: grep -n "mem_keep" scripts/eval_mm_docqa.py | head -30
+  ↳ 243:              mem_keep_frac=None, mem_keep_mode="first"): (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 230	 (+79 lines)
+→ Bash: wc -l scripts/probes/probe_attn_route.py && grep -n "def \|hook\|eager\|output_attentions\|q_proj\|k_proj\|softmax" scripts/probes/probe_attn_route.py | head -50
+  ↳ 161 scripts/probes/probe_attn_route.py (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/probes/probe_attn_route.py
+  ↳ 1	"""Routing probe (no training): can the decoder's own attention pick the page that holds the answer? (+161 lines)
+→ Bash: grep -n "KEEP\|keep\|MQ\|STYLE\|EXTRA\|suffix\|SUF" eval_mm_4b.sh | head -40; wc -l eval_mm_4b.sh
+  ↳ 33:SUF=""; RATEARG=""; [[ -n "$RATE" ]] && { SUF="_r${RATE}"; RATEARG="--image_compr_rate $RATE"; } (+24 lines)
+Arm E (prune slots by decoder attention) has no code yet; reading the eval launcher to decide the smallest safe way to add it.
+→ Bash: sed -n 1,32p eval_mm_4b.sh; sed -n 57,70p eval_mm_4b.sh
+  ↳ #!/bin/bash (+45 lines)
+→ Bash: grep -n "_reset_rope_deltas\|def _pos_kwargs\|set_attn_implementation\|attn_implementation" scripts/eval_mm_docqa.py pisco/model.py | head -20; grep -n "def _reset_rope_deltas" -A12 scripts/eval_mm_docqa.py
+  ↳ scripts/eval_mm_docqa.py:314:def _reset_rope_deltas(module): (+31 lines)
+→ Bash: F=$(ls .pixi/envs/default/lib/python3*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py); echo $F; grep -n "_attn_implementation\|class Qwen3_5Attention\|return attn_output, attn_weights\|rope_deltas" $F | head -30; grep -n "de…
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py (+36 lines)
+I'll add the attention-ranked keep modes to the eval script as two new choices of its existing slot-keep flag, leaving the default path untouched.
+→ Bash: sed -n 1,40p scripts/eval_mm_docqa.py | grep -n "^import\|^from" ; sed -n 532,538p scripts/eval_mm_docqa.py
+  ↳ 21:import argparse (+20 lines)
+Now the patch: a helper that scores each slot by the decoder's attention, then the two new keep modes.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Bash: python3 -c "import ast,sys; ast.parse(open('scripts/eval_mm_docqa.py').read()); print('syntax ok', sys.version.split()[0])"; git diff --numstat scripts/eval_mm_docqa.py; grep -n "mem_keep_frac\": args" -B2 -A3 scripts/eval_mm_docqa.py
+  ↳ syntax ok 3.9.25 (+7 lines)
+Trimming the helper so the patch stays within the 40-line cap.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Bash: python3 -c "import ast; ast.parse(open('scripts/eval_mm_docqa.py').read()); print('syntax ok')"; git diff --numstat scripts/eval_mm_docqa.py; git diff -U0 scripts/eval_mm_docqa.py | grep -c "^+[^+]"; sed -n 240,266p scripts/eval_mm_docqa.py
+  ↳ syntax ok (+29 lines)
+→ Bash: sed -i 's/            c._attn_implementation = "eager"$/            c._attn_implementation_internal = "eager"   # no recursion into sub-configs: only the saved ones change/' scripts/eval_mm_docqa.py && sed -n 251,253p scripts/eval_mm_docqa.…
+  ↳ for c in cfgs.values(): (+6 lines)
+Patch is in and parses. Now checking how the last wake ran the invariant tests so I repeat that exact command.
+→ Bash: cat run_tests_cpu.sh; grep -n "188455\|188456\|188476\]" EXPERIMENTS.md | head -6; sacct -j 188455,188476,188458 -X -o JobID,Partition,Elapsed,NodeList,State | head
+  ↳ #!/bin/bash (+31 lines)
+Planning a chain: invariant tests + two 300-question checks, then four full 1,500-question slot-pruning cells that start only after those pass. Checking the launch syntax the last wake used.
+→ Bash: grep -h '"188476"\|"188455"\|"188478"' .expmon/runs.jsonl 2>/dev/null | head -3 | cut -c1-900; ls .expmon/ | head
+  ↳ {"ts": "2026-11-11 03:35", "jobid": "188455", "launcher": "run_tests_cpu.sh", "argv": [], "git": "a2da4a9+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/188455", "exp": "probes", "slurm":  (+12 lines)
+→ Bash: expmon help launch 2>&1 | head -40
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+39 lines)
+→ Bash: grep -h '"188457"\|"188444"\|"188467"' .expmon/runs.jsonl | cut -c1-700; mkdir -p /tmp/x && ls -la expQ/probes/reg_h016/
+  ↳ {"ts": "2026-11-11 03:04", "jobid": "188444", "launcher": "scripts/probes/route_fusion.sbatch", "argv": ["expQ/probes/attn_route_188442", "expQ/probes/attn_route_188443"], "git": "19915c1+dirty", "out (+9 lines)
+→ Bash: ls -la expQ/probes/reg_h016/eval/; tail -4 eval_mm_4b_188476.out; squeue -j 188476,188472,188442 -h -o "%i %T %M"
+  ↳ total 139 (+9 lines)
+The homer-016 determinism check has written its answers; comparing them with the recorded run's first 300 answers.
+→ Bash: python3 -I - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/probes/reg_h016/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json")) ⏎ b=json.load(open("expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json")) ⏎ ra=a…
+  ↳ n 300 identical 300 mems 118147 118147 (+1 lines)
+homer-016 gives 300/300 identical answers to the recorded run, so newer-image nodes agree. Now setting up the arm E cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && for d in reg_e_plain e_attn_ctrl e_keep05_first e_keep05_even e_keep05_attn e_keep05_attng; do [ -e $d ] && echo "EXISTS $d" || { mkdir $d && ln -s /beegfs/scratch/user/hdejean/pisco/expQ…
+  ↳ e_attn_ctrl: (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188476 "result: determinism check PASS on the same image: reference model 184778 plain, first 300 document questions, homer-016 (el9_8): predictions 300/300 identical to 184781 (homer-…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Bash: expmon launch --dry-run --exp probes --stage test --time 0:06:00 run_tests_cpu.sh 2>&1 | tail -12
+  ↳ would submit: sbatch --time 0:06:00 run_tests_cpu.sh  (+3 lines)
+→ Bash: expmon note "intent: arm E code: scripts/eval_mm_docqa.py --mem_keep_mode gains attn / attn_global (38 added lines, patchable path, one flag): one eager forward of the full prompt, attention of the last prompt position on each <MEM> (mean o…
+  ↳ expmon note: 114 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+5 lines)
+→ Bash: PX=1003520 KEEPF=1.0 KEEPM=attn expmon launch --dry-run --exp probes --stage E --parent 184781 --time 1:00:00 --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/e_attn_ctrl/model pisco 300 eval_data/mm_docqa_1500_1m 2>&1 | tail -6
+  ↳ (eval):1: no matches found: --exclude=homer-[005-009]
+→ Bash: PX=1003520 KEEPF=1.0 KEEPM=attn expmon launch --dry-run --exp probes --stage E --parent 184781 --time 1:00:00 '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/e_attn_ctrl/model pisco 300 eval_data/mm_docqa_1500_1m 2>&1 | tail -6
+  ↳ would submit: sbatch --time 1:00:00 --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/e_attn_ctrl/model pisco 300 eval_data/mm_docqa_1500_1m (+3 lines)
+Launching the two 300-question checks (plain regression and the keep-all attention control), then the four full cells chained on them.
+→ Bash: expmon note "intent: arm E identity control (e_attn_ctrl): reference model 184778, KEEPF=1.0 KEEPM=attn, LIMIT=300 docs, PX=1003520, off el9_7. Pass 1 (eager attention) runs, every slot is kept: predictions must be 300/300 identical to 1847…
+  ↳ Submitted batch job 188480 (+2 lines)
+→ Bash: PX=1003520 KEEPF=0.5 KEEPM=attn expmon launch --dry-run --exp probes --stage E --parent 184781 --time 4:54:00 '--exclude=homer-[005-009]' --dependency afterok:188479:188480:188481 eval_mm_4b.sh expQ/probes/e_keep05_attn/model pisco "" eval_…
+  ↳ would submit: sbatch --time 4:54:00 --exclude=homer-[005-009] --dependency afterok:188479:188480:188481 eval_mm_4b.sh expQ/probes/e_keep05_attn/model pisco  eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: expmon note "intent: arm E full cells, reference model 184778 (s42), mm_docqa_1500_1m, 1,500 Q, PX=1003520, off el9_7, afterok tests 188479 + control 188480 + regression 188481: keep half the slots by (1) first half of each chunk, (2) every…
+  ↳ expmon note: 108 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+All seven chained cells are queued (tests, two 300-question checks, four full pruning cells). Checking whether the arm B cell and the retr10 routing probe have finished.
+→ Bash: tail -3 eval_mm_4b_188472.out; tail -2 probe_attn_route_188442.out; tail -2 eval_mm_4b_188476.out; squeue -j 188472,188442,188476,188479,188480,188481 -h -o "%i %T %M %R"
+  ↳ match                        0.4427 (+10 lines)
+→ Bash: grep -n "paired_judge" EXPERIMENTS.md | tail -3; head -30 scripts/paired_judge.py | grep -n "import\|argparse\|add_argument"; grep -n "add_argument" scripts/paired_judge.py
+  ↳ 300:  - next: balanced arm 173704/173706 vs v4 with paired_judge; then rate-4 finetune / GRPO decision (+12 lines)
+→ Bash: ls expQ/ft_mm_4b_183814/eval/ | grep -i hotpot; ls expQ/probes/b_distr_joined/eval/
+  ↳ mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json (+3 lines)
+→ Bash: E=expQ/ft_mm_4b_183814/eval; B=expQ/probes/b_distr_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr_joined.json; python3 -I scripts/paired_judge.py $B $E/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json --names distr_joined g1 2…
+  ↳ judge: distr_joined = expQ/probes/b_distr_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr_joined.json (+12 lines)
+Arm B's first result is in: joining only the distractor passages already gains +.025 over ten separate chunks. Checking slot totals and the exact baseline command.
+→ Bash: python3 -I - <<'EOF' ⏎ import json ⏎ E="expQ/ft_mm_4b_183814/eval/" ⏎ for n,p in [("distr_joined","expQ/probes/b_distr_joined/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_distr_joined.json"),("g1",E+"mm_docqa_pisco_k10_cml4096_text_hotpotq…
+  ↳ distr_joined 1500 mems 261308 judge 0.604 unp 0 (+9 lines)
+Using the last submission of this wake to re-run the ten-chunk baseline on a newer-image node, so arm B compares on one node image and the run also checks text determinism across images.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && mkdir b_g1_rep && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/model b_g1_rep/model && cd /beegfs/scratch/user/hdejean/pisco && expmon note "intent: arm B baseline re-run…
+  ↳ _188486.out
+→ Bash: expmon probe 188472 judge=0.604 2>&1 | tail -1; expmon note -j 188472 "result (provisional): arm B, 2 golds each alone + 8 distractors joined (3 chunks), model 183814, HotpotQA 1,500 Q, homer-020: judge .604 vs g1 .579 = +.025 [+.005,+.044]…
+  ↳ probe recorded: 188472 (judge=0.604)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+1 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,glob ⏎ d=json.load(open("expQ/probes/reg_h016/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m_lim300.json")) ⏎ s=d["summary"]; print("188476 judge",s.get("judge"),"em",s.get("em"),"n",len(d["records"]),"unp…
+  ↳ 188476 judge 0.61 em 0.4766666666666667 n 300 unp 0 (+7 lines)
+→ Bash: expmon probe 188476 judge=0.610 2>&1 | tail -1; expmon verdict 188476 closed "determinism PASS on the same image: homer-016 (el9_8) vs 184781 (homer-011), first 300 document questions: 300/300 predictions identical, judge .610 / EM .477 bot…
+  ↳ probe recorded: 188476 (judge=0.610)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+1 lines)
+→ Bash: sleep 5; squeue -j 188479,188442 -h -o "%i %T %M"; tail -12 run_tests_cpu_188479.out 2>/dev/null
+  ↳ 188442 PENDING 0:00 (+11 lines)
+→ Bash: sacct -j 188442,188439,188446 -D -X -o JobID,State,Start,End,Elapsed,NodeList%10 | tail -8; ls -la expQ/probes/attn_route_188442/ 2>&1 | tail -4; squeue -u hdejean -h -o "%i %T %M %N" | sort | tr '\n' ';'
+  ↳ ------------ ---------- ------------------- ------------------- ---------- ----------  (+12 lines)
+The retr10 routing probe was preempted seconds after writing its full output (a known race); copying that output aside before the requeued run overwrites it.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_188442 && for f in masses.npz meta.json summary.json; do cp -p $f attempt1_0438_$f; done; ls -la; python3 -I - <<'EOF' ⏎ import json ⏎ a=json.load(open("summary.json")); b=json.lo…
+  ↳ total 15657 (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188442 "result: arm D retr10 control recovered exactly: digit pick@1 .861, attention .885 (per-<MEM> .881, top-4 heads .889), n=1,500, summary identical key-for-key to 185577 (homer-01…
+  ↳ scancel'd: 188442 188444 (+2 lines)
+→ Bash: tail -6 run_tests_cpu_188479.out; grep -E "^Ran|^OK|FAIL|Error" run_tests_cpu_188479.out | head; sacct -j 188479,188444 -X -o JobID,State,Elapsed | tail -2
+  ↳ ---------------------------------------------------------------------- (+11 lines)
+→ Bash: expmon note -j 188479 "result: invariant tests PASS with the arm E attn patch loaded (commit 40d69f8 + working tree): test_positions.py 12 tests OK, test_mm_collators.py 33 tests OK (45/45), exit 0, 2:08 on homer-008" >/dev/null; expmon ver…
+  ↳ verdict recorded: 188479 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+13 lines)
+Tests pass 45/45. Now updating the results page for the owner.
+→ Bash: ls -la docs/probe_campaign_2026-11.md 2>&1; wc -l docs/probe_campaign_2026-11.md 2>/dev/null; cat docs/probe_campaign_2026-11.md 2>/dev/null | head -120
+  ↳ -rw-r--r-- 1 hdejean hdejean 5301 Nov 11 04:19 docs/probe_campaign_2026-11.md (+63 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: sacct -j 188439,188440,188441,188442,188443,188445,188446,188457,188459,188460,188461,188471,188472,188473,188476,188477,188478 -D -X -o JobID,State,End,NodeList%10 -n | awk '$2=="PREEMPTED"' | wc -l; sacct -j 188439,188440,188441,188442,18…
+  ↳ 18 (+3 lines)
+→ Bash: sed -i 's/  it from zero): 13 cell restarts since 03:22\./  it from zero): 18 preemptions of campaign cells since 03:22, 14 of them on homer-008 (sacct)./' docs/probe_campaign_2026-11.md && grep -n "preemptions of campaign" docs/probe_campa…
+  ↳ 20:  it from zero): 18 preemptions of campaign cells since 03:22, 14 of them on homer-008 (sacct).
+Most preemptions (14 of 18) hit homer-008, an older-image node. Tightening the law so every new cell, text too, avoids those nodes.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md has been updated successfully.
+→ Bash: expmon gripe -c gap "a job PREEMPTED right after writing its result is requeued and redone from zero, and its afterok dependents wait for the rerun (188442: 41 min, could land on another node image and overwrite). Suggest 'expmon settle <ji…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Now rewriting STATE.md, starting from the campaign report's summary block.
+→ Bash: expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+16 lines)
+→ Bash: squeue -u hdejean -h -o "%i %T %M %N %R" | sort; for j in 188439 188446 188457 188459 188460 188471 188473 188445; do printf "$j "; grep -E "^\[[0-9]+/1500\]" eval_mm_4b_$j.out 2>/dev/null | tail -1 | cut -c1-14; echo; done
+  ↳ 162472 RUNNING 7:43:38 homer-014 homer-014 (+40 lines)
+→ Bash: sed -i 's/^- 20 probe cells are open\./- 19 probe cells are open (8 running, 11 queued at 04:58)./' docs/probe_campaign_2026-11.md && grep -n "probe cells are open" docs/probe_campaign_2026-11.md; date
+  ↳ 19:- 19 probe cells are open (8 running, 11 queued at 04:58). The `gpu-be` partition keeps taking GPUs back (preemption: SLURM stops the job and requeues (+1 lines)
+→ Bash: sed -i 's/queued at 04:58)/queued at 04:41)/; s/^## Status (2026-11-11 05:00 KST)/## Status (2026-11-11 04:41 KST)/' docs/probe_campaign_2026-11.md && sed -i 's/18 preemptions by 04:55\./18 preemptions by 04:40./' campaign_probes/CAMPAIGN.m…
+  ↳ docs/probe_campaign_2026-11.md:9:## Status (2026-11-11 04:41 KST) (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: timeout 60 expmon display --exp probes 2>&1 | tail -4
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs)
+Writing the wake contract and finishing.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && echo "wake-when job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h" > NEXT && cat NEXT && git -C .. status --…
+  ↳ wake-when job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h (+10 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h", "summary": "First result from the long-chunk arm, provisional: on HotpotQA wi…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.3588 turns=75 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h", "summary": "First result from the long-chunk arm, provisional: on HotpotQA with model 183814 (1,500 questions), each of the 2 answer-holding passages alone plus the 8 distractor passages joined into one chunk scores judge .604, against .579 when all 10 passages are separate chunks: +.025 [+.005, +.044], McNemar p=.012. That is within noise of all 10 joined (.617, −.013, CI crosses 0). So about two-thirds of the long-chunk gain arrives without the answer passages sharing a chunk.\n\nChecks that passed:\n- On a second newer-image node (homer-016), the reference model reproduces the recorded answers 300/300. Newer-image nodes agree with each other.\n- The page-picking re-runs reproduce the old numbers exactly: 10-page documents digit .861 / attention .885; HotpotQA .922 / .873 (n=1,500 each).\n- The retr10 re-run was preempted seconds after writing its output (a known race). I saved the output and killed its requeued duplicate and the fusion job chained to it. Fusion needs relaunching next wake.\n\nStarted the attention-based slot-pruning arm:\n- Added two modes to the eval's existing slot-keep flag: keep the slots the decoder attends to most, per chunk or over all pages. 38 added lines; the default path is unchanged; invariant tests pass 45/45.\n- Queued a keep-all control (300 questions; it must reproduce the plain a
+== final:
+{"next":"wake-when","wake_when":"job:188445,188446,188457 job:188480,188481 job:188471,188473,188486 job:188439,188440,188441,188478 job:188459,188460 max 2h","summary":"First result from the long-chunk arm, provisional: on HotpotQA with model 183814 (1,500 questions), each of the 2 answer-holding passages alone plus the 8 distractor passages joined into one chunk scores judge .604, against .579 when all 10 passages are separate chunks: +.025 [+.005, +.044], McNemar p=.012. That is within noise of all 10 joined (.617, −.013, CI crosses 0). So about two-thirds of the long-chunk gain arrives without the answer passages sharing a chunk.\n\nChecks that passed:\n- On a second newer-image node (homer-016), the reference model reproduces the recorded answers 300/300. Newer-image nodes agree with each other.\n- The page-picking re-runs reproduce the old numbers exactly: 10-page documents digit .861 / attention .885; HotpotQA .922 / .873 (n=1,500 each).\n- The retr10 re-run was preempted seconds after writing its output (a known race). I saved the output and killed its requeued duplicate and the fusion job chained to it. Fusion needs relaunching next wake.\n\nStarted the attention-based slot-pruning arm:\n- Added two modes to the eval's existing slot-keep flag: keep the slots the decoder attends to most, per chunk or over all pages. 38 added lines; the default path is unchanged; invariant tests pass 45/45.\n- Queued a keep-all control (300 questions; it must reproduce the plain answers exactly) and a post-patch plain regression.\n- Queued four 1,500-question cells chained on them: keep half by first half / every 2nd slot / most-attended per chunk / most-attended overall.\n\nAlso queued a re-run of the 10-separate-chunks baseline on a newer-image node, to put that comparison on one node image.\n\nTightened the law: every cell now excludes homer-005..009, because homer-008 took 14 of the campaign's 18 preemptions. Rewrote STATE.md and docs/probe_campaign_2026-11.md. 8 of 8 submissions used. Nothing needed from the owner.","launched":["188479 invariant tests for the attention keep-mode patch (PASS 45/45)","188480 keep-all attention control, 300 document questions","188481 post-patch plain regression, 300 document questions","188482 keep half the slots, first half of each chunk, 1,500 questions","188483 keep half, every 2nd slot, 1,500 questions","188484 keep half, most-attended per chunk, 1,500 questions","188485 keep half, most-attended over all pages, 1,500 questions","188486 HotpotQA 10-separate-chunks baseline re-run on a newer-image node"],"verdicts":[{"jobid":"188443","verdict":"closed","note":"HotpotQA attention-route control exact: digit .922 / attention .873, n=1,500"},{"jobid":"188476","verdict":"closed","note":"homer-016 reproduces 184781's first 300 answers 300/300"},{"jobid":"188442","verdict":"closed","note":"retr10 control exact (.861 / .885, n=1,500); requeued duplicate killed"},{"jobid":"188444","verdict":"closed","note":"fusion killed with 
+== rc=0 secs=723
+== verify: 10/15

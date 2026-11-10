@@ -73,8 +73,10 @@ wait for the whole grid. Every claim carries n (questions, pairs), the paired CI
   ran on the same node image, or on nodes a determinism check showed to agree (`LIMIT=300` plain cell, predictions
   identical). Nodes: el9_7 = homer-005..009, el9_8 = homer-010..020 (`scontrol show node <n> | grep OS=`). Record
   the node of every cell and of its baseline (`sacct -j <id> -D -o NodeList` — the attempt that wrote the file).
-  Until the checks 188476 (homer-016) / 188477 (homer-007) say otherwise, launch image cells with
-  `--exclude=homer-[005-009]`, and pair a cell that ran there only with a baseline from the same image.
+  Check 188476 PASSED: homer-016 (el9_8) gives 184781's (homer-011) first 300 answers 300/300, so el9_8 nodes
+  agree. Until 188477 (homer-007) says otherwise, launch EVERY cell (text too) with `--exclude=homer-[005-009]`
+  (quote it in zsh): besides the image effect, homer-008 took 14 of the campaign's 18 preemptions by 04:40. Pair a
+  cell that ran on el9_7 only with a baseline from the same image.
 - **Health number per cell:** `unparseable: 0` in the eval log, 1,500 rows in the result file, and the total `mems_used`
   within 1% of the baseline cell's (a different slot total is a different budget, not a probe result). A cell failing
   any of these is `closed "health"` and relaunched once. Exception: a probe whose purpose is to change what is compressed

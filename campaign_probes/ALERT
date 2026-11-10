@@ -1,3 +1,4 @@
 LLM wake 2026-11-11_0100 failed FAST (rc=1 in 8s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0100.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0100.log
 LLM wake 2026-11-11_0130 failed FAST (rc=1 in 9s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0130.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0130.log
 verifier 2026-11-11_0330: 1 claim(s) in STATE.md are not backed by the grid / verdicts — see VERIFY.md; downgrade them to provisional or back them before anything else
+verifier 2026-11-11_0430: 2 claim(s) in STATE.md are not backed by the grid / verdicts — see VERIFY.md; downgrade them to provisional or back them before anything else
