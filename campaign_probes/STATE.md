@@ -1,5 +1,5 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-11 06:30-06:55 KST (woken by "problems": the ✗ was 188518's preemption + requeue, a known issue)
+last wake: 2026-11-11 07:30-07:55 KST (scheduled; the ALERT was the verifier's 06:00 note, fixed below)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -9,100 +9,89 @@ last wake: 2026-11-11 06:30-06:55 KST (woken by "problems": the ✗ was 188518's
   (job 188460, verdict best). The pick is right on 98.6% / 98.9% of questions; the all-raw reader scores .809.
 - Removing the distractor pages instead gains only about 2 pt, below the +3 pt gate at both seeds: gold page only,
   compressed, seed 42 .632 vs .610 = +.022 [+.005, +.040], p=.020 (job 188440); seed 43 .639 vs .615 = +.025
-  [+.006, +.043], p=.010 (job 188459). So the document loss is reading the compressed answer page, not distraction.
+  [+.006, +.043], p=.010 (job 188459).
+- Evidence-then-answer on documents gains nothing at seed 42: .611 vs .610 = +.001 [−.017, +.021], 108 / 106, p=.95,
+  n=1,500, slots 1.000× (job 188439, verdict closed; file written by the homer-011 attempt, same node as 184781).
+- Slots stored in int8 change nothing, at both seeds: seed 42 .611 vs .610 = +.001 [−.003, +.006], 1,445/1,500
+  identical (job 188478); seed 43 .613 vs .615 = −.001 [−.005, +.003], 4 / 6, 1,444/1,500 identical, n=1,500 (job
+  188536, verdict best; homer-011 vs baseline homer-016, both el9_8). Adopted as a serving option.
+- Given the question, the most-attended half of the slots carries what the decoder uses, at both seeds (arm E
+  adopted). Documents, n=1,500 each, slots .496×: seed 42 .610 vs .610, +.000 [−.009, +.010] (job 188485); seed 43
+  .615 vs .615, +.000 [−.009, +.009], 25 / 25 (job 188522, verdict best). Blind every-2nd half at the same slot count:
+  seed 42 .505 (job 188483), seed 43 .508 (job 188537, verdict closed), so attention minus blind = +.105 [+.085,
+  +.126], 205 / 47, p=1e-24 and +.107 [+.087, +.127], 203 / 43, p=5e-26. Gate (≥ +4 pt, CI above 0, both seeds) met.
+- provisional (one seed): keeping only the most-attended QUARTER still ties plain. 184778, documents, n=1,500, slots
+  .246×: .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500 identical (job 188538, verdict best,
+  homer-013). Seed 43 not run (cell cap: BLOCKED.md asks the owner).
+- provisional (one seed): the attention half holds on photos. 184778, `mm_naturalqa_1500`, n=1,500, slots .492×:
+  .677 vs .677, +.000 [−.013, +.013], 49 / 49 (job 188539, verdict closed).
 - The long-chunk gain is context between the two answer passages, at both seeds. HotpotQA, 1,500 Q each, golds
   joined in one chunk (others alone) vs ten separate chunks on today's code: seed 42 (183814) .655 vs .582 = +.073
   [+.051, +.095], p=1.5e-10 (jobs 188471 vs 188486); seed 43 (183816) .669 vs .601 = +.067 [+.046, +.088], 186 / 85,
-  p=8e-10 (jobs 188511 vs 188509, verdict best). Slots .998×. Vs one chunk of all ten at seed 43: +.053 [+.029, +.076],
-  p=9e-6 (vs 188510).
-- Joining the eight distractor passages is not adopted: above the noise band once at seed 42, .604 vs .582 = +.022
-  [+.003, +.041], p=.027 (job 188472 vs 188486), not repeated at seed 43, .617 vs .601 = +.016 [−.003, +.035],
-  p=.11 (job 188512 vs 188509).
-- Blind slot halving on the reference model 184778 (documents, 1,500 Q, slots .50×): every 2nd slot .505 vs .610 =
-  −.105 [−.127, −.085], p=3e-24 (job 188483); first half of each chunk .495, −.115 [−.136, −.095], p=4e-28 (job 188482).
+  p=8e-10 (jobs 188511 vs 188509, verdict best). Slots .998×. Vs one chunk of all ten: seed 42 +.038 [+.015, +.061],
+  185 / 128, p=.002 (vs 188518); seed 43 +.053 [+.029, +.076], p=9e-6 (vs 188510).
+- One chunk of all ten vs ten chunks is above the band at seed 42 only: seed 42 .617 vs .582 = +.035 [+.012, +.059],
+  184 / 132, p=.004, slots .978× (job 188518, verdict closed; 1,500/1,500 answers identical to the 11-07 file 185601);
+  seed 43 .615 vs .601 = +.014 [−.008, +.035], p=.23 (job 188510).
+- The no-oracle grouping is not adopted. Top 3 passages by 183814's attention joined, others alone: seed 42 .614 vs
+  .582 = +.032 [+.009, +.056], p=.007 (job 188521, verdict closed); seed 43 .615 vs .601 = +.013 [−.007, +.034],
+  139 / 119, p=.24, n=1,500 (job 188546, verdict closed). Against one chunk of ten it is −.003 (s42) and −.001 (s43).
+- Passage order inside a long chunk is unused, both seeds on today's code: seed 42 .615 vs .617 = −.002 [−.023,
+  +.020], 141 / 144, p=.91 (188473 vs 188518); seed 43 .618 vs .615 = +.003 [−.021, +.026], p=.87 (188513 vs 188510).
+- Joining the eight distractor passages is not adopted: seed 42 .604 vs .582 = +.022 [+.003, +.041], p=.027 (job
+  188472 vs 188486); seed 43 .617 vs .601 = +.016 [−.003, +.035], p=.11 (job 188512 vs 188509).
+- Blind slot halving on 184778 (documents, 1,500 Q, slots .50×): every 2nd slot −.105 [−.127, −.085] (job 188483);
+  first half of each chunk .495, −.115 [−.136, −.095] (job 188482).
 - The instrument is reproducible on every node tested except homer-008: plain document cell 1,500/1,500 identical
-  on homer-011 (job 188419); first 300 questions 300/300 identical on homer-016 (188476, and 188524 on the patched
-  code) and homer-007 (188477); compressed HotpotQA text 1,500/1,500 identical between homer-016 and homer-007
-  (job 188471 and its rerun); homer-008 changed 57/300 image answers (188458).
-- The first `--dense_rate` code (arm G) left the default path unchanged: invariant tests 12/12 + 33/33 + 5/5, exit 0
-  (job 188523); plain 300-Q regression 300/300 answers identical to 184781, EM .477 = recorded (job 188524).
-- That code's rate-8 control FAILED its identity check: `RAW=route1 DENSE=8`, 184778, first 300 documents: 233/300
-  answers identical to 184781 (law: ≥ 97%), slots 118,147 = plain, EM .487 vs .477, pick right on .983 (job 188525,
-  homer-016, verdict closed; answers saved as `attempt_h016_0644_*`, not judged: preempted while judging). The two
-  rate-4 cells 188541 / 188542 were cancelled before they started.
+  on homer-011 (job 188419); first 300 questions 300/300 on homer-016 (188476, 188524) and homer-007 (188477);
+  compressed text 1,500/1,500 between homer-016 and homer-007 (188471 rerun) and between 11-07 and 11-11 code
+  (188518 vs 185601); homer-008 changed 57/300 image answers (188458).
+- Arm G, first `--dense_rate` code: tests 12/12 + 33/33 + 5/5 (job 188523); plain 300-Q regression 300/300
+  identical, EM .477 = recorded (job 188524); its rate-8 control FAILED: 233/300 identical (law: ≥ 97%), slots
+  118,147 = plain, EM .487 vs .477 (job 188525, verdict closed).
 - provisional: the 67 moved answers come from re-compressing the picked page alone (batch of one) instead of inside
-  the four-page padded batch of the plain path; the prompt text and slot count are the same. Untested until the
-  patched re-check runs (the patched code makes the rate-8 slots bit-identical, so the check must then pass).
-- Data: three grouped HotpotQA sets (job 188465) and six no-oracle grouped sets (job 188516; both gold passages in
-  the model's top 2 on .404 digit / .495 attention / .487 product of the 1,500 questions), 1,500 rows each;
-  `eval_data/probes_textvqa_ocr` (job 188545): 500 TextVQA rows, 500/500 questions matched, OCR 13 tokens per row on
-  average, gold answer verbatim in the OCR on .596 of rows.
-- provisional: one chunk of all ten vs ten chunks at seed 43: .615 vs .601 = +.014 [−.008, +.035], p=.23 (job
-  188510), smaller than the +.037 of seed 42 on the 11-07 files. The seed-42 value on today's code is unmeasured
-  until the re-run 188518 returns; the difference between seeds may be seed variation.
-- provisional: passage order inside a long chunk: seed 43 .618 vs .615 = +.003 [−.021, +.026], p=.87 (job 188513
-  vs 188510, both today's code). The seed-42 leg (−.002, job 188473) is against the retired 11-07 file 185601; it
-  waits on 188518.
-- provisional, one model: the cross-passage gain needs no spread layout. Tail-layout model 183538, golds joined
-  .627 vs ten chunks (today's code) .569 = +.058 [+.035, +.082], 202 / 115, p<.001, slots .998× (jobs 188514 vs
-  188519, verdict best).
-- provisional (seed 42): the gain survives without an oracle. Top 3 passages by 183814's attention joined, others
-  alone: .614 vs ten chunks .582 = +.032 [+.009, +.056], 175 / 127, p=.007, slots .995× (job 188521 vs 188486,
-  verdict best); top 2: .612, +.030 [+.008, +.051], p=.007 (job 188520). Gate +.03 met. Seed-43 repeat = job 188546.
-- provisional: given the question, half the slots carry what the decoder uses. Keep the most-attended half over all
-  pages, documents, 1,500 Q each, slots .496×: seed 42 (184778) .610 vs .610, +.000 [−.009, +.010], 27 / 27, 1,289
-  identical (job 188485); seed 43 (184780) .615 vs .615, +.000 [−.009, +.009], 25 / 25, 1,306 identical (job 188522
-  vs 184784, verdict best). Per chunk, seed 42: .606, −.004 [−.015, +.007] (job 188484). +.105 over the better blind
-  half at seed 42 (188483); the seed-43 blind half (188537) is the last piece of the gate.
+  the four-page padded batch of the plain path. From reading the code (2026-11-11 07:40): the decoder prompt is built
+  the same way ("Document j:" + slots, `_build_chat_prompt`, no system prompt) in both paths; only the slot count is
+  measured. The re-check (job 188580) tests the patched code.
 - provisional: page picking (arm D, model 183814, n=1,500 per set, job 188515): 10-page documents digit .861,
   attention .885 (+.025 [+.010, +.039]); HotpotQA digit .922, attention .873. The per-source switch that passes the
-  gate was chosen on the same questions (no held-out split). No judge cell: expected judge gain = +.025 × the route1
-  hit-minus-miss judge gap (.252 at seed 42: 1,479 hits .824 vs 21 misses .571, file a_route1_s42; .325 at seed 43 on
-  16 misses) ≈ +.006 to +.008, under the .02 band.
-- provisional: slots stored in int8 change nothing at seed 42: .611 vs .610 = +.001 [−.003, +.006], 1,445/1,500
-  answers identical, n=1,500 (job 188478). Seed-43 repeat = job 188536.
-- provisional: evidence-then-answer does not close the text gap at seed 42 (MRQA, n=1,500, 250 per source):
-  compressed .699 vs plain .718 (−.019, p=.11, job 188446); uncompressed .807 = .807 (job 188457; its plain side
-  185542 ran on homer-008 with 11-06 code, 300/300 re-checked by 188456). Per-source gaps rest on 250 Q, no CI.
+  gate was chosen on the same questions. Expected judge gain ≈ +.006 to +.008 (under the .02 band), no judge cell.
+- provisional, one model: the cross-passage gain needs no spread layout. Tail-layout model 183538, golds joined
+  .627 vs ten chunks .569 = +.058 [+.035, +.082], 202 / 115, p<.001, slots .998× (jobs 188514 vs 188519, verdict
+  best). The grid lists 188514's parent as 185505 (a label from its launch), its baseline is 188519.
+- provisional: evidence-then-answer does not close the text gap at seed 42 (MRQA, n=1,500): compressed .699 vs plain
+  .718 (−.019 [−.041, +.003], p=.11, job 188446); uncompressed .807 = .807 (job 188457). The law's ".695" baseline is
+  model 183814 with 256-token chunks (job 185775); the arm uses the reference model 184778 with one chunk per passage
+  (job 188445, .718).
+- Data: three grouped HotpotQA sets (job 188465), six no-oracle grouped sets (job 188516), 1,500 rows each;
+  `eval_data/probes_textvqa_ocr` (job 188545): 500 TextVQA rows, 500/500 questions matched.
 
-**Open, and running** (7 campaign jobs at 06:50)
-- arm A: evidence-then-answer on documents, seed 42 (188439, homer-011, 1,400/1,500 at 06:47); int8 seed 43 (188536).
-- arm B: one chunk of ten re-run on today's code, 183814 (188518, 1,130/1,500 at 06:47, 2nd attempt); no-oracle
-  top 3 at seed 43 (188546).
-- arm E: blind every-2nd, seed 43 (188537); keep a quarter, seed 42 (188538); photos, seed 42 (188539).
-- arm F: set built (188545), no cell (budget).
-- arm G: patched, re-check not submitted yet (this wake's 8 submissions were used).
+**Open, and running** (1 campaign job at 07:55)
+- arm G: re-check of the patched flag (job 188580, homer-013, RUNNING since 07:43): tests, 300-Q plain regression,
+  300-Q rate-8 control, exit 1 on any failure.
+- owner: BLOCKED.md asks to raise the cell cap 60 → 65 (keep a quarter at seed 43 is the main reason).
 
 ## What happened this wake
-- Diagnosed the ✗: 188518 PREEMPTED on homer-010 at 06:10 (4 min in, empty `eval/`), requeued — known issue, no action.
-- Verifier findings fixed: "half noise" removed (the seed-42 value on today's code is unmeasured); the seed-42
-  passage-order leg marked as paired with a retired file; distractors joined rewritten as "above the band once, not
-  repeated, not adopted"; the missing seed-43 blind cell for arm E is now running (188537).
-- Paired 5 ended cells: arm B tail control + its baseline, no-oracle top 2 and top 3; arm E seed 43. All 1,500 rows,
-  unparseable 0, 0 non-binary judges, nodes el9_8 like their baselines.
-- Arm G: tests (188523) and plain regression (188524) PASS; the rate-8 control (188525) FAILED identity (233/300).
-  Killed the two rate-4 cells before start and the control's requeued rerun (same answers, nothing waits on it;
-  its answers were saved first). Patch, `scripts/eval_mm_docqa.py` dense branch (9 lines, default path untouched):
-  re-compress the picked page inside its example's batch. `py_compile` passes; invariant tests NOT yet run on it
-  (they run inside the re-check job).
-- New code (`scripts/probes/`, free): `build_textvqa_ocr.py` + `.sbatch` (arm F set, ran OK), `g_checks.sbatch` +
-  `g_checks_compare.py` (arm G re-check in one job: tests, 300-Q regression, 300-Q `DENSE=8` control, the law's
-  criteria, exit 1 on failure; also judges the saved pre-patch control answers).
-- 8 submissions (cap 8): 188536-188539, 188541-188542 (killed), 188545, 188546.
-- Law (CAMPAIGN.md): arm B row (tail and no-oracle results); arm G row (control failure kept and marked, the patch,
-  the one-job re-check, full cells only after a pass); budget line defines a cell and gives the last 3 to arm G.
-- Doc `docs/probe_campaign_2026-11.md` rewritten in place (status, findings 2-3, arms B / E / F / G, Closed).
-- The guard refused one `expmon note` whose text contained the word for a raw submit (nothing was submitted);
-  reworded; known_issues row + gripe filed.
+- ✗ lines in the brief: none of this campaign's (only self-cancelled jobs). Preemptions raced the end of three cells
+  (188439 file 06:54:19 vs end 06:54:21; 188536 07:22:48 vs 07:22:51; 188537 07:37 vs 07:37:06): files copied aside
+  as `attempt_<node>_<hhmm>_*`, the requeued reruns killed with `expmon kill` (nothing waited on them).
+- Verifier findings: arm G hypothesis kept provisional, the code-reading check written out; g10 seed 42 now measured
+  (188518); passage order re-paired at seed 42 with today's g10; tail parent label explained; no-oracle s43 decided;
+  arm E gate decided with paired CIs at both seeds; int8 decided at both seeds; arm C baseline explained; 188546
+  paired by jobid (it has no grid row: its launch left only an adopted manifest row; gripe + known_issues row).
+- Paired and decided 7 cells (188518, 188546, 188538, 188539, 188439, 188536, 188537): all 1,500 rows, unparseable 0,
+  nodes el9_8 like their baselines. 188521 re-verdicted closed (superseded by 188546).
+- Submitted 1 cell: the arm G re-check 188580 (`expmon launch --force --exp probes --stage G --parent 184781
+  --time 1:30:00 --exclude=homer-[005-009] scripts/probes/g_checks.sbatch`).
+- Law (CAMPAIGN.md): arm A, B, E rows record their decisions (arm B closed; the no-oracle prediction marked wrong);
+  arm E gets the keep-an-eighth gate written before any cell; budget line 58 used; same-node rule notes the code
+  date is ruled out for text.
+- Doc `docs/probe_campaign_2026-11.md` rewritten (status, findings re-ranked, arms A / B / E tables, instrument table,
+  Closed). `expmon display --exp probes` refreshed (still 0 rows: known expmon defect).
+- Gripes: launch without a manifest row (188546); preemption racing the end of eval cells.
 
-## Owned jobs (jobid | arm | state at 06:50 | node | note)
-| 188439 | A evidence-then-answer s42 | RUNNING | homer-011 | `a_expand_s42`; vs 184781 .610 |
-| 188518 | B one chunk of ten, 183814, today's code | RUNNING (2nd attempt) | homer-020 | `b_g10_rep`; re-pairs 188471 / 188473 at s42 |
-| 188536 | A int8 s43 | RUNNING | homer-016 | `a_mq8_s43`; vs 184784 .615 (homer-016) |
-| 188537 | E blind every-2nd, s43 | RUNNING | homer-016 | `e_keep05_even_s43`; 188522 − it ≥ +.04, CI above 0 → arm E adopted |
-| 188538 | E keep a quarter, s42 | RUNNING | homer-013 | `e_keep025_attng`; vs 184781 .610 |
-| 188539 | E photos, attention half, s42 | RUNNING | homer-016 | `e_keep05_attng_photo`; vs 184783 .677 (homer-011) |
-| 188546 | B no-oracle top 3, s43 | RUNNING | homer-012 | `b_pred3_attn_s43`; vs 188509 .601 |
+## Owned jobs (jobid | arm | state at 07:55 | node | note)
+| 188580 | G re-check | RUNNING | homer-013 | log `g_checks_188580.out`; last line `G CHECKS PASS|FAIL`, `=== EXIT CODE n ===` |
 
 ## Adopted jobs
 (none. 188422, 188466-188470 belong to the sibling `longchunk` campaign; 188528-188535 to `freeze`.)
@@ -110,32 +99,31 @@ last wake: 2026-11-11 06:30-06:55 KST (woken by "problems": the ✗ was 188518's
 ## Open arms and the next decision for each
 | arm | status | next action |
 |---|---|---|
-| A. use-recovery | route1 adopted; gold-only closed; expand s42 + int8 s43 running | 188439: pair vs 184781 (no seed-43 cell: budget). 188536: within .02 at both seeds → adopt int8 as a serving option |
-| B. long-chunk mechanism | adopted: context between answer passages (both seeds); tail control met (one model); no-oracle met at s42 | 188546 ≥ +.03 over 188509 with CI above 0 → adopt "rank, then re-compress the top passages together" (serving mode; proposal to `longchunk` below). 188518: re-pair 188471 and 188473 at s42 against today's g10 |
-| C. reasoning vs reading | expand at s42: gap does not shrink | closed for budget |
-| D. page picking | decided (job 188515), caveat: rule chosen in-sample | none |
-| E. attention-guided pruning | ties plain at both seeds (188485, 188522) | 188522 − 188537 ≥ +.04 with CI above 0 → adopt. 188538: within .02 → three quarters unused; loss ≥ .05 → free share between 1/2 and 3/4. 188539 within .02 of 184783 → holds on photos |
-| F. photo text vs pixels | set built (188545) | no cell unless arm G fails its re-check or the owner raises the cap. Cell when allowed: `f_text_s42` → 184778 symlink, `pisco_text "" eval_data/probes_textvqa_ocr`, PX=1003520, `--time 2:12:00`, paired on query_id with the TextVQA rows of 184783's photo file (n=500) |
-| G. route then densify | control failed, flag patched | FIRST ACT next wake: `expmon launch --force --exp probes --stage G --parent 184781 --time 1:30:00 '--exclude=homer-[005-009]' scripts/probes/g_checks.sbatch` (no env vars; `--time` = (tests 3.5 + 2 × 11 min slowest 300-Q cell 188481 + 3 judge) × 3). On PASS: `g_dense4_s42` (→ 184778, parent 184781) and `g_dense4_s43` (→ 184780, parent 184784), `RAW=route1 DENSE=4 PX=1003520`, `--time 4:54:00`; their dirs exist. On FAIL: close arm G (the patch was the one allowed for this symptom → BLOCKED.md), give the 2 cells to arm F + one relaunch |
+| A. use-recovery | decided: route1 adopted, int8 adopted, gold-only and evidence-then-answer closed | none (expand s43 only if the cap is raised) |
+| B. long-chunk mechanism | closed | none |
+| C. reasoning vs reading | closed for budget | none |
+| D. page picking | decided, caveat: rule chosen in-sample | none |
+| E. attention-guided pruning | half adopted (both seeds); quarter met at s42 | if the cap is raised: `e_keep025_attng_s43` (→ 184780, parent 184784, `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `--time 4:54:00`) and `e_keep0125_attng` (→ 184778, parent 184781, `KEEPF=0.125`); dirs to create with the symlink rule |
+| F. photo text vs pixels | set built (188545) | cell only if the cap is raised or arm G fails: `f_text_s42` → 184778 symlink, `pisco_text "" eval_data/probes_textvqa_ocr`, PX=1003520, `--time 2:12:00`, paired on query_id with the TextVQA rows of 184783's photo file (n=500) |
+| G. route then densify | re-check 188580 running | read `g_checks_188580.out`. PASS → `g_dense4_s42` (→ 184778, parent 184781) and `g_dense4_s43` (→ 184780, parent 184784), `RAW=route1 DENSE=4 PX=1003520 eval_mm_4b.sh expQ/probes/g_dense4_s4X/model pisco "" eval_data/mm_docqa_1500_1m`, `--time 4:54:00 --exclude=homer-[005-009]`; dirs exist. FAIL → arm G closed (the patch was the one allowed for this symptom: BLOCKED.md section), the 2 cells go to arm F + one health relaunch. Preempted → wait for the requeue |
 
 ## Health and budget
-- cells: 57 of 60 used (every submission counts, killed ones too; law budget line). Last 3: arm G re-check, then the
-  two rate-4 cells only if it passes. Dropped: arm F cell, arm A expand s43, arm C s43, arm F s43, health relaunches.
-- GPU-hours of 40: the tick's sensor counted 10.2 GPU-h in the last 24 h at 06:30 (campaign started 00:00); the
-  running cells add about 5, arm G about 4.
-- Photo seed-43 baseline 184785 ran on homer-008 (the node that moves image answers): no seed-43 photo pairing.
-- gpu-be preemptions this wake: 188525 at 06:43 (while judging; file saved), 188518 at 06:10 (no file). Before each
-  pairing, compare file mtime with the attempt ends.
+- cells: 58 of 60 used (every submission counts, killed ones too; 188546 counted by hand). Last 2: the rate-4 cells.
+- GPU-hours of 40: tick sensor 13.0 GPU-h in the last 24 h at 07:30 (campaign started 00:00).
+- gpu-be preempted 8 campaign attempts between 06:50 and 07:40; check each file's mtime against `sacct -D` attempt ends
+  before pairing.
 
 ## Next wake
-Submit the arm G re-check first. Then pair whatever ended: 188439 (expand s42), 188537 (arm E gate), 188518,
-188536, 188538, 188539, 188546.
+Read the arm G re-check result. On PASS submit the two rate-4 cells; on FAIL close arm G. Then check BLOCKED.md for
+the owner's answer on the cap.
 
 ## Blockers / needs the owner
-- none blocking. The 60-cell cap leaves 3 cells, all for arm G. Raising it by 3 is the owner's call: it would run
-  the text-only TextVQA cell (arm F, set built), evidence-then-answer at seed 43, and keep one health relaunch.
+- BLOCKED.md: raise the cell cap 60 → 65 (recommended) so the keep-a-quarter result gets its second seed. Nothing else
+  waits on the owner.
 
 ## Proposals for the sibling `longchunk` campaign (training is not this campaign's job)
-- Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question, or the top
-  passages of a ranker) rather than random long chunks: +.067-.073 with the golds together (both seeds), +.058 on the
-  tail layout, +.014 n.s. for all ten together at seed 43, +.032 for the top 3 by attention at seed 42.
+- Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question) rather than
+  random long chunks: +.067-.073 with the golds together (both seeds), +.058 on the tail layout. Joining all ten:
+  +.035 (seed 42) / +.014 n.s. (seed 43). A ranker's top 3 joined does no better than all ten.
+- A query-aware slot budget (nested-budget training): half the slots, picked by the decoder's attention with the
+  question, lose nothing at both seeds; a quarter loses nothing at seed 42.

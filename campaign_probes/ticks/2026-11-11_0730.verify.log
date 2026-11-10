@@ -1,0 +1,53 @@
+== verifier 2026-11-11_0730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 9f9f8bf8-531b-4a70-8f8a-cfcd6866f473  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+272 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 274	 (+110 lines)
+→ Glob: {"pattern": "expQ/probes/b_pred3_attn*/**/*"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign probes (2026-11-11 07:50 KST) (+22 lines)
+→ Glob: {"pattern": "**/g_checks_188580*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "g_checks_188580*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ No files found
+→ Glob: {"pattern": "*188546*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ No files found
+→ Glob: {"pattern": "*1885[48]*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Glob: {"pattern": "b_pred3*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ No files found
+I'm checking the probe campaign's claims against the result files. Next I'm finding the files for the seed-43 no-oracle cell and the arm G re-check log.
+→ Glob: {"pattern": "b_pred3*/eval/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/b_pred3_attn/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_pred3_attn.json (+1 lines)
+→ Grep: {"pattern": "188546|188580", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md", "output_mode": "content"}
+  ↳ 31:| a job the last wake launched (e.g. 188546) is missing from `expmon grid probes`; `expmon runs` shows it `adopted` with no exp | the launch left only an adopted manifest row (gripe filed 2026-11-1
+→ Grep: {"pattern": "\"(judge|n|mems_used|unparseable)\":\\s*[0-9.]+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/b_pred3_attn_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_pred3_attn.json", "output_mode": "content", "-o": true, "h…
+  ↳ 15:"n": 1500 (+21 lines)
+→ Glob: {"pattern": "g_checks_*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "g_checks_|#SBATCH --output|#SBATCH -o", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probes/g_checks.sbatch", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/g_checks_%j.out (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/g_checks_188580.out
+  ↳ 1	FACTORS kind=g_checks (+305 lines)
+→ Glob: {"pattern": "e_keep05_attng/**/*.log", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ No files found
+→ Grep: {"pattern": "188485|188440|188546", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md", "output_mode": "content"}
+  ↳ 11:  compressed, seed 42 .632 vs .610 = +.022 [+.005, +.040], p=.020 (job 188440); seed 43 .639 vs .615 = +.025 (+7 lines)
+I'm checking the last few numbers in the result files: the attention-half cell at seed 42, then the answer.
+→ Glob: {"pattern": "e_keep05_attng/eval/*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/e_keep05_attng/eval/mm_docqa_pisco_px1003520_keep05_attn_global_mm_docqa_1500_1m.json
+→ Grep: {"pattern": "\"(judge|n|unparseable|mems_used_total|node|host)\":\\s*\\S+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/e_keep05_attng/eval/mm_docqa_pisco_px1003520_keep05_attn_global_mm_docqa_1500_1m.json", "output_mode": "cont…
+  ↳ 19:"n": 1500, (+5 lines)
+→ Grep: {"pattern": "188485", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks", "output_mode": "content", "head_limit": 15}
+  ↳ campaign_probes/ticks/2026-11-11_0530.log:2:[Omitted long matching line] (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0600.log
+  ↳ 19	→ Bash: for j in 188482 188484 188485 188509 188510 188511 188512 188513 188514 188439 188483; do echo "== $j"; sacct -j $j -D -X -o JobID,State,ExitCode,NodeList,Start,End,Elapsed -n 2>/dev/null;  (+21 lines)
+→ StructuredOutput: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2915 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9%; all-raw .809)", "status": "supported", "reason": "Grid rows 188441/188460 are verdict best, judge .820/.822. Their verdicts give the same CIs, the same discordant counts and route hit .986/.989, n=1,500 each. Both seeds clear the +3 pt gate with CI above 0. Nodes are el9_8 on both sides (homer-016 vs homer-011; homer-020 vs homer-016)."}, {"claim": "Removing the distractor pages gains only about 2 pt, below the +3 pt gate at both seeds (s42 .632 vs .610 = +.022 [+.005,+.040], p=.020, job 188440; s43 .639 vs .615 = +.025 [+.006,+.043], p=.010, job 188459)", "status": "supported", "reason": "Grid rows 188440/188459 are closed, judge .632/.639. Their verdicts give the same CIs and p values, n=1,500, mems .270x. Both CIs stay under +.03, so the gate fails at both seeds. The STATE bullet leaves out the .270x slot ratio that the health exception requires; the verdicts carry it."}, {"claim": "Evidence-then-answer on documents gains nothing at seed 42: .611 vs .610 = +.001 [-.017,+.021], 108/106, p=.95, n=1,500, slots 1.000x (job 188439, homer-011)", "status": "provisional", "reason": "The numbers match grid row 188439 (closed, judge .6113) and its 07:35 verdict. But this is a tie at one seed, and the law says a tie triggers a repeat on the seco
+== final:
+{"claims":[{"claim":"Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9%; all-raw .809)","status":"supported","reason":"Grid rows 188441/188460 are verdict best, judge .820/.822. Their verdicts give the same CIs, the same discordant counts and route hit .986/.989, n=1,500 each. Both seeds clear the +3 pt gate with CI above 0. Nodes are el9_8 on both sides (homer-016 vs homer-011; homer-020 vs homer-016)."},{"claim":"Removing the distractor pages gains only about 2 pt, below the +3 pt gate at both seeds (s42 .632 vs .610 = +.022 [+.005,+.040], p=.020, job 188440; s43 .639 vs .615 = +.025 [+.006,+.043], p=.010, job 188459)","status":"supported","reason":"Grid rows 188440/188459 are closed, judge .632/.639. Their verdicts give the same CIs and p values, n=1,500, mems .270x. Both CIs stay under +.03, so the gate fails at both seeds. The STATE bullet leaves out the .270x slot ratio that the health exception requires; the verdicts carry it."},{"claim":"Evidence-then-answer on documents gains nothing at seed 42: .611 vs .610 = +.001 [-.017,+.021], 108/106, p=.95, n=1,500, slots 1.000x (job 188439, homer-011)","status":"provisional","reason":"The numbers match grid row 188439 (closed, judge .6113) and its 07:35 verdict. But this is a tie at one seed, and the law says a tie triggers a repeat on the second seed. Seed 43 was not run because of the cell cap. BLOCKED.md itself says 'its seed-42 tie needs a repeat under the law'. Closing the arm is valid, since the CI upper bound +.021 is below +3 pt. 'Gains nothing' is a null claim that still needs the second seed."},{"claim":"Slots stored in int8 change nothing, at both seeds (s42 .611 vs .610 = +.001 [-.003,+.006], 1,445 identical, job 188478; s43 .613 vs .615 = -.001 [-.005,+.003], 4/6, 1,444 identical, job 188536). Adopted as a serving option","status":"supported","reason":"Grid 188478 is closed with judge .611; grid 188536 is best with judge .6133. The verdicts match: 7/5 and 4/6 discordant, n=1,500, mems 1.000x. Both CIs sit well inside ±.02 at both seeds. The CAMPAIGN arm A row records 'within .02 at both seeds → adopted as a serving option'. Nodes are el9_8 on both sides (homer-011 vs homer-016)."},{"claim":"Given the question, the most-attended half of the slots carries what the decoder uses, at both seeds (arm E adopted): attn_global half s42 .610=.610 (188485), s43 .615=.615 (188522); minus blind every-2nd = +.105 [+.085,+.126] 205/47 and +.107 [+.087,+.127] 203/43","status":"supported","reason":"The 188485 result file has n=1500 and judge .610. Grid 188522 is best with .615 and grid 188537 shows .508. The 188537 verdict gives both paired CIs and p values. The gate (≥ +4 pt, CI above 0, both seeds) is met, at a slot count lower than the blind half (.496x vs .504x), which works against the claim. Small gap: the node of 188485 is in no 
+== rc=0
