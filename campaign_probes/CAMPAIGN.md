@@ -44,6 +44,11 @@ plumbing checks, never for a claim), chunk cap 4096 (`CML=4096`) on text so no p
 
 Rules: every arm is a committed launcher + a committed cell spec, never raw overrides on the launch line. A
 comparison with a difference not listed here is not a result. A relaunch repeats the original command exactly.
+Before the first launch of a probe env on a mode or path it was never used with, read `scripts/eval_mm_docqa.py`
+`main()` and confirm the flag reaches that branch: until 2026-11-11 `STYLE=expand` was silently ignored in `base` mode
+(patched that day); `STYLE=expand` with `RAW=*` is still not wired and is now refused.
+`base`-mode cells cannot use the symlink rule below (the launcher writes them to `expQ/base_qwen35_4b/eval/`); they are
+allowed there only under a file name that does not exist yet (check with `ls` before the launch).
 Every eval cell runs on a symlinked model dir `expQ/probes/<cell>/model → expQ/<run>/model` (e.g. `rep_184778`), so its
 result lands in `expQ/probes/<cell>/eval/` and never overwrites a recorded file in `expQ/<run>/eval/` (the plain re-run of
 the feasibility gate would). New launchers go in `scripts/probes/*.sbatch`: the repo `.gitignore` drops every `*.sh`,

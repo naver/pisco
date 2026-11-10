@@ -1,0 +1,56 @@
+== verifier 2026-11-11_0330  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 68cc1e04-d2b2-479a-8418-8352133e5d65  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+206 lines)
+→ Glob: {"pattern": "expQ/probes/*/**"}
+→ Glob: {"pattern": "*1884[0-9][0-9]*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/attn_route_185579/summary.json (+15 lines)
+→ Glob: {"pattern": "*.out", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Grep: {"pattern": "mems_used|\"judge\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "count"}
+  ↳ expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json:3001 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/fusion_selftest/fusion.json
+  ↳ 1	{ (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185577/summary.json
+  ↳ 1	{ (+45 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 40	  "time_compress_mean_s": 0.44315696792925396, (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+69 lines)
+Feasibility rerun checks out (.610 = .610, n=1,500). Now checking the seed-43 baseline, the test logs and the patch-check result.
+→ Grep: {"pattern": "\"judge\": 0\\.\\d+,|\"n\": 1500", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 5}
+  ↳ 19:  "n": 1500, (+1 lines)
+→ Glob: {"pattern": "*18845[56]*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "mm_docqa_base_px1003520_*text_mrqa*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval"}
+  ↳ expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json (+1 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500_lim300.json
+  ↳ 1	{ (+74 lines)
+→ Glob: {"pattern": "*1884*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/logs"}
+  ↳ Directory does not exist: /beegfs/scratch/user/hdejean/pisco/expQ/logs. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json
+  ↳ 1	{ (+79 lines)
+→ Grep: {"pattern": "Ran \\d+ tests|EXIT CODE|^OK|FAILED", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "run_tests_cpu_188455.out", "output_mode": "content"}
+  ↳ run_tests_cpu_188455.out:6:Ran 12 tests in 0.156s (+4 lines)
+→ Grep: {"pattern": "300/300|identical|prompt_tokens", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0330.log", "output_mode": "content", "head_limit": 30}
+  ↳ 153:  ↳ rows 300 identical predictions 300 / 300 (+2 lines) (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0330.log
+  ↳ 140	→ Bash: python3 -c " ⏎ import json ⏎ r=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['records'] ⏎ m=lambda k,n: round(sum(x[k] for x in r[:n])/n,3) ⏎  (+19 lines)
+Settled bullets check out against the result files and test log. Now checking which probe each queued cell actually runs, since the grid does not show it.
+→ Grep: {"pattern": "18843[9]|1884[4][0-6]|18845[789]|18846[01]", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 823:{"ts": "2026-11-11 03:04", "jobid": "188439", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/a_expand_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "19915c1+dirty", "outdir":  (+12 lines)
+Queued cells match the launch records. Last check: the HotpotQA page-picking control numbers.
+→ Grep: {"pattern": "\"n\"|digit_pick@1|attn_mean_all_pick@1", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/attn_route_185580/summary.json", "output_mode": "content", "head_limit": 4}
+  ↳ 4: "n": 1500, (+5 lines)
+→ StructuredOutput: {"claims": [{"claim": "The instrument is reproducible on the plain document cell: re-running model 184778 (1,500 questions, PX=1003520) gives judge .610 = recorded .610 (job 184781), paired diff +.000, CI [+.000,+.000], 0 discordant pairs, …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.7807 turns=24 is_error=False denials=0
+== declared: {"claims": [{"claim": "The instrument is reproducible on the plain document cell: re-running model 184778 (1,500 questions, PX=1003520) gives judge .610 = recorded .610 (job 184781), paired diff +.000, CI [+.000,+.000], 0 discordant pairs, n=1,500; answers byte-identical, mems_used 646,042 both. Job 188419, closed (PASS).", "status": "supported", "reason": "expQ/probes/rep_184778/eval/…1500_1m.json and expQ/ft_mm_4b_184778/eval/…1500_1m.json have identical summaries: judge 0.61, the per-source judge numbers (.684/.48/.666), em .50733, f1 .59912, n 1500, judge_unparseable 0. Grid row 188419 is ended/closed, and its verdict records 0 discordant pairs and 646,042 = 646,042. This clears the law's ±.01 feasibility gate. The 646,042 sum and the byte-identity were not recomputed (read-only)."}, {"claim": "provisional: the eval is deterministic for every probe cell, so a paired difference comes from the probe. Shown only for the plain brief-answer document cell (188419); not yet for evidence-then-answer, picked-page-raw, text sets or another GPU.", "status": "provisional", "reason": "Already marked provisional, and it stays so. The only evidence is 188419, plus 188456 (base plain on text, 300/300 identical). No expand, route1 or int8 cell has run, so 'every probe cell' is not shown."}, {"claim": "plumbing only: the page-picking fusion script reproduces the saved route numbers exactly — route .8607, attention .8853, n=1,500, model 183814, 10-page set (selftest 188427 vs probe 185577's
+== final:
+{"claims":[{"claim":"The instrument is reproducible on the plain document cell: re-running model 184778 (1,500 questions, PX=1003520) gives judge .610 = recorded .610 (job 184781), paired diff +.000, CI [+.000,+.000], 0 discordant pairs, n=1,500; answers byte-identical, mems_used 646,042 both. Job 188419, closed (PASS).","status":"supported","reason":"expQ/probes/rep_184778/eval/…1500_1m.json and expQ/ft_mm_4b_184778/eval/…1500_1m.json have identical summaries: judge 0.61, the per-source judge numbers (.684/.48/.666), em .50733, f1 .59912, n 1500, judge_unparseable 0. Grid row 188419 is ended/closed, and its verdict records 0 discordant pairs and 646,042 = 646,042. This clears the law's ±.01 feasibility gate. The 646,042 sum and the byte-identity were not recomputed (read-only)."},{"claim":"provisional: the eval is deterministic for every probe cell, so a paired difference comes from the probe. Shown only for the plain brief-answer document cell (188419); not yet for evidence-then-answer, picked-page-raw, text sets or another GPU.","status":"provisional","reason":"Already marked provisional, and it stays so. The only evidence is 188419, plus 188456 (base plain on text, 300/300 identical). No expand, route1 or int8 cell has run, so 'every probe cell' is not shown."},{"claim":"plumbing only: the page-picking fusion script reproduces the saved route numbers exactly — route .8607, attention .8853, n=1,500, model 183814, 10-page set (selftest 188427 vs probe 185577's summary.json).","status":"supported","reason":"expQ/probes/fusion_selftest/fusion.json has n 1500, digit 0.86067 and attn 0.88533. expQ/probes/attn_route_185577/summary.json (ckpt ft_mm_4b_183814, mm_docqa_retr10_1m, n 1500) has digit_pick@1 0.86067 and attn_mean_all_pick@1 0.88533. Both 188427 and 185577 are closed. It is correctly labelled plumbing: the fused numbers come from synthetic scores."},{"claim":"plumbing only: the eval patch passes the invariant unit tests 45/45 (test_positions 12/12, test_mm_collators 33/33), job 188455; and leaves the uncompressed reader's default path unchanged: 300/300 predictions and prompt token counts identical to 185542's first 300 MRQA rows (EM .367 both), job 188456.","status":"supported","reason":"run_tests_cpu_188455.out has 'Ran 12 tests … OK' (line 6), 'Ran 33 tests … OK' (line 117) and 'EXIT CODE 0' (line 121). The _lim300.json file has n 300 and em 0.36667, and its BioASQ sub-metrics (em .392, f1 .65905, judge .924) equal the 1,500-row 185542 file to every digit. Tick log 0330 line 153 shows 'identical predictions 300 / 300'. Grid has 188456 closed (still RUNNING its judge pass; the file already holds judge .883, unparseable 0). This is plumbing only (LIMIT=300)."},{"claim":"Open, and running (15 cells; none has a result yet)","status":"unsupported","reason":"The count does not match. The list names 13 open cells (6 arm A, 3 arm C, 3 arm D, 1 patch check: 188458). The only way to reach 15 is to add 188455 (grid: ended, closed) and 188456 (clos
+== rc=0

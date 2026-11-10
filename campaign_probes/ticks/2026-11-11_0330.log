@@ -1,0 +1,208 @@
+== campaign probes wake 2026-11-11_0330  reasons=problems  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794335402 live=188443:PENDING,188446:PENDING,188441:PENDING,188442:PENDING,188439:PENDING,188440:PENDING,188445:PENDING,188444:PENDING running=0 pending=8 problems=7 problems_other=0 new=0 gpuh24=0.5 idle_h=0.9 min_util=- alert=1 unpushed=8 cron=2 daemon=1 disk_gb=13294 sig=8867b9b7 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188440_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session d796d2f9-8bfe-4391-baec-bd92286464d4  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ # Wake brief — campaign probes — 2026-11-11_0330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+187 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ===== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 30	## Arms — what varies, what is held constant (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat STATE.md; echo '-----'; cat known_issues.md; echo '-----'; ls -la; cat NEXT
+  ↳ # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+100 lines)
+→ Bash: cat VERIFY.md; echo '-----'; ls ticks | tail; echo '-----'; head -c 3000 ticks/2026-11-11_0330.log 2>/dev/null; ls -la ../campaign_probes/ticks/ | tail -5
+  ↳ # VERIFY — campaign probes — 2026-11-11_0300   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+41 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon check 2>&1 | head -40; ls .expmon/campaign/probes/
+  ↳ 188422     PENDING    OK (+39 lines)
+Checking why seven of the queued probe jobs are flagged "cancelled" while SLURM still lists them as pending.
+→ Bash: squeue -u hdejean -o "%.8i %.20j %.9T %.10M %.10l %.12P %.25R %.20S %Q" ; sacct -j 188439,188440,188441,188442,188443,188445,188446,188444 -X -o JobID,State,Reason%25,Submit,Start,Restart,ExitCode -P 2>&1 | head -20
+  ↳ JOBID                 NAME     STATE       TIME TIME_LIMIT    PARTITION          NODELIST(REASON)           START_TIME PRIORITY (+13 lines)
+→ Bash: sacct -j 188439,188440,188441,188442,188443,188445,188446,188444 -X -o JobID,State,Reason%25,Submit,Start,Restarts,ExitCode -P 2>&1 | head -20; sacct -j 188439 -D -o JobID,State,Submit,Start,End,Restarts -P | head
+  ↳ sacct: error: Invalid field requested: "Restarts" (+1 lines)
+→ Bash: sacct -j 188439,188440,188441,188442,188443,188445,188446,188444 -X -o JobID,State,Reason%25,Submit,Start,ExitCode -P 2>&1 | head -20; echo; sacct -j 188439 -D -o JobID,State,Submit,Start,End -P | head; scontrol show job 188439 | grep -iE '…
+  ↳ JobID|State|Reason|Submit|Start|ExitCode (+15 lines)
+Seven probe jobs started at 03:12, were preempted at 03:22 (gpu-be is a preemptible partition), and SLURM requeued them. Checking what they wrote before the preemption.
+→ Bash: for j in 188439 188440 188441 188442 188443 188445 188446; do echo "## $j"; ls -la expQ/$j 2>/dev/null | head -5; done; ls -la expQ/probes/a_expand_s42/eval expQ/probes/a_gold_s42/eval expQ/probes/a_route1_s42/eval expQ/probes/c_plain_s42/e…
+  ↳ ## 188439 (+46 lines)
+No partial result files were written, so the requeued jobs will restart cleanly. Confirming from one log that it was a preemption, not a crash.
+→ Bash: expmon logs 188445 15 2>&1 | tail -20; expmon logs 188442 8 2>&1 | tail -10
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188445.out (last 15) <== (+24 lines)
+→ Bash: expmon help 2>&1 | grep -iE 'wake|next|ack|requeue|preempt|gripe|handoff|probe ' | head -30
+  ↳ See expmon.conf.template (next to this script) for the fields. (+29 lines)
+→ Bash: grep -n -iE 'wake-when|NEXT' $(dirname $(readlink -f $(which expmon)))/*.md 2>/dev/null | head -20; ls $(dirname $(readlink -f $(which expmon))) | head -30
+  ↳ campaign_hook.py (+19 lines)
+→ Bash: cd $(dirname $(readlink -f $(which expmon))) && grep -n -E 'wake-when|wake_when' campaign.lib.sh | head -30
+  ↳ 17:#   NEXT              the wake's last act is one line in campaign/NEXT — `done`, `wake-in <min>`, `wake-when <conditions>` or (+13 lines)
+→ Bash: cd $(dirname $(readlink -f $(which expmon))) && sed -n 476,520p campaign.lib.sh; sed -n 645,680p campaign.lib.sh
+  ↳ "$now" "${live:--}" "$run" "$pend" "$problems" "$probother" "$newres" "$gpuh" "$idle" "$minutil" "$alert" "${unpushed:-0}" "$cron" "$daemon" "${disk:-?}" "$sig" "$same" "$gits" "$(camp_next | tr ' ' ' (+81 lines)
+→ Bash: cd $(dirname $(readlink -f $(which expmon))) && grep -n 'problems' campaign.lib.sh | head -40
+  ↳ 15:#                     reason: ALERT / GATE / new or STANDING problems / new results / work left while (+19 lines)
+→ Bash: cat eval_mm_4b.sh | head -120
+  ↳ #!/bin/bash (+69 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -iE 'mrqa|hotpot' ; ls expQ/ft_mm_4b_183814/eval/ | grep -iE 'mrqa|hotpot'; ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/
+  ↳ mm_docqa_base_k10_rkrank_hotpot_bge_keep1_text_hotpotqa_1500.json (+16 lines)
+→ Bash: grep -E '"(188445|188446|188441)"' .expmon/runs.jsonl 2>/dev/null | head -3; ls .expmon/ | head; grep -n 'mrqa' EXPERIMENTS.md | grep -i base | head -5
+  ↳ {"ts": "2026-11-11 03:04", "jobid": "188441", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/a_route1_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "19915c1+dirty", "outdir": "/be (+16 lines)
+→ Bash: for j in 188439 188440 188441 188445 188446; do grep -m1 FACTORS eval_mm_4b_$j.out; done; grep -n -B2 -A2 'expmon launch' campaign_probes/ticks/2026-11-11_0300.log | grep -E 'launch' | head -12
+  ↳ FACTORS kind=eval_mm mode=pisco ckpt=a_expand_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=expand gold_only=0 mem (+14 lines)
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json')) ⏎ print(type(d), list(d.keys())[:20] if isinstance(d,dict) else len(d)) ⏎ for k,v in d.items(): ⏎   if not isinstance(v…
+  ↳ <class 'dict'> ['summary', 'records'] (+1 lines)
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json')) ⏎ s=d['summary']; print({k:v for k,v in s.items() if 'judge' in k or k in ('checkpoint_path','topk_docs','max_new_token…
+  ↳ {'topk_docs': 4, 'image_max_pixels': 1003520, 'answer_style': 'brief', 'judge': 0.8066666666666666, 'judge/mrqa_BioASQ': 0.924, 'judge/mrqa_DROP': 0.784, 'judge/mrqa_DuoRC': 0.684, 'judge/mrqa_RACE':  (+9 lines)
+Queued jobs are fine (preempted and requeued). I am now preparing the missing control cell for the text arm: the uncompressed reader with the same "evidence, then answer" prompt.
+→ Bash: grep 'text_mrqa_ood' .expmon/runs.jsonl | grep '"base"' | head -3; grep -h -m3 'Decoding\|max_new\|elapsed\|wall' eval_mm_4b_185527.out 2>/dev/null | head; sacct -j 185527 -X -o JobID,Elapsed,State -P 2>/dev/null
+  ↳ {"ts": "2026-11-06 18:24", "jobid": "185542", "launcher": "eval_mm_4b.sh", "argv": ["expQ/ft_mm_4b_174908/model", "base", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/text_mrqa_ood_1500"], "git": (+2 lines)
+→ Bash: squeue -u hdejean -p gpu -o "%.8i %.20j %.9T %b %D" ; grep -E '"jobid": "18478[0-9]"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print(d['jobid'], d['argv'], d.get('exp'), d.get('factors',…
+  ↳ JOBID                 NAME     STATE TRES_PER_NODE NODES (+13 lines)
+longchunk uses 4 GPUs on `gpu`, so two of my cells there would stay under the owner's 8-GPU cap. Now creating the model symlinks for four new cells.
+→ Bash: ls -la expQ/probes/a_gold_s42/ expQ/probes/rep_184778/; ls expQ/probes/ | grep -E 's43|mq'
+  ↳ expQ/probes/a_gold_s42/: (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && for c in a_gold_s43 a_route1_s43; do mkdir -p $c && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model $c/model; done; mkdir -p a_mq8_s42 && ln -sfn /beegfs/scratch/use…
+  ↳ lrwxrwxrwx  1 hdejean hdejean 61 Nov 11 03:33 model -> /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model (+7 lines)
+Now dry-running the four launches to confirm partition, time and output path.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && GOLD=1 PX=1003520 expmon launch --dry-run --exp probes --stage A --parent 184784 --time 4:54:00 eval_mm_4b.sh expQ/probes/a_gold_s43/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | tail -8; echo; ST…
+  ↳ would submit: sbatch --time 4:54:00 eval_mm_4b.sh expQ/probes/a_gold_s43/model pisco  eval_data/mm_docqa_1500_1m (+8 lines)
+→ Bash: grep -n 'answer_style' scripts/eval_mm_docqa.py | head -20; grep -n 'mem_quant' scripts/eval_mm_docqa.py | head -8
+  ↳ 51:# --answer_style expand: copy the evidence first, then answer (RLComp's "re-expansion", tested without RL). (+10 lines)
+→ Bash: sed -n 640,700p scripts/eval_mm_docqa.py
+  ↳ print(f"[base] {name}") (+60 lines)
+→ Bash: grep -nE 'CAMP_(WAKE_TIMEOUT|TIMEOUT|MAX_TURNS|PATCH|MAX_SUBMIT)' campaign_probes/campaign.conf; grep -n 'def gen_base' -A45 scripts/eval_mm_docqa.py | head -60; grep -n 'EXPAND_SYSTEM_PROMPT\|def final_answer' scripts/eval_mm_docqa.py | he…
+  ↳ 15:CAMP_MAX_SUBMIT_PER_WAKE=8        # new submissions one wake may make (probe campaigns with 2-minute cells want 3+) (+52 lines)
+→ Bash: grep -n 'def _build_chat_prompt' -A25 scripts/eval_mm_docqa.py; grep -n '_build_chat_prompt' scripts/eval_mm_docqa.py
+  ↳ 73:def _build_chat_prompt(tokenizer, *, background: str, question: str, system: str = None) -> str: (+29 lines)
+→ Bash: git status --short scripts/ | head; ls scripts/probes/; cat scripts/probes/route_fusion.sbatch | head -20; sed -n 52,72p scripts/eval_mm_docqa.py
+  ↳ probe_attn_route.py (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 544	    ap.add_argument("--chunk_docs", action="store_true", help="split a text document longer than --compressor_max_length into chunks (training truncates it)") (+5 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py has been updated successfully.
+→ Bash: git diff --stat scripts/eval_mm_docqa.py && git diff scripts/eval_mm_docqa.py && python3 -m py_compile scripts/eval_mm_docqa.py && echo COMPILE_OK; ls expQ/base_qwen35_4b/eval/ | grep -E 'mrqa.*(lim|expand)'
+  ↳ scripts/eval_mm_docqa.py | 13 +++++++++---- (+54 lines)
+→ Bash: grep -E 'test_(positions|mm_collators)' .expmon/runs.jsonl | tail -3 | cut -c1-300; ls *.sh 2>/dev/null | grep -iE 'test|unit' ; grep -n 'test_positions\|test_mm_collators' EXPERIMENTS.md | tail -3 | cut -c1-250
+  ↳ qa_test.sh (+1 lines)
+→ Bash: cat run_tests_cpu.sh; ls -t run_tests_cpu_*.out 2>/dev/null | head -3; f=$(ls -t run_tests_cpu_*.out 2>/dev/null | head -1); [ -n "$f" ] && tail -5 $f && sacct -j $(echo $f | grep -oE '[0-9]+') -X -o JobID,Elapsed,State -P
+  ↳ #!/bin/bash (+30 lines)
+→ Bash: python3 - <<'EOF' ⏎ import re ⏎ t=open('campaign_probes/ticks/2026-11-11_0300.log').read() ⏎ for m in re.finditer(r'→ Bash: [^\n]*expmon launch --exp probes[^\n]*', t): ⏎     print(m.group(0)[:600]); print() ⏎ EOF
+  ↳ → Bash: STYLE=expand PX=1003520 expmon launch --exp probes --stage A --parent 184781 --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | grep -E "Sub (+8 lines)
+The seed-42 route-then-expand cell used `RAW=route1 PX=1003520` (the launcher then sets a 6144-token decoder limit). Launching the test job first, then the chain that depends on it.
+→ Bash: expmon launch --exp probes --stage test --time 0:06:00 run_tests_cpu.sh 2>&1 | grep -E "Submitted|refus|error|Error"
+  ↳ Submitted batch job 188455
+→ Bash: PX=1003520 expmon launch --dry-run --exp probes --stage C --parent 185542 --time 0:44:00 --partition gpu,gpu-be eval_mm_4b.sh expQ/ft_mm_4b_174908/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/text_mrqa_ood_1500 2>&1 | tail -4…
+  ↳ would submit: sbatch --time 0:44:00 --partition gpu,gpu-be eval_mm_4b.sh expQ/ft_mm_4b_174908/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/text_mrqa_ood_1500 (+4 lines)
+→ Bash: STYLE=expand PX=1003520 expmon launch --exp probes --stage C --parent 185542 --time 5:12:00 --partition gpu,gpu-be --dependency afterok:188455:188456 eval_mm_4b.sh expQ/ft_mm_4b_174908/model base "" /beegfs/scratch/user/hdejean/pisco/eval_d…
+  ↳ Submitted batch job 188457 (+1 lines)
+→ Bash: GOLD=1 PX=1003520 expmon launch --exp probes --stage A --parent 184784 --time 4:54:00 eval_mm_4b.sh expQ/probes/a_gold_s43/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | grep -E "Submitted|refus|rror"; RAW=route1 PX=1003520 expmon launch …
+  ↳ Submitted batch job 188459 (+2 lines)
+Seven jobs submitted (cap is 8). Recording the intent of each in the ledger.
+→ Bash:  ⏎ expmon note -j 188455 "intent: invariant tests for the eval_mm_docqa.py patch of this wake (--answer_style expand now reaches the uncompressed reader: gen_base takes system=, prediction = text after 'Answer:'; expand + --raw_policy now r…
+  ↳ expmon note: 87 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+Now recording the preemption diagnosis and filing tool defects.
+→ Bash: expmon note "diagnosis: 7 probe cells (188439-188443, 188445, 188446) started 03:12 on homer-008 and were PREEMPTED at 03:22:06 (gpu-be is preemptible; sacct: PREEMPTED, batch step CANCELLED, Restarts=1, now PENDING again). No result file w…
+  ↳ expmon note: 82 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40; wc -l docs/probe_campaign_2026-11.md
+  ↳ **Settled** (+17 lines)
+→ Bash: cat docs/probe_campaign_2026-11.md; squeue -u hdejean -o "%.8i %.20j %.9T %.12P %.25R %.20S" | grep -E '18845|18846'
+  ↳ # Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+40 lines)
+The test job and the uncompressed-reader regression cell both started at 03:36 (the latter on `gpu`). While they run, I am updating known issues and the law.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && python3 - <<'EOF' ⏎ p='known_issues.md' ⏎ t=open(p).read() ⏎ rows = [ ⏎ "| `expmon check` shows `✗ slurm-cancelled` on a job squeue lists as PENDING; sacct: `PREEMPTED`, `.batch CANCE…
+  ↳ | `expmon display --exp probes` says "0 table rows from 0 runs" while the grid lists the campaign's runs | expmon defect (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat run_tests_cpu_188455.out 2>/dev/null | grep -vE '^\s*$' | tail -15; squeue -j 188455,188456 -h -o "%i %T %M" 2>/dev/null
+  ↳ FACTORS kind=unit_tests (+10 lines)
+test_positions.py passed (12 tests); the collator tests are running. Updating the deliverable page with the new cells while I wait.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ t=open(p).read() ⏎ old_status = t[t.index('## Status'):t.index('| cell | model | set |')] ⏎ new_status = """## Status (2026-11-11 03:45 KST) ⏎ - **Feasibility gate (is the judge repro…
+  ↳ 9:## Status (2026-11-11 03:45 KST) (+4 lines)
+→ Bash: grep -vE '^\s*$' run_tests_cpu_188455.out | tail -6; squeue -j 188455,188456 -h -o "%i %T %M" 2>/dev/null; tail -3 eval_mm_4b_188456.out
+  ↳ ---------------------------------------------------------------------- (+12 lines)
+→ Bash: grep -vE '^\s*$|Deprecation' run_tests_cpu_188455.out | tail -5; sacct -j 188455 -X -o JobID,State,Elapsed,ExitCode -P | tail -1; tail -c 300 eval_mm_4b_188456.out
+  ↳ ok (+12 lines)
+Both invariant tests passed (12 + 33 tests, exit 0, 1:42). Recording that, then writing STATE.md while the 300-question regression runs.
+→ Bash: expmon note -j 188455 "result: invariant tests PASS after the eval_mm_docqa.py expand-in-base patch: test_positions.py 12 tests OK, test_mm_collators.py 33 tests OK, exit 0, 1:42 (run_tests_cpu_188455.out)" >/dev/null && expmon verdict 1884…
+  ↳ ⚠ the note states no n (cells / pairs / queries, e.g. n=12, 12/12, 12 of 12, 12 clips), p or control — a closing number without its denominator is not a result (law: Decision gates; VOID / superseded 
+→ Bash: expmon verdict 188455 closed "invariant tests PASS for the expand-in-base eval patch: 45/45 tests OK (test_positions 12/12, test_mm_collators 33/33), exit 0" 2>&1 | tail -2; tail -c 400 eval_mm_4b_188456.out
+  ↳ verdict recorded: 188455 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+8 lines)
+Writing STATE.md now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: squeue -j 188456 -h -o "%i %T %M"; grep -E '^\[[0-9]+/300\]|judge|EXIT' eval_mm_4b_188456.out | tail -4
+  ↳ 188456 RUNNING 2:03 (+1 lines)
+→ Bash: python3 -c " ⏎ import json,numpy as np ⏎ r=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['records'] ⏎ for n in (10,20,300): print(n, 'em', np.mean([x['em'] for x in r[:n]]), 'f1', round(np.mean(…
+  ↳ Traceback (most recent call last): (+4 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ r=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['records'] ⏎ m=lambda k,n: round(sum(x[k] for x in r[:n])/n,3) ⏎ for n in (10,20,300): print(n, 'em', m('em',n), 'f1'…
+  ↳ 10 em 0.1 f1 0.655 anls 0.572 match 0.5 (+2 lines)
+→ Bash: grep -E '^\[[0-9]+/300\]' eval_mm_4b_188456.out | tail -1; squeue -j 188456 -h -o "%i %T %M"
+  ↳ [50/300] em=0.360 f1=0.681 anls=0.558 match=0.880  72s (+1 lines)
+→ Bash: grep -n 'g10\|_g3' EXPERIMENTS.md | head -5 | cut -c1-400; ls eval_data/ | grep hotpot; cat eval_data/text_hotpotqa_1500_g10/dataset_dict.json 2>/dev/null; ls eval_data/text_hotpotqa_1500_g10/ 2>/dev/null
+  ↳ 509:- 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same conte (+9 lines)
+Arm B (the long-chunk mechanism) needs a new set builder with careful slot-count matching; I am leaving that for a later wake rather than rushing it. Checking the regression cell.
+→ Bash: grep -E '^\[[0-9]+/300\]' eval_mm_4b_188456.out | tail -1; grep -E 'judge|EXIT' eval_mm_4b_188456.out | tail -3; squeue -j 188456 -h -o "%i %T %M"
+  ↳ [80/300] em=0.375 f1=0.686 anls=0.562 match=0.925  84s (+1 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: f=expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500_lim300.json; timeout 240 bash -c "until [ -f $f ] || ! squeue -h -j 188456 | grep -q .; do sleep 10; done"; ls -la $f 2>&1; grep -E '^\[[0-9]+/300\]' eval_mm_4b_188456.ou…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 124524 Nov 11 03:40 expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500_lim300.json (+1 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ a=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500_lim300.json'))['records'] ⏎ b=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['re…
+  ↳ rows 300 identical predictions 300 / 300 (+2 lines)
+The fix leaves the default path unchanged: 300/300 answers and 300/300 prompt lengths are identical to the recorded uncompressed-reader cell. Recording it.
+→ Bash: expmon note -j 188456 "result: patched base path (default brief prompt) is byte-identical to the recorded raw-reader cell 185542: 300/300 predictions and 300/300 prompt token counts identical, EM .367 / F1 .619 on those 300 rows both; no pr…
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ verdict recorded: 188456 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered)
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && python3 - <<'EOF' ⏎ p='STATE.md'; t=open(p).read() ⏎ rep = { ⏎ "  The law's third check (a LIMIT=300 plain cell of the reference model, EM within ±.01) is 188458, still queued;\n  the…
+  ↳ wake-when job:188445,188446,188457 job:188439,188440,188441 job:188442,188443,188444 max 6h
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md'; t=open(p).read() ⏎ a="| checks of the eval fix | unit tests; 300-question reruns of the uncompressed reader (text) and of the reference model (…
+  ↳ M EXPERIMENTS.md (+9 lines)
+Nothing needed from you. The seven "cancelled" probe jobs were preempted, not crashed, and SLURM put them back in the queue.
+
+**What woke this run**
+- Seven queued probe jobs showed as "cancelled". They had started at 03:12 on the `gpu-be` partition, which lends idle GPUs and takes them back. At 03:22 all seven were taken back.
+- SLURM requeued them automatically. None had written a result file yet, so they will restart from zero with no cleanup. Their estimated start is now 13:15–18:00.
+
+**Bug found and fixed in the eval script**
+- `STYLE=expand` (copy the evidence, then answer) had no effect in `base` mode, the uncompressed reader. The planned uncompressed control for the text arm would have silently rerun the plain prompt.
+- The fix is 13 lines in `scripts/eval_mm_docqa.py`. It passes the prompt to the uncompressed reader. It now also refuses expand combined with raw pages, which is still not wired, instead of silently ignoring it.
+- Checks that passed:
+  - Unit tests: 45/45.
+  - A 300-question rerun of the uncompressed reader gave 300/300 answers identical to the recorded run.
+- One check is still waiting: a 300-question rerun of the reference model on documents.
+- The queued jobs pick up the new script when they start. None of them uses the changed code path.
+
+**New jobs (7 of the 8 allowed per run)**
+
+| Arm | Job | What it tests |
+|---|---|---|
+| Text: reasoning vs reading | 188457 | Uncompressed reader with the evidence-then-answer prompt. It starts after the two checks above, which have passed. |
+| Documents: recovering the loss, second seed (model 184780) | 188459 | Gold page only |
+| Documents, second seed | 188460 | The picked page given raw, the others compressed |
+| Documents, first seed (model 184778) | 188461 | Slots stored in 8-bit integers. Expected to change nothing; it shows how many answers a tiny perturbation flips. |
+| Checks | 188455, 188456, 188458 | Unit tests; the two 300-question reruns |
+
+**Notes**
+- No arm has a result yet; 15 cells are queued.
+- I also wrote down the bug's lesson in two places:
+  - `known_issues.md` and `CAMPAIGN.md`: before using a probe setting on a new path, confirm the code actually reaches it.
+  - Three complaints about expmon:
+    - It counts a requeued job as a failure.
+    - The run summary said these failures belonged to other campaigns.
+    - It does not record a launch's settings, so a queued cell's probe cannot be seen.
+- The long-chunk arm (why one long chunk beats ten short ones) is not started. It needs a new builder for grouped eval sets with matched slot counts, so I left it for a later run.
+
+The next run starts when one of three groups leaves the queue: the three text cells, the three first-seed document cells, or the page-picking re-runs and their fusion step. Otherwise it starts in 6 hours.
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188445,188446,188457 job:188439,188440,188441 job:188442,188443,188444 max 6h", "summary": "Woken by 7 'slurm-cancelled' flags: gpu-be preempted the 7 probe cells at 03:22 and SLURM requeued them (no …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.6844 turns=75 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188445,188446,188457 job:188439,188440,188441 job:188442,188443,188444 max 6h", "summary": "Woken by 7 'slurm-cancelled' flags: gpu-be preempted the 7 probe cells at 03:22 and SLURM requeued them (no partial files; benign). Found that STYLE=expand was silently ignored in base mode, so arm C's raw-reader control would have been a no-op. Patched scripts/eval_mm_docqa.py (13 lines): gen_base now takes the system prompt, and expand combined with raw_policy is refused. Unit tests 45/45 pass (188455); base plain 300-row rerun gives 300/300 predictions identical to 185542 (188456). Submitted 7 jobs: tests, base regression, base expand full (188457, afterok), reference-model 300-row regression (188458), arm A s43 gold (188459) and route1 (188460), arm A s42 int8 (188461). No arm decided yet; 15 cells queued.", "launched": ["188455", "188456", "188457", "188458", "188459", "188460", "188461"], "verdicts": [{"jobid": "188455", "verdict": "closed", "note": "invariant tests PASS 45/45 for the expand-in-base eval patch"}, {"jobid": "188456", "verdict": "closed", "note": "patch check PASS: base plain 300/300 predictions identical to 185542"}], "gripes": ["defect: expmon check flags a preempted+requeued PENDING job as 'slurm-cancelled' and counts it as a problem", "defect: the BRIEF said this campaign's 7 flagged jobs belonged to other campaigns while the sensor counted them as ours", "gap: runs.jsonl does not record launch env (STYLE/GOLD/RAW/CML/PX)
+== final:
+{"next":"wake-when","wake_when":"job:188445,188446,188457 job:188439,188440,188441 job:188442,188443,188444 max 6h","summary":"Woken by 7 'slurm-cancelled' flags: gpu-be preempted the 7 probe cells at 03:22 and SLURM requeued them (no partial files; benign). Found that STYLE=expand was silently ignored in base mode, so arm C's raw-reader control would have been a no-op. Patched scripts/eval_mm_docqa.py (13 lines): gen_base now takes the system prompt, and expand combined with raw_policy is refused. Unit tests 45/45 pass (188455); base plain 300-row rerun gives 300/300 predictions identical to 185542 (188456). Submitted 7 jobs: tests, base regression, base expand full (188457, afterok), reference-model 300-row regression (188458), arm A s43 gold (188459) and route1 (188460), arm A s42 int8 (188461). No arm decided yet; 15 cells queued.","launched":["188455","188456","188457","188458","188459","188460","188461"],"verdicts":[{"jobid":"188455","verdict":"closed","note":"invariant tests PASS 45/45 for the expand-in-base eval patch"},{"jobid":"188456","verdict":"closed","note":"patch check PASS: base plain 300/300 predictions identical to 185542"}],"gripes":["defect: expmon check flags a preempted+requeued PENDING job as 'slurm-cancelled' and counts it as a problem","defect: the BRIEF said this campaign's 7 flagged jobs belonged to other campaigns while the sensor counted them as ours","gap: runs.jsonl does not record launch env (STYLE/GOLD/RAW/CML/PX), so the grid cannot show a pending cell's probe"]}
+== rc=0 secs=681
+== verify: 5/10

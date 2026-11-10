@@ -6,8 +6,10 @@ plain cell on the same questions (95% bootstrap CI, McNemar p). Compression: 1 s
 (`compr_rate: 8` in the reference models' config); on the document set at PX=1003520 the plain cell uses 430.7 slots per
 question on average (646,042 slots / 1,500 questions, 4 pages each, measured on job 188419).
 
-## Status (2026-11-11 03:30 KST)
-- **Feasibility gate (is the judge reproducible?) — PASSED.** 8 probe cells submitted, all waiting in the queue.
+## Status (2026-11-11 03:45 KST)
+- **Feasibility gate (is the judge reproducible?) — PASSED.** 15 probe cells in the queue (8 from 03:05, 7 from 03:35);
+  no arm has a result yet. Seven cells started at 03:12 and were preempted at 03:22 (the `gpu-be` partition lends idle
+  GPUs and takes them back); SLURM requeued them and they restart from zero.
 
 | cell | model | set | n | judge accuracy ↑ | baseline judge accuracy ↑ | difference (95% CI) | McNemar p | health (unparseable, rows, mems_used ratio) |
 |---|---|---|---|---|---|---|---|---|
@@ -19,9 +21,10 @@ byte-identical: decoding is greedy, so the pipeline is deterministic and every p
 ## Arms in flight (no result yet)
 | arm | cells waiting | what it answers | training decision it feeds |
 |---|---|---|---|
-| A. use-recovery on documents (seed 42) | evidence-then-answer, gold page only, picked page raw | how much of the −.20 vs raw comes from reading vs picking vs using | evidence-then-answer labels in stage 2; route-then-expand at serving |
-| C. reasoning vs reading on text (seed 42) | plain one-chunk baseline, evidence-then-answer | is the text loss (DROP, DuoRC, RACE) room-to-reason or missing content | evidence-then-answer teacher labels for text |
+| A. use-recovery on documents | seed 42: evidence-then-answer, gold page only, picked page raw, slots stored in int8 (expected no change: shows how many answers a tiny perturbation flips). Seed 43: gold page only, picked page raw | how much of the −.20 vs raw comes from reading vs picking vs using | evidence-then-answer labels in stage 2; route-then-expand at serving |
+| C. reasoning vs reading on text | compressed: plain one-chunk baseline, evidence-then-answer. Uncompressed reader: evidence-then-answer (needed a 13-line fix: the eval ignored that prompt for the uncompressed reader until 2026-11-11) | is the text loss (DROP, DuoRC, RACE) room-to-reason or missing content | evidence-then-answer teacher labels for text |
 | D. page picking without training | attention-route re-runs on 10-page documents and HotpotQA, then fusion | can the decoder's attention beat the digit route prompt with no training | whether routing rows need training |
+| checks of the eval fix | PASSED so far: unit tests 45/45; uncompressed reader, 300 text questions: 300/300 answers identical to the recorded run. Waiting: reference model, 300 document questions | the fix changes nothing it should not | — |
 
 ## Findings
 (none yet)
