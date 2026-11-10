@@ -1,1 +1,1 @@
-wake-when job:188523,188524,188525 job:188520,188521 job:188522 job:188439 max 2h
+wake-when job:188439 job:188537 max 20m
