@@ -1,0 +1,72 @@
+== campaign longchunk wake 2026-11-11_0200  reasons=idle  tier=full  model=claude-opus-5-5  patch=0  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794330001 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=85.6 min_util=- alert=1 unpushed=5 cron=2 daemon=1 disk_gb=13325 sig=db96a1cc same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 10d7e41f-2e89-4cfb-82a5-f7283603b9df  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ # Wake brief — campaign longchunk — 2026-11-11_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+160 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; ls -la; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md
+  ↳ Exit code 1 (+104 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| L1024 | `expQ/longchunk/pt_text_4b_long.sh 1000000 1024 2048 6 8` | CML 1024, DML 2048 (DML = 2 × CML as in the recipe; so each document contributes up to 4 × more tokens) | Qwen3.5-4B/4B, rate 8 (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat STATE.md; echo; echo =====KNOWN; cat known_issues.md; echo ====ALERT; cat ALERT; echo ===TICKS; ls ticks; tail -30 ticks/2026-11-11_0130.log
+  ↳ Exit code 1 (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat known_issues.md; echo '--- ALERT'; cat ALERT; echo '--- TICKS'; ls ticks; echo '--- 0130 log'; tail -40 ticks/2026-11-11_0130.log
+  ↳ # Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+41 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 89	`docs/multimodal_results.md` gets the final table (the owner's chats write it; the wake proposes the text in STATE.md). (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat ticks/2026-11-11_0030.log | tail -60; echo '--- conf'; grep -v '^#' campaign.conf | grep -v '^$'
+  ↳ == campaign longchunk wake 2026-11-11_0030  reasons=alert,first  tier=full  model=claude-opus-5-5  patch=0  max_turns=300  claude=2.1.318 (Claude Code) (+67 lines)
+Reading the campaign state: the last two wakes died on the account's 5-hour quota limit, and no stage-1 training has started yet. Next I check the recipe and launch what the law says comes first.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longchunk/; cat expQ/longchunk/pt_text_4b_long.sh; git log --oneline -3 -- expQ/longchunk/ 2>&1 | head
+  ↳ total 24 (+72 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git ls-files expQ/longchunk; echo '--- ref recipe'; cat qwen35_4b_pt.sh 2>/dev/null | sed -n '1,80p'; echo '--- sacct'; sacct -j 180486 -X -o JobID,JobName%20,State,Elapsed,NodeList,AllocTRES%60,Partit…
+  ↳ --- ref recipe (+56 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "training_dataset\|load_from_disk\|load_dataset" pisco/train.py | head -20; ls data/msmarco_docs | head; cat expQ/longchunk/data_check_msmarco_188358.json | head -40
+  ↳ 177:            d = datasets.load_from_disk(path) (+47 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json;d=json.load(open('expQ/longchunk/data_check_188339.json')) ⏎ a=d.get('all',d); print({k:v for k,v in a.items() if 'kept' in k or 'median' in k or k=='mean'}) ⏎ "; grep -n "s/…
+  ↳ {'mean': 947.55925, 'median': 528.0, 'mean_tokens_kept_cap_256': 233.40957, 'mean_tokens_kept_cap_512': 394.25385, 'mean_tokens_kept_cap_1024': 575.1785, 'mean_tokens_kept_cap_2048': 718.29072, 'mean_ (+13 lines)
+→ Bash: expmon help launch 2>&1 | head -70
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+69 lines)
+→ Bash: gpucap land a100 4 1 2>&1 | tail -15; echo; squeue -u hdejean -o "%i %P %b %T" 2>&1 | head; sinfo -p gpu,gpu-be -o "%P %l" 2>&1 | head
+  ↳ Goal: 1 node(s) x 4 a100 GPU(s) = 4 GPUs , <=0h (+12 lines)
+Next step: dry-running the two short memory/speed test runs (50 training steps at the long-chunk settings) and the control's full stage-1 training.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon launch --dry-run --exp longchunk --stage smoke --parent 188358 --time 1:00:00 --partition gpu $S 1000000 2048 4096 3 16 ++…
+  ↳ would submit: sbatch --time 1:00:00 --partition gpu /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16 ++hf_training.max_steps=50 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "FACTORS\|EXP_OUT\|OUTDIR" .expmon.conf | head; 
+  ↳ 6:EXP_OUT='expQ' (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '1,200p' scripts/expmon_factors.py | grep -n "def \|pt_text\|qwen35_4b_pt\|eval_mm_4b\|data_check\|launcher" | head -30
+  ↳ 2:"""EXP_FACTORS_CMD hook for expmon: `<launcher> <argv...>` -> `key=val` lines. (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 scripts/expmon_factors.py expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16 ++hf_training.max_steps=50; echo "rc=$?"; sed -n '10,34p' scripts/expmon_factors.py
+  ↳ launcher=pt_text_4b_long.sh (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "FACTORS" expQ/longchunk/data_check.sbatch | head -3; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; md5sum $S; expmon launch --exp longchunk --stage smoke --parent 188…
+  ↳ 17:echo "FACTORS kind=data_check dataset=smollm2_10b rows=$ROWS every=$EVERY tokenizer=qwen3.5-4b" (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon note -j 188420 "intent: feasibility gate (b) smoke, L2048 settings (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 GPUs = 192 doc…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+Two test runs submitted (long-chunk settings, 50 steps each). Now chaining the control's full stage-1 training so it starts only if the 1,024-token test run succeeds.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon note -j 188421 "intent: extra smoke (not in the law's gate b, taken from the smoke/relaunch slack, 4 GPU-h): L1024 setting…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon launch --exp longchunk --stage pt1 --parent 188358 --time 23:00:00 --partition gpu --dependency afterok:188421 $S 1000000 …
+  ↳ Submitted batch job 188422 (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188422 "intent: C256 control stage 1 on MS MARCO docs (CML 256, DML 512, BS 24 x ACCUM 2 x 4 GPUs, 1M docs = 5,208 steps, ~0.45B text tokens kept: 447 tokens/doc at the 512 cap per data_…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+7 lines)
+Three jobs are queued. Now I'll record what stopped the last wakes, then rewrite the state file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -30; expmon ledger 40 2>&1 | grep -v "185[0-9][0-9]\] verdict" | tail -25
+  ↳ **Settled** (+37 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "campaign tick: a wake that dies on 'You've hit your 5-hour limit · resets <time>' is classified 'unknown: rc=1, no known signature' and ALERTed as failed-fast; then the tick ret…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; rm ALERT && echo deleted
+  ↳ deleted
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; echo 'wake-when job:188420,188421 max 6h' > NEXT; cat NEXT; ls
+  ↳ wake-when job:188420,188421 max 6h (+7 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188420,188421 max 6h", "summary": "First working wake: the 00:30/01:00/01:30 wakes died on the account's 5-hour usage limit, not a login problem (added to known_issues.md, ALERT deleted). The campaign…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5389 turns=30 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188420,188421 max 6h", "summary": "First working wake: the 00:30/01:00/01:30 wakes died on the account's 5-hour usage limit, not a login problem (added to known_issues.md, ALERT deleted). The campaign had been idle 85 h because its first step had never run. Queued: two 50-step fit-and-speed tests (2,048- and 1,024-token chunk settings, 1 h, 4 GPUs each, 188420/188421), and the 256-token control's full stage 1 (188422, 23 h, starts only after the 1,024 test succeeds). No results yet. Recipe file not in git (expQ/ is gitignored); md5 recorded in STATE.md. Next wake: read s/step and memory fit from the tests, close them, derive --time for L1024/L2048, and retry L2048 at BS 2 if it ran out of memory.", "launched": ["188420", "188421", "188422"], "gripes": ["defect: tick labels a 5-hour usage-limit failure 'unknown' and retries into it every 30 min", "defect: CAMP_COMMIT_PATHS under a gitignored dir (expQ/longchunk) is never committed", "gap: launch --dry-run shows empty factors and a wrong outdir for launchers with a named OUT= dir and a runtime FACTORS line"]}
+== final:
+{"next":"wake-when","wake_when":"job:188420,188421 max 6h","summary":"First working wake: the 00:30/01:00/01:30 wakes died on the account's 5-hour usage limit, not a login problem (added to known_issues.md, ALERT deleted). The campaign had been idle 85 h because its first step had never run. Queued: two 50-step fit-and-speed tests (2,048- and 1,024-token chunk settings, 1 h, 4 GPUs each, 188420/188421), and the 256-token control's full stage 1 (188422, 23 h, starts only after the 1,024 test succeeds). No results yet. Recipe file not in git (expQ/ is gitignored); md5 recorded in STATE.md. Next wake: read s/step and memory fit from the tests, close them, derive --time for L1024/L2048, and retry L2048 at BS 2 if it ran out of memory.","launched":["188420","188421","188422"],"gripes":["defect: tick labels a 5-hour usage-limit failure 'unknown' and retries into it every 30 min","defect: CAMP_COMMIT_PATHS under a gitignored dir (expQ/longchunk) is never committed","gap: launch --dry-run shows empty factors and a wrong outdir for launchers with a named OUT= dir and a runtime FACTORS line"]}
+== rc=0 secs=264
+== verify: 6/6
