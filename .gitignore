@@ -18,7 +18,16 @@ log/
 data/
 exp3/
 exp4/
-expQ/
+expQ/*
+# campaign longchunk: its recipe files are committed (the law requires it); run dirs and outputs stay ignored
+!expQ/longchunk/
+expQ/longchunk/*/
+!expQ/longchunk/*.sh
+!expQ/longchunk/*.sbatch
+# campaign freeze: same rule
+!expQ/freeze/
+expQ/freeze/*/
+!expQ/freeze/*.sh
 expft/
 phase2/
 pretraining/

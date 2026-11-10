@@ -93,6 +93,7 @@ class PISCOConfig(PretrainedConfig):
         connector_type: str = "mlp",
         compressor_mem_layout: str = "tail",
         freeze_norm_gain: bool = False,
+        freeze_compressor: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -219,6 +220,23 @@ class PISCOConfig(PretrainedConfig):
         # becomes trainable and run 176296 (docs -.167, grad spikes) showed that a per-dim gain on every <MEM> fights
         # LoRA-B / the connector over the scale. docs/training_review.md section 4.
         self.freeze_norm_gain = bool(freeze_norm_gain)
+        # Stage B (docs/training_plan.md, "Standing proposal"): the stored <MEM> vectors are fixed. Freezes everything
+        # that defines them, the compressor (adapter, <MEM> token row, merger) AND the connector (norm gain included),
+        # and keeps both in eval mode during training (no LoRA dropout), so a training <MEM> equals the one
+        # `compress` would cache. Only the decoder side trains. The checkpoint still saves compressor + connector.
+        self.freeze_compressor = bool(freeze_compressor)
+
+
+def freeze_compressor_side(model: nn.Module) -> int:
+    """Freeze `model.compressor` and `model.connector` (requires_grad False, eval mode). Returns the number of
+    tensors that were trainable before. See PISCOConfig.freeze_compressor."""
+    n = 0
+    for part in (model.compressor, model.connector):
+        for p in part.parameters():
+            n += int(p.requires_grad)
+            p.requires_grad = False
+        part.eval()
+    return n
 
 
 class ConnectorRMSNorm(nn.Module):
@@ -594,6 +612,10 @@ class PISCO(PreTrainedModel):
                 warnings.warn(f"compressor has a vision tower but no image processor could be built: {e}")
                 self.image_processor = None
 
+
+        if getattr(config, "freeze_compressor", False):
+            n_frz = freeze_compressor_side(self)
+            print(f"[pisco] freeze_compressor=True: froze {n_frz} compressor + connector tensors (eval mode kept)")
 
         print(
             f"Compressor trainable parameters: {self.compressor.num_parameters(only_trainable=True)}"
@@ -1242,6 +1264,14 @@ class PISCO(PreTrainedModel):
     def decoder_eos_ids(self) -> List[int]:
         """Stop tokens for decoder generation (see eos_token_ids)."""
         return eos_token_ids(self.decoder_tokenizer)
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if mode and getattr(self.config, "freeze_compressor", False):
+            # frozen <MEM> producer stays deterministic (no dropout) under model.train()
+            self.compressor.eval()
+            self.connector.eval()
+        return self
 
     def save_pretrained(self, save_directory: str, **kwargs):
         """

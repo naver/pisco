@@ -15,7 +15,7 @@ cd /beegfs/scratch/user/hdejean/pisco
 echo "FACTORS kind=unit_tests"
 git rev-parse --short HEAD
 RC=0
-for t in test_positions.py test_mm_collators.py; do
+for t in test_positions.py test_mm_collators.py test_freeze.py; do
   echo "=== $t ==="; pixi run python -u $t || RC=1
 done
 echo "=== EXIT CODE $RC ==="; exit $RC
