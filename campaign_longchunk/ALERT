@@ -1,3 +1,4 @@
 ALERT 2026-11-11 00:17 — campaign longchunk (the next LLM wake must handle this, then delete the file)
 - no campaign GPU-second for 83.9h (cap 24h) — a gate failing CLOSED? (splare sat idle 21 days this way)
 LLM wake 2026-11-11_0100 failed FAST (rc=1 in 10s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0100.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0100.log
+LLM wake 2026-11-11_0130 failed FAST (rc=1 in 9s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0130.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0130.log
