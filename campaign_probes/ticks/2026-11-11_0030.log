@@ -1,0 +1,24 @@
+== campaign probes wake 2026-11-11_0030  reasons=first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794324601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.1 idle_h=1.4 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=13353 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session 261b1f58-7cad-4928-891e-0a3cda67b663  model claude-opus-5-5  tools 36
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ # Wake brief — campaign probes — 2026-11-11_0030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+142 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && ls -la && cat CAMPAIGN.md
+  ↳ total 37 (+154 lines)
+→ Bash: cat STATE.md && echo ---- && cat known_issues.md && echo ---- && cat campaign.conf && ls ticks
+  ↳ # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+92 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | head -120
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+45 lines)
+→ Bash: cat eval_mm_4b.sh && ls scripts/probes/ && ls expQ/probes/ 2>/dev/null | head; ls expQ/ft_mm_4b_184778/eval/ | head -50
+  ↳ #!/bin/bash (+78 lines)
+First wake of the probes campaign. I'm reading the eval launcher and the recorded reference files, then I'll launch the instrument check (re-run of the reference document cell).
+→ Bash: cat .expmon.conf | grep -v '^#' | grep -v '^$' | head -60; ls -la expQ/ft_mm_4b_184778/ expQ/ft_mm_4b_184778/eval/; ls -la expQ/probes/*/ | head -30
+→ Bash: sed -n '/Resume here/,/^## /p' HANDOFF.md | head -80
+  ↳ EXP_ROOT=. (+61 lines)
+  ↳ ## Resume here (chat closed 2026-11-11 ~00:30 KST) (+14 lines)
+You've hit your 5-hour limit · resets 1:50am (Asia/Seoul)
+== result: subtype=success cost=0.6275 turns=8 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 1:50am (Asia/Seoul)
+== rc=1 secs=56
