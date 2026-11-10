@@ -32,8 +32,8 @@ g1 .579, documents .599 / .618, photos .671 / .671 — is a REFERENCE row only (
 | reference (exists) | `qwen35_4b_pt.sh 1000000 24 2 ++…mem_layout=spread ++…mem_position_stride=8` on SmolLM2 | corpus | — | not compared; reported as a row | 0 (done) |
 
 Downstream of stage 1, every arm uses EXACTLY the control's commands, only the init model changes:
-- stage 2: `pt_mm_4b.sh 100000 8 8 merger <arm stage-1 model> +model_config_overrides.image_max_pixels=1003520 hf_training.learning_rate=3e-5 collator_kwargs.p_text=0.5 collator_kwargs.p_image_ae=0.2 collator_kwargs.p_image_cont=0.05 +collator_kwargs.p_desc=0.15 +collator_kwargs.p_find=0.1 +model_config_overrides.kd_weight=0.5 +collator_kwargs.teacher_inputs=true +collator_kwargs.teacher_max_length=6144` (= job 183537's argv; 256-token text chunks stay: chunk length is a stage-1 variable only in this campaign)
-- finetune: `ft_mm_4b.sh <arm stage-2 model> 28000 1 64 hf_training.learning_rate=2e-5 +model_config_overrides.image_max_pixels=1003520` and the same with `+hf_training.seed=43` (= jobs 183814 / 183816; bf16 recipe, NOT the fp32 5e-6 regime, so the comparison to the control is clean)
+- stage 2: `pt_mm_4b.sh 100000 8 8 merger <arm stage-1 model> +model_config_overrides.image_max_pixels=1003520 hf_training.learning_rate=3e-5 collator_kwargs.p_text=0.5 collator_kwargs.p_image_ae=0.2 collator_kwargs.p_image_cont=0.05 +collator_kwargs.p_desc=0.15 +collator_kwargs.p_find=0.1 +model_config_overrides.kd_weight=0.5 +collator_kwargs.teacher_inputs=true +collator_kwargs.teacher_max_length=6144` with env `PT_DATA=<root>/data/mm_pretrain_pdfa_1m_desc:50000,<root>/data/mm_pretrain_wiki_1m_desc:19000,<root>/data/mm_pretrain_natural_desc:31000` and `PT_OUT=expQ/longchunk/pt_mm_<arm>` (= job 183537's argv AND env — the env is not in the manifest, it was read from 183537's `training_config.yaml`; without it the launcher trains on `data/mm_pretrain_160k`; 256-token text chunks stay: chunk length is a stage-1 variable only in this campaign)
+- finetune: `ft_mm_4b.sh <arm stage-2 model> 28000 1 64 hf_training.learning_rate=2e-5 +model_config_overrides.image_max_pixels=1003520` and the same with `+hf_training.seed=43`, with env `FT_DATA=<root>/data/mm_ft_docpages_20k_1m_teacher:20000,<root>/data/mm_ft_natural_8k_teacher:8000` and `FT_OUT=expQ/longchunk/ft_<arm>_s42|s43` (= jobs 183814 / 183816, argv AND env; bf16 recipe, NOT the fp32 5e-6 regime, so the comparison to the control is clean)
 - evals of each finetuned model, judge chained (`eval_mm_4b.sh <model> pisco …`): g10 `CML=4096 TOPK=10 … eval_data/text_hotpotqa_1500_g10`, g1 `TOPK=10 … eval_data/text_hotpotqa_1500`, documents `eval_data/mm_docqa_1500_1m`, photos `eval_data/mm_naturalqa_1500`, MRQA `CML=4096 … eval_data/text_mrqa_ood_1500` (ledger 2026-11-06 18:00 and 2026-11-10 give the exact lines used for the control; repeat them).
 
 Rules: every arm is a committed recipe file, never raw overrides on the launch line. Before launching two arms
@@ -51,11 +51,10 @@ arm − the SmolLM2 reference: the corpus differs).
   SmolLM2 (job 188339, `expQ/longchunk/data_check_188339.json`): 23.8% / 8.3%, a 1,024-chunk 56% full → FAILED.
   MS MARCO documents (job 188358, `data_check_msmarco_188358.json`, 107k of 3.2M sampled): median 881 tokens, p90 3,589;
   **43.4% ≥ 1,024 (83% of tokens), 20.4% ≥ 2,048 (63%)**; a 1,024-chunk 72% full, a 2,048-chunk 51% → PASSED; adopted
-  by the owner (2026-11-10 "as planned"). Documents are truncated to DML by the collator (no packing). (b) a smoke
-  of `pt_text_4b_long.sh` at L2048 settings (`expmon launch --exp longchunk --time 1:00:00 … ++hf_training.max_steps=50`,
-  its own cell, verdict closed afterwards) must fit in 80 GB per GPU and give s/step; derive `--time` = s/step × 5,208 × 1.25
-  for the full cell (C256 takes 16 h on 4 GPUs: 180486). If it does not fit at BS 3, try BS 2 / ACCUM 24 once; else L2048
-  is closed with "does not fit" and the campaign runs L1024 only. Launch order: C256 first (it is also the smoke of the
+  by the owner (2026-11-10 "as planned"). Documents are truncated to DML by the collator (no packing). (b) FIT + SPEED, DONE 2026-11-11 (50-step
+  smokes, verdicts closed): L2048 (188420, BS 3) fits, ~72 GB per GPU (sacct gpumem 288 GB over 4), 58.6 s/step →
+  full cell 84.8 h, `--time` 106 h; L1024 (188421, BS 6) fits, ~71 GB per GPU, 42.1 s/step → 60.9 h, `--time` 76 h;
+  C256 (188422, live) 11.6 s/step → 16.8 h. Rule kept: `--time` = measured s/step × 5,208 × 1.25. Launch order: C256 first (it is also the smoke of the
   new corpus), then L1024, then L2048, one stage 1 at a time.
 - **Mid-run health (stage 1):** held-out `eval_loss` every 2,000 steps (`expmon probe`) compared with C256's curve at the
   same step (and the SmolLM2 reference `expQ/archq3/pt_text_1M_spread/train.log` for scale); collapse (loss flat at the
@@ -74,6 +73,10 @@ arm − the SmolLM2 reference: the corpus differs).
 
 ## Budget and caps
 - GPU-days for the whole campaign: **35** (C256 ≈ 5, L1024 ≈ 8, L2048 ≈ 13 GPU-days at the estimates above; a third seed ≈ 3; slack for the smoke and relaunches)
+- MEASURED 2026-11-11 (gate b): stage 1 C256 ≈ 67 GPU-h, L1024 ≈ 244, L2048 ≈ 339; downstream ≈ 61 per arm (stage 2 19 +
+  finetunes 22 + evals 20); smokes 7 → the full plan projects to ≈ 841 GPU-h = 35.0 GPU-days, the WHOLE budget with no
+  slack (a tie's third seed ≈ 3 more). Rule (tightened): launch L2048 stage 1 only if GPU-h spent + projected left ≤ 35
+  GPU-days at that moment; otherwise BLOCKED.md for the owner (raise the budget, or close L2048 as over budget).
 - at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
 - every launch: `--time` from measured s/step × steps × 1.25; `--mem`/`--cpus` as the recipe files state (profiled on the control)
 - stage 1 takes 4 GPUs: run ONE stage 1 at a time (the user cap is 8 GPUs on `gpu`); stage 2 / finetune / evals are 1 GPU each

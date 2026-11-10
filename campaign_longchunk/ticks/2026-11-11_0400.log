@@ -1,0 +1,155 @@
+== campaign longchunk wake 2026-11-11_0400  reasons=condition  tier=full  model=claude-opus-5-5  patch=0  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794337202 live=188422:RUNNING running=1 pending=0 problems=0 problems_other=0 new=0 gpuh24=7.5 idle_h=0.0 min_util=- alert=0 unpushed=9 cron=2 daemon=1 disk_gb=13272 sig=dcb32103 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188420,188421_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: job:188420,188421 (ended)   (NEXT was: wake-when job:188420,188421 max 6h)
+== session 6aad8c86-7346-4b76-86d9-7e243fc864df  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ # Wake brief — campaign longchunk — 2026-11-11_0400   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+204 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+98 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; sed -n '/^Rules: every arm/,/^## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat STATE.md; echo '-----'; cat known_issues.md; ls -la
+  ↳ Rules: every arm is a committed recipe file, never raw overrides on the launch line. Before launching two arms (+66 lines)
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+77 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat VERIFY.md; echo '-----'; expmon ledger 40 2>&1 | grep -v "probes\|arm A\|arm C" | tail -30
+  ↳ # VERIFY — campaign longchunk — 2026-11-11_0200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+43 lines)
+Now the two smoke jobs' outcomes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 188420,188421,188422 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,AllocTRES%60 2>&1; ls -la expQ/longchunk/ | tail -30
+  ↳ JobID             State ExitCode    Elapsed               Start                 End        NodeList                                                    AllocTRES  (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; cat pt_text_4b_long.sh; md5sum pt_text_4b_long.sh; for d in pt_text_1M_cml2048_188420 pt_text_1M_cml1024_188421 pt_text_1M_cml256_188422; do echo "## $d"; ls -la $d; done
+  ↳ #!/bin/bash (+93 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188420 188421; do echo "## $j"; f=pt_text_long_$j.out; ls -la $f; tr '\r' '\n' < $f | grep -E "s/it|it/s" | grep -E "\| *(1|5|10|20|30|40|49|50)/50" | tail -12; tr '\r' '\n' < $f | grep -iE "l…
+  ↳ ## 188420 (+51 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=pt_text_long_188422.out; ls -la $f; tr '\r' '\n' < $f | grep -E "s/it|it/s\]" | tail -3; tr '\r' '\n' < $f | grep -iE "error|Traceback|out of memory" | head; sinfo -o "%P %l %D" | head; grep -E "^[^#…
+  ↳ -rw-r--r-- 1 hdejean hdejean 863784 Nov 11 04:01 pt_text_long_188422.out (+63 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '1,60p' pt_mm_4b.sh
+  ↳ #!/bin/bash (+43 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs 2>/dev/null | grep -E "^(183537|183814|183816|180486) " ; grep -nE "183537|183814|183816" EXPERIMENTS.md | head -20
+  ↳ 180486     ended     -           archq3         24b7a2c+dirty  qwen35_4b_pt.sh  launcher=qwen35_4b_pt.sh kind=pt_text backbone=qwen3.5-4b samples=1000000 bs=24 accum=2 rate=8 extra=++model.init_args.c (+23 lines)
+Both fit tests finished cleanly; I'm now recording their speeds and checking how to chain the control's later stages.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -c 3000 expQ/pt_mm_4b_183537/training_config.yaml 2>/dev/null || ls expQ | grep 183537; ls -d expQ/*183537* expQ/archq3/* 2>/dev/null | head -20
+  ↳ (eval):1: no matches found: expQ/*183537*
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/archq3/; expmon runs 2>/dev/null | grep -E "^183537" | sed 's/.*| //'; grep -o "expQ/archq3/[a-z_0-9]*" EXPERIMENTS.md | sort | uniq -c | sort -rn | head
+  ↳ pt_mm_5M_spread (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/183537 expQ/archq3/pt_mm_spread | head -30; grep -E "training_dataset|samples|learning_rate|PT_DATA|model_name_or_path" expQ/archq3/pt_mm_spread/training_config.yaml 2>/dev/null | head; ls -la …
+  ↳ ls: cannot access 'expQ/183537': No such file or directory (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; diff expQ/longchunk/pt_text_1M_cml256_188422/training_config.yaml expQ/longchunk/pt_text_1M_cml1024_188421/training_config.yaml; echo; diff expQ/longchunk/pt_text_1M_cml1024_188421/training_config.yaml…
+  ↳ 4c4 (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '1,50p' ft_mm_4b.sh | grep -vE "^\s*$"; echo -----; sed -n '1,30p' expQ/archq2/probe_mixer.sh
+  ↳ #!/bin/bash (+58 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E "training_dataset|samples|seed|learning_rate|image_max_pixels|model_name_or_path" expQ/ft_mm_4b_183814/training_config.yaml expQ/ft_mm_4b_183816/training_config.yaml; sacct -j 183537,183814,183…
+  ↳ expQ/ft_mm_4b_183814/training_config.yaml:  learning_rate: 2.0e-05 (+25 lines)
+Recording the fit-test results, then chaining the control's next stages and the 1,024-token arm behind the running control.
+→ Bash: expmon help launch 2>&1 | head -60
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -hoE "[A-Z_]+=[^ ]+ [A-Z_=0-9a-z/ .,:-]*expmon launch[^\"]{0,200}" campaign_probes/ticks/*.log 2>/dev/null | head -5; grep -h "expmon launch" campaign_longchunk/ticks/*.log | head -5
+  ↳ → Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon launch --dry-run --exp longchunk --stage smoke --parent 188358 --time 1:00 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -h "expmon launch" campaign_probes/ticks/2026-11-11_0300.log | grep -oE "(CML|TOPK|STYLE|RAW|GOLD|MQ)=[^ ]* .{0,160}" | head -3; grep -n "env\b\|export" $(which expmon) 2>/dev/null | grep -i "sbat…
+  ↳ STYLE=expand PX=1003520 expmon launch --dry-run --exp probes --stage A --parent 184781 --time 5:12:00 eval_mm_4b.sh expQ/probes/a_expand_s42/model pisco "" eval_data/mm_docq (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"(jobid|job)": ?"?(183537|183814|183816|184705)\b' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print({k:v for k,v in d.items() if k in ('jo…
+  ↳ {'jobid': '183537', 'launcher': 'pt_mm_4b.sh', 'argv': ['100000', '8', '8', 'merger', '/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread/model', '+model_config_overrides.image_max_pixel (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git log --oneline 24b7a2c..HEAD -- pisco/configs/finetune_mm.yaml pisco/configs/pt_lora_mm.yaml pisco/configs/defaults.yaml ft_mm_4b.sh pt_mm_4b.sh pisco/collator.py pisco/mm_collator.py pisco/model.py…
+  ↳ e936195 Reviews, eval builders, probes, head-scales module; ledger and HANDOFF
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git show --stat e936195 | head -40; git diff 24b7a2c HEAD --stat -- pisco/configs/finetune_mm.yaml pisco/configs/pt_lora_mm.yaml pisco/configs/defaults.yaml ft_mm_4b.sh pt_mm_4b.sh pisco/ | tail -15
+  ↳ commit e9361950781458fe4bea8f39f6d496033cfe8d87 (+44 lines)
+Checking that the finetune recipe has not drifted since the reference runs, before chaining the control's stages.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff 24b7a2c e936195 -- pisco/configs/finetune_mm.yaml; diff <(sed 's/^ *//' expQ/ft_mm_4b_183814/training_config.yaml | sort) <(sed 's/^ *//' expQ/ft_mm_4b_184778/training_config.yaml 2>/dev/null …
+  ↳ diff --git a/pisco/configs/finetune_mm.yaml b/pisco/configs/finetune_mm.yaml (+18 lines)
+→ Bash: sacct -j 188420,188421 -o JobID,TRESUsageInMax%180 2>&1 | grep -E "batch|JobID"; expmon help probe 2>&1 | grep -A6 "^  probe" | head -8
+  ↳ JobID                                                                                                                                                                              TRESUsageInMax  (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict 188420 closed "feasibility gate (b) PASS at L2048 (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 A100-80GB): 50/50 steps, exit 0, GPU memory peak 288 GB over 4 GPUs (~72 GB each, sacct gpumem)…
+  ↳ verdict recorded: 188420 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; S=$R/expQ/longchunk/pt_text_4b_long.sh ⏎ echo "### L1024 pt1"; expmon launch --dry-run --exp longchunk --stage pt1 --parent 188358 --time 3-04:15:00 --partition gp…
+  ↳ ### L1024 pt1 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E "^EXP_FACTORS_CMD|^EXP_PROFILE" .expmon.conf; expmon runs --backfill-factors --dry-run 2>&1 | tail -8
+  ↳ EXP_FACTORS_CMD='python3 scripts/expmon_factors.py' (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs --backfill-factors --dry-run 2>&1 | grep -E "^\s+1884(2[0-2])|^\s+18842" ; sed -n '1,60p' scripts/expmon_factors.py | grep -nE "pt_text_4b_long|def |launcher|basename" | head -20
+  ↳ 188422     kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=256 dml=512 bs=24 accum=2 rate=8 layout=spread extra= (+12 lines)
+Working around an expmon guard that wrongly treats every new launch as the closed fit-test cell; checking what factors it computes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=$R; python3 scripts/expmon_factors.py pt_mm_4b.sh 100000 8 8 merger /x/pt_text_1M_cml256_188422/model; echo ---; python3 scripts/expmon_factors.py pt_text_4b_long.sh 1000000 1024 2048 6 8; echo ---; …
+  ↳ launcher=pt_mm_4b.sh (+11 lines)
+→ Bash: grep -n "closed as a dead arm" $(which expmon) | head; n=$(grep -n "closed as a dead arm" $(which expmon) | head -1 | cut -d: -f1); sed -n "$((n-40)),$((n+3))p" $(which expmon)
+  ↳ 1641:        echo "launch: REFUSED — this cell (exp='${EXPLABEL:-<none>}', same factors) was closed as a dead arm by run $_clash." >&2 (+44 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E "^EXP_ENV" .expmon.conf; grep -c '"jobid": "188421"' .expmon/runs.jsonl; grep '"jobid": "188421"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: print(json.loads(l).g…
+  ↳ EXP_ENV='env CONDA_OVERRIDE_CUDA=12.7 pixi run' (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; find .expmon -name "runs.jsonl*" -newer .expmon.conf 2>/dev/null | head; for f in $(find .expmon -name "runs.jsonl" 2>/dev/null); do echo "$f: $(grep -c . $f)"; grep '"188421"' $f | python3 -c " ⏎ impo…
+  ↳ .expmon/runs.jsonl (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 env CONDA_OVERRIDE_CUDA=12.7 pixi run python3 scripts/expmon_factors.py /beegfs/scratch/user/hdejean/pisco/pt_mm_4b.sh 100000 8 8 merger /x/model 2>&1 | head; echo "rc=$?"
+  ↳ env: ‘pixi’: No such file or directory (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; MF=.expmon/runs.jsonl VF=.expmon/verdicts.jsonl NEWFAC="" EXPL=longchunk python3 -c ' ⏎ import json, os ⏎ def sig(d): return "|".join("%s=%s" % (k, d[k]) for k in sorted(d)) ⏎ newsig = sig(dict(l.split…
+  ↳ 185499 'ckpt=ft_mm_4b_183814|data=text_hotpotqa_1500|image_rate=ckpt|kind=eval_mm|launc <class 'dict'> (+19 lines)
+Still debugging the expmon guard (it refuses both planned launches); one trace to see what it compares.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; bash -x $(which expmon) launch --dry-run --exp longchunk --stage pt2 --parent 188422 --time 23:51:00 --partition gpu --dependency afterok:188422 pt_mm_4b.sh 100000…
+  ↳ ++ EXP_FACTORS_CMD='python3 scripts/expmon_factors.py' (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp longchunk --stage pt2 --parent 188422 --time 23:51:00 --partition gpu --dependency afterok:188422 pt_mm_4b.sh 100000 8 8 merger $R/ex…
+  ↳ would submit: sbatch --time 23:51:00 --partition gpu --dependency afterok:188422 pt_mm_4b.sh 100000 8 8 merger /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/model (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; expmon launch --dry-run --exp longchunk --stage pt1 --parent 188358 --time 3-04:15:00 --partition gpu --dependency afterok:188422…
+  ↳ would submit: sbatch --time 3-04:15:00 --partition gpu --dependency afterok:188422 /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh 1000000 1024 2048 6 8 (+3 lines)
+The guard refusal was not reproducible (it passed on a plain re-run); I'll gripe it. Writing intents, then submitting the five chained jobs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh; md5sum $S; expmon launch --exp longchunk --stage pt1 --parent 188358 --time 3-04:15:00 --partition gpu --dependency afterok:18842…
+  ↳ 8d3745e9cc343b6fb30d8d4a2bc2cd8c  /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188466 "intent: arm L1024 stage 1 on MS MARCO docs (CML 1024, DML 2048, BS 6 x ACCUM 8 x 4 A100 = 192 docs/step, 1M docs = 5,208 steps, ~1.04B text tokens kept = 2.3x the control), recip…
+  ↳ expmon note: 117 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; FD=$R/data/mm_ft_docpages_20k_1m_teacher:20000,$R/data/mm_ft_natural_8k_teacher:8000; M=$R/expQ/longchunk/pt_mm_cml256/model ⏎ FT_DATA=$FD FT_OUT=$R/expQ/longchunk…
+  ↳ job id:  188468 (+5 lines)
+→ Bash: sacct -j 188467,188468,188469,188470 --env-vars -X 2>/dev/null | grep -oE "(PT_DATA|PT_OUT|FT_DATA|FT_OUT|SETS)=[^ ]*" | head; squeue -j 188466,188467,188468,188469,188470 -o "%i %j %T %r %P %l" 
+  ↳ JOBID NAME STATE REASON PARTITION TIME_LIMIT (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188467 "intent: C256 stage 2 = job 183537's argv exactly (v4kd 100k, lr 3e-5, merger, 1M px, KD 0.5) + its env PT_DATA (pdfa_1m_desc:50000, wiki_1m_desc:19000, natural_desc:31000, read f…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+Now recording the budget projection and tightening the law with the measured speeds and the missing environment variables.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; grep -n "smoke\|^- stage 2\|^- finetune\|GPU-days for the whole" CAMPAIGN.md | head -20
+  ↳ 35:- stage 2: `pt_mm_4b.sh 100000 8 8 merger <arm stage-1 model> +model_config_overrides.image_max_pixels=1003520 hf_training.learning_rate=3e-5 collator_kwargs.p_text=0.5 collator_kwargs.p_image_ae=0 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; sed -n '54,60p;76,77p' CAMPAIGN.md
+  ↳ by the owner (2026-11-10 "as planned"). Documents are truncated to DML by the collator (no packing). (b) a smoke (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; python3 - <<'EOF' ⏎ p='CAMPAIGN.md'; s=open(p).read() ⏎ old_b = s[s.index("(b) a smoke\n  of `pt_text_4b_long.sh`"):s.index("Launch order: C256 first")] ⏎ new_b = ("(b) FIT + SPEED, …
+  ↳ 35:- stage 2: `pt_mm_4b.sh 100000 8 8 merger <arm stage-1 model> +model_config_overrides.image_max_pixels=1003520 hf_tra (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note --did "budget projection from measured s/step (fit tests 188420/188421, control 188422)" --saw "stage 1 C256 67 GPU-h, L1024 244, L2048 339; downstream ~61 per arm; full plan ~841 GPU-h = 3…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Now the known-issues rows, then the state file and the live page.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat >> known_issues.md <<'EOF' ⏎ | `expmon launch` REFUSED "closed as a dead arm by run <a closed smoke>" for a cell with other factors (2026-11-11 04:00, cited smoke 188421 for the …
+  ↳ **Settled** (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tr '\r' '\n' < pt_text_long_188422.out | grep -E "/5208 \[" | tail -1; tr '\r' '\n' < pt_text_long_188422.out | grep -E "'loss'" | tail -3
+  ↳ 1%|▏         | 67/5208 [16:41<16:29:48, 11.55s/it] (+1 lines)
+→ Bash: grep -rn "wake-when" $(dirname $(readlink -f $(which expmon)))/*.sh 2>/dev/null | grep -iE "parse|file:|cond" | head -8
+  ↳ /home/hdejean/.claude/expmon/campaign.lib.sh:17:#   NEXT              the wake's last act is one line in campaign/NEXT — `done`, `wake-in <min>`, `wake-when <conditions>` or (+5 lines)
+→ Bash: sed -n 478,492p /home/hdejean/.claude/expmon/campaign.lib.sh
+  ↳ # `wake-when <condition>... [max <N>[m|h]]` (2026-11-10): the agent names what it waits for and the tick tests it for free, (+14 lines)
+Writing the state file for the owner.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "wake-when job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h" > campaign_longchunk/NEXT; cat campaign_longchunk/NEXT; git status --short campaign_longchunk/
+  ↳ wake-when job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h (+5 lines)
+Both fit tests passed, so the 1,024-token and 2,048-token chunk arms both fit in GPU memory. I measured their speeds and queued the control's whole training chain plus the 1,024-token arm behind the running control. There are no accuracy numbers yet.
+
+## Done this wake
+- **2,048-token chunks:** fits on 4 A100-80GB at batch 3 per GPU, about 72 GB per GPU. 58.6 s per step, so a full stage 1 (text pretraining, 1M documents) takes about 85 h. Test closed.
+- **1,024-token chunks:** fits at batch 6 per GPU, about 71 GB per GPU. 42.1 s per step, so a full stage 1 takes about 61 h. Test closed.
+- **Training-setting differences:** I compared the resolved training settings of the control and the long-chunk runs. Only the chunk length, the text kept per document and the batch split differ. The effective batch stays at 192 documents.
+- **Campaign rules:** I wrote the measured speeds into the rules. I also added two data settings the stage-2 and finetune commands need. They were left out of the written command lines, and without them the scripts would train on their default data. I copied them from the old reference runs' saved configs.
+
+## Running now
+- **Control stage 1 (256-token chunks):** running since 03:47 at 11.6 s per step. It should finish around 20:45 today, well inside its 23 h limit. Its first check of the loss on held-out text comes at step 2,000, around 10:15.
+- **Queued behind it (5 jobs), each starting only when the job before it succeeds:**
+  - the 1,024-token arm's stage 1 (76 h limit);
+  - the control's stage 2 (images), then its two finetunes (seeds 42 and 43);
+  - a check that each compressed slot still holds its own part of the text, on the control's stage-1 model.
+
+## Budget warning (no action yet)
+At the measured speeds, all three arms use about 35.0 of the 35 GPU-days allowed. That leaves nothing for reruns or a third seed. The control plus the 1,024-token arm come to about 18.4 GPU-days. I added a rule: the 2,048-token arm starts only if it still fits in the budget. If not, I will ask you around 2026-11-14, when the 1,024-token stage 1 ends.
+
+## Next wake
+At the step-2,000 checkpoint, or when the control's stage 1 ends, at most 8 h from now. I will check that the control has not collapsed (loss flat or NaN). If it has, I cancel it and every job chained behind it.
+
+I reported two expmon problems:
+- Its "already closed" safety check twice blocked valid launches by mistake. The same commands went through a minute later.
+- It does not record the data settings a launch passes in.
+
+Nothing needed from you now. Around 2026-11-14 you may need to decide: raise the budget by about 3 GPU-days, or drop the 2,048-token arm.
+→ StructuredOutput: {"next": "wake-when", "summary": "Fit tests passed: L2048 fits (~72 GB/GPU, 58.6 s/step → 84.8 h stage 1), L1024 fits (~71 GB/GPU, 42.1 s/step → 60.9 h). Control C256 stage 1 (188422) running at 11.6 s/step, ends ≈20:45. Chained this wake: …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.1693 turns=55 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Fit tests passed: L2048 fits (~72 GB/GPU, 58.6 s/step → 84.8 h stage 1), L1024 fits (~71 GB/GPU, 42.1 s/step → 60.9 h). Control C256 stage 1 (188422) running at 11.6 s/step, ends ≈20:45. Chained this wake: L1024 stage 1 (188466, afterok 188422), C256 stage 2 (188467) → finetunes s42/s43 (188468/188469), C256 ownership probe (188470). Law tightened with measured speeds, the PT_DATA/FT_DATA env the reference runs used, and a budget rule: projected full plan = 35.0 GPU-days (whole budget), so L2048 launches only if it still fits, else BLOCKED.md (~2026-11-14).", "launched": ["188466", "188467", "188468", "188469", "188470"], "verdicts": [{"jobid": "188420", "verdict": "closed", "note": "L2048 fit PASS: 50/50 steps, ~72 GB/GPU, 58.6 s/step → full stage 1 84.8 h, --time 106 h"}, {"jobid": "188421", "verdict": "closed", "note": "L1024 fit PASS: 50/50 steps, ~71 GB/GPU, 42.1 s/step → full stage 1 60.9 h, --time 76 h"}], "gripes": ["defect: launch closed-arm guard falsely REFUSED two unrelated launches citing closed smoke 188421; _newfac empty in headless wakes because pixi not on PATH", "gap: launch does not record env vars the launcher reads (PT_DATA/FT_DATA), so a reference command cannot be repeated exactly from the manifest"], "wake_when": "job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h"}
+== final:
+{"next":"wake-when","summary":"Fit tests passed: L2048 fits (~72 GB/GPU, 58.6 s/step → 84.8 h stage 1), L1024 fits (~71 GB/GPU, 42.1 s/step → 60.9 h). Control C256 stage 1 (188422) running at 11.6 s/step, ends ≈20:45. Chained this wake: L1024 stage 1 (188466, afterok 188422), C256 stage 2 (188467) → finetunes s42/s43 (188468/188469), C256 ownership probe (188470). Law tightened with measured speeds, the PT_DATA/FT_DATA env the reference runs used, and a budget rule: projected full plan = 35.0 GPU-days (whole budget), so L2048 launches only if it still fits, else BLOCKED.md (~2026-11-14).","launched":["188466","188467","188468","188469","188470"],"verdicts":[{"jobid":"188420","verdict":"closed","note":"L2048 fit PASS: 50/50 steps, ~72 GB/GPU, 58.6 s/step → full stage 1 84.8 h, --time 106 h"},{"jobid":"188421","verdict":"closed","note":"L1024 fit PASS: 50/50 steps, ~71 GB/GPU, 42.1 s/step → full stage 1 60.9 h, --time 76 h"}],"gripes":["defect: launch closed-arm guard falsely REFUSED two unrelated launches citing closed smoke 188421; _newfac empty in headless wakes because pixi not on PATH","gap: launch does not record env vars the launcher reads (PT_DATA/FT_DATA), so a reference command cannot be repeated exactly from the manifest"],"wake_when":"job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h"}
+== rc=0 secs=537
+== verify: 9/10

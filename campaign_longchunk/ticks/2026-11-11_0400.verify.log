@@ -1,0 +1,55 @@
+== verifier 2026-11-11_0400  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+== session 8febce7e-c2fc-45bb-836e-29c623613c11  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longchunk (+172 lines)
+→ Glob: {"pattern": "expQ/longchunk/*"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+57 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk"}
+  ↳ expQ/longchunk/data_check.sbatch (+82 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_msmarco_188358.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_188339.json
+  ↳ 1	{ (+214 lines)
+→ Glob: {"pattern": "**/pt_text_long_1884*.out", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ No files found
+Checking the job logs behind the two speed claims next; the corpus numbers already match their JSON files.
+→ Grep: {"pattern": "#SBATCH|OUT=|--output", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "output_mode": "content"}
+  ↳ 2:#SBATCH -n 1 (+8 lines)
+→ Grep: {"pattern": "\\{'loss'|'eval_loss'|train_runtime|'loss':|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188420.out", "output_mode": "content", "head_limit": 40}
+  ↳ 17511:[Omitted long matching line] (+7 lines)
+→ Grep: {"pattern": "\\{'loss'|'eval_loss'|train_runtime|'loss':|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188421.out", "output_mode": "content", "head_limit": 40}
+  ↳ 17511:[Omitted long matching line] (+7 lines)
+→ Grep: {"pattern": "\\| (10|49|50)/50 \\[", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188420.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:| 10/50 [ (+6 lines)
+→ Grep: {"pattern": "\\| (10|49|50)/50 \\[", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188421.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:| 10/50 [ (+6 lines)
+→ Grep: {"pattern": "(10|49)/50 \\[[0-9:]+<[0-9:]+, *[0-9.]+s/it\\]", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188420.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:10/50 [12:58<40:32, 60.81s/it] (+1 lines)
+→ Grep: {"pattern": "(10|49)/50 \\[[0-9:]+<[0-9:]+, *[0-9.]+s/it\\]", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188421.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:10/50 [10:03<29:30, 44.25s/it] (+1 lines)
+→ Grep: {"pattern": "gpumem|gpuutil|TRESUsage|MaxRSS", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0400.log", "output_mode": "content", "head_limit": 30}
+  ↳ 58:→ Bash: sacct -j 188420,188421 -o JobID,TRESUsageInMax%180 2>&1 | grep -E "batch|JobID"; expmon help probe 2>&1 | grep -A6 "^  probe" | head -8 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-11_0400.log
+  ↳ 1	== campaign longchunk wake 2026-11-11_0400  reasons=condition  tier=full  model=claude-opus-5-5  patch=0  max_turns=300  claude=2.1.318 (Claude Code) (+154 lines)
+Speeds for both fit tests match their logs. Now checking the running control job's log and the config diff.
+→ Grep: {"pattern": "\\{'loss': '[0-9.]+'[^}]*\\}", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188422.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17603:{'loss': '2.301', 'grad_norm': '3.141', 'learning_rate': '9.387e-06', 'epoch': '0.009601'}
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188421/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+50 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml2048_188420/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+50 lines)
+→ Grep: {"pattern": "\"jobid\": \"18846[6-9]\"|\"jobid\": \"188470\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 840:{"ts": "2026-11-11 04:06", "jobid": "188466", "launcher": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "argv": ["1000000", "1024", "2048", "6", "8"], "git": "c308c41+dir (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl
+  ↳ 841	{"ts": "2026-11-11 04:06", "jobid": "188467", "launcher": "pt_mm_4b.sh", "argv": ["100000", "8", "8", "merger", "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/model", 
+→ StructuredOutput: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed."…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9306 turns=24 is_error=False denials=0
+== declared: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.", "status": "supported", "reason": "data_check_msmarco_188358.json: n=107,120 of n_docs_total 3,213,596, frac_docs_ge_1024=0.4339 and ge_2048=0.2039. These clear the law's ≥30% / ≥15% bar. data_check_188339.json: n=100,000, 0.2384 / 0.0831, below both bars. Both verdicts are recorded as closed (00:11), and the owner's adoption is noted in the law."}, {"claim": "The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, exit 0, peak GPU memory 288 GB summed over 4 GPUs (~72 GB each, sacct), 58.6 s per step (steps 10–49 of pt_text_long_188420.out) → a full stage 1 (5,208 steps, 1M documents) = 84.8 h — job 188420, closed.", "status": "supported", "reason": "pt_text_long_188420.out: step 10 at 12:58, step 49 at 51:05, so 2,287 s over 39 steps = 58.6 s/step. train_runtime is 3,189 s and eval_loss 2.026 at step 50. Config: CML 2048, DML 4096, BS 3, accum 16. 5,208 × 58.6 s = 84.8 h. The 288 GB and exit 0 come from the closed verdict 188420 (sacct); the raw sacct output is cut off in the tick log, so I could not re-read it."}, {"claim": "The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, exit 0, ~71 GB per GPU, 42.1 s per step (pt_text_long_188421.out) → full stage 1 = 60.9 h — job 188421, closed.", "status": "s
+== final:
+{"claims":[{"claim":"Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.","status":"supported","reason":"data_check_msmarco_188358.json: n=107,120 of n_docs_total 3,213,596, frac_docs_ge_1024=0.4339 and ge_2048=0.2039. These clear the law's ≥30% / ≥15% bar. data_check_188339.json: n=100,000, 0.2384 / 0.0831, below both bars. Both verdicts are recorded as closed (00:11), and the owner's adoption is noted in the law."},{"claim":"The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, exit 0, peak GPU memory 288 GB summed over 4 GPUs (~72 GB each, sacct), 58.6 s per step (steps 10–49 of pt_text_long_188420.out) → a full stage 1 (5,208 steps, 1M documents) = 84.8 h — job 188420, closed.","status":"supported","reason":"pt_text_long_188420.out: step 10 at 12:58, step 49 at 51:05, so 2,287 s over 39 steps = 58.6 s/step. train_runtime is 3,189 s and eval_loss 2.026 at step 50. Config: CML 2048, DML 4096, BS 3, accum 16. 5,208 × 58.6 s = 84.8 h. The 288 GB and exit 0 come from the closed verdict 188420 (sacct); the raw sacct output is cut off in the tick log, so I could not re-read it."},{"claim":"The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, exit 0, ~71 GB per GPU, 42.1 s per step (pt_text_long_188421.out) → full stage 1 = 60.9 h — job 188421, closed.","status":"supported","reason":"pt_text_long_188421.out: step 10 at 10:03, step 49 at 37:24, so 1,641 s over 39 steps = 42.1 s/step. train_runtime is 2,328 s and eval_loss 2.096. Config: CML 1024, DML 2048, BS 6, accum 8. 5,208 × 42.1 s = 60.9 h. The 285 GB / ~71 GB per GPU comes from the closed verdict 188421 (sacct)."},{"claim":"No accuracy result yet: no arm has a judged number.","status":"supported","reason":"Grid: no cell of this campaign has a RESULT beyond 188422's speed probe. The judged rows 185499–185603 are pre-campaign probes, closed as 'not a cell of the 2026-11-10 campaign'."},{"claim":"Control stage 1 (256-token chunks, 1M documents): job 188422 RUNNING since 03:47, 67 of 5,208 steps (12,864 documents) at 04:05, 11.6 s per step → ends ≈ 2026-11-11 20:45; first held-out loss at step 2,000 ≈ 10:15.","status":"supported","reason":"The grid shows 188422 RUNNING, probe @36 at s_per_step=11.6 with docs_seen=6,912 (= 36 × 192). Tick log: '67/5208 [16:41<16:29:48, 11.55s/it]', and 67 × 192 = 12,864. Training log: loss 2.301 at step 50, lr 9.387e-06. Both end times are projections from 67 steps: training started 03:51, so step 2,000 lands ≈ 10:16 and the end ≈ 20:40 plus evals. The fit tests held their s/step from step 10 to step 49, so the projection is reasonable."},{"claim":"Chained behind it, all waiting on dependencies (submitted this wake): 1,024-token arm stage 1, control stage 2 → two finetunes, ownership probe.","status":"supported","reason":"runs.jsonl lines 840–844 hold 188466–188470, l
+== rc=0

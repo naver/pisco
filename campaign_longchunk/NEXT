@@ -1,1 +1,1 @@
-wake-when job:188420,188421 max 6h
+wake-when job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h
