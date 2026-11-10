@@ -1,0 +1,9 @@
+== campaign longchunk wake 2026-11-11_0100  reasons=idle  tier=full  model=claude-opus-5-5  patch=0  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794326402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=84.6 min_util=- alert=1 unpushed=2 cron=2 daemon=1 disk_gb=13344 sig=db96a1cc same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 79395dd7-c07b-4f29-8c0c-dcc30dd7d4d1  model claude-opus-5-5  tools 36
+You've hit your 5-hour limit · resets 1:50am (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 1:50am (Asia/Seoul)
+== rc=1 secs=10
