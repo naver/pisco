@@ -13,7 +13,7 @@ import sys
 import numpy as np
 import torch
 
-REPO = pathlib.Path(__file__).resolve().parent.parent
+REPO = pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 import datasets  # noqa: E402
 

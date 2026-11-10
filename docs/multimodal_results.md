@@ -35,6 +35,12 @@ Caveats: the nav questions are simple (which object, in what order, on which sid
 photos; the nav "uncompressed" number is the backbone LoRA-finetuned on the same rows (the fair ceiling,
 `scripts/train_base_mm.py`). Navigation model: `expQ/ft_nav_4b/model`.
 
+**Current best (2026-11-10): the spread `<MEM>` layout at full budget**, `expQ/ft_mm_4b_184778/model` (s42) and
+`184780` (s43): documents .610 / .615, photos .677 / .685 (judge, 1,500 Q each), equal to 174908 / 176242 within noise
+with one stage-2 pass instead of three ([architecture_review.md](architecture_review.md), archq3). Slots are placed at
+the centre of the segment or image tile they compress; the gain over the tail layout is +.08 documents / +.02 photos at
+a reduced budget, and chunk length becomes free at inference (see "Long chunks" below).
+
 Under the earlier Yes/No judge the same files read: documents .594 vs .817, photos .669 vs .718, nav .810 vs .797
 (the `judge_project` fields). The two judges never change a ranking; they differ on long free-text answers (VizWiz).
 
@@ -70,12 +76,57 @@ over the chunk beats keeping the first ones on photos (coverage), not on documen
 tied rate 8 on RAG, so a trained rate-16 image chain would recover part of this; rate 4 (twice the vectors) gave
 nothing and made dense pages worse. Files: `expQ/ft_mm_4b_174908/eval/*keep0*` (`eval_mm_4b.sh` env `KEEPF`, `KEEPM`).
 
-**Trained rate 16 (2026-11-06, spread layout, reduced-budget chain, label `rate`):** judge accuracy, 1,500 Q, paired
-vs the spread rate-8 chain at equal budget: documents .535 / .544 vs .599 / .618 (s42 / s43) = −.065 (CI −.087 to −.043)
-/ −.074 (−.095 to −.053); photos .643 / .642 vs .671 / .671 = −.027 (−.047 to −.007) / −.029 (−.048 to −.007). Vs the
-tail rate-8 chain: documents +.028 / +.001, photos −.005 / −.007 (n.s.): the spread layout at rate 16 equals the old
-layout at rate 8, at half the tokens. Halving the budget costs about .07 on documents and .03 on photos, so the rate
-curve is not flat on images, unlike text RAG. Weakest source: infographics (.40 / .43). Rate 32 chain in progress.
+**Trained rate curve (spread layout, reduced-budget chains, label `rate`, 2026-11-06/10).** Judge accuracy, 1,500 Q,
+two seeds (s42 / s43), paired against the spread rate-8 chain at equal budget:
+
+| rate (slots per 1M-px page) | documents, judge accuracy ↑ | vs rate 8 (95% CI) | photos, judge accuracy ↑ | vs rate 8 (95% CI) | stage-1 slot ownership |
+|---|---|---|---|---|---|
+| 8 (56) | .599 / .618 | | .671 / .671 | | .977 |
+| 16 (28) | .535 / .544 | −.065 (−.087 to −.043) / −.074 (−.095 to −.053) | .643 / .642 | −.027 (−.047 to −.007) / −.029 (−.048 to −.007) | .978 |
+| 32 (14) | .427 / .420 | −.172 (−.197 to −.147) / −.198 (−.224 to −.174) | .587 / .585 | −.084 (−.107 to −.061) / −.086 (−.108 to −.063) | .547 (none) |
+
+Rate 16 equals the tail layout at rate 8 (documents +.028 / +.001, photos n.s.) at half the tokens; it is the floor
+for photos only (infographics fall to .40). Rate 32 is not usable for QA and its slots no longer own a segment. The
+image rate curve is not flat, unlike text RAG. Rate round closed.
+
+**Slot dropping by layout (reduced chains, judge, A = kept − full, 2026-11-10):** spread: documents keep 50% first
+−.121, every 2nd −.129, keep 25% −.261; photos −.061 / −.043 / −.153. Tail: documents −.043 / −.103 / −.083; photos
+−.019 / −.045 / −.058. Tail slots are redundant (all read the whole chunk), so dropping them is cheap; spread slots
+each own a part, so dropping them loses content. Neither gives a free coarse level; a trained hierarchy (nested-budget
+training) would have to beat the tail's cheap degradation to be worth it.
+
+## Long chunks (probe 2026-11-10, no training)
+
+Same content, grouped differently, judge accuracy on 1,500 HotpotQA questions with 10 passages (~1,270 tokens joined),
+models trained on 256-token chunks only, chunk cap 4,096 so nothing is cut:
+
+| chunks per question | spread rate 8, judge accuracy ↑ | vs ten chunks (95% CI) | tail rate 8, judge accuracy ↑ | vs ten chunks (95% CI) |
+|---|---|---|---|---|
+| ten (one passage each, ~130 tokens) | .579 | | .568 | |
+| three (~400 tokens) | .578 | −.001 (−.023 to +.021) | .495 | −.073 (−.098 to −.048) |
+| one (~1,270 tokens) | **.617** | **+.037 (+.014 to +.062)** | .399 | −.169 (−.198 to −.141) |
+
+With the spread layout each slot stays ~4 tokens from its text whatever the chunk length, so a long chunk costs
+nothing and even helps multi-passage questions (the compressor sees all passages together). Under the tail layout
+every slot sits at the chunk end and the start of a long chunk is lost. Confirmed on MRQA (one ~900-token passage):
+spread one chunk .694 = split .695; tail .639 vs .689; production .631 vs .697. Files: `expQ/ft_mm_4b_18381{4}/eval/
+*cml4096_text_hotpotqa_1500*`, `eval_data/text_hotpotqa_1500_g3`, `_g10` (`eval_mm_4b.sh` env `CML`, `CHUNK`).
+
+## External benchmarks: the sets of "Position IDs Matter" (2026-11-07/10)
+
+Built by `scripts/build_mm_eval_mcq.py` (ScienceQA-IMG 500 + MMBench-EN dev 500, one page, lettered options) and
+`scripts/build_text_eval_mrqa.py` (MRQA out-of-domain, 6 × 250, one passage). Judge accuracy, paired:
+
+| set | spread rate 8 (183814) | tail rate 8 (183538) | production 174908 | uncompressed | spread − tail (95% CI) | spread − uncompressed (95% CI) |
+|---|---|---|---|---|---|---|
+| image multiple choice (1,000 Q) | .864 | .838 | .839 | .895 | +.026 (+.010 to +.042) | −.031 (−.051 to −.013) |
+| MRQA, passages split into 256-token chunks (1,500 Q) | .695 | .689 | .697 | .807 | +.006 n.s. | −.111 (−.135 to −.087) |
+| MRQA, one passage = one chunk | .694 | .639 | .631 | .807 | +.055 (+.031 to +.077) | −.113 |
+
+MRQA per source (spread, split): BioASQ .88, RelationExtraction .79, TextbookQA .82, DROP .60, DuoRC .55, RACE .53 vs
+raw .92 / .90 / .87 / .78 / .68 / .68: the gap is reasoning and narrative, not retrieval. A first MRQA run with the
+finetune collator's 256-token truncation read .63 and is void. Not comparable model for model with the paper
+(Llama-3.2 / LLaVA-1.5 there), same questions and metrics.
 
 ## How the evaluation is done
 

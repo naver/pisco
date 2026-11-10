@@ -33,30 +33,24 @@ board. Launch everything with `expmon launch --exp <label> …`, never raw sbatc
 | RL headroom | pass@8 .698 vs greedy .510 on 500 Q; RAFT (positive half only, one round) null | mmrl 173667 / 173710 |
 | seed spread | .029 on documents between seeds 42 and 43 of the same recipe | 173550 vs 176243 |
 
-## Round 0: state 2026-11-04 (check with `expmon status`, `expmon grid archq3`)
+## Round 0: state 2026-11-10 (check with `expmon status`, `expmon grid archq3`)
 
 **archq3 verdict (2026-11-03): the spread `<MEM>` layout wins** (judge, 1,500 Q, paired vs the tail chain at equal
-budget: documents +.093 s42 / +.075 s43, photos +.023 s42; equal to the full-budget production model 174908 / 176242
-with 62% of the stage-2 data; table in `architecture_review.md`). Now running / queued (all label archq3): **the full-budget spread chain** (owner's go, 2026-11-03; relaunched
-2026-11-04 00:50 after a BeeGFS outage at 00:12 killed the first chain 184709-184717 at stage-1 step 703): stage 1 184769 (5M text, 4 GPUs, 143228 recipe + `compressor_mem_layout=spread mem_position_stride=8` → `expQ/archq3/pt_text_5M_spread`, ~79 h) → stage 2 184777 (pt_mm_v4kd_4b recipe, 160k, → `expQ/archq3/pt_mm_5M_spread`, ~30 h) → finetunes 184778 (s42) / 184780 (s43) (174908 recipe, bf16) → evals 184781 / 184783 (s42 docs / photos), 184784 / 184785 (s43); references 174908 / 176242; ETA ~2026-11-09.
-The production lineage had two extra legacy stage-2 passes (170810, 172617) that this chain skips. Photos s43 of the
-reduced chain (184703) is in: +.021 vs tail, −.004 vs 176242, so the verdict stands at two seeds on both sets.
-**archq3b (coarse order) is parked** (see round 4; its stage 2 184706 died in the outage and is not relaunched).
-**SLURM note:** `expmon launch --parent` records lineage only; pass `--dependency afterany:<parent>` at submission
-(a `scontrol update` afterwards is too late when GPUs are free: 184770-184776 started and failed within a minute).
-
-**Rate round (owner's go 2026-11-04 01:10, label `rate`; one variable = `compr_rate` on the spread layout):** two
-reduced-budget chains with the archq3 recipe (1M text → v4kd 100k → 28k bf16 finetune at s42 / s43 → judged evals),
-reference = the spread rate-8 chain 183814 / 183816 at equal budget. Rate 16 (`mem_position_stride=16`; 17 slots per
-256-token chunk, 28 per 1M-px page): 184801 → 184802 → 184806 / 184807 → 184808, 184809, 184813, 184814. Rate 32
-(stride 32; 9 / 14 slots): 184815 (gpu-be, `--requeue`) → 184816 → 184817 / 184818 → 184820-184823. Shake-out 184800.
-Output under `expQ/rate/`. `qwen35_4b_pt.sh` now takes `RATE=` from the environment. Why: a fixed slot count is
-what the capped chunks already give; dropping half the slots of a rate-8 model at inference costs .13 on documents,
-so the budget has to be trained; trained rate 16 tied rate 8 on text RAG; rate 4 bought +.034 at 1.8× tokens.
-Deliverable: the trained rate curve 8 / 16 / 32 at equal budget on documents and photos. **Rate 16 result (2026-11-06):**
-documents −.065 / −.074 and photos −.027 / −.029 vs spread rate 8 (both seeds, CIs exclude 0); equal to the tail rate-8
-chain at half the tokens (numbers in `multimodal_results.md`). Rate 32: stage 1 done, stage 2 184816 waiting on the
-GPU cap (now allowed on gpu-be too), results ~2026-11-08.
+budget: documents +.093 s42 / +.075 s43, photos +.023 / +.021; table in `architecture_review.md`). **Full-budget
+spread chain done (2026-11-10):** 5M text (184769) → one stage-2 pass 160k (184777) → finetunes 184778 (s42) / 184780
+(s43) → documents .610 / .615, photos .677 / .685 = production 174908 / 176242 within noise (documents +.011 / +.024,
+photos −.009 / +.010) with one stage-2 pass instead of three. **184778 / 184780 are the reference models from now on.**
+The fp32 5e-6 regime (round 1) can now go into `finetune_mm.yaml` (nothing bf16 is pending).
+**Rate round closed (2026-11-10):** trained rate 16 −.07 documents / −.03 photos, rate 32 −.17 to −.20 / −.09 vs rate 8
+(table in `multimodal_results.md`); rate 32 slots no longer own a segment (.547). Rate 8 stays; 16 only where tokens
+matter on photos. **Long chunks (probe 2026-11-10):** with the spread layout one 1,270-token chunk beats ten 130-token
+chunks (+.037) at inference with no training, while the tail layout loses .17: the next stage-1 arm is **long chunks
+(compressor_max_length 1,024-2,048)**. **archq3b (coarse order) parked** (round 4). **Literature-scan probes:**
+attention-mass page picking beats the digit prompt on images (10 pages .885 vs .861) and loses on text (.873 vs .922);
+per-head scales (SEAL) null; slot dropping is cheaper under tail than spread (no free coarse level either way).
+**SLURM notes:** `expmon launch --parent` records lineage only; pass `--dependency afterany:<parent>` at submission.
+4-GPU jobs on gpu-be with checkpoints 6 h apart do not survive preemption (rate-32 stage 1 lost a day); use
+`--partition gpu,gpu-be` and keep the 8-GPU cap in mind.
 
 Recipe of a reduced-budget chain (what every archq3 chain used):
 
@@ -219,9 +213,11 @@ The spread layout is the stage-1 base from now on. The **coarse-to-fine slot ord
 the middle), and a position id cannot give a slot a wider span; its stage-1 ownership is weaker than spread (.927 vs
 .977, late←early R² .109 vs .013). A real coarse level needs levels (1, 2, 4, 8 slots at span midpoints), nested-budget
 training (lower levels hidden from the decoder at random) and probably a level token: a training round, not a layout.
-Probes before it: on the spread finetune keep only the first k slots at inference (answer NLL / judge) and permute
-the slot order on the decoder side (the "order unused" finding came from the tail model). Next stage-1 variable after it: the **per-slot ownership loss**
-(mem_tokens_review rank 2). Group pooling is dropped (it was the fallback for a negative verdict). Data and labels ([data_review.md](data_review.md), ranked): (1) **routing rows on real questions** in the finetune
+Probe done (2026-11-10): keeping the first 50% of slots costs .12 documents under spread but .04 under tail (tail slots
+are redundant), 25% costs .26 vs .08; so a trained hierarchy must beat the tail's cheap degradation. Next stage-1
+variables, ranked: (a) **long chunks** (compressor_max_length 1,024-2,048; the inference probe already gives +.037
+for one chunk vs ten, see round 0); (b) **multi-position slots** (PPE, literature scan rank 1; a training arm, since an
+inference probe on one-id slots only measures the shift); (c) the **per-slot ownership loss** (mem_tokens_review rank 2). Group pooling is dropped (it was the fallback for a negative verdict). Data and labels ([data_review.md](data_review.md), ranked): (1) **routing rows on real questions** in the finetune
 ("find v2": 8-20 documents, same-document + ColQwen2 negatives, 1-2 gold, pages + text + frames, the eval's
 `ROUTE_QUESTION` prompt; target pick@1 ≥ .85 at 11-20 pages vs .77-.81 now; control = the same number of extra QA
 rows); (2) **evidence-then-answer teacher labels** as a second mode next to brief (cheap check first: does the

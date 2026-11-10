@@ -249,14 +249,20 @@ write), so they wait for the two finetune-only arms:
 
   Every document source gains at both seeds (infographics +.076 / +.062, multi-page +.116 / +.108, slides +.086 /
   +.056). With 62% of the stage-2 data the layout chain equals the production model on documents and is within noise
-  on photos. Consequences: the spread layout is the stage-1 base of every next chain; the full-budget spread chain
-  is training (184769 → 184777 → 184778 / 184780 → evals, vs 174908 / 176242). **archq3b (coarse-to-fine slot order,
-  `spread_coarse`) is parked (2026-11-04):** it is not a hierarchy. The bit-reversal order starts at segment 0, so the
-  first kept slot sits at the start of the chunk (n = 33: start, end, middle, quarters), not at the middle as the
-  docstring says; and a position id gives a slot a point, not a span, so no order makes one slot cover the whole chunk
-  without nested-budget training (lower levels hidden from the decoder at random) and a level marker. Its stage-1
-  model also has weaker ownership than spread (.927 vs .977) and more late←early redundancy (R² .109 vs .013). Its
-  stage 2 died in the BeeGFS outage of 2026-11-04 and is not relaunched.
+  on photos. **Full budget (2026-11-10):** the same layout in the production recipe (5M text → one 160k stage-2 pass →
+  28k finetune; models 184778 / 184780) scores documents .610 / .615 and photos .677 / .685 against production's
+  .599 / .591 and .685 / .675: documents +.011 (−.014 to +.035) / +.024 (−.002 to +.048), photos −.009 / +.010, all
+  within noise. At full budget the layout equals production with one stage-2 pass instead of three: the +.08 of the
+  reduced chains is what the extra stage-2 data was buying. New reference models: `expQ/ft_mm_4b_184778/model` (s42),
+  `expQ/ft_mm_4b_184780/model` (s43). **Long chunks are free at inference (probe 2026-11-10, no training):** ten
+  HotpotQA passages compressed as ONE ~1,270-token chunk score .617 vs .579 as ten chunks (+.037, CI +.014 to +.062)
+  although training only saw 256-token chunks; the tail layout collapses (.399 vs .568, −.169). On MRQA a ~900-token
+  passage as one chunk: spread .694 = split into 256-token chunks .695; tail .639 vs .689. This explains the old
+  layout's failure on long chunks (the July cml=512 arm) and justifies a stage-1 arm trained with 1,024-2,048-token
+  chunks. Consequences: the spread layout is the stage-1 base of every next chain. archq3b (coarse-to-fine slot order,
+  `spread_coarse`) is parked (2026-11-04): a permutation, not a hierarchy (the first kept slot sits at the chunk
+  start; a position id is a point, not a span; stage-1 ownership .927 vs .977); its stage 2 died in the BeeGFS outage
+  and is not relaunched.
 - **Parked for later rounds (owner, 2026-10-30: one variable per round):** the per-slot ownership loss, pooling
   instead of `<MEM>` tokens ([mem_tokens_review.md](mem_tokens_review.md)).
 - **Layout mechanism check (2026-11-02, text, stage-1 pair at equal budget):** with the spread layout a slot
@@ -279,7 +285,7 @@ write), so they wait for the two finetune-only arms:
 | 4 | Store `<MEM>`s in int8; serve with a float16 linear-attention state | none | half the storage; +9-14% throughput on long answers |
 | 5 | If speed matters more than reuse of Qwen3.5: a **full-attention VLM decoder** (e.g. Qwen3-VL-4B); it must stay a VLM, since #1 shows it raw pages | stage-2 + finetune, about 2-3 GPU-days | 5.0× instead of 3.0× at 512-token answers under load |
 | 6 | A **0.8B compressor** | stage-2 + finetune | 3× cheaper indexing; risk on dense pages (smaller vision tower) |
-| 7 | **Spread `<MEM>` layout from stage 1** (section above): done 2026-11-03, +.08 on documents and +.02 on photos vs the tail layout at equal budget, 2 seeds | stage 1 + 2 + finetune (~2.5 GPU-days at the reduced budget) | adopt in the next full-budget chain; archq3b coarse-to-fine order under test |
+| 7 | **Spread `<MEM>` layout from stage 1** (section above): done; reduced budget +.08 documents / +.02 photos vs the tail layout; full budget = production (+.011 / +.024 documents, n.s.) with one stage-2 pass instead of three; long chunks free at inference (+.037 for one 1,270-token chunk vs ten; tail −.169) | stage 1 + 2 + finetune | adopted: 184778 / 184780 are the reference models; next stage-1 arm: 1,024-2,048-token chunks |
 
 Not worth it now: per-layer KV injection, cross-attention readers, rendering text as images, per-document decoder-state
 caching on Qwen3.5 (50 MB per page), more `<MEM>`s everywhere (rate 4: +.034 for 1.8× the tokens).

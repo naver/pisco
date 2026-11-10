@@ -80,13 +80,13 @@ def _build_chat_prompt(tokenizer, *, background: str, question: str, system: str
     return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False)
 
 
-def make_collator(model: PISCO, *, topk: int, compressor_max_length: int, image_compr_rate, query_dependent: bool):
+def make_collator(model: PISCO, *, topk: int, compressor_max_length: int, image_compr_rate, query_dependent: bool, chunk_docs: bool = False):
     """The finetuning collator, used here only for example_chunks (chunking / truncation / cleaning)."""
     return MultimodalFineTuningCollator(
         compressor_tokenizer=model.compressor_tokenizer, decoder_tokenizer=model.decoder_tokenizer,
         compr_rate=model.compr_rate, compressor_max_length=compressor_max_length,
         image_processor=model.image_processor, image_compr_rate=image_compr_rate,
-        topk_docs=topk, query_dependent=query_dependent, pad_to_multiple_of=None,
+        topk_docs=topk, query_dependent=query_dependent, pad_to_multiple_of=None, chunk_docs=chunk_docs,
     )
 
 TIMINGS = defaultdict(list)
@@ -541,6 +541,7 @@ def main():
                     help="add N pages of other documents of the same source, then shuffle (with_distractors); "
                          "set --topk_docs to the new page count")
     ap.add_argument("--gold_only", action="store_true", help="drop the distractor pages (both modes): distractor interference")
+    ap.add_argument("--chunk_docs", action="store_true", help="split a text document longer than --compressor_max_length into chunks (training truncates it)")
     ap.add_argument("--head_scales", default=None, help="JSON from scripts/probe_seal.py: per-head output scales on the decoder's full-attention layers (SEAL probe)")
     ap.add_argument("--answer_style", choices=["brief", "expand"], default="brief",
                     help="pisco mode: expand = copy the evidence, then answer (EXPAND_SYSTEM_PROMPT); prediction = the "
@@ -617,7 +618,7 @@ def main():
         assert model.image_processor is not None, "checkpoint has no image processor"
         args.image_max_pixels = int(model.config.image_max_pixels)
         coll = make_collator(model, topk=args.topk_docs, compressor_max_length=args.compressor_max_length,
-                             image_compr_rate=args.image_compr_rate, query_dependent=args.query_dependent)
+                             image_compr_rate=args.image_compr_rate, query_dependent=args.query_dependent, chunk_docs=args.chunk_docs)
         print(f"[eval] image_max_pixels={args.image_max_pixels} (checkpoint: {not overrides})")
     else:
         from transformers import AutoModelForImageTextToText, AutoTokenizer
