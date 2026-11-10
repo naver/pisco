@@ -33,7 +33,7 @@ case "$ARM" in
 esac
 SEEDOV=""; [ "$SEED" != 42 ] && SEEDOV="+hf_training.seed=$SEED"
 SMOKEOV=""; TAG=""
-if [ -n "$SMOKE" ]; then SMOKEOV="hf_training.max_steps=$SMOKE"; TAG="_smoke"; fi
+if [ -n "$SMOKE" ]; then SMOKEOV="+hf_training.max_steps=$SMOKE"; TAG="_smoke"; fi
 OUT=$ROOT/expQ/freeze/ft_${ARM}_s${SEED}${TAG}
 mkdir -p "$OUT"
 echo "FACTORS kind=ft_mm arm=$ARM seed=$SEED smoke=${SMOKE:-0} init=pt_mm_5M_spread samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520"
