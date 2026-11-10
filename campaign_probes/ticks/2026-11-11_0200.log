@@ -1,0 +1,117 @@
+== campaign probes wake 2026-11-11_0200  reasons=idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794330001 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.1 idle_h=2.9 min_util=- alert=1 unpushed=5 cron=2 daemon=1 disk_gb=13325 sig=db96a1cc same=1 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session a601ae6b-2fab-4231-a871-554299e8924d  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ # Wake brief — campaign probes — 2026-11-11_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+148 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_probes/ticks/2026-11-11_0100.log | tail -40; echo ----; cat campaign_probes/ticks/2026-11-11_0130.log | tail -40; echo ----; ls campaign_probes/; cat campaign_probes/ALERT
+  ↳ == campaign probes wake 2026-11-11_0100  reasons=idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_probes/CAMPAIGN.md; echo =====; cat campaign_probes/STATE.md
+  ↳ Exit code 1 (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 25	unit is judge accuracy in [0, 1], "pt" = .01. Models are FIXED: the reference pair `expQ/ft_mm_4b_184778/model` (s42) and (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 1	# Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+20 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 65	 (+39 lines)
+Checking why the last two wakes failed (they hit the Claude 5-hour usage limit), then starting the campaign's first step.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls campaign_probes/ticks/; tail -30 campaign_probes/ticks/2026-11-11_0030.log; cat campaign_probes/campaign.conf
+  ↳ 2026-11-11_0030.log (+76 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat eval_mm_4b.sh; ls scripts/probes/ ; ls expQ/probes/ 2>/dev/null | head -30; ls -la expQ/ft_mm_4b_184778/eval/
+  ↳ #!/bin/bash (+81 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '/Resume here/,/^## /p' HANDOFF.md | head -40; ls -la expQ/ft_mm_4b_184778/ expQ/ft_mm_4b_184780/; expmon launch --help 2>&1 | head -60
+  ↳ ## Resume here (chat closed 2026-11-11 ~00:30 KST) (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -l "ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json" eval_mm_4b_*.out 2>/dev/null | head; python3 -c " ⏎ import json;d=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_…
+  ↳ eval_mm_4b_184781.out (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json;d=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json')) ⏎ print(json.dumps(d['summary'],indent=0)[:1500]); r=d['records']; print(len(r))…
+  ↳ { (+70 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 184781 -o JobID,Submit,Start,End,Elapsed,State,Restarts -X; grep -c FACTORS eval_mm_4b_184781.out; grep -nE "^\[eval\]|rows|compress|loading|Loading" eval_mm_4b_184781.out | head -20; wc -l ev…
+  ↳ sacct: error: Invalid field requested: "Restarts" (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 184781,184784 -o JobID,Submit,Start,End,Elapsed,State -X; sacct -j 185577,185579,185580 -o JobID,Elapsed,State,Partition -X; gpucap free a100 2>&1 | tail -8
+  ↳ JobID                     Submit               Start                 End    Elapsed      State  (+13 lines)
+Launching the instrument check next: a re-run of the reference model's document eval, written to a separate folder so the recorded result is not overwritten.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/probes/attn_route_185579/ | head; git check-ignore -v expQ/probes/x/eval/a.json expQ/probes/x/model; cat .gitignore | head -30; ls eval_data/mm_docqa_1500_1m | head
+  ↳ total 3268 (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; mkdir -p expQ/probes/rep_184778 && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model expQ/probes/rep_184778/model && ls -la expQ/probes/rep_184778/ && ls expQ/probes/rep_184778/mode…
+  ↳ total 1 (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp probes --stage feas --parent 184781 --time 4:54:00 eval_mm_4b.sh expQ/probes/rep_184778/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | tail -8
+  ↳ Submitted batch job 188419 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188419 "intent: feasibility gate of campaign probes — re-run of the reference document cell (model 184778 via symlink expQ/probes/rep_184778/model so the recorded file is not overwritten…
+  ↳ Exit code 2 (+3 lines)
+The check is queued (waiting for a GPU). While it waits, I'll prepare the page-picking analysis for a later step and record why the last two wakes failed.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat expQ/probes/attn_route_185577/summary.json; python3 -c " ⏎ import json; m=json.load(open('expQ/probes/attn_route_185577/meta.json')); print(type(m), (list(m.keys()) if isinstance(m,dict) else len(m…
+  ↳ { (+107 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 60,200p scripts/probes/probe_attn_route.py | grep -nE "savez|meta|digit|route_logprobs|append\(" | head -30
+  ↳ 8:rows_out, masses, meta = [], [], [] (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 100,112p scripts/probes/probe_attn_route.py; grep -n "def route_logprobs" -A30 scripts/eval_mm_docqa.py | grep -nE "return|def " | head
+  ↳ assert captured, "no attention weights captured (eager attention not active?)" (+14 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/probes/probe_attn_route.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/probes/probe_attn_route.py has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "rank_scores|rank1|query_id" scripts/eval_mm_docqa.py | head -20; grep -n "row = \|row.get\|for t, i in" scripts/probes/probe_attn_route.py | head
+  ↳ 135:    document (first 12 characters differ), then all pages shuffled (seeded by query_id), gold_positions remapped.""" (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/probes/probe_attn_route.py'; s=open(p).read() ⏎ old='"digit_lp": [float(x) for x in lp] if lp is not None else None})   # full digit scores: route_fusion.py' ⏎ new='"digi…
+  ↳ lp = E.route_logprobs(model, background, emb, query, n_docs, dev) if n_docs <= 20 else None (+11 lines)
+Preparing the page-picking probe (saving the full route scores so they can be fused with attention). Locating its launcher.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls *.sh | grep -i probe; cat probe_attn_route.sh 2>/dev/null | head -30; squeue -j 188419 -o "%i %T %P %R" -h
+  ↳ mem_probe_4b_bs24.sh (+29 lines)
+Writing the fusion analysis script (combines the model's route answer with its attention to pick the answer page).
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/probes/route_fusion.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/probes/route_fusion.py (file state is current in your context — no need to Read it back)
+Adding a self-test that rebuilds the known page-picking numbers (.861 route, .885 attention) from the saved files, so the script is checked before it is used.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/probes/route_fusion.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/probes/route_fusion.py has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git ls-files probe_attn_route.sh eval_mm_4b.sh probe_seal.sh scripts/probes/; python3 -c "import ast;ast.parse(open('scripts/probes/route_fusion.py').read());ast.parse(open('scripts/probes/probe_attn_r…
+  ↳ scripts/probes/probe_attn_route.py (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat > scripts/probes/route_fusion.sbatch <<'EOF' ⏎ #!/bin/bash ⏎ #SBATCH -n 1 ⏎ #SBATCH -p gpu-be ⏎ #SBATCH --gres=gpu:0 ⏎ #SBATCH --cpus-per-task=2 ⏎ #SBATCH --mem=16G ⏎ #SBATCH --time=0:20:00 ⏎ #SBAT…
+  ↳ not ignored (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp probes --stage fusion scripts/probes/route_fusion.sbatch --selftest expQ/probes/attn_route_185577 expQ/probes/fusion_selftest 2>&1 | grep -E "Submitted|job id"
+  ↳ Submitted batch job 188427 (+1 lines)
+Meanwhile, recording the cause of the two failed wakes (Claude usage limit, not a login problem).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188427 "intent: plumbing check of scripts/probes/route_fusion.py (arm D) on the saved 185577 probe: synthetic digit scores must give back digit .8607 and attention .8853 exactly; CPU, no…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Now tightening the campaign law with two measured facts (cell wall time, output location).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 188419,188427 -h -o "%i %T %R %S"; ls docs/probe_campaign_2026-11.md 2>&1; expmon campaign report --section leaves 2>&1 | head -30
+  ↳ 188419 PENDING (Priority) 2026-11-11T09:54:59 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat route_fusion_188427.out | tail -15; gpucap land a100 1 2>&1 | tail -8; squeue -p gpu-be -t PD -h | wc -l; squeue -u hdejean -p gpu -h -o "%i %j %T"
+  ↳ FACTORS kind=route_fusion args=--selftest,expQ/probes/attn_route_185577,expQ/probes/fusion_selftest (+21 lines)
+→ Bash: squeue -j 188420,188421,188422 -o "%i %j %T %P %b %D %R %S %l" ; squeue -j 188419 -o "%i %b %R %S" -h
+  ↳ JOBID NAME STATE PARTITION TRES_PER_NODE NODES NODELIST(REASON) START_TIME TIME_LIMIT (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 185579 185580; do python3 -c " ⏎ import json;s=json.load(open('expQ/probes/attn_route_$j/summary.json'));print($j,s['n'],s['topk'],round(s['digit_pick@1'] or 0,3),round(s['attn_mean_all_pick@1…
+  ↳ 185579 1500 4 0.987 0.985 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "\[job 18578[345]\]|\[job 188338\]" EXPERIMENTS.md | cut -c1-400 | head -8
+  ↳ (Bash completed with no output)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "185783|185784|185785|188338" EXPERIMENTS.md | cut -c1-400 | head -8; grep -n "mixer" EXPERIMENTS.md | tail -4 | cut -c1-400
+  ↳ 472:- 2026-11-02 02:00 probe bugs fixed (2026-11-02): probe_mixer.sh / probe_mem_position.sh had lost their CKPT export (a sed on probe_connector.sh dropped the line), so 183625-183631 silently probed (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 185577 closed "pre-campaign (2026-11-06) attention-route probe, model 183814, retr10 10 pages, n=1500: digit route pick@1 .861, attention mass .885; arm D baseline + known-positive co…
+  ↳ verdict recorded: 185577 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+9 lines)
+Writing the campaign state file and the findings page skeleton.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -oE '"(image_)?compr_rate": *[0-9a-z]+' expQ/ft_mm_4b_184778/model/config.json
+  ↳ "compr_rate": 8
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon grid probes 2>&1 | awk '{print $1,$3,$4,$5}' | head -14; squeue -j 188419 -h -o "%i %T %R %S"
+  ↳ RUN PARENT STATE VERDICT (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "wake-when job:188419 max 6h" > campaign_probes/NEXT; cat campaign_probes/NEXT
+  ↳ wake-when job:188419 max 6h
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188419 max 6h", "summary": "The campaign has its first real run queued: the instrument check (does the judge reproduce at the .02 level?) is waiting on the shared best-effort GPU queue. SLURM estimate…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3864 turns=50 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188419 max 6h", "summary": "The campaign has its first real run queued: the instrument check (does the judge reproduce at the .02 level?) is waiting on the shared best-effort GPU queue. SLURM estimates it starts around 09:55 KST, and no other part of the campaign can start until it passes. The three earlier wakes (00:30, 01:00, 01:30) failed because the Claude 5-hour usage limit was hit, not because of a login problem.\n\nDone:\n- Instrument check: re-runs the reference model's document eval (1,500 questions) as job 188419. It runs from a symlinked model folder under expQ/probes/rep_184778, so the recorded .610 result is not overwritten.\n- Pass rule: the judge must come out within ±.01 of the recorded .610, with the paired 95% CI inside ±.02.\n- Time limit: 4:54, which is 3 × the slowest measured run of this eval (98 min).\n- I did not move it to the main queue. The sibling training campaign already has two 4-GPU jobs waiting there, which fill the owner's 8-GPU cap, so one more GPU would delay that training. The law's rule applies if it is still waiting after 6 h: move it to gpu,gpu-be.\n- Page-picking probe (picks the answer page by combining the route prompt with the decoder's attention): code is ready.\n  - probe_attn_route.py now saves the full route scores and query_id for each row; the 2026-11-06 runs saved only the chosen page.\n  - New scripts/probes/route_fusion.py and route_fusion.sbatch.\n  - Self-test (job 188427) rebuilt t
+== final:
+{"next":"wake-when","wake_when":"job:188419 max 6h","summary":"The campaign has its first real run queued: the instrument check (does the judge reproduce at the .02 level?) is waiting on the shared best-effort GPU queue. SLURM estimates it starts around 09:55 KST, and no other part of the campaign can start until it passes. The three earlier wakes (00:30, 01:00, 01:30) failed because the Claude 5-hour usage limit was hit, not because of a login problem.\n\nDone:\n- Instrument check: re-runs the reference model's document eval (1,500 questions) as job 188419. It runs from a symlinked model folder under expQ/probes/rep_184778, so the recorded .610 result is not overwritten.\n- Pass rule: the judge must come out within ±.01 of the recorded .610, with the paired 95% CI inside ±.02.\n- Time limit: 4:54, which is 3 × the slowest measured run of this eval (98 min).\n- I did not move it to the main queue. The sibling training campaign already has two 4-GPU jobs waiting there, which fill the owner's 8-GPU cap, so one more GPU would delay that training. The law's rule applies if it is still waiting after 6 h: move it to gpu,gpu-be.\n- Page-picking probe (picks the answer page by combining the route prompt with the decoder's attention): code is ready.\n  - probe_attn_route.py now saves the full route scores and query_id for each row; the 2026-11-06 runs saved only the chosen page.\n  - New scripts/probes/route_fusion.py and route_fusion.sbatch.\n  - Self-test (job 188427) rebuilt the saved numbers exactly: route .8607 and attention .8853 on 1,500 rows.\n- The 8 earlier probe rows in the results table (from before the campaign) are closed with their numbers. known_issues.md has 2 new rows: the usage-limit failure, and the overwrite risk when re-running a recorded eval.\n- CAMPAIGN.md tightened: time limit from the slowest measured run; every eval runs from a symlinked model folder; new launchers are named *.sbatch.\n- Started docs/probe_campaign_2026-11.md.\n\nYour action, not blocking:\n- eval_mm_4b.sh and probe_attn_route.sh are not under git, because .gitignore drops every *.sh file. Force-add them when convenient.\n- The ALERT about the failed wakes is yours to clear. Nothing needs fixing: the usage limit has reset.","launched":["188419 feasibility gate: re-run of the reference model 184778 document cell (1500 Q, PX=1003520, gpu-be, --time 4:54:00)","188427 CPU self-test of scripts/probes/route_fusion.py on probe 185577 (PASS)"],"verdicts":[{"jobid":"188427","verdict":"closed","note":"plumbing PASS: route .8607 / attention .8853 reproduced exactly, n=1500"},{"jobid":"185577","verdict":"closed","note":"pre-campaign attention route probe, retr10: route .861, attention .885, n=1500; arm D baseline and known-positive control"},{"jobid":"185579","verdict":"closed","note":"pre-campaign, docs 4 pages: route .987, attention .985, n=1500 (ceiling)"},{"jobid":"185580","verdict":"closed","note":"pre-campaign, HotpotQA: route .922, attention .873, n=1500; arm D no-l
+== rc=0 secs=414
+== verify: 3/3

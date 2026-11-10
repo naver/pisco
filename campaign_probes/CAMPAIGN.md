@@ -44,6 +44,10 @@ plumbing checks, never for a claim), chunk cap 4096 (`CML=4096`) on text so no p
 
 Rules: every arm is a committed launcher + a committed cell spec, never raw overrides on the launch line. A
 comparison with a difference not listed here is not a result. A relaunch repeats the original command exactly.
+Every eval cell runs on a symlinked model dir `expQ/probes/<cell>/model → expQ/<run>/model` (e.g. `rep_184778`), so its
+result lands in `expQ/probes/<cell>/eval/` and never overwrites a recorded file in `expQ/<run>/eval/` (the plain re-run of
+the feasibility gate would). New launchers go in `scripts/probes/*.sbatch`: the repo `.gitignore` drops every `*.sh`,
+so `eval_mm_4b.sh` and `probe_attn_route.sh` are NOT under git (owner to force-add them).
 Any new eval set or grouping is a ledger `resource:` note the moment it exists (path, size, how built).
 
 ## Decision gates
@@ -68,7 +72,9 @@ wait for the whole grid. Every claim carries n (questions, pairs), the paired CI
 - at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
 - every launch: one GPU, `-p gpu-be` by default (`--partition gpu,gpu-be` when gpu-be is jammed; the owner's 8-GPU cap on
   `gpu` is shared with the sibling training campaign `longchunk`, so never more than 2 cells on `gpu` at once); `--time` =
-  measured cell wall × 3 (a 1,500-Q judged document cell measured 28-45 min, photos 18 min, text 17 min)
+  measured cell wall × 3, from the SLOWEST measured run of that cell kind (a 1,500-Q judged document cell measured 28 min
+  on job 184784 and 98 min on job 184781, same cell kind → 4:54:00; photos 18 min, text 17 min; attention-route probe
+  retr10 41 min / docs 21 min / hotpot 12 min)
 - no launch below CAMP_DISK_FLOOR_GB free; nothing new after CAMP_UNTIL
 
 ## Deliverable — how results reach the owner

@@ -105,7 +105,9 @@ with torch.inference_mode():
         lp = E.route_logprobs(model, background, emb, query, n_docs, dev) if n_docs <= 20 else None
         masses.append(mass.numpy().astype(np.float32))
         meta.append({"i": int(i), "n_docs": n_docs, "counts": counts, "gold": sorted(gold),
-                     "digit_pick": int(np.argmax(lp)) if lp is not None else None, "source": row.get("source")})
+                     "digit_pick": int(np.argmax(lp)) if lp is not None else None, "source": row.get("source"),
+                     "digit_lp": [float(x) for x in lp] if lp is not None else None,   # full digit scores: route_fusion.py
+                     "query_id": str(row.get("query_id"))})
         if (t + 1) % 100 == 0:
             print(f"{t + 1}/{len(idx)}", flush=True)
 

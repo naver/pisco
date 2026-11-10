@@ -1,1 +1,2 @@
 LLM wake 2026-11-11_0100 failed FAST (rc=1 in 8s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0100.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0100.log
+LLM wake 2026-11-11_0130 failed FAST (rc=1 in 9s) — unknown: rc=1, no known signature in the log. Fix: read it: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0130.log. Log: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-11_0130.log

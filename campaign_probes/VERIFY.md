@@ -1,0 +1,11 @@
+# VERIFY — campaign probes — 2026-11-11_0200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file)
+
+All three claims in STATE.md check out: the "nothing settled" bullet, the plumbing-only selftest of the page-picking script (job 188427 reproduces .8607 / .8853 on n=1500 from 185577's summary.json), and the pending instrument-check job 188419, launched with the law's exact command against the recorded .610 from job 184781. The campaign has no result of its own yet. The selftest proves only that the code runs: its route number matches by construction and only its attention number is a real check.
+
+3 claim(s): 3 supported · 0 provisional · 0 unsupported
+
+| claim | status | reason |
+|---|---|---|
+| Settled: nothing yet. The campaign has not measured anything of its own; it waits on the instrument check below. | supported | The grid has no ended campaign cell except the plumbing selftest 188427 and the instrument-check job 188419, which is PENDING. The other rows (185577/185579/185580/185581/185783-185785/188338) are pre-campaign and closed. Nothing is claimed, so there is nothing to contradict. |
+| Settled (plumbing only): the page-picking fusion script reproduces the saved route numbers exactly — route .8607, attention .8853, n=1500 rows, model 183814, 10-page document set (selftest job 188427  | supported | route_fusion_188427.out prints 'SELFTEST PASS: digit 0.8607 attn 0.8853', n=1500, skipped 0. expQ/probes/attn_route_185577/summary.json has digit_pick@1 0.86067 and attn_mean_all_pick@1 0.88533, ckpt ft_mm_4b_183814, retr10_1m, topk 10. The code asserts both match within 1e-9. Caveat: the digit matc |
+| Open, running: feasibility gate = job 188419, a re-run of the reference model's document cell (model 184778, 1,500 questions, PX=1003520), PENDING on gpu-be (Priority, SLURM start estimate 09:55 KST); | supported | Status claim only, no result. Grid row: 188419, stage feas, parent 184781, PENDING. The session queue shows 188419 eval_mm_4b.sh PENDING on gpu-be (Priority). The tick log at 02:00 shows the law's exact command: PX=1003520 eval_mm_4b.sh expQ/probes/rep_184778/model pisco "" eval_data/mm_docqa_1500_1 |
