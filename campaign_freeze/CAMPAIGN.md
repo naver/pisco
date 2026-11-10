@@ -112,7 +112,12 @@ table of each run (entries changed %, per module) and the training cost (hours, 
 | a job PENDING > 2 h for Resources with `--mem` above the profile rung's MaxRSS × 1.5 while cheaper twins run | `scontrol update JobId=… MinMemoryNode=…` (downward only) | never touch a job the campaign does not own |
 | the expmon daemon is gone | `expmon daemon` | — |
 | a probe/eval straggler FAILED in seconds with a benign signature (known_issues.md) | ignore, note once | — |
-| a reproduced crash whose fix is ≤ CAMP_PATCH_LINES lines inside a "## Patchable
+| a reproduced crash in a campaign file whose fix is ≤ CAMP_PATCH_LINES lines inside a "## Patchable" path | apply it, smoke on the cheapest cell (≤ 20 steps), record `<file> — <traceback line> — <lines changed>` in STATE.md; the tick commits it (CAMP_COMMIT_PATHS) | 1 patch per symptom, then BLOCKED.md |
+| a job PENDING > 6 h for Resources on `gpu` | resubmit with `--partition gpu-be` (preemptible; a preemption relaunch counts as transient) | 1 move per cell |
+| a finetune of a listed arm has written its checkpoint at about a quarter of the run (step ~100 of 438) | PREVIEW: `eval_mm_4b.sh <checkpoint> pisco 300 eval_data/mm_docqa_1500_1m`, judge chained, paired against the reference's checkpoint at the same step and seed when it exists; report as `provisional:` with n = 300 | one preview per finetune cell; a preview never validates or fails the gate |
+Anything else: BLOCKED.md and stop.
+
+## Patchable
 CAMP_PATCH_LINES=20 (campaign.conf; the conf wins).
 - **freely patchable** (≤ 20 lines per symptom): `expQ/freeze/check_module_move.sh`.
 - **patchable IF an invariant holds**: `expQ/freeze/ft_freeze.sh` — its SLURM header, paths, env plumbing, logging, or
