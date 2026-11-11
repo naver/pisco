@@ -1,0 +1,60 @@
+== campaign longchunk wake 2026-11-11_1030  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794360601 live=188466:PENDING,188469:PENDING,188468:PENDING,188467:PENDING,188422:RUNNING,188470:PENDING running=1 pending=5 problems=0 problems_other=0 new=0 gpuh24=33.9 idle_h=0.0 min_util=97 alert=0 unpushed=30 cron=3 daemon=1 disk_gb=13047 sig=fd95baa0 same=6 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188422_file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 (exists)   (NEXT was: wake-when job:188422 file:expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000 max 8h)
+== session 64ada0c7-38a6-41cf-873d-7601cb162a51  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/64ada0c7-38a6-41cf-873d-7601cb162a51/tool-results/bte2uqv0k.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-11_1030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+221 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/CAMPAIGN.md; echo ======; cat campaign_longchunk/STATE.md
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 30,80p campaign_longchunk/CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/STATE.md; echo; echo ====KI; cat campaign_longchunk/known_issues.md; echo ===VERIFY; cat campaign_longchunk/VERIFY.md 2>/dev/null || cat .expmon/campaign/longchunk/VERIFY.md
+  ↳ Exit code 1 (+59 lines)
+  ↳ | arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+50 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 80,140p campaign_longchunk/CAMPAIGN.md; echo "--- KI"; cat campaign_longchunk/known_issues.md; echo "--- VERIFY"; ls campaign_longchunk/ .expmon/campaign/longchunk/
+  ↳ finetunes 22 + evals 20); smokes 7 → the full plan projects to ≈ 841 GPU-h = 35.0 GPU-days, the WHOLE budget with no (+122 lines)
+Checking the control's stage-1 checkpoint at step 2,000 (the loss health check), then updating the state file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/VERIFY.md; echo "--- run dir"; ls -la expQ/longchunk/pt_text_1M_cml256_188422/ | head -30
+  ↳ # VERIFY — campaign longchunk — 2026-11-11_0400   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longchunk/; f=$(ls expQ/longchunk/*188422*.out 2>/dev/null | head -1); echo "log: $f"; grep -o "'eval_loss': [0-9.e-]*[^}]*" $f | head; grep -o "{'loss': [^}]*}" $f | awk 'NR%10==0' | tail -25;…
+  ↳ build_msmarco_docs.sbatch (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 188422 5 2>&1 | tail -8; ls -t logs 2>/dev/null | grep 188422; find . -maxdepth 2 -name "*188422*" -newer expQ/longchunk/pt_text_4b_long.sh 2>/dev/null | head
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/pt_text_long_188422.out (last 5) <== (+79 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=pt_text_long_188422.out; grep -o "{'eval_loss': [^}]*}" $f; echo "--- train loss every 250 steps"; grep -o "{'loss': [^}]*}" $f | awk 'NR%25==1 || NR<=2' ; grep -o "{'loss': [^}]*}" $f | wc -l; grep …
+  ↳ {'eval_loss': '0.8007', 'eval_Rouge-1': '0.7899', 'eval_Rouge-2': '0.6875', 'eval_Rouge-L': '0.7833', 'eval_precision': '0.8139', 'eval_recall': '0.8041', 'eval_M': '0.01562', 'eval_runtime': '27.69', (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=pt_text_long_188422.out; grep -io "[a-z_']*nan[a-z_']*" $f | sort | uniq -c; grep -o "{'loss': '[0-9.]*'" $f | sed "s/{'loss': //" | tr '\n' ' '; echo; echo "--- ref"; grep -o "eval_loss[^,]*" expQ/a…
+  ↳ 8 Pregnancy (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls campaign_longchunk/ticks/ | tail -5; grep -l "188467" campaign_longchunk/ticks/* | head; grep -n "PT_DATA\|FT_DATA" campaign_longchunk/ticks/2026-11-11_0400.log 2>/dev/null | head -20
+  ↳ 2026-11-11_0200.log (+13 lines)
+Control stage 1 looks healthy at step 2,000. Now checking that the chained image-stage jobs carry their data settings.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 96p campaign_longchunk/ticks/2026-11-11_0400.log | cut -c1-1500; sacct -j 188467,188468,188469,188470 --env-vars -X 2>/dev/null | grep -oE "(PT_DATA|PT_OUT|FT_DATA|FT_OUT|SETS)=[^ ]*" | head
+  ↳ ↳ JOBID NAME STATE REASON PARTITION TIME_LIMIT (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 188467 --env-vars -X -P 2>&1 | head -c 600; echo; scontrol show job 188467 2>&1 | grep -iE "Command|WorkDir|StdOut|Dependency" ; ls /var/spool/slurm* 2>/dev/null | head -2
+  ↳ Environment used for 188467 (must be batch to display) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "PT_OUT|PT_DATA" pt_mm_4b.sh | head; grep -nE "FT_OUT|FT_DATA" ft_mm_4b.sh | head -5; sed -n 93p campaign_longchunk/ticks/2026-11-11_0400.log | cut -c1-900; grep -n "PT_DATA=" campaign_longchu…
+  ↳ 29:DATA=${PT_DATA:-/beegfs/scratch/user/hdejean/pisco/data/mm_pretrain_160k} (+4 lines)
+→ Bash: cd /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/; grep -l "pt_mm_cml256" *.jsonl 2>/dev/null | head -3; f=$(grep -l "PT_OUT=.*pt_mm_cml256" *.jsonl 2>/dev/null | head -1); echo "f=$f"; [ -n "$f" ] && grep -o 'PT_DATA=[^…
+  ↳ Exit code 1 (+3 lines)
+→ Bash: cd /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/; for f in 6757705f-eb16-4447-87e4-532c6090a5cc.jsonl 24b5a27a-7196-46b6-8ca5-f20c8742c895.jsonl; do echo "== $f"; grep -o 'PT_[A-Z]*=[^ ]*' $f | sort -u | head -6; grep -…
+  ↳ == 6757705f-eb16-4447-87e4-532c6090a5cc.jsonl (+15 lines)
+The launch env can only be confirmed once the image-stage job starts; I keep that claim provisional. Recording the step-2,000 health numbers now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 188422 --step 2000 eval_loss=0.8007 eval_rougeL=0.7833 docs_seen=384000 2>&1 | tail -3; expmon note -j 188422 "result: C256 stage-1 health at step 2,000 (.384 epoch, 384,000 MS MARCO docum…
+  ↳ probe recorded: 188422 @2000 (eval_loss=0.8007 eval_rougeL=0.7833 docs_seen=384000)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon curves 188422 2>&1 | tail -6
+  ↳ expmon curves: EXP_CURVES_CMD not set in /beegfs/scratch/user/hdejean/pisco/.expmon.conf — author a series extractor (prints JSON {run: {metric: [[step,val],...]}}; the 'expmon' skill does this).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+15 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c gap "curves: EXP_CURVES_CMD unset in pisco/.expmon.conf, so 'expmon curves' cannot plot a running stage 1 and the wake copies eval_loss by hand from the .out; suggest a built-in default…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Control stage 1 (188422, 256-token chunks, MS MARCO 1M docs) passed its step-2,000 health check: held-out loss .801, Rouge-L .783 (64 rows), train loss 2.30 → .95 still falling, no NaN, 11.3–11.6 s/step → e…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3118 turns=24 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Control stage 1 (188422, 256-token chunks, MS MARCO 1M docs) passed its step-2,000 health check: held-out loss .801, Rouge-L .783 (64 rows), train loss 2.30 → .95 still falling, no NaN, 11.3–11.6 s/step → ends ≈ 20:45. Probe + ledger note recorded. Chained jobs (L1024 stage 1 188466, C256 stage 2 188467 → finetunes 188468/188469, ownership probe 188470) are still pending on dependencies. The data env vars (PT_DATA/FT_DATA) of the chained stage-2/finetune jobs can't be read from Slurm until they run, so that claim stays provisional; the next wake checks training_dataset in pt_mm_cml256/training_config.yaml. Budget spent ≈ 34 GPU-h. STATE.md rewritten. No submissions.", "launched": [], "verdicts": [], "gripes": ["gap: EXP_CURVES_CMD unset in pisco/.expmon.conf, so expmon curves cannot plot a running stage 1; suggest a built-in default extractor for HF Trainer log dicts"], "wake_when": "job:188470 max 14h"}
+== final:
+{"next":"wake-when","summary":"Control stage 1 (188422, 256-token chunks, MS MARCO 1M docs) passed its step-2,000 health check: held-out loss .801, Rouge-L .783 (64 rows), train loss 2.30 → .95 still falling, no NaN, 11.3–11.6 s/step → ends ≈ 20:45. Probe + ledger note recorded. Chained jobs (L1024 stage 1 188466, C256 stage 2 188467 → finetunes 188468/188469, ownership probe 188470) are still pending on dependencies. The data env vars (PT_DATA/FT_DATA) of the chained stage-2/finetune jobs can't be read from Slurm until they run, so that claim stays provisional; the next wake checks training_dataset in pt_mm_cml256/training_config.yaml. Budget spent ≈ 34 GPU-h. STATE.md rewritten. No submissions.","launched":[],"verdicts":[],"gripes":["gap: EXP_CURVES_CMD unset in pisco/.expmon.conf, so expmon curves cannot plot a running stage 1; suggest a built-in default extractor for HF Trainer log dicts"],"wake_when":"job:188470 max 14h"}
+== rc=0 secs=186
+== verify: 7/8

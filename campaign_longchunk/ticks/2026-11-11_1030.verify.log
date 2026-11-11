@@ -1,0 +1,59 @@
+== verifier 2026-11-11_1030  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+== session 5870a37d-40b8-4ee6-a5cc-973cf5a8cdf7  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longchunk (+170 lines)
+→ Glob: {"pattern": "expQ/longchunk/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk"}
+  ↳ expQ/longchunk/data_check.sbatch (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_msmarco_188358.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_188339.json
+  ↳ 1	{ (+214 lines)
+→ Grep: {"pattern": "eval_loss|'loss'", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/train.log", "output_mode": "content", "head_limit": 80}
+  ↳ No matches found
+→ Glob: {"pattern": "pt_text_long_1884*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Grep: {"pattern": "loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/train.log", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+Checking the control run's log numbers next. The data numbers already match their json files.
+→ Grep: {"pattern": "pt_text_long", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/pt_text_long_%j.out (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000/trainer_state.json
+  ↳ 1	{ (+39 lines)
+→ Grep: {"pattern": "eval_|\"loss\": 0\\.9|\"step\": (1000|950|1050|1950|2000)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-2000/trainer_state.json", "output_mode": "content", "head_limit": 60}
+  ↳ 6:  "eval_steps": 2000, (+40 lines)
+→ Grep: {"pattern": "eval_loss|'loss': '0\\.9|262728|262,728|Token indices", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188422.out", "output_mode": "content", "head_limit": 40}
+  ↳ 17605:[Omitted long matching line] (+36 lines)
+→ Grep: {"pattern": "Token indices sequence length is longer than the specified maximum sequence length for this model \\(\\d+", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188422.out", "output_mode": "content", "-o": true}
+  ↳ 17605:Token indices sequence length is longer than the specified maximum sequence length for this model (528568 (+3 lines)
+→ Grep: {"pattern": "'loss': '0\\.95\\d*', 'grad_norm': '[0-9.]+', 'learning_rate': '[0-9.e-]+', 'epoch': '0\\.39\\d*'", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188422.out", "output_mode": "content", "-o": true}
+  ↳ 18063:'loss': '0.9521', 'grad_norm': '0.2598', 'learning_rate': '3.193e-05', 'epoch': '0.3936'
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread", "output_mode": "content", "head_limit": 20}
+  ↳ expQ/archq3/pt_text_1M_spread/checkpoint-5208/trainer_state.json:298:      "eval_loss": 0.9236328601837158, (+4 lines)
+→ Grep: {"pattern": "50/50 \\[[0-9:]+<|train_runtime|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188420.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:50/50 [52:03< (+6 lines)
+→ Grep: {"pattern": "50/50 \\[[0-9:]+<|train_runtime|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188421.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 17511:50/50 [38:05< (+6 lines)
+→ Grep: {"pattern": "compressor_max_length|decoder_max_length|per_device_train_batch_size|gradient_accumulation_steps|max_steps|learning_rate|training_dataset|samples|seed|mem_layout|mem_position_stride|compr_rate|lora_r", "path": "/beegfs/scratch/…
+  ↳ 4:  per_device_train_batch_size: 24 (+11 lines)
+→ Grep: {"pattern": "compressor_max_length|decoder_max_length|per_device_train_batch_size|gradient_accumulation_steps|max_steps|learning_rate|training_dataset|samples|seed|mem_layout|mem_position_stride|compr_rate|lora_r", "path": "/beegfs/scratch/…
+  ↳ 4:  per_device_train_batch_size: 6 (+12 lines)
+Comparing the full configs of the control run and the 1,024-token test run, then I will give the verdicts.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188421/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+50 lines)
+→ Grep: {"pattern": "188466|188470|afterok|time=", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longchunk", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_longchunk/VERIFY.md:14:| Chained behind it, all waiting on dependencies (submitted this wake): 1,024-token arm stage 1, control stage 2 → two finetunes, ownership probe. | supported | runs.js (+31 lines)
+→ Grep: {"pattern": "\"jobid\": \"18846[6-9]\"|\"jobid\": \"188470\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 840:"jobid": "188466" (+4 lines)
+→ Grep: {"pattern": "\"time\": \"[^\"]*\"|\"dependency\": \"[^\"]*\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "offset": 0, "head_limit": 0, "glob": "runs.jsonl", "multiline": false}
+  ↳ 12:"time": "4:00:00" (+865 lines)
+→ StructuredOutput: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed."…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9318 turns=26 is_error=False denials=0
+== declared: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.", "status": "supported", "reason": "data_check_msmarco_188358.json: n=107,120 of 3,213,596, frac_docs_ge_1024 .4339, ge_2048 .2039. Both clear the law's thresholds of 30% and 15%. data_check_188339.json: n=100,000, .2384 and .0831, both below the thresholds. Both jobs carry verdict closed in the grid and verdicts."}, {"claim": "The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, exit 0, ~72 GB per GPU (sacct 288 GB over 4), 58.6 s per step (steps 10–49 of `pt_text_long_188420.out`) → full stage 1 (5,208 steps, 1M documents) = 84.8 h — job 188420, closed.", "status": "supported", "reason": "Verdict 188420 (04:04): 50/50 steps, exit 0, 288 GB over 4 GPUs, 39 steps in 2,287 s = 58.6 s per step, 84.8 h. pt_text_long_188420.out shows 50/50 and train_runtime. Grid row 188420: cml 2048, dml 4096, bs 3, accum 16, verdict closed. This is a fit and speed test only, which is what gate (b) asks."}, {"claim": "The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, exit 0, ~71 GB per GPU, 42.1 s per step (`pt_text_long_188421.out`) → full stage 1 = 60.9 h — job 188421, closed.", "status": "supported", "reason": "Verdict 188421: 50/50 steps, exit 0, 285 GB over 4 GPUs, 1,641 s for steps 10–49 = 42.1 s per step, 60.9 h
+== final:
+{"claims":[{"claim":"Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.","status":"supported","reason":"data_check_msmarco_188358.json: n=107,120 of 3,213,596, frac_docs_ge_1024 .4339, ge_2048 .2039. Both clear the law's thresholds of 30% and 15%. data_check_188339.json: n=100,000, .2384 and .0831, both below the thresholds. Both jobs carry verdict closed in the grid and verdicts."},{"claim":"The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, exit 0, ~72 GB per GPU (sacct 288 GB over 4), 58.6 s per step (steps 10–49 of `pt_text_long_188420.out`) → full stage 1 (5,208 steps, 1M documents) = 84.8 h — job 188420, closed.","status":"supported","reason":"Verdict 188420 (04:04): 50/50 steps, exit 0, 288 GB over 4 GPUs, 39 steps in 2,287 s = 58.6 s per step, 84.8 h. pt_text_long_188420.out shows 50/50 and train_runtime. Grid row 188420: cml 2048, dml 4096, bs 3, accum 16, verdict closed. This is a fit and speed test only, which is what gate (b) asks."},{"claim":"The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, exit 0, ~71 GB per GPU, 42.1 s per step (`pt_text_long_188421.out`) → full stage 1 = 60.9 h — job 188421, closed.","status":"supported","reason":"Verdict 188421: 50/50 steps, exit 0, 285 GB over 4 GPUs, 1,641 s for steps 10–49 = 42.1 s per step, 60.9 h. pt_text_long_188421.out shows 50/50. Grid row: cml 1024, dml 2048, bs 6, accum 8, closed. Its training_config.yaml differs from 188422's only in CML, DML, batch, accumulation and max_steps 50, as STATE says."},{"claim":"No accuracy result yet: no arm has a judged number.","status":"supported","reason":"The grid has no judged result for any campaign cell. Only 188422 has a result, a probe at step 2000 (eval_loss .8007). The judged rows 1855xx/1856xx are pre-campaign probes, closed as 'not a cell of the 2026-11-10 campaign'."},{"claim":"Control stage 1 (256-token chunks, 1M documents): job 188422 RUNNING on homer-019. Health check at step 2,000 (.384 epoch, 384,000 documents, ≈ 0.17 B text tokens) PASSED: held-out loss .801, Rouge-L .783 on 64 held-out rows; train loss fell 2.30 → .95 … no NaN. 11.3–11.6 s per step → ends ≈ 20:45 today. Scale only: the SmolLM2 reference 180486 had held-out loss .924 at the same epoch.","status":"supported","reason":"checkpoint-2000/trainer_state.json: epoch .38402, eval_loss .80066, eval_Rouge-L .78330. 27.69 s × 2.311 samples/s = 64 rows. Train loss 2.3007 at step 50, .9810 at 1,000, .9503 at 2,000; the log gives .9521 at about step 2,050 with lr 3.193e-5. Tokens: 384,000 × 447 kept per document = 0.17 B. 180486 trainer_state first eval_loss is .9236. The grid probe matches (384,000 documents). 'PASSED' only means no collapse under the law's rule: this is the control, so there is no curve to compare it with. Side note: the log holds 4 tokenizer-length warning
+== rc=0
