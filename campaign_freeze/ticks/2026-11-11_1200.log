@@ -1,0 +1,89 @@
+== campaign freeze wake 2026-11-11_1200  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794366001 live=188583:RUNNING,188582:RUNNING,188606:PENDING,188605:PENDING,188604:PENDING,188603:PENDING,188602:PENDING,188601:PENDING,188599:PENDING,188598:PENDING,188597:PENDING,188596:PENDING,188585:PENDING,188584:PENDING running=2 pending=12 problems=0 problems_other=0 new=0 gpuh24=10.6 idle_h=0.0 min_util=16 alert=0 unpushed=32 cron=3 daemon=1 disk_gb=13001 sig=c4dd6993 same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 (exists)   (NEXT was: wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h)
+== session 341c7151-4b81-4662-ac25-9dede5e614c0  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/341c7151-4b81-4662-ac25-9dede5e614c0/tool-results/b2dazn1ww.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-11_1200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+236 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ===== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+  ↳ ## Decision gates (+69 lines)
+→ Bash: cat STATE.md; echo; echo "----- KNOWN"; cat known_issues.md; echo "---- ls"; ls -la
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+130 lines)
+Reading the training logs for both frozen finetunes at the 0.46-epoch checkpoint, then I'll queue the remaining eval cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze && ls -la ft_frozen_s42 ft_frozen_s43; for s in 42 43; do f=ft_frozen_s$s/checkpoint-200/trainer_state.json; [ -f $f ] && jq -c '.log_history[] | select(.eval_loss!=null) | {step,epoch,eval_…
+  ↳ ft_frozen_s42: (+32 lines)
+Both frozen runs are healthy at 0.46 epoch (eval loss below the reference at the same point). Recording the probes and fetching the exact launch command of the earlier text cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon probe 188582 --step 0.46 eval_loss=0.444 2>&1 | tail -2; expmon probe 188583 --step 0.46 eval_loss=0.431 2>&1 | tail -2; expmon help 2>&1 | grep -iE "runs|show|cmd|launch" | head -20
+  ↳ probe recorded: 188582 @0.46 (eval_loss=0.444)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+21 lines)
+→ Bash: grep -E '"(188605|188606|188509|188603)"' .expmon/runs.jsonl | jq -c '{jobid,launcher,argv,env,slurm,stage,parent,outdir}' 2>/dev/null | head; grep -c . .expmon/runs.jsonl
+  ↳ {"jobid":"188509","launcher":"eval_mm_4b.sh","argv":["expQ/probes/b_g1_s43/model","pisco","","eval_data/text_hotpotqa_1500"],"env":null,"slurm":{"partition":"gpu-be","exclude":"homer-[005-009]","time" (+4 lines)
+→ Bash: ls campaign_freeze/ticks/ | tail -5; grep -ohE "expmon launch[^\"]*text_mrqa[^\"]*" campaign_freeze/ticks/*.log .expmon/campaign/freeze/*.log 2>/dev/null | head -3; grep -nE '^\s*(PX|CML|TOPK|RAW|STYLE)|\$\{(PX|CML|TOPK)' eval_mm_4b.sh | he…
+  ↳ 2026-11-11_1000.log (+11 lines)
+→ Bash: ls -la expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ | grep -iE "mrqa|hotpot"; ls expQ/probes/b_g1_s43/model/eval 2>/dev/null | grep -i hotpot; ls -la expQ/freeze/; grep -n "eval/" eval_mm_4b.sh | head -5
+  ↳ total 10 (+12 lines)
+→ Bash: ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/; ls -la expQ/freeze/ref_s42 expQ/freeze/ref_s43; sed -n 50,60p eval_mm_4b.sh
+  ↳ expQ/ft_mm_4b_184778/eval/: (+28 lines)
+→ Bash: expmon logs 188509 400 2>/dev/null | grep -E "FACTORS|OUTJ|wrote|judge acc|Elapsed|compressor_max_length|cml|EXIT" | head -10; sacct -j 188509,188505 -X -o JobID,Elapsed,State,NodeList -n 2>/dev/null
+  ↳ wrote expQ/probes/b_g1_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+11 lines)
+Queuing the six remaining text eval cells (MRQA seed 43 pair, HotpotQA × 4). First checking the eval code has not changed since the earlier cells — git shows both eval files modified.
+→ Bash: md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py | cut -c1-8,33-; stat -c '%y %n' scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py; git diff --stat HEAD -- scripts/eval_mm_docqa.py eval_mm_4b.sh
+  ↳ dfe32aa0  scripts/eval_mm_docqa.py (+8 lines)
+Eval code is byte-identical to the earlier cells (same hashes). Dry-running the first launch.
+→ Bash: PX=1003520 CML=4096 expmon launch --dry-run --exp freeze --stage eval --parent 188583 --dependency=afterok:188583 --partition=gpu-be --exclude='homer-[005-009]' --time=0:27:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s43/model pisco "" eval_data…
+  ↳ would submit: sbatch --dependency=afterok:188583 --partition=gpu-be --exclude=homer-[005-009] --time=0:27:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s43/model pisco  eval_data/text_mrqa_ood_1500 (+3 lines)
+Dry run matches the earlier cells. Submitting all six, each chained to its own finetune.
+→ Bash: L() { local stage=$1 parent=$2 dep=$3 t=$4 model=$5 set=$6; shift 6; env "$@" expmon launch --exp freeze --stage $stage --parent $parent --dependency=afterok:$dep --partition=gpu-be --exclude='homer-[005-009]' --time=$t eval_mm_4b.sh $model…
+  ↳ Submitted batch job 188612 (+5 lines)
+All six submitted (jobs 188612–188617). Recording intents in the ledger.
+→ Bash: C="eval code md5 unchanged: eval_mm_docqa.py dfe32aa0, eval_mm_4b.sh 50abc167, judge_mm_docqa.py 02bc8748" ⏎ expmon note -j 188612 "intent: arm F s43 MRQA text cell: frozen final of 188583, text_mrqa_ood_1500, PX=1003520 CML=4096, afterok 1…
+  ↳ - 2026-11-11 12:02 [job 188616] intent: arm F s43 HotpotQA: frozen final of 188583, same command as 188614, afterok 188583, paired with 188617. --time (+2 lines)
+Checking the verifier's full note on the preview comparison before rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && grep -A2 -i "second unlisted" VERIFY.md | cut -c1-1200; grep -iE "unsupported|wrong" VERIFY.md | cut -c1-300 | head
+  ↳ | provisional: early previews (step-100 checkpoint = .23 epoch, 6,400 rows seen; first 300 documents; judge accuracy ↑) sit 2-3 pt below the FINISHED reference, inside noise: seed 42 .583 vs .610 (−.0 (+3 lines)
+Verifier found 0 unsupported claims; its one extra caveat (the preview's reference side is the old judged file, written by older eval code) goes into STATE.md. Now rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' 2>/dev/null || awk 'NR>=1' /dev/null ⏎ EOF ⏎ sed -n '/## Module movement/,$p' campaign_freeze/STATE.md | head -3 >/dev/null; date '+%H:%M'
+  ↳ 12:02
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Filing one expmon gap (the run manifest drops the env that defines an eval cell), then writing NEXT.
+→ Bash: expmon gripe -c gap "launch manifest stores env:null, yet eval cells are defined by env vars (PX/CML/TOPK on eval_mm_4b.sh): the grid shows identical factors for MRQA vs HotpotQA cells and a relaunch cannot repeat the command exactly. Sugge…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Both frozen finetunes are healthy, and every eval cell that decides the question is now queued. No result yet: the first scores land around 17:30–18:00.
+
+**Done this wake**
+- Checked both runs at 0.46 epoch (12,800 of 28,032 rows). These are the "frozen" finetunes: only the decoder's LoRA adapter trains, while the compressor and the connector stay fixed. Held-out loss (lower is better) is a little below the reference finetune at the same point:
+
+  | seed | frozen | reference | kill threshold |
+  |---|---|---|---|
+  | 42 | .444 | .455 | .513 |
+  | 43 | .431 | .439 | .471 |
+
+- Queued the last 6 eval cells: the text QA set (MRQA) at seed 43, plus the multi-passage text set (HotpotQA, reported but not deciding) at both seeds. Each runs as a frozen/reference pair, set to start when its seed's finetune ends.
+- The eval code is byte-identical to the earlier queued cells, so every pair is scored by the same code.
+- The verifier found no unsupported claims. I added one caveat it raised: the early 300-document previews were scored against reference results written by older eval code.
+
+**Running now**
+- Frozen finetune seed 42 ends about 16:20; seed 43 about 16:50.
+- 18 jobs follow them: 2 checks that the frozen weights did not move, and 16 eval cells (documents, photos, MRQA, HotpotQA × 2 seeds × frozen/reference).
+
+**Next wake**
+- It fires when all 18 jobs have finished (at most 9 h from now).
+- It will confirm each cell's exit code and settings, then run the paired comparison: judge-accuracy differences per question, with a 95% confidence interval (CI).
+- It will apply the gate: the frozen side must be within 2 points of the reference on documents, photos and MRQA at both seeds, with the CI not wholly below 0.
+- It will also re-run the unit tests on the committed code. They passed earlier, but on an uncommitted copy. This wake had used all 6 of its allowed submissions.
+
+**Tooling gap logged:** expmon does not store the environment variables that define an eval cell (image budget, chunk length, pages per question). So the MRQA and HotpotQA cells look identical in the campaign's table of runs.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Frozen-compressor finetunes healthy at .46 epoch (eval_loss .444 vs ref .455 s42; .431 vs .439 s43; probes recorded). Submitted the last 6 eval cells chained afterok on each finetune: MRQA s43 frozen/ref pa…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3591 turns=22 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Frozen-compressor finetunes healthy at .46 epoch (eval_loss .444 vs ref .455 s42; .431 vs .439 s43; probes recorded). Submitted the last 6 eval cells chained afterok on each finetune: MRQA s43 frozen/ref pair and HotpotQA x4. All 16 eval cells (8 frozen/reference pairs, 4 sets x 2 seeds) + 2 module-move checks are queued; eval code hashes unchanged. Verifier: 0 unsupported; added its eval-code confound to the preview caveat. STATE.md rewritten; NEXT waits on all 18 chained jobs, max 9h.", "launched": ["188612", "188613", "188614", "188615", "188616", "188617"], "gripes": ["gap: launch manifest stores env:null although eval cells are defined by env vars (PX/CML/TOPK); suggest EXP_ENV_KEYS recorded in runs.jsonl and shown in grid/dry-run"], "wake_when": "job:188584,188585,188596,188597,188598,188599,188601,188602,188603,188604,188605,188606,188612,188613,188614,188615,188616,188617 max 9h"}
+== final:
+{"next":"wake-when","summary":"Frozen-compressor finetunes healthy at .46 epoch (eval_loss .444 vs ref .455 s42; .431 vs .439 s43; probes recorded). Submitted the last 6 eval cells chained afterok on each finetune: MRQA s43 frozen/ref pair and HotpotQA x4. All 16 eval cells (8 frozen/reference pairs, 4 sets x 2 seeds) + 2 module-move checks are queued; eval code hashes unchanged. Verifier: 0 unsupported; added its eval-code confound to the preview caveat. STATE.md rewritten; NEXT waits on all 18 chained jobs, max 9h.","launched":["188612","188613","188614","188615","188616","188617"],"gripes":["gap: launch manifest stores env:null although eval cells are defined by env vars (PX/CML/TOPK); suggest EXP_ENV_KEYS recorded in runs.jsonl and shown in grid/dry-run"],"wake_when":"job:188584,188585,188596,188597,188598,188599,188601,188602,188603,188604,188605,188606,188612,188613,188614,188615,188616,188617 max 9h"}
+== rc=0 secs=186
+== verify: 7/11
