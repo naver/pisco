@@ -1,0 +1,68 @@
+== campaign freeze wake 2026-11-11_1030  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794360601 live=188583:RUNNING,188582:RUNNING,188599:PENDING,188598:PENDING,188597:PENDING,188596:PENDING,188585:PENDING,188584:PENDING running=2 pending=6 problems=0 problems_other=0 new=0 gpuh24=7.6 idle_h=0.0 min_util=89 alert=0 unpushed=30 cron=3 daemon=1 disk_gb=13047 sig=4f8a22e5 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188594,188595_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: job:188594,188595 (ended)   (NEXT was: wake-when job:188594,188595 max 2h)
+== session 51cba5e5-7538-4779-94a3-67c6b98b1b56  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ # Wake brief — campaign freeze — 2026-11-11_1030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+215 lines)
+→ Bash: cat campaign_freeze/CAMPAIGN.md && echo ===== && cat campaign_freeze/STATE.md && echo ==== && cat campaign_freeze/known_issues.md
+  ↳ Exit code 1 (+112 lines)
+→ Bash: sed -n '/## Decision gates/,/## Patchable/p' campaign_freeze/CAMPAIGN.md
+→ Bash: cat campaign_freeze/STATE.md; echo; echo "-----KI-----"; cat campaign_freeze/known_issues.md
+  ↳ ## Decision gates (+69 lines)
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+116 lines)
+→ Bash: expmon ledger 40 | head -60; sacct -j 188594,188595 -o JobID,State,ExitCode,Elapsed,NodeList -X
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+44 lines)
+→ Bash: expmon logs 188594 40 2>&1 | tail -40; ls -la expQ/freeze/; ls -la expQ/freeze/ft_frozen_s42/ | head -30
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+61 lines)
+Both early-checkpoint previews of the frozen finetune finished OK. Now reading the seed-43 result and pairing both with the reference models on the same 300 questions.
+→ Bash: expmon logs 188595 12 2>&1 | tail -12; ls expQ/freeze/ft_frozen_s43/eval/; ls expQ/ft_mm_4b_184778/eval/ | grep -i docqa; ls expQ/ft_mm_4b_184780/eval/ | grep -i docqa
+  ↳ The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details. (+16 lines)
+→ Bash: f=expQ/freeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json; jq -c 'keys' $f; jq -c 'if type=="object" then (.results // .rows // .per_example)[0] | keys else .[0]|keys end' $f 2>&1 | head -5
+  ↳ ["records","summary"] (+1 lines)
+→ Bash: f=expQ/freeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json; jq -c '.records[0] | with_entries(.value |= (tostring | .[0:60]))' $f; jq '.records|length' $f; jq '.records|length' expQ/ft_mm_4b_184778…
+  ↳ {"query_id":"presentation-140726083339-phpapp01_95__global-sustainable-en","source":"slidevqa","query":"Which renewable energy was most produced in Germany in 2011?","answers":"[\"Wind\"]","prediction (+2 lines)
+→ Bash: for pair in "ft_frozen_s42:ft_mm_4b_184778" "ft_frozen_s43:ft_mm_4b_184780"; do F=expQ/freeze/${pair%%:*}/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json; R=expQ/${pair##*:}/eval/mm_docqa_pisco_px1003520_mm_docqa_1…
+  ↳ == ft_frozen_s42:ft_mm_4b_184778 (+47 lines)
+→ Bash: md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py | cut -c1-8,33-; stat -c '%y %n' scripts/eval_mm_docqa.py eval_mm_4b.sh; for n in "17 25" "14 19"; do set -- $n; awk -v b=$1 -v c=$2 'BEGIN{n=b+c;k=(b<c?b:c);p=0;for(i=…
+  ↳ dfe32aa0  scripts/eval_mm_docqa.py (+6 lines)
+→ Bash: for bc in 17:25 14:19; do awk -v b=${bc%%:*} -v c=${bc##*:} 'BEGIN{n=b+c;k=(b<c?b:c);p=0;for(i=0;i<=k;i++){lc=0;for(j=1;j<=n;j++)lc+=log(j);for(j=1;j<=i;j++)lc-=log(j);for(j=1;j<=n-i;j++)lc-=log(j);p+=exp(lc-n*log(2))};p*=2;if(p>1)p=1;print…
+  ↳ b=17 c=25 exact McNemar p=0.280 (+1 lines)
+→ Bash: jq -c 'select(.jobid=="188596" or .jobid=="188597" or .jobid=="188594") | {jobid,cmd:(.cmd//.command//.argv), stage, parent, env}' .expmon/runs.jsonl 2>/dev/null | head; grep -E "eval_loss|'loss'" expQ/freeze/ft_frozen_s42/train.log | tail …
+  ↳ {"jobid":"188594","cmd":["expQ/freeze/ft_frozen_s42/checkpoint-100","pisco","300","eval_data/mm_docqa_1500_1m"],"stage":"preview","parent":"188582","env":null} (+3 lines)
+→ Bash: jq -c 'select(.jobid=="188596" or .jobid=="188597")' .expmon/runs.jsonl | cut -c1-900; tail -c 1500 expQ/freeze/ft_frozen_s42/train.log; expmon logs 188582 5 2>&1 | tail -5; expmon logs 188583 3 2>&1 | tail -3
+  ↳ {"ts":"2026-11-11 10:03","jobid":"188596","launcher":"eval_mm_4b.sh","argv":["expQ/freeze/ft_frozen_s42/model","pisco","","eval_data/mm_docqa_1500_1m"],"git":"d1d3c2b+dirty","outdir":"/beegfs/scratch/ (+108 lines)
+→ Bash: sed -n '1,60p' eval_mm_4b.sh | grep -nE 'PX|CML|TOPK|SBATCH|\$1|\$2|\$3|\$4|OUT|out' | head -40; ls -la expQ/freeze/ref_s42 expQ/freeze/ref_s43
+  ↳ 2:#SBATCH -n 1 (+33 lines)
+→ Bash: expmon launch --help 2>&1 | head -40; grep -n "188596\|expmon launch" campaign_freeze/ticks/2026-11-11_1000.log 2>/dev/null | head -10
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+17 lines)
+→ Bash: sacct -j 188539,188445,188509 -X -o JobID,JobName%16,State,Elapsed,NodeList; ls /beegfs/scratch/user/hdejean/pisco/eval_data/ | grep -E "naturalqa_1500|mrqa_ood_1500|hotpotqa_1500"
+  ↳ JobID                 JobName      State    Elapsed        NodeList  (+9 lines)
+→ Bash: grep -h "^FACTORS\|^wrote" eval_mm_4b_188445.out eval_mm_4b_188539.out 2>/dev/null | head
+  ↳ FACTORS kind=eval_mm mode=pisco ckpt=e_keep05_attng_photo data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_on (+3 lines)
+Submitting the next six eval jobs: photos for both seeds (frozen and reference), plus text QA for seed 42. Each waits for its finetune to finish. Dry run first.
+→ Bash: PX=1003520 expmon launch --dry-run --exp freeze --stage eval --parent 188582 --partition gpu-be --exclude 'homer-[005-009]' --dependency afterok:188582 --time 0:27:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s42/model pisco "" eval_data/mm_natur…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --dependency afterok:188582 --time 0:27:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s42/model pisco  eval_data/mm_naturalqa_1500 (+3 lines)
+→ Bash: X='homer-[005-009]'; P=eval_data/mm_naturalqa_1500; M=eval_data/text_mrqa_ood_1500 ⏎ echo "photos F s42"; PX=1003520 expmon launch --exp freeze --stage eval --parent 188582 --partition gpu-be --exclude "$X" --dependency afterok:188582 --tim…
+  ↳ photos F s42 (+11 lines)
+→ Bash: squeue -j 188601,188602,188603,188604,188605,188606 -o "%i %T %R %P %l %E" 
+  ↳ JOBID STATE NODELIST(REASON) PARTITION TIME_LIMIT DEPENDENCY (+6 lines)
+Now recording the preview result and the new jobs in the experiment ledger.
+→ Bash: expmon probe 188582 --step 0.23 judge_docs300=0.583 2>&1 | tail -1; expmon probe 188583 --step 0.23 judge_docs300=0.593 2>&1 | tail -1 ⏎ expmon note -j 188594 "result: provisional preview, frozen s42 checkpoint-100 (.23 epoch, 6,400 rows) o…
+  ↳ probe recorded: 188582 @0.23 (judge_docs300=0.583)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+9 lines)
+→ Bash: expmon verdict 188594 closed "provisional preview: frozen s42 checkpoint-100 (.23 epoch) judge .583 vs ref 184778 final .610 on same 300 docs, -.027, 17/25, p=.28; stage-confounded, never gates" 2>&1 | tail -1; expmon verdict 188595 closed …
+  ↳ verdict recorded: 188594 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+19 lines)
+→ Bash: expmon gripe -c defect "display --exp freeze reports '0 table rows, 0 media files from 0 runs' while 'expmon grid freeze' lists 20 runs of exp=freeze (smokes, checks, previews with judged JSONs under expQ/freeze/*/eval): the page the law na…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -E "save_steps|eval_steps|save_total" expQ/freeze/ft_frozen_s43/training_config.yaml; echo "wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h" > campaign_freeze/NEXT; cat campaign_freeze/…
+  ↳ save_steps: 100 (+3 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h", "summary": "Nothing is decided yet. Both frozen-compressor finetunes are healthy: about a third of an epoch done a…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5194 turns=28 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h", "summary": "Nothing is decided yet. Both frozen-compressor finetunes are healthy: about a third of an epoch done at 10:33 (seed 42 ~9,200 rows, seed 43 ~8,800 of 28,032), ending around 16:35 and 16:55. The early previews (checkpoint at a quarter of training, first 300 documents, judge accuracy) score .583 at seed 42 and .593 at seed 43. The finished reference scores .610 on the same questions at both seeds. The gaps (−2.7 pt, p=.28; −1.7 pt, p=.49) are inside the 2-point noise band. They compare a partly trained model with a finished one, so they are provisional and never gate. This wake queued six eval jobs, each starting when its finetune ends: photos at both seeds (frozen and reference) and MRQA text at seed 42 (frozen and reference). The eval code hashes are unchanged. I recorded the probes, notes and preview verdicts and rewrote STATE.md. The `expmon display` page is empty (0 rows) although the grid lists 20 runs, so I filed a defect report. Next wake (about 12:00, when seed 43 saves its half-way checkpoint): read eval loss at half an epoch, then queue MRQA at seed 43 and HotpotQA at both seeds.", "launched": ["188601", "188602", "188603", "188604", "188605", "188606"], "verdicts": [{"jobid": "188594", "verdict": "closed", "note": "provisional preview s42 checkpoint-100 (.23 epoch): judge .583 vs ref 184778 final .610 on same 300 docs, -.027, 17/2
+== final:
+{"next":"wake-when","wake_when":"file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h","summary":"Nothing is decided yet. Both frozen-compressor finetunes are healthy: about a third of an epoch done at 10:33 (seed 42 ~9,200 rows, seed 43 ~8,800 of 28,032), ending around 16:35 and 16:55. The early previews (checkpoint at a quarter of training, first 300 documents, judge accuracy) score .583 at seed 42 and .593 at seed 43. The finished reference scores .610 on the same questions at both seeds. The gaps (−2.7 pt, p=.28; −1.7 pt, p=.49) are inside the 2-point noise band. They compare a partly trained model with a finished one, so they are provisional and never gate. This wake queued six eval jobs, each starting when its finetune ends: photos at both seeds (frozen and reference) and MRQA text at seed 42 (frozen and reference). The eval code hashes are unchanged. I recorded the probes, notes and preview verdicts and rewrote STATE.md. The `expmon display` page is empty (0 rows) although the grid lists 20 runs, so I filed a defect report. Next wake (about 12:00, when seed 43 saves its half-way checkpoint): read eval loss at half an epoch, then queue MRQA at seed 43 and HotpotQA at both seeds.","launched":["188601","188602","188603","188604","188605","188606"],"verdicts":[{"jobid":"188594","verdict":"closed","note":"provisional preview s42 checkpoint-100 (.23 epoch): judge .583 vs ref 184778 final .610 on same 300 docs, -.027, 17/25, p=.28; stage-confounded, never gates"},{"jobid":"188595","verdict":"closed","note":"provisional preview s43 checkpoint-100 (.23 epoch): judge .593 vs ref 184780 final .610 on same 300 docs, -.017, 14/19, p=.49; stage-confounded, never gates"}],"gripes":["display --exp freeze writes 0 table rows from 0 runs while grid lists 20 exp=freeze runs; display should use the same runs.jsonl exp filter as grid and read eval JSON summaries from each run's model-dir argv"]}
+== rc=0 secs=217
+== verify: 8/11

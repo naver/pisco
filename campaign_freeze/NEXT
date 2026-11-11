@@ -1,1 +1,1 @@
-wake-when job:188594,188595 max 2h
+wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-200 max 3h
