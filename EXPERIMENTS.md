@@ -759,3 +759,31 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-11-11 12:02 [job 188616] intent: arm F s43 HotpotQA: frozen final of 188583, same command as 188614, afterok 188583, paired with 188617. --time 0:29:00. eval code md5 unchanged: eval_mm_docqa.py dfe32aa0, eval_mm_4b.sh 50abc167, judge_mm_docqa.py 02bc8748
 - 2026-11-11 12:02 [job 188617] intent: arm R s43 HotpotQA RE-EVAL: 184780 via ref_s43, afterok 188583. --time 0:29:00. eval code md5 unchanged: eval_mm_docqa.py dfe32aa0, eval_mm_4b.sh 50abc167, judge_mm_docqa.py 02bc8748
 - 2026-11-11 12:02 decision: arm F mid-run health OK at .46 epoch (12,800 rows): eval_loss frozen s42 .444 vs reference 184778 .455, frozen s43 .431 vs 184780 .439 (64 eval rows each); 71.4 / 75.6 s/step (checkpoint-100 -> 200 mtimes). Submitted the last 6 eval cells, chained afterok on each finetune: MRQA s43 pair 188612/188613, HotpotQA x4 188614-188617. Every gating cell (docs, photos, MRQA x 2 seeds) is now queued.
+- 2026-11-11 18:35 decision: arm F gate 0 = TIE (law: not validated, not failed) -> third-seed pair R3. Frozen minus reference judge accuracy, n=1500 each, same eval code (md5 dfe32aa0), raw means: documents s42 .582-.610=-.028, s43 .580-.615=-.035; photos -.009 / -.013; MRQA text .695-.718=-.023 / .697-.724=-.027; HotpotQA (not gating) -.028 / -.023. 8 of 8 cells negative. Validated needs >=-.02 everywhere (documents and MRQA miss at both seeds); Failed needs <=-.03 at BOTH seeds on one set (documents s42 is -.028). Paired CIs pending (job 188650). Freeze held over the full runs: every compressor/connector row changed 0.0% (188584/188585). Final eval_loss F .435/.413 vs R .414/.375 (64 rows).
+- 2026-11-11 18:35 [job 188650] intent: paired_judge.py (unchanged, md5 a3cc13b2) on the 8 frozen/reference pairs, CPU gpu-be, new launcher expQ/freeze/paired_judge_cpu.sh (calls the script only). --time 0:15:00 (stdlib, seconds).
+- 2026-11-11 18:35 [job 188651] intent: arm R3 frozen seed 44 (ft_freeze.sh frozen 44), law: tie -> third seed. --time 11:40:00 = 9:18:20 (188583, slowest frozen run) x 1.25. gpucap: 4/8 of the gpu cap used before, 6/8 after this pair.
+- 2026-11-11 18:35 [job 188652] intent: arm R3 reference seed 44 (ft_freeze.sh unfrozen 44 = reference command + seed 44). --time 17:20:00 = 13:49:25 (184780, slowest reference run) x 1.25.
+- 2026-11-11 18:35 [job 188653] intent: R3 frozen s44 documents eval, PX=1003520, afterok 188651, paired with 188654. --time 0:40:00 = 31:47 (slowest docs cell) x 1.25. Same eval code md5 as s42/s43.
+- 2026-11-11 18:35 [job 188654] intent: R3 reference s44 documents eval, PX=1003520, afterok 188652, paired with 188653. --time 0:40:00.
+- 2026-11-11 18:35 [job 188655] intent: run_tests_cpu.sh on HEAD be0d842 (freeze flag committed in d167725; pisco/ and test_*.py clean) to close the provisional unit-test claim.
+- 2026-11-11 18:36 [job 188584] verdict: closed — frozen s42 full run (1.0 epoch, 28,032 rows): every compressor/connector row incl. norm gain changed 0.0%; decoder lora_A 14.7% / lora_B 66.7% of entries changed (moved .0067 / .0702 of norm)
+- 2026-11-11 18:36 [job 188585] verdict: closed — frozen s43 full run: every compressor/connector row incl. norm gain changed 0.0%; decoder lora_A 14.7% / lora_B 66.3% (moved .0066 / .0692 of norm)
+- 2026-11-11 18:36 [job 188596] verdict: closed — frozen s42 documents judge .582 (n 1500); vs ref 188597 .610: -.028 [-.049,-.007], 111/153, McNemar p .011 (188650)
+- 2026-11-11 18:36 [job 188597] verdict: closed — reference 184778 documents judge .610 (n 1500), same code as 188596
+- 2026-11-11 18:36 [job 188598] verdict: closed — frozen s43 documents judge .580 (n 1500); vs ref 188599 .615: -.035 [-.057,-.014], 109/161, p .002 (188650)
+- 2026-11-11 18:36 [job 188599] verdict: closed — reference 184780 documents judge .615 (n 1500), same code as 188598
+- 2026-11-11 18:36 [job 188601] verdict: closed — frozen s42 photos judge .664 (n 1500); vs ref 188602 .673: -.009 [-.026,+.008], 78/92, p .319 (188650)
+- 2026-11-11 18:36 [job 188602] verdict: closed — reference 184778 photos judge .673 (n 1500)
+- 2026-11-11 18:36 [job 188603] verdict: closed — frozen s43 photos judge .672 (n 1500); vs ref 188604 .685: -.013 [-.030,+.004], 78/97, p .173 (188650)
+- 2026-11-11 18:36 [job 188604] verdict: closed — reference 184780 photos judge .685 (n 1500)
+- 2026-11-11 18:36 [job 188605] verdict: closed — frozen s42 MRQA text judge .695 (n 1500); vs ref 188606 .718: -.023 [-.040,-.008], 59/94, p .006 (188650)
+- 2026-11-11 18:36 [job 188606] verdict: closed — reference 184778 MRQA text judge .718 (n 1500)
+- 2026-11-11 18:36 [job 188612] verdict: closed — frozen s43 MRQA text judge .697 (n 1500); vs ref 188613 .724: -.027 [-.043,-.009], 67/107, p .003 (188650)
+- 2026-11-11 18:36 [job 188613] verdict: closed — reference 184780 MRQA text judge .724 (n 1500)
+- 2026-11-11 18:36 [job 188614] verdict: closed — frozen s42 HotpotQA judge .575 (n 1500, not gating); vs ref 188615 .603: -.028 [-.045,-.013], 64/106, p .002 (188650)
+- 2026-11-11 18:36 [job 188615] verdict: closed — reference 184778 HotpotQA judge .603 (n 1500)
+- 2026-11-11 18:36 [job 188616] verdict: closed — frozen s43 HotpotQA judge .571 (n 1500, not gating); vs ref 188617 .593: -.023 [-.041,-.006], 68/102, p .011 (188650)
+- 2026-11-11 18:36 [job 188617] verdict: closed — reference 184780 HotpotQA judge .593 (n 1500)
+- 2026-11-11 18:36 [job 188650] verdict: closed — paired_judge.py on 8 frozen/reference pairs: frozen lower on 8/8; CI wholly below 0 on documents, MRQA, HotpotQA at both seeds; photos CI spans 0 at both seeds
+- 2026-11-11 18:38 [job 188655] verdict: closed — unit tests on committed HEAD be0d842 (pisco/ and test_*.py clean): test_positions 12/12, test_mm_collators 33/33, test_freeze 5/5, exit 0
+- 2026-11-11 18:38 [job 188655] result: all 3 test files OK on HEAD be0d842 (12 + 33 + 5 tests), exit 0; closes the provisional unit-test claim of 188517

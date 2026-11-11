@@ -69,6 +69,9 @@ Metric unit: judge accuracy in [0, 1]; "pt" = .01. Every difference is PAIRED pe
   and the CI does not lie wholly below 0. Report HotpotQA too (reported, not gating).
 - **Failed (the finetune needs the compressor):** on any gating set, ≤ −3 pt with the CI wholly below 0 at both seeds.
 - **Tie:** anything else → the third-seed pair R3, then decide on three seeds (2 of 3).
+  (Clarified wake 6, 2026-11-11, before the seed-44 result: "2 of 3" replaces "both seeds" in each rule above.
+  Validated = every gating set passes at ≥ 2 of 3 seeds; Failed = one gating set fails at ≥ 2 of 3 seeds. Still a
+  tie after three seeds → BLOCKED.md for the owner, no fourth seed.)
 - Noise band 2 pt: below it nothing is a result. Headline claims in STATE.md and the ledger are prefixed `provisional:`
   until the next wake re-derives them from `expmon grid freeze` and `scripts/paired_judge.py`.
 - A NEW metric closes nothing until its row here states its n and a known-positive control it recovers.

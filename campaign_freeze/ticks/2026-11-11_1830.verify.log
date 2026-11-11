@@ -1,0 +1,81 @@
+== verifier 2026-11-11_1830  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session 43839979-1d74-48f1-aa04-d9b0bee4968e  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+279 lines)
+→ Glob: {"pattern": "expQ/freeze/**/*.{log,out,txt,json,sh}", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze"}
+  ↳ campaign_freeze/ticks/.keep (+19 lines)
+  ↳ expQ/freeze/ft_freeze.sh (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/paired_judge_cpu.sh
+  ↳ 1	#!/bin/bash (+29 lines)
+→ Glob: {"pattern": "*188650*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188650.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_frozen_s42:ref_s42,ft_frozen_s43:ref_s43 (+72 lines)
+→ Grep: {"pattern": "dfe32aa0|md5|eval_mm_docqa.py", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-11_1830.log", "output_mode": "content", "head_limit": 60}
+  ↳ 54:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py scripts/paired_judge.py | cut -c1-8,33-; ls -la --time-style=+%m-%d_%H:%M scri (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-11_1830.log
+  ↳ 1	== campaign freeze wake 2026-11-11_1830  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code) (+129 lines)
+→ Grep: {"pattern": "\"jobid\": \"(18859[6-9]|18860[1-6]|18861[2-7])\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": false}
+  ↳ 901:[Omitted long matching line] (+15 lines)
+→ Grep: {"pattern": "md5|FACTORS|^[0-9a-f]{7}", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*_18859[6-7].out", "output_mode": "content", "head_limit": 30}
+  ↳ eval_mm_4b_188597.out:2:FACTORS kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=bri (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188596.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+35 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188597.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-992b689e-5071-dff0-eda8-7ab0abf0457a) (+35 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+38 lines)
+Configs match except the freeze flag. Now checking the smoke losses, the module-move checks and the training-cost numbers.
+→ Grep: {"pattern": "\"loss\"|\"eval_loss\"|\"step\"|train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/checkpoint-20/trainer_state.json", "output_mode": "content"}
+  ↳ 16:      "loss": 0.5939737796783447, (+5 lines)
+→ Grep: {"pattern": "\"loss\"|\"eval_loss\"|\"step\"|train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_unfrozen_s42_smoke/checkpoint-20/trainer_state.json", "output_mode": "content"}
+  ↳ 16:      "loss": 0.6392498016357422, (+5 lines)
+→ Grep: {"pattern": "freeze_compressor|Compressor trainable parameters|Total trainable", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Glob: {"pattern": "check_move_freeze_18857[89].out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188578.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s42_smoke (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188579.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_unfrozen_s42_smoke (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188584.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s42 (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188585.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s43 (+10 lines)
+→ Grep: {"pattern": "freeze_compressor=True|Compressor trainable parameters|Total trainable", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188528.out", "output_mode": "content"}
+  ↳ 106:[pisco] freeze_compressor=True: froze 506 compressor + connector tensors (eval mode kept) (+2 lines)
+→ Grep: {"pattern": "train_runtime|Compressor trainable parameters|Total trainable", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out", "output_mode": "content"}
+  ↳ 105:Compressor trainable parameters: 0 (+5 lines)
+→ Grep: {"pattern": "train_runtime|Compressor trainable parameters|Total trainable", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188583.out", "output_mode": "content"}
+  ↳ 106:Compressor trainable parameters: 0 (+5 lines)
+→ Grep: {"pattern": "train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/train.log", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": "train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/train.log", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": "train_runtime[^,]*", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "ft_mm_4b_18477[8]*.out", "output_mode": "content", "-o": true}
+  ↳ ft_mm_4b_184778.out:4679:train_runtime': '3.955e+04'
+→ Grep: {"pattern": "train_runtime[^,]*", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "ft_mm_4b_184780*.out", "output_mode": "content", "-o": true}
+  ↳ ft_mm_4b_184780.out:4687:train_runtime': '4.96e+04'
+Smoke losses, module-move outputs and frozen runtimes all match. Now checking the reference eval-loss curves and the unit-test and preview jobs.
+→ Grep: {"pattern": "eval_loss': '[0-9.]*|'epoch': '[0-9.]*'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_mm_4b_184778.out", "output_mode": "content", "-o": true, "head_limit": 120}
+  ↳ 4376:'epoch': '0.02291' (+53 lines)
+→ Grep: {"pattern": "^=== |^Ran |^OK|FAIL|passed|^[0-9a-f]{7}|EXIT|dirty|status", "path": "/beegfs/scratch/user/hdejean/pisco/run_tests_cpu_188655.out", "output_mode": "content"}
+  ↳ 2:be0d842 (+10 lines)
+→ Grep: {"pattern": "eval_loss': '[0-9.]*", "path": "/beegfs/scratch/user/hdejean/pisco/ft_mm_4b_184780.out", "output_mode": "content", "-o": true}
+  ↳ 4436:eval_loss': '0.4714 (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Grep: {"pattern": "gpumem|49\\.9|49\\.7|31\\.9", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks", "output_mode": "content", "head_limit": 20}
+  ↳ campaign_freeze/ticks/2026-11-11_0630.log:46:→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon probe 188528 --step 0.0229 loss=0.594 2>&1 | tail -1; expmon note -j 188528 "probe: frozen smoke at (+7 lines)
+→ StructuredOutput: {"claims": [{"claim": "Gate 0 at two seeds = TIE under the law → third-seed pair launched (frozen − reference, n = 1,500 per set, job 188650: documents −.028 [−.049,−.007] / −.035 [−.057,−.014]; photos −.009 [−.026,+.008] / −.013 [−.030,+.0…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3130 turns=37 is_error=False denials=0
+== declared: {"claims": [{"claim": "Gate 0 at two seeds = TIE under the law → third-seed pair launched (frozen − reference, n = 1,500 per set, job 188650: documents −.028 [−.049,−.007] / −.035 [−.057,−.014]; photos −.009 [−.026,+.008] / −.013 [−.030,+.004]; MRQA −.023 [−.040,−.008] / −.027 [−.043,−.009]; HotpotQA −.028 / −.023; 8 of 8 pairs negative)", "status": "supported", "reason": "Every number matches paired_judge_freeze_188650.out (ALL rows, n=1500, McNemar 111/153 p .011, 109/161 p .002, 78/92, 78/97, 59/94, 67/107, 64/106, 68/102). Gate reading is right: Validated fails (docs and MRQA below −2 pt at both seeds); Failed needs ≤ −3 pt at both seeds and docs s42 is −2.8. Arms differ only by freeze_compressor (ft_frozen_s42/training_config.yaml vs ft_mm_4b_184778). Both sides were launched at 12:02 on git 8c9fccd+dirty, and 188596/188597 ran on the same GPU UUID. Format slip: the law requires a 'provisional:' prefix on headline claims until the next wake re-derives them, and this bullet has none."}, {"claim": "The loss is spread out, not one data type: every per-source difference is negative at both seeds (largest mpdocvqa −.034/−.050, DROP −.032/−.060, RACE −.040/−.024; smallest realworldqa −.004/−.006) (job 188650)", "status": "provisional", "reason": "The signs check out in 188650.out (28 of 28 per-source diffs negative, quoted values exact). But each source has only n = 250–500 and no n is stated. Only mpdocvqa s43, DROP s43 and hotpot_bridge have a CI below 0. Several diffs are u
+== final:
+{"claims":[{"claim":"Gate 0 at two seeds = TIE under the law → third-seed pair launched (frozen − reference, n = 1,500 per set, job 188650: documents −.028 [−.049,−.007] / −.035 [−.057,−.014]; photos −.009 [−.026,+.008] / −.013 [−.030,+.004]; MRQA −.023 [−.040,−.008] / −.027 [−.043,−.009]; HotpotQA −.028 / −.023; 8 of 8 pairs negative)","status":"supported","reason":"Every number matches paired_judge_freeze_188650.out (ALL rows, n=1500, McNemar 111/153 p .011, 109/161 p .002, 78/92, 78/97, 59/94, 67/107, 64/106, 68/102). Gate reading is right: Validated fails (docs and MRQA below −2 pt at both seeds); Failed needs ≤ −3 pt at both seeds and docs s42 is −2.8. Arms differ only by freeze_compressor (ft_frozen_s42/training_config.yaml vs ft_mm_4b_184778). Both sides were launched at 12:02 on git 8c9fccd+dirty, and 188596/188597 ran on the same GPU UUID. Format slip: the law requires a 'provisional:' prefix on headline claims until the next wake re-derives them, and this bullet has none."},{"claim":"The loss is spread out, not one data type: every per-source difference is negative at both seeds (largest mpdocvqa −.034/−.050, DROP −.032/−.060, RACE −.040/−.024; smallest realworldqa −.004/−.006) (job 188650)","status":"provisional","reason":"The signs check out in 188650.out (28 of 28 per-source diffs negative, quoted values exact). But each source has only n = 250–500 and no n is stated. Only mpdocvqa s43, DROP s43 and hotpot_bridge have a CI below 0. Several diffs are under the 2-pt noise band, where the law says nothing is a result. So 'spread out' is a sign pattern, not a shown effect per source."},{"claim":"The freeze held over the full runs (1.0 epoch, 28k rows): every compressor and connector row, norm gain included, changed 0.0%; decoder lora_B 66.7% / 66.3% changed (jobs 188584 / 188585)","status":"supported","reason":"check_move_freeze_188584.out and 188585.out: compressor lora_A/B, token_adapter, connector linear and norm_gain are all 0.0%, decoder lora_B 66.7% / 66.3%. Both training logs say 'Compressor trainable parameters: 0'. Caveat: the norm-gain and token rows also read 0.0% in the unfrozen control (188579), so for those two rows the check has no positive control. The compressor LoRA and connector linear rows do have one."},{"claim":"Feasibility gate PASS (20-step smokes): frozen side 0.0% (188578); unfrozen control moves compressor LoRA 25.4%/76.4%, connector 25.4% (188579); train loss .594 vs .639 at step 10 and .584 vs .580 at step 20 (188528/188534); config diff = max_steps + freeze_compressor only","status":"supported","reason":"Checked: trainer_state.json of both smokes (step 10: .5940 vs .6392, a gap of .045, inside .05 with little margin; step 20: .5839 vs .5799). ft_freeze_188528.out shows 'froze 506 … tensors' and 'Compressor trainable parameters: 0'. check_move 188578 / 188579 rows are as quoted. The smoke training_config.yaml differs from 184778's only by max_steps: 20 and freeze_compressor: true."},{"claim":"Frozen training 
+== rc=0
