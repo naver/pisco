@@ -1,5 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-11 09:30-09:50 KST (condition: the arm G rate-4 cells 188590 / 188591 left the queue)
+last wake: 2026-11-12 01:30-01:40 KST (alert: a false "loop not armed" watchdog alarm; nothing else changed since
+2026-11-11 09:50)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -78,23 +79,20 @@ last wake: 2026-11-11 09:30-09:50 KST (condition: the arm G rate-4 cells 188590 
 - provisional (not a gate, derived from the two arm G cells): per extra decoder token, rate 4 on the picked page
   recovers about twice what the raw page does: +.063 / 107.5 tokens ≈ .059 per 100 tokens (s42) vs +.210 / 753 ≈ .028.
 
-**Open, and running** (0 campaign jobs at 09:45)
+**Open, and running** (0 campaign jobs at 2026-11-12 01:35)
 - none running. Every arm is decided or closed for the cell cap (60 of 60 used).
 - owner: BLOCKED.md asks to raise the cell cap 60 → 65 (keep a quarter at seed 43 is the main reason).
 
 ## What happened this wake
-- ✗ lines in the brief: none of this campaign's (only self-cancelled jobs, all diagnosed by earlier wakes).
-- Verifier (08:30 STATE): 15 supported, 7 provisional, 0 unsupported. Its two reporting gaps are fixed above (slots
-  1.020× for golds joined vs one chunk of ten; .749× / .748× for the raw-page cells). The 06:16 ALERT is the
-  verifier's 06:00 note, fixed since 07:30; left for the owner to clear.
-- Arm G: both rate-4 cells COMPLETED (exit 0, one attempt each, no preemption; files written 09:13 / 09:14 = job ends).
-  Health: 1,500 rows, unparseable 0, same pick as the raw-page cells 1,500/1,500, `dense_mems` 215.8 / 215.9 per
-  question. Paired with `scripts/paired_judge.py` vs plain and vs the raw page; token counts from
-  `decoder_prompt_tokens`. Gate failed at both seeds → verdicts closed, ledger decision, probes recorded.
-- Law (CAMPAIGN.md): arm G row records the decision; budget line updated (no relaunch was needed).
-- Doc `docs/probe_campaign_2026-11.md`: status rewritten, new finding 2 (rate 4), arm G table, Closed list.
-- `expmon display --exp probes` refreshed (still 0 rows, known issue). BLOCKED.md refreshed (arm G ended).
-- Gripe: the grid keeps only the last `expmon probe` row per job (a judge= value vanished after an em= call).
+- ALERT (01:00): "crontab has no 'campaign tick' line — the loop is not armed". False alarm: the ticks at 01:00 and
+  01:30 both ran and recorded `cron=3`, the 01:17 watchdog said OK, and `expmon campaign` reports `armed: yes`. One
+  empty `crontab -l` read by the 01:00 watchdog (known expmon defect). ALERT deleted, known_issues row added, gripe
+  filed, ledger decision written.
+- ✗ lines in the brief: none of this campaign's (the one ✗ belongs to another campaign).
+- Verifier (09:30 STATE): 15 supported, 8 provisional, 0 unsupported. Every provisional line it lists is already
+  marked provisional below; nothing to fix.
+- The tick resubmitted the expmon daemon at 01:00 (it had exited); no action needed from this wake.
+- Nothing launched: all 60 cells are used. BLOCKED.md (raise the cap 60 → 65) still has no answer.
 
 ## Owned jobs (jobid | arm | state at 09:45 | node | note)
 (none running)
@@ -115,7 +113,7 @@ last wake: 2026-11-11 09:30-09:50 KST (condition: the arm G rate-4 cells 188590 
 
 ## Health and budget
 - cells: 60 of 60 used (every submission counts, killed ones too; 188546 counted by hand). A launch needs the owner.
-- GPU-hours of 40: tick sensor 15.4 GPU-h in the last 24 h at 09:30 (campaign started 00:00).
+- GPU-hours of 40: tick sensor 15.8 GPU-h in the last 24 h at 2026-11-12 01:30 (no campaign GPU job since 11-11 09:15).
 - gpu-be preempted 8+ campaign attempts on 2026-11-11; the two arm G cells were not preempted.
 
 ## Next wake
