@@ -1,0 +1,84 @@
+== campaign longchunk wake 2026-11-11_2130  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794400201 live=188469:PENDING,188468:PENDING,188466:RUNNING,188467:RUNNING,188712:PENDING,188711:PENDING,188710:PENDING,188709:PENDING,188708:PENDING,188707:PENDING running=2 pending=8 problems=0 problems_other=0 new=0 gpuh24=78.3 idle_h=0.0 min_util=- alert=0 unpushed=37 cron=3 daemon=1 disk_gb=12683 sig=a8a89347 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml (exists)   (NEXT was: wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml max 6h)
+== session 1ef9f202-d921-4bb4-8f4c-1064cd705441  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/1ef9f202-d921-4bb4-8f4c-1064cd705441/tool-results/bqsr8xs33.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-11_2130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+247 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ 1	# Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat .expmon/campaign/longchunk/VERIFY.md 2>/dev/null | head -40; ls .expmon/campaign/longchunk/; echo; grep -n -A6 'training_dataset' expQ/longchunk/pt_mm_cml256/training_config.yaml | head -30
+  ↳ alerted (+32 lines)
+The control's stage-2 job is now running with the right image data. Checking the verifier's notes and diffing the stage-2 config against the reference run next.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json;d=json.load(open('.expmon/campaign/longchunk/verify.result.json'));print(json.dumps(d,indent=1)[:4000])"; ls -d expQ/*183537* expQ/*/*183537* 2>/dev/null; grep -rl 'job_id.*1…
+  ↳ { (+91 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json;d=json.load(open('.expmon/campaign/longchunk/verify.result.json'));r=json.loads(d['result']) ⏎ for c in r['claims']: ⏎   if c['status']!='supported': print(c['status'],'|',c[…
+  ↳ provisional | Control stage 1 (256-token chunks) FINISHED: 1M documents (5,208 steps, 1.0 epoch) in 16:43 h, exit 0 — job 188422, closed. Held-out loss .801 / .877   (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs 2>/dev/null | grep -E '^183537|^188467' ; grep -n '183537' EXPERIMENTS.md | head -5
+  ↳ 183537     ended     -           archq3         24b7a2c+dirty  pt_mm_4b.sh      launcher=pt_mm_4b.sh kind=pt_mm samples=100000 bs=8 accum=8 vision_lora=merger init=pt_text_1M_spread image_max_pixels=1 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; diff expQ/archq3/pt_mm_spread/training_config.yaml expQ/longchunk/pt_mm_cml256/training_config.yaml 2>&1 | head -40 || ls expQ/archq3/
+  ↳ 41c41 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'output_dir|run_name|SLURM' expQ/archq3/pt_mm_spread/training_config.yaml | head; ls expQ/archq3/pt_mm_spread/ | head; ls -la expQ/longchunk/pt_mm_cml256/; tail -c 1500 expQ/longchunk/pt_mm_cm…
+  ↳ 1:output_dir: ./outputs/run (+65 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -oE "\{'loss'[^}]*\}" expQ/archq3/pt_mm_spread/train.log | head -2; grep -oE "\{'loss'[^}]*\}" expQ/longchunk/pt_text_1M_cml1024_188466/train.log | tail -1; grep -oE '[0-9]+/5208 \[[^]]*\]' expQ/l…
+  ↳ homer-020 2026-11-11T21:06:33
+Stage 2 of the control checks out (only its starting model differs from the reference run). Now reading the reference losses and the 1,024-token run's progress.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -o "'loss': '[^']*', 'grad_norm[^}]*" expQ/archq3/pt_mm_spread/train.log | head -2; ls expQ/longchunk/; L=$(ls -d expQ/longchunk/pt_text_1M_cml1024* | head -1); echo $L; grep -o "'loss': '[^']*', …
+  ↳ build_msmarco_docs.sbatch (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c loss expQ/archq3/pt_mm_spread/train.log; grep -m2 -o "'loss': [^,]*, 'grad_norm': [^,]*, [^}]*" expQ/archq3/pt_mm_spread/train.log; L=expQ/longchunk/pt_text_1M_cml1024_188466; grep -o "'loss': …
+  ↳ 0
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/archq3/pt_mm_spread/train.log expQ/longchunk/pt_text_1M_cml1024_188466/; tail -c 600 expQ/longchunk/pt_text_1M_cml1024_188466/train.log; tail -c 300 expQ/archq3/pt_mm_spread/train.log; ls e…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 5971 Nov  1 19:51 expQ/archq3/pt_mm_spread/train.log (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 188466 3 2>/dev/null | tr '\r' '\n' | grep -oE "[0-9]+/5208 \[[^]]*\]|\{'loss'[^}]*\}" | tail -3; expmon logs 183537 400 2>/dev/null | tr '\r' '\n' | grep -oE "\{'loss'[^}]*\}" | head -2
+  ↳ 75/5208 [55:31<59:46:37, 41.92s/it] (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longchunk/pt_text_1M_cml256_188422/; grep -nE 'save_steps|eval_steps|logging_steps' expQ/longchunk/pt_text_1M_cml1024_188466/training_config.yaml
+  ↳ checkpoint-4000 (+8 lines)
+Everything is already chained, so this wake only records and waits. Writing the ledger note, fixing the verifier's two points, and rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188467 "result: C256 stage 2 started 21:06 homer-020. training_config.yaml: training_dataset = pdfa_1m_desc:50000, wiki_1m_desc:19000, natural_desc:31000 (PT_DATA verified); full diff vs…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Now fixing the known-issues row the verifier flagged (the loss rise is not "the same" as the reference's).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -30
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c gap "campaign report --section leaves prints 16 near-identical 'pre-campaign inference probe' Settled bullets (one per closed probe cell 185499-185603) before the campaign's own leaves;…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Nothing needed from you. The control's image-training stage started with the correct data, so this wake had nothing to launch. It waits for the 1,024-token run's first checkpoint.
+
+**Done this wake**
+- **Control, image-training stage (stage 2, job 188467):** it started at 21:06. Its saved config lists the right image data. It differs from the earlier reference run only in the starting model, which is the intended difference. Loss fell from 2.10 to 1.97 over the first 20 steps, with no invalid (NaN) values. It should end around 2026-11-12 15:45, well inside its time limit.
+- **Fixed a claim the automatic checker flagged.** I had written that the control's rising held-out loss (loss on 64 rows kept out of training) was "the eval protocol, same as the reference". That was not shown. The control starts rising earlier than the reference run (+.077 by step 4,000, while the reference stays flat). It is still not a collapse: training loss stays flat and there are no NaN values. The cause is now marked untested in the status file and in the known-issues list.
+- Logged one complaint about the campaign tool: its summary repeats 16 identical lines for old probe jobs that are not part of this campaign.
+
+**Running now**
+
+| What | Progress | Expected end |
+|---|---|---|
+| 1,024-token chunk arm, text-training stage (stage 1) | 77 of 5,208 steps, about 14,800 of 1M documents, 41.5 s per step | about 2026-11-14 08:30 |
+| Control, image-training stage | 21 of 1,562 steps, 43 s per step | about 2026-11-12 15:45 |
+
+- Two control finetunes (training runs with seeds 42 and 43) and their 6 scoring jobs are already queued. Each starts when the job before it succeeds. The 6 scoring jobs are 3 test sets × 2 seeds, scored by the Qwen3-8B judge (a model that grades each answer). The test sets are long HotpotQA passages, document pages and photos.
+- No accuracy number exists yet for any arm.
+- About 3.3 of the 38 GPU-days are spent. The full plan is projected at 35 GPU-days.
+
+**Next**
+- The next wake is when the 1,024-token run saves its step-2,000 checkpoint (about 2026-11-12 19:40), or after 24 h at most. It will check that run's held-out loss for a collapse.
+- A failure in any queued job wakes the campaign earlier.
+→ StructuredOutput: {"next": "wake-when", "summary": "Control stage 2 (188467) started 21:06 on homer-020 with the verified PT_DATA mix (pdfa 50k, wiki 19k, natural 31k); its resolved config differs from the reference 183537 only in the init model; 43 s/step, …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2466 turns=25 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Control stage 2 (188467) started 21:06 on homer-020 with the verified PT_DATA mix (pdfa 50k, wiki 19k, natural 31k); its resolved config differs from the reference 183537 only in the init model; 43 s/step, loss 2.10->1.97, ends ~11-12 15:45. L1024 stage 1 (188466) at 77/5208 steps (~14.8k of 1M docs), 41.5 s/step, ends ~11-14 08:30. Nothing to launch: finetunes and 6 gating evals already chained. Fixed verifier finding: control held-out loss rise now described as not a collapse, cause untested (rises earlier than the reference). STATE.md rewritten, known_issues row corrected, ledger notes written.", "launched": [], "verdicts": [], "gripes": ["gap: campaign report --section leaves prints 16 near-identical pre-campaign probe bullets; collapse same-verdict bullets or let the law mark cells out-of-campaign"], "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json max 24h"}
+== final:
+{"next":"wake-when","summary":"Control stage 2 (188467) started 21:06 on homer-020 with the verified PT_DATA mix (pdfa 50k, wiki 19k, natural 31k); its resolved config differs from the reference 183537 only in the init model; 43 s/step, loss 2.10->1.97, ends ~11-12 15:45. L1024 stage 1 (188466) at 77/5208 steps (~14.8k of 1M docs), 41.5 s/step, ends ~11-14 08:30. Nothing to launch: finetunes and 6 gating evals already chained. Fixed verifier finding: control held-out loss rise now described as not a collapse, cause untested (rises earlier than the reference). STATE.md rewritten, known_issues row corrected, ledger notes written.","launched":[],"verdicts":[],"gripes":["gap: campaign report --section leaves prints 16 near-identical pre-campaign probe bullets; collapse same-verdict bullets or let the law mark cells out-of-campaign"],"wake_when":"file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json max 24h"}
+== rc=0 secs=169
+== verify: 9/10

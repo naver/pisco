@@ -1,1 +1,1 @@
-wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml max 6h
+wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json max 24h
