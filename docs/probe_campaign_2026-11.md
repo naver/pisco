@@ -6,11 +6,16 @@ cell on the same questions (95% bootstrap CI, exact McNemar p). Compression: 1 s
 (`compr_rate: 8` in every model here). Document set (`mm_docqa_1500_1m`, PX=1003520, 4 pages per question): the plain
 cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per question): about 177 slots per question.
 
-## Status (2026-11-11 08:45 KST)
+## Status (2026-11-11 09:45 KST)
+- **Every arm is decided or closed for the cell cap (60 of 60 cells used).** What is left needs the owner to raise the
+  cap (`campaign_probes/BLOCKED.md`): the keep-a-quarter repeat at seed 43, keep an eighth, TextVQA as OCR text.
 - **Arm A decided at both seeds.** Showing the one page the model picks as raw pixels, the other three as slots,
   recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
   Removing the three distractor pages gains only about 2 pt; asking the decoder to copy the evidence before answering
   gains nothing (+.001, seed 42; provisional: a tie needs the seed-43 repeat, not run for the cell cap). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
+- **Arm G decided at both seeds: twice the slots on the picked page is NOT enough.** Re-compressing the picked page at
+  rate 4 (other pages rate 8) gains +.063 / +.049, below the +.14 gate (route1, the page raw, gains +.210 / +.207). It
+  costs only 1/7 of route1's extra decoder tokens. The models were trained at rate 8 only.
 - **Arm E decided at both seeds: given the question, half the slots carry everything the decoder uses.** Keeping the
   half the decoder attends to most gives the plain score (.610 = .610, .615 = .615) and beats a blind half by +.105 /
   +.107. provisional (seed 42 only): keeping a QUARTER still gives the plain score (.611 vs .610, slots .246×).
@@ -22,9 +27,7 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
 - **Arm D decided:** attention picks image pages better than the digit prompt (+2.5 pt), the digit prompt picks text
   passages better (+4.9 pt); the end-to-end judge effect of either is too small to measure.
 - **Arm C (evidence-then-answer on text) did not close the text gap** at seed 42.
-- Running: arm G, the picked page at twice the slots, both seeds (jobs 188590 / 188591, 1,500 questions each). Its
-  re-check passed (job 188580). That uses the last 2 of the 60 cells. Arm F (TextVQA as text): set built, no cell
-  (cell cap).
+- Arm F (TextVQA as text): set built, no cell (cell cap).
 
 ## Findings (ranked)
 1. **The document loss is reading the compressed answer page — route-then-expand removes it.** Picked page raw:
@@ -32,8 +35,17 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
    right on 98.6% / 98.9% of questions. Gold page alone, compressed: +.022 / +.025. Evidence-then-answer: +.001.
    Motivates: serve with route-then-expand (decoder prompt 1,264 tokens vs 511 compressed), and put training effort
    into how well one page's slots can be read (stage 1/2), not into distractor robustness or answer-format labels.
-   Arm G tests the cheaper version (the picked page at twice the slots instead of raw).
-2. **Given the question, the decoder uses at most half of the slots — maybe a quarter.** Keep the most-attended half
+   The cheaper version, the picked page at twice the slots instead of raw, recovers only a quarter to a third of it
+   (finding 2).
+2. **Twice the slots on the picked page recovers only a quarter to a third of the raw-page gain (untrained rate).**
+   Picked page re-compressed at rate 4, other pages rate 8, documents, n = 1,500 each: seed 42 .673 vs plain .610,
+   +.063 [+.043, +.083], 158 / 64, p < .001; seed 43 .663 vs .615, +.049 [+.030, +.067], 147 / 74, p < .001. Gate
+   (≥ +.14, 2/3 of the raw page's gain) failed at both seeds. Cost: +107.5 decoder prompt tokens per question vs
+   +753 for the raw page (.143×), so per extra token it recovers about twice as much as the raw page (.06 vs .028
+   per 100 tokens; consistent with, not a gate). The models never saw rate 4 in training. Motivates (for the
+   `longchunk` campaign): a stage-2 arm that trains a mixed rate (picked page at rate 4); closes "densify instead of
+   expand" as a training-free serving mode.
+3. **Given the question, the decoder uses at most half of the slots — maybe a quarter.** Keep the most-attended half
    over all pages, documents, n = 1,500 each, slots .496×: seed 42 .610 vs .610, +.000 [−.009, +.010], 27 / 27; seed 43
    .615 vs .615, +.000 [−.009, +.009], 25 / 25. Blind halves at the same slot count: every 2nd slot .505 / .508, so the
    attention half is +.105 [+.085, +.126] (p = 1e-24) and +.107 [+.087, +.127] (p = 5e-26) better. provisional, one
@@ -41,7 +53,7 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
    +.012], 37 / 35, 1,197 / 1,500 answers identical. Photos (one seed): the half gives .677 = .677. The selection
    needs one full pass over every slot with the question, so it saves decoder context, not storage. Motivates: a
    query-aware slot budget, or nested-budget training so the needed quarter can be found without the full pass.
-3. **The long-chunk gain is context between the passages that answer together.** Golds joined (9 chunks) vs ten
+4. **The long-chunk gain is context between the passages that answer together.** Golds joined (9 chunks) vs ten
    chunks: +.073 [+.051, +.095] (seed 42, 183814) and +.067 [+.046, +.088] (seed 43, 183816), n = 1,500 each, same
    slots (.998×), all on bridge questions. Against one chunk of all ten: +.038 [+.015, +.061] (seed 42) and +.053
    [+.029, +.076] (seed 43). The tail-layout model (183538) shows the same gain, +.058 [+.035, +.082] (one model,
@@ -51,14 +63,14 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
    re-compress the top passages together" serving mode is NOT adopted. Motivates: a long-chunk stage 1 that packs
    RELATED passages together (the sibling `longchunk` campaign); a ranker that finds both answer passages (both in the
    attention top 3 on .667 of questions) is the missing piece.
-4. **Storing slots in int8 costs nothing, at both seeds.** Seed 42 +.001 [−.003, +.006], 1,445 / 1,500 answers
+5. **Storing slots in int8 costs nothing, at both seeds.** Seed 42 +.001 [−.003, +.006], 1,445 / 1,500 answers
    identical; seed 43 −.001 [−.005, +.003], 1,444 / 1,500 identical. A serving option (half the memory of bf16 slots).
-5. **Giving the decoder room to reason or copy does not close the gap.** Evidence-then-answer on MRQA text: compressed
+6. **Giving the decoder room to reason or copy does not close the gap.** Evidence-then-answer on MRQA text: compressed
    .699 vs .718 plain; raw .807 vs .807. The gap on DROP shrinks from −.204 to −.172 (below the 5 pt gate) and grows on
    DuoRC (−.084 → −.156) and RACE (−.152 → −.188); BioASQ drops .912 → .812 (the slots do not hold exact strings well).
    On documents (seed 42): .611 vs .610, +.001 [−.017, +.021], 108 / 106. Motivates: stage-1/2 objectives for exact
    content (the transcription side), not reasoning labels. Closes evidence-then-answer labels.
-6. **Which page picker to use depends on the modality.** Attention mass: +.025 pick@1 on 10-page documents, −.049 on
+7. **Which page picker to use depends on the modality.** Attention mass: +.025 pick@1 on 10-page documents, −.049 on
    HotpotQA. A per-source switch passes the arm D gate, but it was chosen on the same questions it is scored on.
    Product fusion never loses (+.019 / +.006). No judge cell: the expected judge gain is +.025 × the hit-minus-miss
    judge gap of the picked-page-raw cells (.252 at seed 42: 1,479 hits .824 vs 21 misses .571; .325 at seed 43 on
@@ -142,7 +154,7 @@ compressed − raw gap on DROP / DuoRC / RACE shrinks by ≥ 5 pt with the same 
 | reciprocal-rank fusion | .881 | +.020 [+.009, +.031], 6e-4 | .892 | −.030 [−.044, −.017], 2e-5 |
 | per-source switch (chosen on these same questions) | .885 | +.025 [+.010, +.039], .001 | .922 | +.000 |
 Gate (≥ +2 pt on documents AND no loss on HotpotQA) met by the per-source switch only, which was chosen on these same
-questions (no held-out split). Closed without a judge cell: see finding 6.
+questions (no held-out split). Closed without a judge cell: see finding 7.
 
 ## Arm E — attention-guided slot pruning (documents; photos for one cell)
 How a cell works: one extra pass over the full prompt (all slots + the question); the attention of the last prompt
@@ -170,19 +182,29 @@ adopted.** Quarter (gate written before the cell: within .02 of plain → three 
 seed 42; the seed-43 cell is not run (cell cap), so it stays provisional.
 
 ## Arm G — route then densify (accepted by the owner 2026-11-11)
-The page the model picks (same pick as "picked page raw") is re-compressed at rate 4 (twice its slots) and stays
-compressed; the other pages keep rate 8. Code: `RAW=route1 DENSE=<rate>` in `eval_mm_4b.sh` (`--dense_rate` in
-`scripts/eval_mm_docqa.py`, default path unchanged). Invariant tests PASS (job 188523: positions 12 / 12, collators
-33 / 33, freeze 5 / 5); plain 300-question regression PASS (job 188524: 300 / 300 answers identical, EM .477 =
-recorded). The flag at rate 8 on 300 questions FAILED its check (job 188525): 233 / 300 answers identical to plain
-(needed ≥ 97%), same slot total (118,147), EM .487 vs .477, pick right on .983. Suspected cause: the flag re-compressed
-the picked page alone, the plain path compresses the four pages in one padded batch. The two rate-4 cells were
-cancelled before they started. Patch (9 lines): the page is re-compressed inside its example's batch, so at rate 8
-its slots should be the plain slots exactly. Re-check PASSED (job 188580, `scripts/probes/g_checks.sbatch`, homer-013):
-tests 12 / 12, 33 / 33, 5 / 5; plain 300-question regression 300 / 300 identical (EM .477, judge .610); the flag at
-rate 8 now gives 300 / 300 answers identical to plain (judge .610 = .610, slots 118,147 both), so the batch-of-one
-compression was the cause. Rate-4 cells running: seed 42 job 188590 (homer-011), seed 43 job 188591 (homer-012). Gate:
-gain over plain ≥ +.14 (2/3 of picked-page-raw's +.21) with CI above 0, at ≤ 1/3 of its extra decoder tokens, both seeds.
+The page the model picks (same pick as "picked page raw", 1,500 / 1,500 picks identical) is re-compressed at rate 4
+(twice its slots) and stays compressed; the other pages keep rate 8. Code: `RAW=route1 DENSE=<rate>` in
+`eval_mm_4b.sh` (`--dense_rate` in `scripts/eval_mm_docqa.py`, default path unchanged). Baselines: plain (seed 42 job
+184781, homer-011; seed 43 job 184784, homer-016) and picked page raw (jobs 188441 / 188460).
+| cell | model | n | judge accuracy ↑ | baseline judge accuracy ↑ | difference (95% CI) | McNemar p (up / down) | health (unparseable, rows, slots vs plain) | compression: slots / question, decoder prompt tokens |
+|---|---|---|---|---|---|---|---|---|
+| picked page at rate 4 (job 188590, homer-011) | 184778 s42 | 1,500 | .673 | plain .610 | +.063 [+.043, +.083] | <.001 (158 / 64) | 0, 1,500, 1.250 | 538.2 (picked page 215.8), 619 |
+| same cell | 184778 s42 | 1,500 | .673 | picked page raw .820 | −.147 [−.169, −.126] | <.001 (44 / 265) | | raw: 322.4 + 1 raw page, 1,264 |
+| picked page at rate 4 (job 188591, homer-012) | 184780 s43 | 1,500 | .663 | plain .615 | +.049 [+.030, +.067] | <.001 (147 / 74) | 0, 1,500, 1.250 | 538.2 (picked page 215.9), 619 |
+| same cell | 184780 s43 | 1,500 | .663 | picked page raw .822 | −.159 [−.180, −.137] | <.001 (38 / 276) | | raw: 322.4 + 1 raw page, 1,264 |
+Plain: 430.7 slots, 511 decoder prompt tokens per question. By source, rate 4 vs plain: seed 42 infographics .562 vs
+.480 (+.082), multi-page .744 vs .666 (+.078), slides .712 vs .684 (+.028); seed 43 .528 vs .480, .758 vs .678, .704
+vs .686. Answers identical to plain: 984 / 1,500 (seed 42), 993 / 1,500 (seed 43). On the 21 / 16 questions where the
+pick is wrong, rate 4 scores .524 / .500 vs plain .571 / .562 (too few to read).
+**Gate** (gain over plain ≥ 2/3 of the raw page's, CI above 0, at ≤ 1/3 of its extra decoder tokens, both seeds):
+tokens met (+107.5 vs +753, .143×); gain FAILED at both seeds (+.063 < +.140; +.049 < +.138). **Closed.** Caveat: the
+models were trained at rate 8 only, so the fail may be the untrained rate, not the idea.
+How the flag was checked: invariant tests PASS (job 188523: positions 12 / 12, collators 33 / 33, freeze 5 / 5); plain
+300-question regression PASS (job 188524). First version FAILED its rate-8 control (job 188525: 233 / 300 answers
+identical to plain, needed ≥ 97%): it re-compressed the picked page alone, the plain path compresses the four pages in
+one padded batch. Patched (9 lines): the page is re-compressed inside its example's batch. Re-check PASSED (job
+188580, `scripts/probes/g_checks.sbatch`, homer-013): tests, plain 300 / 300, rate-8 control 300 / 300 identical to
+plain (judge .610 = .610, slots 118,147 both).
 
 ## Arm F — photo text vs pixels (TextVQA, 500 questions)
 `eval_data/probes_textvqa_ocr` is built (job 188545, `scripts/probes/build_textvqa_ocr.py`): the 500 TextVQA rows of
@@ -220,10 +242,11 @@ on images and on text). The code date does not move compressed text answers (188
 
 ## Closed
 - Gold page only (both seeds): +.022 / +.025, below the +3 pt gate. Distractor pages are not the main loss.
-- Evidence-then-answer: documents +.001 (seed 42), text −.019 (seed 42); no gain seen (finding 5).
+- Evidence-then-answer: documents +.001 (seed 42), text −.019 (seed 42); no gain seen (finding 6).
 - Passage order inside a long chunk: −.002 (seed 42), +.003 (seed 43). Unused.
 - Joining the distractor passages: +.022 (p = .027) at seed 42, +.016 (n.s.) at seed 43 over ten chunks; not adopted.
 - "Rank by attention, then join the top 3" as a serving mode: equals joining all ten at both seeds; +.013 (n.s.) over
   ten chunks at seed 43.
 - A judge cell for a fused page picker (expected gain below the noise band).
 - Blind slot halving on the reference models: −.105 / −.115 (seed 42), −.107 (seed 43).
+- The picked page at twice the slots (rate 4), untrained: +.063 / +.049 over plain, below the +.14 gate at both seeds.

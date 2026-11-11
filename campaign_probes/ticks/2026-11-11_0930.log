@@ -1,0 +1,78 @@
+== campaign probes wake 2026-11-11_0930  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794357002 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=15.9 idle_h=0.3 min_util=- alert=1 unpushed=27 cron=3 daemon=1 disk_gb=13085 sig=db96a1cc same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188590,188591_max_5h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:188590,188591 (ended)   (NEXT was: wake-when job:188590,188591 max 5h)
+== session 77e4e840-7132-4126-aa74-e56628f4de01  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+24 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/77e4e840-7132-4126-aa74-e56628f4de01/tool-results/bo99hvmf1.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-11_0930   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+283 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la
+  ↳ 192 CAMPAIGN.md (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+192 lines)
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+135 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 1	# Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 188590,188591 -D -o JobID%20,State,ExitCode,NodeList,Start,End,Elapsed 2>&1 | head -30; ls -la expQ/probes/g_dense4_s42/eval/ expQ/probes/g_dense4_s43/eval/ 2>&1
+  ↳ JobID      State ExitCode        NodeList               Start                 End    Elapsed  (+16 lines)
+Both arm G cells (picked page at twice the slots) finished cleanly; now checking their health and pairing them with the baselines.
+→ Bash: for j in 188590 188591; do f=$(ls logs/eval_mm_4b_${j}.out 2>/dev/null || find . -maxdepth 2 -name "eval_mm_4b_${j}.out" | head -1); echo "== $j $f"; grep -E "unparseable|judge|mems|dense|EXIT|rows|Error|Traceback" $f | tail -25; done
+  ↳ == 188590 ./eval_mm_4b_188590.out (+47 lines)
+→ Bash: head -40 scripts/paired_judge.py | grep -nE "^import|^from|argparse|add_argument" ; grep -n "add_argument" scripts/paired_judge.py; ls expQ/ft_mm_4b_184778/eval/ | grep 1500_1m; ls expQ/ft_mm_4b_184780/eval/ | grep 1500_1m; ls expQ/probes/a…
+  ↳ 8:import argparse (+17 lines)
+→ Bash: P=mm_docqa_pisco_px1003520; G=rawroute1_dense4_mm_docqa_1500_1m.json; time ( ⏎ echo "### s42 dense4 vs plain"; timeout 60 python3 scripts/paired_judge.py expQ/ft_mm_4b_184778/eval/${P}_mm_docqa_1500_1m.json expQ/probes/g_dense4_s42/eval/${P…
+  ↳ ### s42 dense4 vs plain (+32 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='mm_docqa_pisco_px1003520' ⏎ files={'plain42':f'expQ/ft_mm_4b_184778/eval/{P}_mm_docqa_1500_1m.json','route42':f'expQ/probes/a_route1_s42/eval/{P}_rawroute1_mm_docqa_1500_1m.json','dense42':f'expQ/probes/…
+  ↳ plain42 top keys ['summary', 'records'] (+11 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='mm_docqa_pisco_px1003520' ⏎ files={'plain42':f'expQ/ft_mm_4b_184778/eval/{P}_mm_docqa_1500_1m.json','route42':f'expQ/probes/a_route1_s42/eval/{P}_rawroute1_mm_docqa_1500_1m.json','dense42':f'expQ/probes/…
+  ↳ == plain42 summary: {'em': 0.5073333333333333, 'em/slidevqa': 0.494, 'f1': 0.5991203620230745, 'f1/slidevqa': 0.6325488593786076, 'anls': 0.6161575668740203, 'anls/slidevqa': 0.5890909058804865, 'matc (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json, statistics as st ⏎ P='mm_docqa_pisco_px1003520' ⏎ for s,pl,rt,dn in [(42,'expQ/ft_mm_4b_184778/eval','expQ/probes/a_route1_s42/eval','expQ/probes/g_dense4_s42/eval'),(43,'expQ/ft_mm_4b_184780/eval','expQ/pro…
+  ↳ seed 42: n=1500 mean decoder prompt tokens {'plain': 511.1, 'route1': 1264.0, 'dense4': 618.6} total mems {'plain': 646042, 'route1': 483566, 'dense4': 807328} (+11 lines)
+Arm G is decided: the picked page at twice the slots gains +.063 / +.049, well short of the +.14 gate at both seeds. Now recording verdicts, then updating the state file and report.
+→ Bash: grep -nE "unsupported|UNSUPPORTED|wrong|fix" campaign_probes/VERIFY.md | head -20; head -12 campaign_probes/VERIFY.md; expmon ledger 40 2>&1 | tail -15 | cut -c1-200
+  ↳ 5:22 claim(s): 15 supported · 7 provisional · 0 unsupported (+27 lines)
+→ Bash: expmon probe 188590 judge=0.6727 em=0.5713 2>&1 | tail -2; expmon probe 188591 judge=0.6633 2>&1 | tail -2; python3 -c " ⏎ import json;d=json.load(open('expQ/probes/g_dense4_s43/eval/mm_docqa_pisco_px1003520_rawroute1_dense4_mm_docqa_1500_1…
+  ↳ probe recorded: 188590 (judge=0.6727 em=0.5713)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: expmon probe 188591 em=0.5587 2>&1 | tail -1 ⏎ expmon verdict 188590 closed "arm G s42 FAIL: picked page re-compressed at rate 4 (2x its slots), other 3 pages rate 8, 184778 docs n=1,500, homer-011 (= baseline node): judge .673 vs plain .61…
+  ↳ probe recorded: 188591 (em=0.5587)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: expmon note "decision: arm G CLOSED (both seeds fail the +.14 gate): picked page at rate 4 (2x slots), rest rate 8, docs n=1,500 each: s42 +.063 [+.043,+.083] (188590), s43 +.049 [+.030,+.067] (188591) over plain; route1 (picked page raw) +…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+Now the report document and the law's arm G row.
+→ Bash: wc -l docs/probe_campaign_2026-11.md && grep -nE "^#|arm G|G\." docs/probe_campaign_2026-11.md | head -60
+  ↳ 229 docs/probe_campaign_2026-11.md (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+229 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ P='mm_docqa_pisco_px1003520' ⏎ for s,pl,dn in [(42,'expQ/ft_mm_4b_184778/eval','expQ/probes/g_dense4_s42/eval'),(43,'expQ/ft_mm_4b_184780/eval','expQ/probes/g_dense4_s43/eval')]: ⏎     A={r['query_id']+'|'+…
+  ↳ 42 identical 984 / 1500 slots/q dense 538.2186666666666 plain 430.69466666666665 (+1 lines)
+Now rewriting the report document's status, findings, and arm G section.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ old_status_start=s.index('## Status (2026-11-11 08:45 KST)') ⏎ old_status_end=s.index('## Findings (ranked)') ⏎ new_status='''## Status (2026-11-11 09:45 KST) ⏎ - *…
+  ↳ 33:1. **The document loss is reading the compressed answer page — route-then-expand removes it.** Picked page raw: (+9 lines)
+Now recording the decision in the law's arm G row.
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old='→ the batch-of-one cause is confirmed; full cells 188590 (s42) / 188591 (s43) submitted 08:40 |' ⏎ assert s.count(old)==1 ⏎ s=s.replace(old,'→ the batch-of-one ca…
+  ↳ 45:| G. route then densify (accepted by the owner 2026-11-11) | `eval_mm_4b.sh <
+Updating the owner question (cell cap) now that arm G has ended, then refreshing the display page.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon display --exp probes 2>&1 | tail -6
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40 | cut -c1-260
+  ↳ **Settled** (+10 lines)
+→ Bash: expmon runs 2>&1 | grep -E "^18859[01]|^188580" | cut -c1-250; expmon grid probes 2>&1 | grep -E "^18859" | cut -c1-60,300-
+  ↳ 188580     ended     -           probes         554b8a3+dirty  g_checks.sbatch  kind=eval_mm mode=pisco ckpt=g_dense8_ctrl2 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 me (+4 lines)
+→ Bash: expmon probe 188591 judge=0.6633 em=0.5587 2>&1 | tail -1; expmon grid probes 2>&1 | grep -E "^18859" | cut -c1-40,300-; expmon gripe -c defect "grid RESULT keeps only the LAST expmon probe row per job: probing judge= then em= on 188591 hid…
+  ↳ probe recorded: 188591 (judge=0.6633 em=0.5587)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+3 lines)
+Writing the state file now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: echo "waiting-owner" > campaign_probes/NEXT && cat campaign_probes/NEXT && git status --short campaign_probes docs | head
+  ↳ waiting-owner (+6 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Arm G is closed at both seeds: re-compressing the picked page at twice the slots does not recover enough. Arm G = the picked page re-compressed at rate 4, the other pages at rate 8. Documents, 1,500 que…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.9094 turns=31 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Arm G is closed at both seeds: re-compressing the picked page at twice the slots does not recover enough. Arm G = the picked page re-compressed at rate 4, the other pages at rate 8. Documents, 1,500 questions per seed, judge accuracy (higher is better):\n- Seed 42: .673 vs plain .610, +.063 [+.043, +.083], job 188590.\n- Seed 43: .663 vs plain .615, +.049 [+.030, +.067], job 188591.\n- The gate needed at least +.14 (two thirds of the raw page's +.21). Both seeds miss it.\n- Cost: 107.5 extra decoder tokens per question, against 753 for showing the page raw (.143x). So per extra token it recovers about twice as much as the raw page, but the total gain is too small.\n- Caveat: the models were trained at rate 8 only.\n\nBoth cells completed cleanly: exit 0, no preemption, 1,500 rows, 0 unparseable answers, the same page picks as the raw-page cells. Recorded verdicts, probes and a ledger decision. Rewrote STATE.md, the report docs/probe_campaign_2026-11.md (new finding 2, arm G table) and the arm G row of CAMPAIGN.md. Refreshed the display page and BLOCKED.md.\n\nEvery arm is now decided or closed because of the cell cap (60 of 60 used). Nothing can launch until the owner answers BLOCKED.md: raise the cap from 60 to 65, mainly to repeat the 'keep a quarter of the slots' result at seed 43.", "launched": [], "verdicts": [{"jobid": "188590", "verdict": "closed", "note": "arm G s42: picked page at rate 4, .673 vs plain .610 = +.063 [+.043,+.083],
+== final:
+{"next":"waiting-owner","summary":"Arm G is closed at both seeds: re-compressing the picked page at twice the slots does not recover enough. Arm G = the picked page re-compressed at rate 4, the other pages at rate 8. Documents, 1,500 questions per seed, judge accuracy (higher is better):\n- Seed 42: .673 vs plain .610, +.063 [+.043, +.083], job 188590.\n- Seed 43: .663 vs plain .615, +.049 [+.030, +.067], job 188591.\n- The gate needed at least +.14 (two thirds of the raw page's +.21). Both seeds miss it.\n- Cost: 107.5 extra decoder tokens per question, against 753 for showing the page raw (.143x). So per extra token it recovers about twice as much as the raw page, but the total gain is too small.\n- Caveat: the models were trained at rate 8 only.\n\nBoth cells completed cleanly: exit 0, no preemption, 1,500 rows, 0 unparseable answers, the same page picks as the raw-page cells. Recorded verdicts, probes and a ledger decision. Rewrote STATE.md, the report docs/probe_campaign_2026-11.md (new finding 2, arm G table) and the arm G row of CAMPAIGN.md. Refreshed the display page and BLOCKED.md.\n\nEvery arm is now decided or closed because of the cell cap (60 of 60 used). Nothing can launch until the owner answers BLOCKED.md: raise the cap from 60 to 65, mainly to repeat the 'keep a quarter of the slots' result at seed 43.","launched":[],"verdicts":[{"jobid":"188590","verdict":"closed","note":"arm G s42: picked page at rate 4, .673 vs plain .610 = +.063 [+.043,+.083], n=1,500; gate +.14 failed; tokens .143x of the raw page's"},{"jobid":"188591","verdict":"closed","note":"arm G s43: .663 vs plain .615 = +.049 [+.030,+.067], n=1,500; gate +.138 failed -> arm G closed"}],"blocked":"BLOCKED.md: raise the cell cap from 60 to 65 (recommended), mainly to repeat 'keep a quarter of the slots' at seed 43; all 60 cells are used and every arm is decided or closed for the cap.","gripes":["defect: the grid keeps only the last `expmon probe` row per job (a judge= value vanished after a later em= call); suggest merging probe keys per job"]}
+== rc=0 secs=255
+== verify: 15/23
