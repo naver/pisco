@@ -1,0 +1,76 @@
+== campaign freeze wake 2026-11-11_1000  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794358801 live=188583:RUNNING,188582:RUNNING,188585:PENDING,188584:PENDING running=2 pending=2 problems=0 problems_other=0 new=0 gpuh24=6.3 idle_h=0.0 min_util=55 alert=0 unpushed=28 cron=3 daemon=1 disk_gb=13078 sig=38aa1d52 same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100 (exists)   (NEXT was: wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-100 max 4h)
+== session 038d76a0-56b6-48dc-a311-123d590a5b06  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ # Wake brief — campaign freeze — 2026-11-11_1000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+198 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ===== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && grep -n '' CAMPAIGN.md | sed -n '/Decision gates/,/Patchable/p'
+  ↳ 33:| F (frozen) | `expQ/freeze/ft_freeze.sh frozen 42` and `… frozen 43` | `freeze_compressor=true` (compressor + connector frozen and in eval mode; decoder LoRA trains) | stage-2 model, 28k rows (doc (+86 lines)
+→ Bash: sed -n '119,125p' CAMPAIGN.md; echo '-----STATE'; cat STATE.md; echo '-----KI'; cat known_issues.md; ls -la
+  ↳ | a reproduced crash in a campaign file whose fix is ≤ CAMP_PATCH_LINES lines inside a "## Patchable" path | apply it, smoke on the cheapest cell (≤ 20 steps), record `<file> — <traceback line> — <lin (+124 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -la expQ/freeze/ expQ/freeze/ft_frozen_s42 expQ/freeze/ft_frozen_s43 2>&1 | head -50; ls expQ/ft_mm_4b_184778/ expQ/ft_mm_4b_184780/; ls expQ/ft_mm_4b_184778/eval expQ/ft_mm_4b_184780/eval
+  ↳ expQ/freeze/: (+53 lines)
+Both frozen finetunes reached their step-100 checkpoint. I am reading their losses, then I will submit the preview eval.
+→ Bash: expmon logs 188582 40 2>&1 | grep -E "eval_loss|'loss'|it\]|s/it" | tail -15; echo ---; expmon logs 188583 40 2>&1 | grep -E "eval_loss|'loss'|s/it" | tail -15
+  ↳ [A{'eval_loss': '0.4552', 'eval_Rouge-1': '0.4963', 'eval_Rouge-2': '0.3205', 'eval_Rouge-L': '0.4954', 'eval_precision': '0.5225', 'eval_recall': '0.4241', 'eval_M': '0', 'eval_runtime': '49.37', 'e (+53 lines)
+→ Bash: ls expQ/freeze/ft_frozen_s42/checkpoint-100 expQ/ft_mm_4b_184778/model; head -60 eval_mm_4b.sh; git diff --stat; git log --oneline -3 -- scripts/eval_mm_docqa.py eval_mm_4b.sh pisco/model.py test_freeze.py
+  ↳ expQ/freeze/ft_frozen_s42/checkpoint-100: (+89 lines)
+→ Bash: sed -n '60,200p' eval_mm_4b.sh; ls -la --time-style=full-iso expQ/ft_mm_4b_184778/eval expQ/ft_mm_4b_184780/eval scripts/eval_mm_docqa.py eval_mm_4b.sh
+  ↳ echo "FACTORS kind=eval_mm mode=$MODE ckpt=$(basename $RUN_DIR) data=$(basename $DATA) limit=${LIMIT:-all} image_rate=${RATE:-ckpt} topk=$TOPK max_pixels=$PX merged=${MERGE:-0} samples_per_q=$NSAMP ra (+27 lines)
+→ Bash: ls -d eval_data/text_* ; find expQ -maxdepth 3 -name '*text_mrqa_ood_1500*' -newer expQ/ft_mm_4b_184778/training_config.yaml 2>/dev/null | head; grep -n "text_mrqa_ood_1500\|text_hotpotqa_1500" EXPERIMENTS.md | tail -8
+  ↳ eval_data/text_hotpotqa_1500 (+13 lines)
+→ Bash: R=$(ls .expmon/runs.jsonl 2>/dev/null || find . -maxdepth 3 -name runs.jsonl | head -1); echo $R; grep -E 'text_mrqa_ood_1500|text_hotpotqa_1500"|text_hotpotqa_1500 ' $R | grep -v '"base"' | grep -v ' base ' | tail -4 | cut -c1-900
+  ↳ .expmon/runs.jsonl (+4 lines)
+→ Bash: grep -n "CAMP_WRITE_ROOTS\|CAMP_MAX_TRAIN\|CAMP_COMMIT_PATHS" campaign_freeze/campaign.conf; grep -n -o ".\{200\}text_mrqa_ood_1500.\{100\}" campaign_probes/CAMPAIGN.md | head -3; grep -n -o ".\{150\}text_hotpotqa_1500.\{80\}" campaign_prob…
+  ↳ 14:CAMP_MAX_TRAIN=2                  # trainings in flight at once (CAMPAIGN.md "Budget and caps" refers to it) (+37 lines)
+Still reading: I am finding the exact command the earlier text evals used, so the reference re-runs match it.
+→ Bash: ls -la --time-style=+%m-%d_%H:%M expQ/probes/c_plain_s42/ expQ/probes/c_plain_s42/eval; grep -h '"c_plain_s42"\|c_plain_s42/model' .expmon/runs.jsonl | cut -c1-400 | tail -2; grep -n "c_plain_s42\|plain MRQA\|MRQA .718\|\.718" EXPERIMENTS.m…
+  ↳ expQ/probes/c_plain_s42/: (+18 lines)
+→ Bash: sacct -j 188485,188522,188590,188591,188445,188509,188486,188519 -X -o JobID,JobName%14,State,Elapsed,NodeList,Start -n 2>&1 | head -20; grep -h 'mm_naturalqa_1500' .expmon/runs.jsonl | grep -v '"base"' | tail -2 | cut -c1-250
+  ↳ 188485        eval_mm_4b.sh  COMPLETED   00:30:08       homer-016 2026-11-11T05:28:41  (+9 lines)
+→ Bash: grep -n -i -A6 "same node rule" campaign_probes/CAMPAIGN.md | head -20; sacct -j 188539,185576 -X -o JobID,State,Elapsed,NodeList -n
+  ↳ 75:- **Same node rule (added 2026-11-11):** a paired difference between two cells with IMAGE inputs counts only when both (+8 lines)
+→ Bash: expmon help launch 2>&1 | head -40
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+39 lines)
+Recording the step-100 health numbers, then setting up the reference eval folders.
+→ Bash: expmon probe 188582 --step 0.23 eval_loss=0.4552 2>&1 | tail -2; expmon probe 188583 --step 0.23 eval_loss=0.4419 2>&1 | tail -2; mkdir -p expQ/freeze/ref_s42 expQ/freeze/ref_s43 && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_1…
+  ↳ probe recorded: 188582 @0.23 (eval_loss=0.4552)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+18 lines)
+→ Bash: PX=1003520 expmon launch --dry-run --exp freeze --stage preview --parent 188582 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s42/checkpoint-100 pisco 300 eval_data/mm_docqa_1500_1m 2>&1 |…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s42/checkpoint-100 pisco 300 eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: for s in 42 43; do p=$([ $s = 42 ] && echo 188582 || echo 188583); PX=1003520 expmon launch --exp freeze --stage preview --parent $p --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s$s/check…
+  ↳ Submitted batch job 188594 (+3 lines)
+→ Bash: ls expQ/freeze/ft_frozen_s42_smoke; PX=1003520 expmon launch --dry-run --exp freeze --stage eval --parent 188582 --partition gpu-be --exclude 'homer-[005-009]' --dependency afterok:188582 --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s…
+  ↳ checkpoint-20 (+8 lines)
+→ Bash: D=eval_data/mm_docqa_1500_1m;  ⏎ PX=1003520 expmon launch --exp freeze --stage eval --parent 188582 --partition gpu-be --exclude 'homer-[005-009]' --dependency afterok:188582 --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s42/model pisc…
+  ↳ job id:  188596 (+3 lines)
+→ Bash: grep -E '"jobid": "18859[4-9]"' .expmon/runs.jsonl | python3 -c "import sys,json; [print(r['jobid'], r['argv'], r.get('slurm')) for r in map(json.loads, sys.stdin)]"; squeue -j 188594,188595,188596,188597,188598,188599 -o "%i %T %R %P" 
+  ↳ 188594 ['expQ/freeze/ft_frozen_s42/checkpoint-100', 'pisco', '300', 'eval_data/mm_docqa_1500_1m'] {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '0:40:00'} (+12 lines)
+Six eval jobs are in: two step-100 previews running, four full documents evals waiting on the finetunes. Logging intents now.
+→ Bash: which jq;  ⏎ expmon note -j 188594 "intent: arm F s42 PREVIEW (law: one per finetune cell): checkpoint-100 (.23 epoch, 6,400 rows seen) of the frozen finetune 188582, PX=1003520, first 300 documents of mm_docqa_1500_1m, judge chained. No re…
+  ↳ /usr/bin/jq (+1 lines)
+→ Bash: F=expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; jq -c 'if type=="object" then keys else (.[0]|keys) end' $F | cut -c1-400
+→ Bash: for F in expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; do jq -c '[.metrics.judge, (.results|length), ([.results[:300][].judge]|add/length),…
+  ↳ ["records","summary"]
+  ↳ Exit code 5 (+3 lines)
+→ Bash: for F in expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; do jq -c '[(.records|length), ([.records[:300][].judge]|add/300), .summary.judge?]' …
+  ↳ [1500,0.61,0.61] (+2 lines)
+→ Bash: expmon gripe -c gap "launch: --dependency is passed to sbatch but not recorded in the manifest's slurm dict (runs.jsonl 188596-188599 show partition/exclude/time only), so grid/brief cannot show which cells wait on which run; record depende…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+18 lines)
+→ Bash: expmon verdict 188517 closed "unit tests of freeze_compressor pass (test_freeze.py 5/5: only decoder trainable, no gradient to the frozen side, frozen side in eval mode, flag off = old behaviour), exit 0. Ran on the UNCOMMITTED copy 9dd687d…
+  ↳ verdict recorded: 188517 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+State written. Adding the ledger line and the wait condition, then done.
+→ Bash: expmon note "decision: arm F mid-run health OK at .23 epoch (6,400 rows): eval_loss frozen s42 .455 vs reference 184778 .513, frozen s43 .442 vs 184780 .471 (64 eval rows each); 71/75 s/step. Submitted the two pre-authorised step-100 previe…
+  ↳ wake-when job:188594,188595 max 2h
+→ StructuredOutput: {"next": "wake-when", "summary": "Both frozen finetunes are healthy at about a quarter of an epoch (6,400 of 28,032 rows seen). Their eval loss (lower is better, 64 held-out rows) is below the reference finetune at the same point: .455 vs .…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7960 turns=31 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Both frozen finetunes are healthy at about a quarter of an epoch (6,400 of 28,032 rows seen). Their eval loss (lower is better, 64 held-out rows) is below the reference finetune at the same point: .455 vs .513 at seed 42, and .442 vs .471 at seed 43. Training runs at 71–75 s per step, and both runs should end around 16:20–16:50. This wake submitted six eval jobs. Two are previews of the step-100 checkpoints on the first 300 documents, now running; the reference final models score .610 on those same 300 questions, at both seeds. The other four are 1,500-question documents evals, chained to start when each finetune ends: one for each frozen model and one re-run for each reference model. The reference re-runs read the model through symlink folders under expQ/freeze, so the old result files are not overwritten. Both sides run in the same time window on the same eval code (hashes noted). The verifier's findings are fixed: the unit-test verdict now says the tests ran on an uncommitted copy (9dd687d+dirty) and the flag was committed later as d167725. The norm-gain finding is marked provisional, and the old MRQA reference file was found. One slip: a one-second stdlib python3 read of the manifest on the login node, noted in STATE.md. Next wake, when both previews end: record the preview scores, then submit the photos pairs at both seeds and the MRQA pair at seed 42, all chained on the finetunes.", "launched": ["188594", "188595", "188596", "188597", "
+== final:
+{"next":"wake-when","summary":"Both frozen finetunes are healthy at about a quarter of an epoch (6,400 of 28,032 rows seen). Their eval loss (lower is better, 64 held-out rows) is below the reference finetune at the same point: .455 vs .513 at seed 42, and .442 vs .471 at seed 43. Training runs at 71–75 s per step, and both runs should end around 16:20–16:50. This wake submitted six eval jobs. Two are previews of the step-100 checkpoints on the first 300 documents, now running; the reference final models score .610 on those same 300 questions, at both seeds. The other four are 1,500-question documents evals, chained to start when each finetune ends: one for each frozen model and one re-run for each reference model. The reference re-runs read the model through symlink folders under expQ/freeze, so the old result files are not overwritten. Both sides run in the same time window on the same eval code (hashes noted). The verifier's findings are fixed: the unit-test verdict now says the tests ran on an uncommitted copy (9dd687d+dirty) and the flag was committed later as d167725. The norm-gain finding is marked provisional, and the old MRQA reference file was found. One slip: a one-second stdlib python3 read of the manifest on the login node, noted in STATE.md. Next wake, when both previews end: record the preview scores, then submit the photos pairs at both seeds and the MRQA pair at seed 42, all chained on the finetunes.","launched":["188594","188595","188596","188597","188598","188599"],"verdicts":[{"jobid":"188517","verdict":"closed","note":"corrected: tests ran on uncommitted 9dd687d+dirty; flag committed later as d167725; re-run on HEAD planned"}],"gripes":["launch: --dependency not recorded in the manifest slurm dict","launch: env-var factors (PX, CML, TOPK) not captured at submit time; PENDING chained evals show empty factors"],"wake_when":"job:188594,188595 max 2h"}
+== rc=0 secs=288
+== verify: 8/11
