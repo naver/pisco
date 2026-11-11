@@ -1,0 +1,82 @@
+== campaign longchunk wake 2026-11-11_2100  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794398401 live=188467:PENDING,188469:PENDING,188468:PENDING,188466:RUNNING running=1 pending=3 problems=0 problems_other=0 new=0 gpuh24=75.9 idle_h=0.0 min_util=- alert=0 unpushed=36 cron=3 daemon=1 disk_gb=12734 sig=48f5f03c same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188470_max_14h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: job:188470 (ended)   (NEXT was: wake-when job:188470 max 14h)
+== session 1fcef7c9-fbc9-495e-92da-df69cdc58c27  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ # Wake brief — campaign longchunk — 2026-11-11_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+221 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; sed -n '/^- finetune:/,/^## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat STATE.md; echo; echo '-----'; cat known_issues.md; ls -la
+  ↳ - finetune: `ft_mm_4b.sh <arm stage-2 model> 28000 1 64 hf_training.learning_rate=2e-5 +model_config_overrides.image_max_pixels=1003520` and the same with `+hf_training.seed=43`, with env `FT_DATA=<ro (+74 lines)
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+90 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 | head -60; sacct -j 188422,188470,188466,188467 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList -n
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+44 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; ls; ls pt_text_1M_cml256_188422 | head -30; grep -E "eval_loss|eval_rouge" pt_text_long_188422.out | tail -8; tail -5 pt_text_long_188422.out
+  ↳ Exit code 1 (+17 lines)
+Checking the control's finished stage 1 and the ownership probe result before updating state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 188422 200 2>/dev/null | grep -E "eval_loss|eval_rougeL|train_runtime|'loss'" | tail -12; ls expQ/longchunk/pt_text_1M_cml256_188422/model | head
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 188470 80 2>/dev/null | tail -45
+  ↳ [A{'eval_loss': '1.007', 'eval_Rouge-1': '0.7322', 'eval_Rouge-2': '0.5998', 'eval_Rouge-L': '0.7225', 'eval_precision': '0.7678', 'eval_recall': '0.7579', 'eval_M': '0.03125', 'eval_runtime': '6.042 (+11 lines)
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/probe_mixer_188470.out (last 80) <== (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422; grep -oE "'eval_loss': '[0-9.]+'.{0,60}|'epoch': '[0-9.]+'\}" train.log | grep -A1 eval_loss | head -20; grep -c eval_loss train.log; grep -oE "\{'loss': '[0-9.]…
+  ↳ 0
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls pt_text_long_188422* 2>/dev/null || find . -maxdepth 2 -name "*188422*.out" | head -1); echo $f; grep -oE "'eval_loss': '[0-9.]+', 'eval_Rouge-1': '[0-9.]+', 'eval_Rouge-2': '[0-9.]+', 'eval_Rou…
+  ↳ pt_text_long_188422.out (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/archq3/pt_text_1M_spread/train.log; do grep -oE "'eval_loss': '[0-9.]+', 'eval_Rouge-1': '[0-9.]+', 'eval_Rouge-2': '[0-9.]+', 'eval_Rouge-L': '[0-9.]+'|'eval_loss': [0-9.]+, 'eval_Rouge-…
+  ↳ pt_mm_5M_spread (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/archq3/pt_text_1M_spread/; grep -l "180486" *.out 2>/dev/null | head -3; f=$(ls *180486*.out 2>/dev/null | head -1); echo "f=$f"; [ -n "$f" ] && grep -oE "'eval_loss': '?[0-9.]+'?, 'eval_Rouge-…
+  ↳ checkpoint-4000 (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; diff pt_text_1M_cml256_188422/training_config.yaml pt_text_1M_cml1024_188466/training_config.yaml; echo "rc=$?"; md5sum pt_text_4b_long.sh; ls -la pt_text_1M_cml1024_188466/; grep -oE "\…
+  ↳ 4c4 (+24 lines)
+Control stage 1 finished cleanly; the 1,024-token arm started with only the 4 expected config differences. Now looking up the exact eval commands to chain the control's evals.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "^- 2026-11-(06 18|10)" EXPERIMENTS.md | grep -iE "eval|g10|CML=4096|TOPK" | head -20
+  ↳ 509:- 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same conte (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=$(find . -maxdepth 3 -name runs.jsonl | head -3); echo $R; for j in 185507 185505 188597 188602 188606 188615; do grep "\"$j\"" $R | head -1 | python3 -c "import sys,json; d=json.loads(sys.stdin.read…
+  ↳ ./.expmon/runs.jsonl (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '1,60p' eval_mm_4b.sh | grep -nE "PX|CML|TOPK|SBATCH|\$\{?[0-9]|LIMIT|sbatch" | head -30; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py | cut -c1-8,33-; git diff --stat…
+  ↳ 2:#SBATCH -n 1 (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -A6 -i "same node rule" campaign_probes/CAMPAIGN.md | head -20; grep -h '"argv": \["expQ/ft_mm_4b_18381[46]/model"' .expmon/runs.jsonl | grep -E "mm_docqa_1500_1m|mm_naturalqa_1500\"" | python3…
+  ↳ 75:- **Same node rule (added 2026-11-11):** a paired difference between two cells with IMAGE inputs counts only when both (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 185507,185600,185601,185603,188596,188598,188603,188604 -X -o JobID,Elapsed,NodeList,State -n; grep -nE "FT_OUT|OUT_DIR|output_dir|/model" ft_mm_4b.sh | head; scontrol show job 188467 | grep -…
+  ↳ 185507         00:00:43       homer-020     FAILED  (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -hE '"jobid": "18846[789]"' .expmon/runs.jsonl | cut -c1-700; scontrol show job 188468 | grep -E "WorkDir|Command"
+  ↳ {"ts": "2026-11-11 04:06", "jobid": "188467", "launcher": "pt_mm_4b.sh", "argv": ["100000", "8", "8", "merger", "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/model", "+mo (+4 lines)
+Chaining the control's six gating evals now (deciding set + documents + photos, both seeds). Confirming the finetune output paths first.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "\[job 18846[89]\]" EXPERIMENTS.md | cut -c1-600
+  ↳ 602:- 2026-11-11 04:07 [job 188468] intent: C256 finetune s42 = 183814's argv (28k rows, bs 1 x 64, lr 2e-5, bf16, 1M px) + its env FT_DATA (docpages_20k_1m_teacher:20000, natural_8k_teacher:8000) fro (+1 lines)
+Dry-running the first eval to check the effective partition, exclude and time.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; CML=4096 TOPK=10 expmon launch --exp longchunk --stage eval --parent 188468 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:26:00 --dependency afterok:188468 eval_mm_4b.sh /beegfs/scr…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:26:00 --dependency afterok:188468 eval_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/model pisco   (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk ⏎ for s in 42 43; do ⏎  P=$([ $s = 42 ] && echo 188468 || echo 188469) ⏎  CML=4096 TOPK=10 expmon launch --exp longchunk --stage eval --parent $P --p…
+  ↳ Submitted batch job 188707 (+5 lines)
+All six submitted. Recording notes, probes and the health verdict.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco ⏎ expmon probe 188422 --step 4000 eval_loss=0.8772 eval_rougeL=0.7579 docs_seen=768000 2>&1 | tail -1 ⏎ expmon probe 188422 --step 5208 eval_loss=1.007 eval_rougeL=0.7225 docs_seen=1000000 2>&1 | tail -…
+  ↳ probe recorded: 188422 @4000 (eval_loss=0.8772 eval_rougeL=0.7579 docs_seen=768000)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"18847?0"|188470' .expmon/verdicts.jsonl | tail -2 | cut -c1-300; grep -c . .expmon/verdicts.jsonl
+  ↳ {"ts": "2026-11-11 21:03", "jobid": "188470", "verdict": "closed", "note": "C256 stage-1 slot ownership .972 on text (3,053 test slots), gate >=.95 PASSED; reference .977"} (+1 lines)
+Tightening the law with the eval details I had to work out (pixel budget, node exclusion, measured times), so the arms repeat them exactly.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; grep -n "^- evals of each finetuned model" CAMPAIGN.md
+  ↳ 40:- evals of each finetuned model, judge chained (`eval_mm_4b.sh <model> pisco …`): g10 `CML=4096 TOPK=10 … eval_data/text_hotpotqa_1500_g10`, g1 `TOPK=10 … eval_data/text_hotpotqa_1500`, documents `
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco ⏎ expmon gripe -c defect "verdict n-check warned 'no n' on a note that says '3,053 test slots' and '64 rows' — the detector seems to miss comma-thousands and 'N rows/slots'; accept \d{1,3}(,\d{3})* foll…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; python3 - <<'EOF' ⏎ p='known_issues.md' ⏎ s=open(p).read() ⏎ row="| stage-1 held-out `eval_loss` RISES at the end of the run while train loss is flat (C256 188422: .801 → .877 → 1.00…
+  ↳ | a law command's launcher reads env vars (`PT_DATA`, `PT_OUT` in pt_mm_4b.sh; `FT_DATA`, `FT_OUT` in ft_mm_4b.sh) that  (+1 lines)
+Writing the new state file.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "decision: longchunk wake 2026-11-11 21:00 — control stage 1 (188422) done: 1M docs, 16:43 h, held-out loss end rise .801->1.007 matches the SmolLM2 reference (.924->1.023), not a collapse;…
+  ↳ expmon note: 99 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "The baseline model trained on short 256-token chunks finished its text training cleanly. It read 1M documents in 16.7 h. Its slots still each hold their own piece of the text (ownership .972 over 3,053 test…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7188 turns=33 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "The baseline model trained on short 256-token chunks finished its text training cleanly. It read 1M documents in 16.7 h. Its slots still each hold their own piece of the text (ownership .972 over 3,053 test slots; the gate needs ≥ .95). Its held-out loss rises at the end (.801 → 1.007). The older SmolLM2 baseline rose the same way (.924 → 1.023), so this is not a collapse; I logged it in known_issues.md. The 1,024-token arm started training at 20:31, and its config differs from the baseline's only in the 4 planned settings. It runs at 42.2 s per step and should end around 2026-11-14 09:30. The baseline's image training stage (job 188467) is still waiting for a GPU. Its two finetunes are already chained behind it. This wake I also chained the baseline's 6 deciding evaluations behind those finetunes, each with the judge: the long-passage set, documents and photos, for both seeds. I made the law stricter with what I had to work out by hand: the pixel budget the image evals need, excluding nodes homer-005 to 009, the measured time limits, and recording the eval code checksums. Budget used: about 3.2 of 38 GPU-days. No accuracy number exists yet. Nothing needed from the owner.", "launched": ["188707 control seed 42 long-passage eval (text_hotpotqa_1500_g10), runs after finetune 188468", "188708 control seed 42 documents eval, runs after 188468", "188709 control seed 42 photos eval, runs after 188468", "188710 control seed 43 long-passage eval, run
+== final:
+{"next":"wake-when","summary":"The baseline model trained on short 256-token chunks finished its text training cleanly. It read 1M documents in 16.7 h. Its slots still each hold their own piece of the text (ownership .972 over 3,053 test slots; the gate needs ≥ .95). Its held-out loss rises at the end (.801 → 1.007). The older SmolLM2 baseline rose the same way (.924 → 1.023), so this is not a collapse; I logged it in known_issues.md. The 1,024-token arm started training at 20:31, and its config differs from the baseline's only in the 4 planned settings. It runs at 42.2 s per step and should end around 2026-11-14 09:30. The baseline's image training stage (job 188467) is still waiting for a GPU. Its two finetunes are already chained behind it. This wake I also chained the baseline's 6 deciding evaluations behind those finetunes, each with the judge: the long-passage set, documents and photos, for both seeds. I made the law stricter with what I had to work out by hand: the pixel budget the image evals need, excluding nodes homer-005 to 009, the measured time limits, and recording the eval code checksums. Budget used: about 3.2 of 38 GPU-days. No accuracy number exists yet. Nothing needed from the owner.","launched":["188707 control seed 42 long-passage eval (text_hotpotqa_1500_g10), runs after finetune 188468","188708 control seed 42 documents eval, runs after 188468","188709 control seed 42 photos eval, runs after 188468","188710 control seed 43 long-passage eval, runs after finetune 188469","188711 control seed 43 documents eval, runs after 188469","188712 control seed 43 photos eval, runs after 188469"],"verdicts":[{"jobid":"188422","verdict":"closed","note":"Baseline text training done: 1M documents, 16:43 h. Held-out loss rises at the end, as it did for the SmolLM2 baseline; not a collapse."},{"jobid":"188470","verdict":"closed","note":"Baseline slot ownership .972 on 3,053 test slots; gate ≥ .95 passed."}],"gripes":["defect: the n-check on verdict notes misses counts written with commas, like '3,053 test slots'","gap: the campaign report's leaves section lists 16 old pre-campaign probes before the campaign's own verdicts","gap: the launch record drops environment variables (PX, CML, TOPK, FT_OUT, PT_DATA), and the dry-run shows no factors"],"wake_when":"file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml max 6h"}
+== rc=0 secs=279
+== verify: 7/9

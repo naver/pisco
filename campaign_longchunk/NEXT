@@ -1,1 +1,1 @@
-wake-when job:188470 max 14h
+wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/training_config.yaml max 6h
