@@ -1,0 +1,50 @@
+== campaign freeze wake 2026-11-11_2030  reasons=scheduled  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794396602 live=188652:RUNNING,188651:RUNNING,188677:PENDING,188676:PENDING,188675:PENDING,188674:PENDING,188673:PENDING,188672:PENDING,188654:PENDING,188653:PENDING running=2 pending=8 problems=0 problems_other=0 new=0 gpuh24=29.5 idle_h=0.0 min_util=28 alert=0 unpushed=35 cron=3 daemon=1 disk_gb=12761 sig=852793cf same=1 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-in_30
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session e114c518-ad9b-4deb-8c0e-a8ff3cb1c0c4  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/e114c518-ad9b-4deb-8c0e-a8ff3cb1c0c4/tool-results/bkfq3fwyy.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-11_2030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+237 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ======= && cat STATE.md && ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat STATE.md; ls -la
+  ↳ ## Decision gates (+72 lines)
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+119 lines)
+→ Bash: cat VERIFY.md; cat known_issues.md | head -50; ls ../expQ/freeze/
+  ↳ # VERIFY — campaign freeze — 2026-11-11_1930   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+54 lines)
+Checking progress of the two seed-44 finetunes, then chaining the module-move checks and the paired test.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && for j in 188651 188652; do echo "--- $j"; expmon logs $j 400 2>&1 | grep -oE "[0-9]+/437 \[[^]]*\]|'eval_loss': [0-9.]+|'loss': '?[0-9.]+|nan" | tail -4; done
+  ↳ --- 188651 (+9 lines)
+→ Bash: for j in 188651 188652; do echo "--- $j"; expmon logs $j 2000 2>&1 | grep -oE "'(loss|eval_loss|grad_norm)': '?[0-9.na]+" | tail -6 | tr '\n' ' '; echo; done; cat expQ/freeze/paired_judge_cpu.sh | head -40
+  ↳ --- 188651 (+32 lines)
+→ Bash: ls -la expQ/freeze/ft_frozen_s42/eval/ expQ/freeze/ref_s42 | head -20; ls expQ/freeze/ft_frozen_s44 expQ/freeze/ft_unfrozen_s44; grep -n "OUT\|eval/" eval_mm_4b.sh | head -10
+  ↳ expQ/freeze/ft_frozen_s42/eval/: (+29 lines)
+→ Bash: head -15 expQ/freeze/check_module_move.sh; sacct -j 188584,188585,188650 -o JobID,Elapsed,State,Partition,Timelimit -X
+  ↳ #!/bin/bash (+19 lines)
+→ Bash: expmon launch --exp freeze --stage check --parent 188651 --dependency afterok:188651 --partition gpu-be --time 0:05:00 --dry-run expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/s…
+  ↳ would submit: sbatch --dependency afterok:188651 --partition gpu-be --time 0:05:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch (+3 lines)
+→ Bash: expmon launch --exp freeze --stage check --parent 188651 --dependency afterok:188651 --partition gpu-be --time 0:05:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model /beegfs/scratch/use…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/*_188699.out   (err: /beegfs/scratch/user/hdejean/pisco/*_188699.out) (+7 lines)
+Both checks queued (188699 frozen, 188700 reference). Now the paired test, chained on all 8 seed-44 evals.
+→ Bash: expmon launch --exp freeze --stage judge --dependency afterok:188653:188654:188672:188673:188674:188675:188676:188677 --partition gpu-be --time 0:05:00 expQ/freeze/paired_judge_cpu.sh ft_frozen_s44:ft_unfrozen_s44 2>&1 | tail -4
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/*_188701.out   (err: /beegfs/scratch/user/hdejean/pisco/*_188701.out) (+3 lines)
+→ Bash: expmon note -j 188699 "intent: module-move check of frozen s44 (afterok 188651) vs stage-2 184777; every compressor/connector row must read 0.0%. --time 0:05:00 (measured 47 s, 188584)" && expmon note -j 188700 "intent: module-move check of…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && python3 - <<'PY' ⏎ s=open('STATE.md').read() ⏎ a=s.index('## Owned jobs'); b=s.index('## Mid-run health') ⏎ print(len(s), a, b) ⏎ PY
+  ↳ 12778 4243 7567
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "decision: wake 8 — seed-44 pair healthy at 20:32 (frozen .22 epoch 71 s/step; reference .16 epoch 91 s/step, loss .52). Chain completed: module-move checks 188699/188700 afterok each fin…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Seed-44 pair healthy at 20:32 (frozen .22 epoch 71 s/step; reference .16 epoch 91 s/step, loss .52, no NaN). Submitted the last 3 jobs of the seed-44 chain: module-move checks 188699 (afterok 188651) and 18…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2215 turns=20 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Seed-44 pair healthy at 20:32 (frozen .22 epoch 71 s/step; reference .16 epoch 91 s/step, loss .52, no NaN). Submitted the last 3 jobs of the seed-44 chain: module-move checks 188699 (afterok 188651) and 188700 (afterok 188652), paired test 188701 (afterok all 8 seed-44 evals). Applied verifier marks in STATE.md (photos wording, hotpot_bridge n=1197, reference s/step 91). Waiting for 188701 (~06:30-07:00 11-12) to make the 3-seed decision.", "launched": ["188699", "188700", "188701"], "wake_when": "job:188701 max 16h", "verdicts": [], "gripes": []}
+== final:
+{"next":"wake-when","summary":"Seed-44 pair healthy at 20:32 (frozen .22 epoch 71 s/step; reference .16 epoch 91 s/step, loss .52, no NaN). Submitted the last 3 jobs of the seed-44 chain: module-move checks 188699 (afterok 188651) and 188700 (afterok 188652), paired test 188701 (afterok all 8 seed-44 evals). Applied verifier marks in STATE.md (photos wording, hotpot_bridge n=1197, reference s/step 91). Waiting for 188701 (~06:30-07:00 11-12) to make the 3-seed decision.","launched":["188699","188700","188701"],"wake_when":"job:188701 max 16h","verdicts":[],"gripes":[]}
+== rc=0 secs=169
+== verify: 7/12

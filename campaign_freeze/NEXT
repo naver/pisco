@@ -1,1 +1,1 @@
-wake-in 30
+wake-when job:188701 max 16h
