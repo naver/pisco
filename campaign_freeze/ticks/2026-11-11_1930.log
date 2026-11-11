@@ -1,0 +1,80 @@
+== campaign freeze wake 2026-11-11_1930  reasons=scheduled  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794393001 live=188652:RUNNING,188651:RUNNING,188654:PENDING,188653:PENDING running=2 pending=2 problems=0 problems_other=0 new=0 gpuh24=27.5 idle_h=0.0 min_util=- alert=0 unpushed=34 cron=3 daemon=1 disk_gb=12805 sig=b2beb587 same=1 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-in_30
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session 09f80120-5eb9-44db-8265-5a5dd4bb21dd  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/09f80120-5eb9-44db-8265-5a5dd4bb21dd/tool-results/bzz6904il.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-11_1930   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+213 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ======= && cat STATE.md
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ ## Decision gates (+72 lines)
+  ↳ Exit code 1 (+96 lines)
+→ Bash: sed -n '/^Next wake/,/^## Deliverable/p' STATE.md; echo '---'; cat known_issues.md; echo '---'; ls -la; cat VERIFY.md 2>/dev/null | head -50
+  ↳ Next wake (in ~30 min: nothing to wait on, the 6-submission cap stopped this wake) submits the 6 remaining seed-44 eval cells, chained afterok on 188651 (frozen) / 188652 (reference), same commands as (+75 lines)
+Reading done. This wake will queue the six missing seed-44 eval cells (photos, MRQA text, HotpotQA for both sides), chained after the two running finetunes, and fix the verifier's marks in STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -30; echo '---'; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py; git status --short | head; git diff --stat
+  ↳ - 2026-11-11 12:02 [job 188617] intent: arm R s43 HotpotQA RE-EVAL: 184780 via ref_s43, afterok 188583. --time 0:29:00. eval code md5 unchanged: eval_mm_docqa.py dfe32aa0, eval_mm_4b.sh 50abc167, judg (+45 lines)
+Eval code checksums match the seed-42/43 cells. Now the exact launch commands those cells used.
+→ Bash: expmon help 2>&1 | grep -iE 'runs|show|meta|cmd' | head; ls expQ/188601 expQ/188614 2>&1 | head; cat expQ/188601/*.json 2>/dev/null | head -40
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+12 lines)
+→ Bash: grep -E '"(188601|188605|188614|188653|188654)"' .expmon/runs.jsonl | jq -c '{jobid, stage, parent, launcher, argv, sbatch, env, exp}' 2>/dev/null | head -20
+  ↳ {"jobid":"188601","stage":"eval","parent":"188582","launcher":"eval_mm_4b.sh","argv":["expQ/freeze/ft_frozen_s42/model","pisco","","eval_data/mm_naturalqa_1500"],"sbatch":null,"env":null,"exp":"freeze (+4 lines)
+→ Bash: grep -E '"jobid": ?"(188614|188653)"' .expmon/runs.jsonl | jq . | head -80; sacct -j 188614,188605,188601 -o JobID,Partition,Timelimit,ReqMem,ReqTRES%60,Elapsed,State -X
+  ↳ { (+67 lines)
+→ Bash: ls -t logs 2>/dev/null | grep -E '188605|188614|188601' | head; f=$(ls logs/*188605* 2>/dev/null | head -1); echo "$f"; grep -m5 -iE 'CML|compressor_max_length|TOPK|max_pixels|PX=' "$f" 2>/dev/null; sed -n '1,60p' eval_mm_4b.sh | grep -nE '…
+  ↳ (eval):1: no matches found: logs/*188605* (+17 lines)
+→ Bash: ls expQ/freeze/ft_frozen_s42/ expQ/freeze/ft_frozen_s42/eval 2>/dev/null | head -30; ls expQ/freeze/ft_frozen_s44 expQ/freeze/ft_unfrozen_s44 2>/dev/null
+  ↳ expQ/freeze/ft_frozen_s42/: (+23 lines)
+Confirmed the env per set (photos `PX=1003520`; MRQA adds `CML=4096`; HotpotQA adds `CML=4096 TOPK=10`). Quick health check on the two running finetunes:
+→ Bash: for d in ft_frozen_s44 ft_unfrozen_s44; do echo "== $d"; tail -c 600 expQ/freeze/$d/train.log | tr '\r' '\n' | tail -4; done; expmon check 2>&1 | grep -E '18865[12]' 
+  ↳ == ft_frozen_s44 (+11 lines)
+→ Bash: for j in 188651 188652; do echo "== $j"; expmon logs $j 400 2>&1 | tr '\r' '\n' | grep -E 'it\]|s/it|loss' | tail -2; done
+  ↳ == 188651 (+5 lines)
+→ Bash: sacct -j 188601,188602,188603,188604,188605,188606,188612,188613,188614,188615,188616,188617 -o JobID,Elapsed,NodeList,State -X --noheader
+  ↳ 188601         00:18:16       homer-016  COMPLETED  (+11 lines)
+Slowest earlier cell × 1.25 gives: photos 19:00 → `0:24:00`, MRQA 17:21 → `0:22:00`, HotpotQA 22:44 → `0:29:00`. Checking the launch syntax, then a dry run.
+→ Bash: expmon help 2>&1 | sed -n '/^  launch/,/^  [a-z]/p' | head -30
+  ↳ launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid>] [--stage <label>] [--force] (+18 lines)
+→ Bash: PX=1003520 expmon launch --dry-run --exp freeze --stage eval --parent 188651 --dependency afterok:188651 --partition gpu-be --exclude 'homer-[005-009]' --time 0:24:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s44/model pisco "" eval_data/mm_natur…
+  ↳ would submit: sbatch --dependency afterok:188651 --partition gpu-be --exclude homer-[005-009] --time 0:24:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s44/model pisco  eval_data/mm_naturalqa_1500 (+3 lines)
+Dry run is clean. Submitting the six cells.
+→ Bash: X='homer-[005-009]' ⏎ PX=1003520 expmon launch --exp freeze --stage eval --parent 188651 --dependency afterok:188651 --partition gpu-be --exclude "$X" --time 0:24:00 eval_mm_4b.sh expQ/freeze/ft_frozen_s44/model pisco "" eval_data/mm_natura…
+  ↳ Submitted batch job 188672 (+11 lines)
+→ Bash: squeue -j 188672,188673,188674,188675,188676,188677 -o '%i %j %T %r %P %l %E' ; for j in 188672 188673 188674 188675 188676 188677; do grep -E "\"jobid\": ?\"$j\"" .expmon/runs.jsonl | jq -c '[.jobid,.stage,.parent,.argv[0],.argv[3]]'; done
+  ↳ JOBID NAME STATE REASON PARTITION TIME_LIMIT DEPENDENCY (+12 lines)
+All six are queued behind their finetune. Recording intent in the ledger.
+→ Bash: M='eval code md5 unchanged: eval_mm_docqa.py dfe32aa0, eval_mm_4b.sh 50abc167, judge_mm_docqa.py 02bc8748' ⏎ expmon note -j 188672 "intent: R3 frozen s44 photos eval, PX=1003520, afterok 188651, paired with 188673. --time 0:24:00 = 19:00 (s…
+  ↳ probe recorded: 188651 @0.10 (loss_s_per_step=71.0)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+Fixing one mislabeled probe (I named a speed metric "loss_s_per_step"), then re-deriving the two-seed numbers from the paired-test output so the headline can drop its `provisional:` prefix.
+→ Bash: expmon probe 188651 --step 0.10 s_per_step=71.0 2>&1 | tail -1; f=$(find logs expQ -maxdepth 3 -name '*188650*' 2>/dev/null | head -3); echo "$f"; grep -E 'ALL|^==|mm_docqa|naturalqa|mrqa|hotpot' $(echo "$f" | grep -m1 out) | head -30
+  ↳ probe recorded: 188651 @0.10 (s_per_step=71.0)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl)
+→ Bash: expmon logs 188650 200 2>&1 | grep -E 'ALL|^=+|pair|frozen|ref_' | head -40
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188650.out (last 200) <== (+39 lines)
+→ Bash: grep -E 'CAMP_(RETRY_MIN|MAX_TRAIN|MAX_SUBMIT)' campaign_freeze/campaign.conf; sed -n '1,30p' expQ/freeze/paired_judge_cpu.sh | grep -vE '^\s*$' | head -25; grep -E '"jobid": ?"(188584|188650)"' .expmon/runs.jsonl | jq -c '[.jobid,.stage,.p…
+  ↳ CAMP_RETRY_MIN=30                 # cool-down before the LLM re-wakes on STANDING problems or an idle campaign with work left (NEXT absent) (+29 lines)
+→ Bash: expmon gripe -c gap "launch does not record env vars set on the launch line (PX=… CML=… TOPK=… expmon launch …): runs.jsonl has env:null, and the FACTORS line lacks CML, so repeating a cell's exact command meant reconstructing env from outp…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/^## Deliverable/,/^## Notes this wake/p' STATE.md > /tmp/freeze_state_tail.md; wc -l /tmp/freeze_state_tail.md
+  ↳ 32 /tmp/freeze_state_tail.md
+→ Bash: cat > STATE.md <<'EOF' ⏎ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) ⏎  ⏎ last wake: 2026-11-11 19:30 tick (wake 7) ⏎  ⏎ ## TL;DR — where this leaves the question (readable as an email) ⏎ **Settled** ⏎ …
+  ↳ 5:## TL;DR — where this leaves the question (readable as an email) (+11 lines)
+→ Bash: sed -n '86,106p' STATE.md
+  ↳ | connector norm gain | 0.0 | 0.0 (bf16 lost update) | 0.0 | 0.0 | (+20 lines)
+→ Bash: sed -i 's/^## Training cost (A100-80GB)$/## Training cost (A100-80GB) — provisional: different nodes and dates; the seed-44 pair (same time, homer-010 \/ homer-009) is the clean comparison/' STATE.md && sed -i 's/HotpotQA −2.8 \/ −2.3. 20% …
+  ↳ 89:## Training cost (A100-80GB) — provisional: different nodes and dates; the seed-44 pair (same time, homer-010 / homer (+2 lines)
+STATE.md is rewritten. Last step: write NEXT (wake in 30 minutes to chain the final three jobs).
+→ Bash: echo 'wake-in 30' > NEXT && cat NEXT
+  ↳ wake-in 30
+→ StructuredOutput: {"next": "wake-in", "wake_in_min": 30, "summary": "Freeze campaign, wake 7. Both seed-44 finetunes are healthy. Frozen 188651: .10 epoch, 71 s/step, ends ~03:20. Reference 188652: .07 epoch, 89 s/step, train loss .497, ends ~06:00-08:30. Su…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6729 turns=32 is_error=False denials=0
+== declared: {"next": "wake-in", "wake_in_min": 30, "summary": "Freeze campaign, wake 7. Both seed-44 finetunes are healthy. Frozen 188651: .10 epoch, 71 s/step, ends ~03:20. Reference 188652: .07 epoch, 89 s/step, train loss .497, ends ~06:00-08:30. Submitted the 6 missing seed-44 eval cells (photos, MRQA text, HotpotQA, each side), each afterok on its finetune. Commands match the seed-42/43 cells; eval code md5 is unchanged; --time = slowest earlier cell × 1.25. With the two documents cells already queued, all 8 seed-44 evals are now in the queue. Re-derived the two-seed tie from the paired-test output; no number changed. Applied the verifier's five provisional marks in STATE.md (per-source spread, speed, eval loss, norm gain, previews). The 6-submission cap is used up. The next wake (30 min) chains the last 3 jobs: 2 module-move checks after the finetunes, and the paired test after the 8 evals. Then the 3-seed decision.", "launched": ["188672", "188673", "188674", "188675", "188676", "188677"], "gripes": ["gap: expmon launch does not record env vars set on the launch line (PX/CML/TOPK) in runs.jsonl; had to reconstruct them from output file names"]}
+== final:
+{"next":"wake-in","wake_in_min":30,"summary":"Freeze campaign, wake 7. Both seed-44 finetunes are healthy. Frozen 188651: .10 epoch, 71 s/step, ends ~03:20. Reference 188652: .07 epoch, 89 s/step, train loss .497, ends ~06:00-08:30. Submitted the 6 missing seed-44 eval cells (photos, MRQA text, HotpotQA, each side), each afterok on its finetune. Commands match the seed-42/43 cells; eval code md5 is unchanged; --time = slowest earlier cell × 1.25. With the two documents cells already queued, all 8 seed-44 evals are now in the queue. Re-derived the two-seed tie from the paired-test output; no number changed. Applied the verifier's five provisional marks in STATE.md (per-source spread, speed, eval loss, norm gain, previews). The 6-submission cap is used up. The next wake (30 min) chains the last 3 jobs: 2 module-move checks after the finetunes, and the paired test after the 8 evals. Then the 3-seed decision.","launched":["188672","188673","188674","188675","188676","188677"],"gripes":["gap: expmon launch does not record env vars set on the launch line (PX/CML/TOPK) in runs.jsonl; had to reconstruct them from output file names"]}
+== rc=0 secs=254
+== verify: 7/12
