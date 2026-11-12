@@ -1,2 +1,0 @@
-LLM wake 2026-11-12_2300 failed FAST (rc=1 in 25s) — usage-limit: 5-hour limit · resets 11:30pm (Asia/Seoul). Fix: nothing to do — the account quota resets by itself; the loop resumes then. Log: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/ticks/2026-11-12_2300.log
-  ↳ no LLM wake will be attempted until 2026-11-12 23:30 (the stated reset); sensors keep ticking.

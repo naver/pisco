@@ -1,0 +1,38 @@
+== campaign longchunk wake 2026-11-12_2330  reasons=alert  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794493802 live=188466:RUNNING,188469:RUNNING,188468:RUNNING,188981:PENDING,188980:PENDING,188982:PENDING,188983:PENDING,188712:PENDING,188711:PENDING,188710:PENDING,188709:PENDING,188708:PENDING,188707:PENDING running=3 pending=10 problems=4 problems_other=0 new=0 gpuh24=126.6 idle_h=0.0 min_util=31 alert=1 unpushed=46 cron=3 daemon=1 disk_gb=11971 sig=97d877e1 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983_max_18h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 6afa10c9-b7f4-4369-a1e5-46437ad1ac36  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/6afa10c9-b7f4-4369-a1e5-46437ad1ac36/tool-results/bduqenji4.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-12_2330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+220 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && wc -l CAMPAIGN.md STATE.md known_issues.md && cat STATE.md && cat known_issues.md
+  ↳ 162 CAMPAIGN.md (+88 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188980 188981 188982 188983; do scontrol show job $j | grep -oE 'JobState=\S+|Reason=\S+|Restarts=\S+|StartTime=\S+' | tr '\n' ' '; echo " <- $j"; done; sacct -j 188982 -o JobID,State,Start,En…
+  ↳ JobState=PENDING Reason=Resources Restarts=1 StartTime=2026-11-13T06:26:49  <- 188980 (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat ALERT; echo ----; sed -n 1,162p CAMPAIGN.md
+  ↳ LLM wake 2026-11-12_2300 failed FAST (rc=1 in 25s) — usage-limit: 5-hour limit · resets 11:30pm (Asia/Seoul). Fix: nothing to do — the account quota resets by itself; the loop resumes then. Log: /beeg (+164 lines)
+Woken by the usage-limit alert from the failed 23:00 wake; nothing is broken. I'm checking training progress, then updating state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188466 188468 188469; do echo "== $j"; expmon logs $j 400 2>/dev/null | grep -oE "[0-9]+/[0-9]+ \[[0-9:]+<[0-9:]+, *[0-9.]+s/it\]" | tail -1; expmon logs $j 400 2>/dev/null | grep -E "'loss'|e…
+  ↳ == 188466 (+169 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42; ls; grep -E "eval_steps|save_steps|eval_strategy|save_strategy|max_steps|load_best|resume" training_config.yaml 2>/dev/null; ls -d checkpoint-* 2>/dev/null; cd /beegfs/scra…
+  ↳ checkpoint-100 (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "resume" pisco/train.py ft_mm_4b.sh | head; grep -nE "^#SBATCH|requeue" ft_mm_4b.sh | head
+  ↳ pisco/train.py:31:    """HF Trainer whose resume path understands PISCO's partial checkpoints. (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 188982 "result: preempted on gpu-be (homer-016) at 22:31 after 1:40, requeued by SLURM (Restarts=1), PENDING (Priority, est. start 11-13 08:00); benign (known_issues row 1), no action" ;…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; python3 - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ start=s.index('## TL;DR') ⏎ end=s.index('## Owned jobs') ⏎ new_tldr='''## TL;DR — where this leaves the question (readable as an…
+  ↳ 60 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py | cut -c1-8,33-
+  ↳ 50abc167  eval_mm_4b.sh (+2 lines)
+Checksums unchanged. Finishing the state file and the wait contract now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; sed -i 's/re-checked 2026-11-12 22:30 (unchanged; not re-checked 23:30, no new submission)/re-checked 2026-11-12 23:35 (unchanged)/' STATE.md; cd ..; expmon note "decision: longchunk…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "No-op wake. The 23:00 wake failed because the account hit its 5-hour usage limit; that limit resets by itself, so I deleted the alert file. One of the four step-100 preview evals of the 256-token control fi…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0073 turns=14 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "No-op wake. The 23:00 wake failed because the account hit its 5-hour usage limit; that limit resets by itself, so I deleted the alert file. One of the four step-100 preview evals of the 256-token control finetunes was preempted on gpu-be at 22:31 and requeued by SLURM. That is harmless and needed no action. All four previews are now pending, and each has been preempted once. The 1,024-token stage 1 is healthy: step 2,328 of 5,208 (447k of 1M documents), train loss .80, ends about 2026-11-14 08:40. The two control finetunes are at step 244 and 261 of 437. The seed-42 run slowed to about 113 s per step, which leaves only about 45 minutes before its 06:22 time limit. If it times out, train.py resumes from its last checkpoint, so a relaunch would cost about 1 hour. The eval code checksums are unchanged. Budget used: about 215 GPU-hours (9.0 GPU-days of 38). Nothing launched.", "launched": [], "verdicts": [], "gripes": ["gap: the tick woke the LLM for a usage-limit ALERT whose own text says 'nothing to do' while a valid wake-when contract was in force. A usage-limit alert should resume the standing NEXT contract after the reset and clear itself."], "wake_when": "job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983 max 18h"}
+== final:
+{"next":"wake-when","summary":"No-op wake. The 23:00 wake failed because the account hit its 5-hour usage limit; that limit resets by itself, so I deleted the alert file. One of the four step-100 preview evals of the 256-token control finetunes was preempted on gpu-be at 22:31 and requeued by SLURM. That is harmless and needed no action. All four previews are now pending, and each has been preempted once. The 1,024-token stage 1 is healthy: step 2,328 of 5,208 (447k of 1M documents), train loss .80, ends about 2026-11-14 08:40. The two control finetunes are at step 244 and 261 of 437. The seed-42 run slowed to about 113 s per step, which leaves only about 45 minutes before its 06:22 time limit. If it times out, train.py resumes from its last checkpoint, so a relaunch would cost about 1 hour. The eval code checksums are unchanged. Budget used: about 215 GPU-hours (9.0 GPU-days of 38). Nothing launched.","launched":[],"verdicts":[],"gripes":["gap: the tick woke the LLM for a usage-limit ALERT whose own text says 'nothing to do' while a valid wake-when contract was in force. A usage-limit alert should resume the standing NEXT contract after the reset and clear itself."],"wake_when":"job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983 max 18h"}
+== rc=0 secs=129
+== verify: 11/13
