@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-12 01:30-01:40 KST (alert: a false "loop not armed" watchdog alarm; nothing else changed since
-2026-11-11 09:50)
+last wake: 2026-11-12 09:30-09:40 KST (alert: "no campaign GPU job for 24 h", the expected result of the unanswered
+cap question; nothing else changed since 2026-11-11 09:50)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -79,22 +79,23 @@ last wake: 2026-11-12 01:30-01:40 KST (alert: a false "loop not armed" watchdog 
 - provisional (not a gate, derived from the two arm G cells): per extra decoder token, rate 4 on the picked page
   recovers about twice what the raw page does: +.063 / 107.5 tokens ≈ .059 per 100 tokens (s42) vs +.210 / 753 ≈ .028.
 
-**Open, and running** (0 campaign jobs at 2026-11-12 01:35)
+**Open, and running** (0 campaign jobs at 2026-11-12 09:35)
 - none running. Every arm is decided or closed for the cell cap (60 of 60 used).
 - owner: BLOCKED.md asks to raise the cell cap 60 → 65 (keep a quarter at seed 43 is the main reason).
 
 ## What happened this wake
-- ALERT (01:00): "crontab has no 'campaign tick' line — the loop is not armed". False alarm: the ticks at 01:00 and
-  01:30 both ran and recorded `cron=3`, the 01:17 watchdog said OK, and `expmon campaign` reports `armed: yes`. One
-  empty `crontab -l` read by the 01:00 watchdog (known expmon defect). ALERT deleted, known_issues row added, gripe
-  filed, ledger decision written.
-- ✗ lines in the brief: none of this campaign's (the one ✗ belongs to another campaign).
-- Verifier (09:30 STATE): 15 supported, 8 provisional, 0 unsupported. Every provisional line it lists is already
-  marked provisional below; nothing to fix.
-- The tick resubmitted the expmon daemon at 01:00 (it had exited); no action needed from this wake.
-- Nothing launched: all 60 cells are used. BLOCKED.md (raise the cap 60 → 65) still has no answer.
+- ALERT (09:17): "no campaign GPU-second for 24.0 h — a gate failing closed?". Not a closed gate: the campaign is
+  idle because all 60 of 60 cells are used and the owner question in BLOCKED.md (raise the cap 60 → 65, expmon id
+  f81678) has had no answer for 24 h; `expmon campaign` says `armed: yes`. ALERT deleted, known_issues row added,
+  gripe filed (the idle watchdog should stay quiet while NEXT = `waiting-owner` and a question is open), ledger
+  decision written.
+- ✗ lines in the brief: none (every campaign line in `expmon check` is OK; the running and pending jobs belong to
+  the sibling campaigns `longchunk` and `freeze`).
+- Verifier: 15 supported, 8 provisional, 0 unsupported. Every provisional line it lists is already marked
+  provisional below; nothing to fix.
+- Nothing launched.
 
-## Owned jobs (jobid | arm | state at 09:45 | node | note)
+## Owned jobs (jobid | arm | state at 2026-11-12 09:35 | node | note)
 (none running)
 
 ## Adopted jobs
@@ -113,7 +114,8 @@ last wake: 2026-11-12 01:30-01:40 KST (alert: a false "loop not armed" watchdog 
 
 ## Health and budget
 - cells: 60 of 60 used (every submission counts, killed ones too; 188546 counted by hand). A launch needs the owner.
-- GPU-hours of 40: tick sensor 15.8 GPU-h in the last 24 h at 2026-11-12 01:30 (no campaign GPU job since 11-11 09:15).
+- GPU-hours of 40: tick sensor 0.5 GPU-h in the last 24 h at 2026-11-12 09:30 (the tail of the 11-11 cells; no campaign GPU
+  job since 11-11 09:15).
 - gpu-be preempted 8+ campaign attempts on 2026-11-11; the two arm G cells were not preempted.
 
 ## Next wake
