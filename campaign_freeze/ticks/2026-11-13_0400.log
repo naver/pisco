@@ -1,0 +1,10 @@
+== campaign freeze wake 2026-11-13_0400  reasons=problems-standing,condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794510002 live=189094:RUNNING,189098:PENDING,189097:PENDING,189096:PENDING,189095:PENDING,189065:PENDING,189099:PENDING,189067:PENDING running=1 pending=7 problems=1 problems_other=0 new=0 gpuh24=8.0 idle_h=0.0 min_util=76 alert=0 unpushed=55 cron=3 daemon=1 disk_gb=11841 sig=2f92144b same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json_job:189067_job:189094_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json (exists)   (NEXT was: wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json job:189067 job:189094 max 3h)
+== session d5857f95-bf45-46ff-a91d-908884b9fa8c  model claude-opus-5-5  tools 47
+You've hit your 5-hour limit · resets 4:30am (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 4:30am (Asia/Seoul)
+== rc=1 secs=12
