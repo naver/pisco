@@ -1,3 +1,0 @@
-ALERT 2026-11-13 00:29 — campaign probes (the next LLM wake must handle this, then delete the file)
-- no campaign job ran for 39.2h (cap 24h) — a gate failing CLOSED? (splare sat idle 21 days this way)
-- crontab has no 'campaign tick' line — the loop is not armed (expmon campaign arm)

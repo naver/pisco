@@ -1,0 +1,32 @@
+== campaign probes wake 2026-11-13_0200  reasons=problems  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794502801 live=189059:PENDING,189056:PENDING,189058:PENDING,189057:PENDING running=0 pending=4 problems=4 problems_other=0 new=0 gpuh24=0.0 idle_h=40.8 min_util=- alert=1 unpushed=52 cron=3 daemon=1 disk_gb=11919 sig=dd440831 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189056,189057_job:189058,189059_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session ddf6bbfe-9040-4b0a-a917-2666278e9920  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+26 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/ddf6bbfe-9040-4b0a-a917-2666278e9920/tool-results/bvtwff49l.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-13_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+293 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la && cat STATE.md
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 193 CAMPAIGN.md (+179 lines)
+  ↳ # CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+192 lines)
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_probes/ALERT; echo ---; date; squeue -j 189056,189057,189058,189059 -o "%.10i %.10T %.12M %.10P %R %S" ; sacct -j 189056,189057,189058,189059 -D -X -o JobID,State,NodeList,Start,End,Part…
+  ↳ ALERT 2026-11-13 00:29 — campaign probes (the next LLM wake must handle this, then delete the file) (+48 lines)
+→ Bash: ls -la expQ/probes/a_expand_s43/eval expQ/probes/f_text_s42/eval 2>&1; scontrol show job 189056 | grep -E "Restarts|SubmitTime|Reason|ExcNodeList|TimeLimit"; squeue -u hdejean -p gpu -h -o "%i %j %b %D %T" 
+  ↳ expQ/probes/a_expand_s43/eval: (+18 lines)
+→ Bash: rm campaign_probes/ALERT && expmon note "probes wake 2026-11-13 02:00 (woken by problems + ALERT). The 4 cells of the raised cap (189056-189059) started on gpu-be 01:19-01:40 (homer-013, homer-016), were PREEMPTED 01:34-01:42 and requeued (…
+  ↳ expmon note: 95 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && python3 - <<'EOF' ⏎ import re ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ s=s.replace("""last wake: 2026-11-13 00:00-00:15 KST (woken by a watchdog ALERT; both lines false alarms, ALERT delet…
+  ↳ 84:**Open, and running** (4 campaign cells submitted 2026-11-12 23:33; each started on gpu-be 01:19-01:40, was PREEMPTED (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe -c defect "watchdog re-wrote the same two false-alarm ALERT lines (idle 39h with cells PENDING; crontab missing while cron=3) at 00:29, 14 min after a wake deleted them at 00:15, costing…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log
+→ StructuredOutput: {"next": "wake-when", "summary": "Nothing launched. The four campaign eval cells (189056-189059) started on gpu-be at 01:19-01:40 and were preempted at 01:34-01:42. SLURM put them back in the queue (Restarts=1). Their eval/ dirs are empty, …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9806 turns=12 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Nothing launched. The four campaign eval cells (189056-189059) started on gpu-be at 01:19-01:40 and were preempted at 01:34-01:42. SLURM put them back in the queue (Restarts=1). Their eval/ dirs are empty, so no result was lost (a known issue: preemption and requeue). The ALERT of 00:29 repeated the two false alarms and was deleted. The idle line is wrong because the cells had run and idle_h is now 0.0. The crontab line is wrong because expmon reports armed: yes and the sensor reads cron=3. The law allows moving cells to the gpu partition only after 6 h PENDING, which falls at about 06:00. The owner's gpu share is at 7 of 8 GPUs now. STATE.md and the ledger are updated. NEXT: wake-when for the four cells, max 4 h.", "launched": [], "verdicts": [], "gripes": ["watchdog re-wrote the same two false-alarm ALERT lines 14 min after a wake deleted them, costing another full wake; suggest re-raising only if the sensor confirms on 2 consecutive ticks"], "wake_when": "job:189056,189057 job:189058,189059 max 4h"}
+== final:
+{"next":"wake-when","summary":"Nothing launched. The four campaign eval cells (189056-189059) started on gpu-be at 01:19-01:40 and were preempted at 01:34-01:42. SLURM put them back in the queue (Restarts=1). Their eval/ dirs are empty, so no result was lost (a known issue: preemption and requeue). The ALERT of 00:29 repeated the two false alarms and was deleted. The idle line is wrong because the cells had run and idle_h is now 0.0. The crontab line is wrong because expmon reports armed: yes and the sensor reads cron=3. The law allows moving cells to the gpu partition only after 6 h PENDING, which falls at about 06:00. The owner's gpu share is at 7 of 8 GPUs now. STATE.md and the ledger are updated. NEXT: wake-when for the four cells, max 4 h.","launched":[],"verdicts":[],"gripes":["watchdog re-wrote the same two false-alarm ALERT lines 14 min after a wake deleted them, costing another full wake; suggest re-raising only if the sensor confirms on 2 consecutive ticks"],"wake_when":"job:189056,189057 job:189058,189059 max 4h"}
+== rc=0 secs=104
+== verify: 17/25

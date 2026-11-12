@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-13 00:00-00:15 KST (woken by a watchdog ALERT; both lines false alarms, ALERT deleted, nothing
-launched; the four cells of the raised cap still wait in the queue)
+last wake: 2026-11-13 02:00-02:10 KST (woken by the four cells' preemption + a repeated watchdog ALERT; both ALERT
+lines false alarms, ALERT deleted, nothing launched; the four cells of the raised cap are back in the queue)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -81,8 +81,9 @@ launched; the four cells of the raised cap still wait in the queue)
   vs raw +.210 / 753 ≈ .028 (about 2×, jobs 188590 / 188441); seed 43 .049 / 107.5 ≈ .046 vs .207 / 753 ≈ .027
   (about 1.7×, jobs 188591 / 188460).
 
-**Open, and running** (4 campaign cells submitted 2026-11-12 23:33, all PENDING for Priority on gpu-be; SLURM start
-estimate at 00:05 on 11-13: 11-15 00:46 / 03:56 / 05:30 / 06:15, it was 11-13 07:45-17:30 at submission)
+**Open, and running** (4 campaign cells submitted 2026-11-12 23:33; each started on gpu-be 01:19-01:40, was PREEMPTED
+01:34-01:42 before writing anything and requeued, Restarts=1; all PENDING for Priority again at 02:05, SLURM start
+estimate 11-15 14:30-15:30 or none)
 - arm E, keep a quarter of the slots at seed 43 (job 189056) — decides whether "three quarters of the slots go
   unused per question" holds at both seeds.
 - arm E, keep an eighth of the slots at seed 42 (job 189057) — finds where slot dropping starts to cost.
@@ -90,29 +91,27 @@ estimate at 00:05 on 11-13: 11-15 00:46 / 03:56 / 05:30 / 06:15, it was 11-13 07
 - arm F, TextVQA questions answered from OCR text instead of pixels, seed 42 (job 189059) — reported only.
 
 ## What happened this wake
-- ALERT 2026-11-12 23:58, two lines, both false alarms; ALERT deleted:
-  - "no campaign job ran for 38.7 h — a gate failing CLOSED?": the campaign was idle because the cell cap was used up
-    until the owner raised it (answer 2026-11-12 23:14); the four cells it bought were submitted 23:33 and pend for
-    Priority. Not a closed gate. Gripe filed (the watchdog should count a PENDING campaign job as not idle).
-  - "crontab has no 'campaign tick' line": `expmon campaign` says `armed: yes (tick every 30m)` and the tick sensor
-    reads `cron=3` (known_issues row 33). The wake hook refused my own crontab read (hard rule 3) — expected, noted
-    here, nothing else needed.
-- Queue: the four cells' `eval/` dirs do not exist yet (nothing ran, nothing to rescue). SLURM's start estimate slid
-  from 11-13 morning to 11-15 00:46-06:15. The law's partition widening (`gpu,gpu-be`, at most 2 cells) is allowed only
-  after 6 h PENDING, i.e. from 05:33 on 11-13. The two sibling control finetunes on `gpu` (188469, 188468) end about
-  04:00 and 05:10-06:20, which frees owner `gpu` slots at about the same time.
-- `expmon note -j <id>` works again (known_issues row 35 rewritten): the four launch intents of 23:33 are now in the
-  ledger (cells 61-64).
-- ✗ lines in the brief: none for this campaign. Verifier: 17 supported, 8 provisional, 0 unsupported; all 8 were
-  already marked provisional.
+- The four cells ran briefly and were preempted (sacct, attempt 1): 189056 homer-013 01:19-01:34, 189057 homer-013
+  01:25-01:34, 189058 homer-016 01:37-01:40, 189059 homer-016 01:40-01:42. Every `eval/` dir is empty (the eval writes
+  only at the end), so a requeued run restarts clean: known issue (preemption + requeue). No action.
+- ALERT 2026-11-13 00:29, same two lines as the one deleted at 00:15, both false alarms; ALERT deleted:
+  - "no campaign job ran for 39.2 h": the cells were queued (since 23:33) and did run from 01:19; the tick reads
+    `idle_h=0.0` now (known_issues row 34).
+  - "crontab has no 'campaign tick' line": `expmon campaign` says `armed: yes (tick every 30m)`, sensor `cron=3`
+    (known_issues row 33).
+- Partition widening not done: the law allows it after 6 h PENDING; the cells have pended about 2.5 h (minus their
+  2-15 min runs). The owner's `gpu` share is 7 of 8 GPUs now (188466 ×4, 188468, 188469, 189094), so it has room for
+  one cell at most. The two sibling finetunes 188468 / 188469 reach their 14:03 time limit by about 06:20 / 06:58.
+- ✗ lines in the brief: none for this campaign. Verifier: 17 supported, 8 provisional, 0 unsupported; all 8 already
+  marked provisional.
 
-## Owned jobs (jobid | cell | arm | state at 11-13 00:05 | intent — also in the ledger since 11-13 00:05)
+## Owned jobs (jobid | cell | arm | state at 11-13 02:05 | intent — also in the ledger since 11-13 00:05)
 | job | cell dir (`expQ/probes/…`) → model | arm | state | intent |
 |---|---|---|---|---|
-| 189056 | `e_keep025_attng_s43` → 184780 | E | PENDING | cell 61. `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q, judge chained. Baseline plain 184784 .615 (homer-016, el9_8). Gate (written 2026-11-11 before the s42 cell): within .02 of plain at both seeds → three quarters of the slots unused per question; a loss ≥ .05 → the free share lies between 1/2 and 3/4. `--time 4:54:00` = slowest docs cell (184781, 98 min) × 3 |
-| 189057 | `e_keep0125_attng` → 184778 | E | PENDING | cell 62. `KEEPF=0.125 KEEPM=attn_global PX=1003520`, documents, 1,500 Q. Baseline plain 184781 .610 (homer-011). Gate (written 2026-11-11 before any cell): within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional. `--time 4:54:00` |
-| 189058 | `a_expand_s43` → 184780 | A | PENDING | cell 64. `STYLE=expand PX=1003520`, documents, 1,500 Q. Baseline plain 184784 .615. Gate ≥ +3 pt with CI above 0 at both seeds (s42 +.001). `--time 5:12:00` = slowest expand docs cell (174852, 104 min) × 3 |
-| 189059 | `f_text_s42` → 184778 | F | PENDING | cell 63. mode `pisco_text`, `PX=1003520` (file suffix only), `eval_data/probes_textvqa_ocr`, 500 rows. Pair on query_id with the 500 TextVQA rows of 184778's photo file (`expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json`, cell 184783, homer-011). Reported only; a gain ≥ 5 pt motivates a mixed-input arm. Text ceiling: a gold answer is verbatim in the OCR on .596 of rows. `--time 2:12:00` (no measured cell of this kind; 500 short rows) |
+| 189056 | `e_keep025_attng_s43` → 184780 | E | PENDING (preempted once, homer-013) | cell 61. `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q, judge chained. Baseline plain 184784 .615 (homer-016, el9_8). Gate (written 2026-11-11 before the s42 cell): within .02 of plain at both seeds → three quarters of the slots unused per question; a loss ≥ .05 → the free share lies between 1/2 and 3/4. `--time 4:54:00` = slowest docs cell (184781, 98 min) × 3 |
+| 189057 | `e_keep0125_attng` → 184778 | E | PENDING (preempted once, homer-013) | cell 62. `KEEPF=0.125 KEEPM=attn_global PX=1003520`, documents, 1,500 Q. Baseline plain 184781 .610 (homer-011). Gate (written 2026-11-11 before any cell): within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional. `--time 4:54:00` |
+| 189058 | `a_expand_s43` → 184780 | A | PENDING (preempted once, homer-016) | cell 64. `STYLE=expand PX=1003520`, documents, 1,500 Q. Baseline plain 184784 .615. Gate ≥ +3 pt with CI above 0 at both seeds (s42 +.001). `--time 5:12:00` = slowest expand docs cell (174852, 104 min) × 3 |
+| 189059 | `f_text_s42` → 184778 | F | PENDING (preempted once, homer-016) | cell 63. mode `pisco_text`, `PX=1003520` (file suffix only), `eval_data/probes_textvqa_ocr`, 500 rows. Pair on query_id with the 500 TextVQA rows of 184778's photo file (`expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json`, cell 184783, homer-011). Reported only; a gain ≥ 5 pt motivates a mixed-input arm. Text ceiling: a gold answer is verbatim in the OCR on .596 of rows. `--time 2:12:00` (no measured cell of this kind; 500 short rows) |
 
 ## Adopted jobs
 (none. 188466-188469, 188707-188712, 188980-188983 belong to the sibling `longchunk` campaign.)
@@ -137,17 +136,18 @@ estimate at 00:05 on 11-13: 11-15 00:46 / 03:56 / 05:30 / 06:15, it was 11-13 07
 - Pairing nodes: every image cell needs its node from the attempt that wrote its file (same node rule).
 
 ## Next wake
-- NEXT = `wake-when job:189056,189057 job:189058,189059 max 6h`: wakes when either pair of cells has left the queue,
-  or at about 06:05 on 11-13 at the latest (6.5 h PENDING). If they still pend then: widen at most 2 cells (the two
-  arm E cells first: they decide an adopted claim) with `scontrol update JobId=… Partition=gpu,gpu-be`, only if the
-  owner's `gpu` share then has room for 2 (sibling jobs counted, never more than 2 campaign cells on `gpu`); if the
-  hook refuses `scontrol`, note it here and keep waiting. Then `wake-when` the same jobs, max 18 h.
-- For each finished cell: `unparseable: 0`, row count (1,500; 500 for 189059), node of the attempt that wrote the file,
-  `scripts/paired_judge.py` against its baseline (CI, McNemar), slot ratio from `mems_used`; then `expmon verdict`,
-  `expmon probe <id> judge=…`, one ledger note per decided arm (try `expmon note` once; if the guard still errors,
-  STATE.md), rewrite `docs/probe_campaign_2026-11.md`, refresh `expmon display --exp probes`.
-- When all four are decided and no health relaunch is needed: every arm is decided or closed for the cap → NEXT
-  `waiting-owner` is wrong (no question) → write a close-out proposal for the owner or `done`.
+- NEXT = `wake-when job:189056,189057 job:189058,189059 max 4h`: wakes when either pair of cells has left the queue,
+  or at about 06:05 on 11-13 at the latest (each cell then PENDING > 6 h since its 23:33 submission, minus its short
+  run). If they still pend then: widen at most 2 cells (the two arm E cells first: they decide an adopted claim) with
+  `scontrol update JobId=… Partition=gpu,gpu-be`, only if the owner's `gpu` share then has room (sibling jobs
+  counted, never more than 2 campaign cells on `gpu`); if the hook refuses `scontrol`, note it here and keep waiting.
+  Then `wake-when` the same jobs, max 18 h.
+- For each finished cell: `unparseable: 0`, row count (1,500; 500 for 189059), node of the attempt that wrote the file
+  (`sacct -j <id> -D -o NodeList,End` vs the file mtime: preemption often races the end), `scripts/paired_judge.py`
+  against its baseline (CI, McNemar), slot ratio from `mems_used`; then `expmon verdict`, `expmon probe <id> judge=…`,
+  one ledger note per decided arm, rewrite `docs/probe_campaign_2026-11.md`, refresh `expmon display --exp probes`.
+- When all four are decided and no health relaunch is needed: every arm is decided or closed for the cap → write a
+  close-out proposal for the owner or `done`.
 
 ## Blockers / needs the owner
 - none. (Two expmon defects griped, neither blocks the plan: the watchdog calls a queued campaign idle, and the hook
