@@ -1,0 +1,90 @@
+== campaign freeze wake 2026-11-13_0230  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794504601 live=189094:RUNNING,189065:PENDING,189098:PENDING,189097:PENDING,189096:PENDING,189095:PENDING,189099:PENDING,189067:PENDING running=1 pending=7 problems=1 problems_other=0 new=0 gpuh24=8.8 idle_h=0.0 min_util=- alert=0 unpushed=54 cron=3 daemon=1 disk_gb=11905 sig=4ccf6246 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189067_job:189094_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session 580a97b3-cb0b-483a-a0b8-c7ab8016a026  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+23 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/580a97b3-cb0b-483a-a0b8-c7ab8016a026/tool-results/b3pwhmcjr.txt | cut -c1-600
+  ↳ <persisted-output> (+23 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/580a97b3-cb0b-483a-a0b8-c7ab8016a026/tool-results/b3pwhmcjr.txt
+  ↳ 14	- NEXT (2026-11-13 01:36): (+119 lines)
+→ Bash: f=/home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/580a97b3-cb0b-483a-a0b8-c7ab8016a026/tool-results/b3pwhmcjr.txt; wc -l $f; grep -n '^## ' $f
+  ↳ 270 /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/580a97b3-cb0b-483a-a0b8-c7ab8016a026/tool-results/b3pwhmcjr.txt (+10 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/580a97b3-cb0b-483a-a0b8-c7ab8016a026/tool-results/b3pwhmcjr.txt
+  ↳ 134	188602     eval-ref 184778   ended     closed     -        eval_mm  -        -        -        -        -        -        -        -        1003520    -        pisco    ref_s42  mm_naturalqa_1500  (+137 lines)
+I'm checking why this wake fired (the brief says "problems" but counts zero) and reading the law and state files.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+  ↳ 224 CAMPAIGN.md (+113 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat known_issues.md; echo ----; sed -n 1,224p CAMPAIGN.md
+  ↳ # Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+249 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 189065,189094 -D -X -o JobID,State,Start,End,Elapsed,NodeList,Restarts,ExitCode,Reason%20 2>&1 | head -20; scontrol show job 189065 | grep -E 'JobState|Restarts|StartTime|Reason|Requeue' 
+  ↳ sacct: error: Invalid field requested: "Restarts" (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 189065,189094 -D -X -o JobID,State,Start,End,Elapsed,NodeList,ExitCode 2>&1 | head -20; ls -la expQ/freeze/ 2>/dev/null | tail -20
+  ↳ JobID             State               Start                 End    Elapsed        NodeList ExitCode  (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n '189065\|189064\]' EXPERIMENTS.md | cut -c1-700 | tail -12
+  ↳ 850:- 2026-11-12 23:40 [job 189064] intent: split test A1 feasibility smoke: ft_freeze.sh compfrozen 42 20 (freeze_part=compressor; connector + decoder LoRA train), 20 steps = 1,280 rows (.046 epoch), (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 189094 40 2>&1 | tail -25 | cut -c1-300
+  ↳ eval_ds Dataset({ (+54 lines)
+The seed-42 run of the "compressor frozen" arm is healthy (step 44 of 437, ~71 s/step). Now checking the training loss and the preempted smoke.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; L=$(ls -t expQ/freeze/ft_compfrozen_s42/*.log 2>/dev/null | head -1); echo "$L"; ls expQ/freeze/ft_compfrozen_s42/; f=$(expmon logs 189094 --path 2>/dev/null | head -1); echo "path=$f"; grep -ao "{'los…
+  ↳ expQ/freeze/ft_compfrozen_s42/train.log (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -ao "{'loss'[^}]*}" ft_freeze_189094.out | tail -5; grep -ao "{'eval_loss'[^}]*}" ft_freeze_189094.out | tail -3; grep -a 'freeze_part\|trainable parameters' ft_freeze_189094.out | head -5
+  ↳ {'loss': '0.6767', 'grad_norm': '0.1943', 'learning_rate': '8.182e-06', 'epoch': '0.02291'} (+8 lines)
+Seed-42 "compressor frozen" run: train loss .677 at step 10 (reference run .680), .503 at step 40, no eval point yet. Checking checkpoint timing for the step-100 preview the law allows.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'save_steps|eval_steps|save_total|save_strategy|max_steps' expQ/freeze/ft_compfrozen_s42/training_config.yaml; ls expQ/freeze/ft_frozen_s42/ expQ/ft_mm_4b_184778/ | head -30; grep -n '188594\|…
+  ↳ 10:  save_strategy: steps (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls .expmon/campaign/freeze/ campaign_freeze/; cat campaign_freeze/VERIFY.md 2>/dev/null | cut -c1-1200 | head -40
+  ↳ campaign_freeze/: (+61 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -a 'norm gain never moves' campaign_freeze/VERIFY.md | awk -F'|' '{print $4}'
+  ↳ The gain part is supported: norm_gain 0.0% changed with RMS 0.46094 in check_move_freeze_188579 / 189066 / 188700, and the A1 trainable count 20,980,736 includes the 2,560-entry gain. The 'only' concl
+Nothing failed. The only event: the "connector frozen" smoke was preempted on the preemptible partition after 10 min and requeued (known benign case). Recording that and the run's health.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 189094 --step 0.092 loss=0.503 s_per_step=71 2>&1 | tail -2; expmon note -j 189065 "result: PREEMPTED on gpu-be at 02:01 after 10:12 on homer-016 (started 01:51), auto-requeued (Restarts=1…
+  ↳ probe recorded: 189094 @0.092 (loss=0.503 s_per_step=71)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/known_issues.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -60 | cut -c1-500
+  ↳ **Settled** (+16 lines)
+Now rewriting the state file: fixing the one claim the checker downgraded (the module check cannot see the frozen `<MEM>` row) and updating the running jobs and plan.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; python3 - 2>/dev/null; awk '/^## Deliverable/,/^## Proposed text/' STATE.md | head -3 >/dev/null; grep -n '^## ' STATE.md
+  ↳ 5:## TL;DR — where this leaves the question (readable as an email) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 62	## Deliverable — judge accuracy ↑ (Qwen3-8B rubric judge), n = 1,500 per set; Δ = paired difference arm − reference of the same seed [95% CI] (jobs 188650, 188701) (+39 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum pisco/model.py campaign_freeze/patches/split_freeze.diff scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py | cut -c1-8,33-
+  ↳ 994cff3d  pisco/model.py (+4 lines)
+All eval-code fingerprints still match gate 0, so the reference answers still pair. Writing the decision note, a tooling gripe, and the wait condition.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "decision: freeze wake 13 (2026-11-13 02:30, woken by a problem-count change). Cause: A2 smoke 189065 preempted on gpu-be at 02:01 after 10 min, requeued (benign, known_issues row 1 widened…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Nothing went wrong and nothing new was launched this wake. The wake fired because a short test run was preempted and put back in the queue, which is normal on the preemptible partition.
+
+## Done this wake
+- **Why it woke:** the 20-step test run of the "connector frozen" arm started on the preemptible GPU partition at 01:51. It was preempted at 02:01 and requeued automatically. A 20-step run saves no checkpoint, so it will restart from scratch (about 30 min). No action needed.
+- **"Compressor frozen" arm, seed 42 (full run, 1 epoch = 28,032 rows):** healthy at 0.10 epoch.
+  - Train loss: .677 at 0.023 epoch, falling to .503 at 0.092 epoch. The reference run logged .680 at the same point.
+  - Speed is about 71 s per step, so it should end around 10:20.
+- **Checks:** the eval-code fingerprints (md5) still match the ones used for the first decision (whether freezing compressor + connector keeps accuracy; it does not). So the reference answers can still be paired question by question.
+- **Correction from the read-only checker:** I marked one claim as provisional. It says the frozen and full runs differ only in the compressor adapter, the merger and the connector. The movement check cannot see the single `<MEM>` row, which sits inside a 1.27-billion-entry group, so this is not measured.
+- **Slip:** an empty `python3 -` ran on the login node during a file listing. It did no work, but the rules forbid it, and it is noted in the state file.
+
+## Waiting on
+- **"Connector frozen" test run:** back in the queue. The scheduler's start estimate is tomorrow 20:15, but that is a worst case: its first start came 2 h after submission against a 14-h estimate.
+- **"Compressor frozen", seed 43:** cannot start yet, for two reasons:
+  - The campaign allows two trainings at once, and both slots are taken (the seed-42 run and the queued test run).
+  - The owner's GPU partition has 7 of 8 GPUs in use, and the rules forbid taking the last one.
+  - The rules give no allowed way to swap the order or move the test run to the other partition, so I left both as they are.
+
+## Next
+The next wake comes when the seed-42 run writes its step-100 checkpoint (~03:40), or when one of the two watched jobs leaves the queue, at most 3 h. At that wake:
+- Run the allowed early preview: 300 document questions at 0.23 epoch. I'll compare it with the fully frozen run's preview at the same point (.583) and the reference's final score (.610).
+- Record the step-100 eval loss against the reference's .513.
+
+Nothing needed from you. Still open from earlier: an owner's chat should commit the split-freeze setting (`pisco/model.py`, `test_freeze.py`), because the running job uses the uncommitted working copy.
+→ StructuredOutput: {"next": "wake-when", "summary": "Wake 13 (02:30), cause: A2 connector-frozen smoke 189065 preempted on gpu-be after 10 min and requeued (benign, known_issues row 1 widened). A1 compressor-frozen s42 full run 189094 healthy at .10 epoch (tr…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6634 turns=26 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Wake 13 (02:30), cause: A2 connector-frozen smoke 189065 preempted on gpu-be after 10 min and requeued (benign, known_issues row 1 widened). A1 compressor-frozen s42 full run 189094 healthy at .10 epoch (train loss .677->.503, ~71 s/step, ends ~10:20); probe recorded. Eval-code md5 unchanged. Verifier fix: 'difference = compressor LoRA + merger + connector MLP only' downgraded to provisional (<MEM> row invisible to the module check). Nothing launched; A1 s43 still blocked by the training cap (A1 s42 + pending A2 smoke) and the gpu last-slot rule. STATE.md rewritten. Next: step-100 preview of A1 s42 (pre-authorised) at ~03:40.", "wake_when": "file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json job:189067 job:189094 max 3h", "launched": [], "verdicts": [], "gripes": ["gap: brief said 'woken because: problems' while every sensor read problems=0; real trigger was a benign gpu-be preempt+requeue inside the wake-when contract — name job+transition, and skip waking for benign requeues"]}
+== final:
+{"next":"wake-when","summary":"Wake 13 (02:30), cause: A2 connector-frozen smoke 189065 preempted on gpu-be after 10 min and requeued (benign, known_issues row 1 widened). A1 compressor-frozen s42 full run 189094 healthy at .10 epoch (train loss .677->.503, ~71 s/step, ends ~10:20); probe recorded. Eval-code md5 unchanged. Verifier fix: 'difference = compressor LoRA + merger + connector MLP only' downgraded to provisional (<MEM> row invisible to the module check). Nothing launched; A1 s43 still blocked by the training cap (A1 s42 + pending A2 smoke) and the gpu last-slot rule. STATE.md rewritten. Next: step-100 preview of A1 s42 (pre-authorised) at ~03:40.","wake_when":"file:/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json job:189067 job:189094 max 3h","launched":[],"verdicts":[],"gripes":["gap: brief said 'woken because: problems' while every sensor read problems=0; real trigger was a benign gpu-be preempt+requeue inside the wake-when contract — name job+transition, and skip waking for benign requeues"]}
+== rc=0 secs=247
+== verify: 14/20
