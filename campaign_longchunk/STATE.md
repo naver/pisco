@@ -1,6 +1,6 @@
 # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append)
 
-last wake: 2026-11-13 07:00 (woken by a problem-count change: the control's seed-43 g10 eval was preempted on gpu-be at 06:30 and requeued — benign, known_issues row 1. Both control finetunes and the last 3 control previews had finished cleanly; recorded. Nothing launched.)
+last wake: 2026-11-13 07:30 (woken by a problem-count change: the control's seed-43 documents and photos evals were preempted on gpu-be at 07:20 and requeued — benign, known_issues row 1. Nothing launched.)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -22,20 +22,22 @@ last wake: 2026-11-13 07:00 (woken by a problem-count change: the control's seed
   | grouped HotpotQA g10 (one long chunk per question) | .603 (bridge .560, comparison .789) | .570 (bridge .535, comparison .719) | 188981 / 188983 |
   | documents `mm_docqa_1500_1m` | .597 (infovqa .470, slidevqa .660) | .603 (infovqa .490, slidevqa .660) | 188980 / 188982 |
 
-  The two seeds differ by 3.3 pt on g10 at n = 300: a later arm's preview gap smaller than that is seed noise. Each later arm's step-100 preview pairs against the same seed here.
+  The two seeds differ by 3.3 pt on g10 at n = 300. That is one seed pair, not a noise band: at n = 300 the sampling error of an unpaired difference is about 4 pt, so no preview gap of either size is a result. Only the law's paired CI on 1,500 questions decides. Each later arm's step-100 preview is still paired against the same seed here, as a check that the code ran.
 - provisional: why the control's stage-1 held-out loss rises. The SmolLM2 reference 180486 also rises at the end (.924 / .920 / 1.023), but the control starts rising earlier (+.077 by step 4,000; the reference is flat, −.004). Cause untested; 64 held-out rows only; the downstream judge scores are the real health check.
-- 1,024-token arm stage 1 — job 188466 RUNNING on homer-019: step 2,981 of 5,208 = 572,000 of 1M documents (.57 epoch) at 07:00. 41 s per step → ends ≈ 2026-11-14 08:30 (limit 2026-11-15 00:46). Last held-out check (step 2,000): .611. Next held-out check at step 4,000 ≈ 2026-11-13 18:40.
-- The control's 6 gating evals (1,500 Q each, judge chained) — dependencies met, now on gpu-be: documents s43 (188711) and photos s43 (188712) RUNNING on homer-019 since 07:01; g10 s42 (188707, est. start 07:25), documents s42 (188708, est. 15:15), photos s42 (188709, est. 15:45), g10 s43 (188710, preempted once at 06:30, est. 16:00) PENDING (Priority).
+- 1,024-token arm stage 1 — job 188466 RUNNING on homer-019, no restart: step 3,025 of 5,208 = 580,800 of 1M documents (.58 epoch) at 07:36. 41.8 s per step → ends ≈ 2026-11-14 09:00 (limit 2026-11-15 00:46). Last held-out check (step 2,000): .611. Next held-out check at step 4,000 ≈ 2026-11-13 18:55.
+- The control's 6 gating evals (1,500 Q each, judge chained) — all 6 PENDING on gpu-be (Priority) after 3 preemptions. Seed 43 documents (188711) had answered 1,030 of 1,500 Q and seed 43 photos (188712) had answered all 1,500 and judged 816 when both were preempted at 07:20 on homer-019; g10 seed 43 (188710) was preempted at 06:30. Each restarts from scratch (no resume in `eval_mm_4b.sh`). Scheduler start estimates: g10 s42 15:15, documents s42 15:30, photos s42 16:00, g10 s43 16:15, documents s43 16:30, photos s43 17:00.
 
 ## Owned jobs (jobid | arm / stage | state | progress | eta | note)
 | job | arm / stage | state | progress | eta | note |
 |---|---|---|---|---|---|
-| 188466 | L1024 stage 1 | RUNNING (gpu, homer-019) | 2,981 / 5,208 steps = 572k / 1M documents at 07:00 | ≈ 2026-11-14 08:30 | `pt_text_4b_long.sh 1000000 1024 2048 6 8`; out `expQ/longchunk/pt_text_1M_cml1024_188466`; held-out eval + checkpoint every 2,000 steps |
-| 188707 / 188710 | C256 eval g10 s42 / s43 | PENDING (Priority; 188710 Restarts 1) | — | est. 07:25 / 16:00 | `CML=4096 TOPK=10`, `text_hotpotqa_1500_g10`, 1,500 Q; limit 0:26; model `expQ/longchunk/ft_cml256_s4X/model` |
-| 188708 / 188711 | C256 eval documents s42 / s43 | PENDING / RUNNING (homer-019) | — | est. 15:15 / ≈ 07:40 | `PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q; limit 0:40 |
-| 188709 / 188712 | C256 eval photos s42 / s43 | PENDING / RUNNING (homer-019) | — | est. 15:45 / ≈ 07:25 | `PX=1003520`, `mm_naturalqa_1500`, 1,500 Q; limit 0:24 |
+| 188466 | L1024 stage 1 | RUNNING (gpu, homer-019) | 3,025 / 5,208 steps = 580,800 / 1M documents at 07:36 | ≈ 2026-11-14 09:00 | `pt_text_4b_long.sh 1000000 1024 2048 6 8`; out `expQ/longchunk/pt_text_1M_cml1024_188466`; held-out eval + checkpoint every 2,000 steps |
+| 188707 / 188710 | C256 eval g10 s42 / s43 | PENDING (Priority; 188710 Restarts 1) | — | est. start 15:15 / 16:15 | `CML=4096 TOPK=10`, `text_hotpotqa_1500_g10`, 1,500 Q; limit 0:26; model `expQ/longchunk/ft_cml256_s4X/model` |
+| 188708 / 188711 | C256 eval documents s42 / s43 | PENDING (Priority; 188711 Restarts 1) | — | est. start 15:30 / 16:30 | `PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q; limit 0:40 |
+| 188709 / 188712 | C256 eval photos s42 / s43 | PENDING (Priority; 188712 Restarts 1) | — | est. start 16:00 / 17:00 | `PX=1003520`, `mm_naturalqa_1500`, 1,500 Q; limit 0:24 |
 
-All evals: `--partition gpu-be --exclude 'homer-[005-009]'` (same-node rule: image cells pair only between agreeing el9_8 nodes; record the node of the attempt that wrote each file with `sacct -j <id> -D -o NodeList,End`). Eval code md5 at submit AND re-checked 2026-11-13 07:02 (unchanged): `eval_mm_4b.sh` 50abc167, `scripts/eval_mm_docqa.py` dfe32aa0, `scripts/judge_mm_docqa.py` 02bc8748; `pisco/model.py` 994cff3d (the freeze campaign's 2026-11-12 23:40 `freeze_part` patch; every control eval and every arm eval run on it, so pairs stay on the same code).
+All evals: `--partition gpu-be --exclude 'homer-[005-009]'` (same-node rule: image cells pair only between agreeing el9_8 nodes; record the node of the attempt that wrote each file with `sacct -j <id> -D -o NodeList,End`). The law has no row to widen an eval to `gpu`, and the owner's 8-GPU share on `gpu` is full anyway (this stage 1 = 4, freeze 2, probes 2).
+Leftover from the preempted photos s43 attempt: `expQ/longchunk/ft_cml256_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json` (07:18, 1,500 rows, NO judge fields — not a result; the requeued 188712 overwrites it).
+Eval code md5 at submit AND re-checked 2026-11-13 07:35 (unchanged): `eval_mm_4b.sh` 50abc167, `scripts/eval_mm_docqa.py` dfe32aa0, `scripts/judge_mm_docqa.py` 02bc8748; `pisco/model.py` 994cff3d (the freeze campaign's 2026-11-12 23:40 `freeze_part` patch; every control eval and every arm eval run on it, so pairs stay on the same code).
 Preserved step-100 checkpoints: `expQ/longchunk/ft_cml256_s42_step100/checkpoint-100` and `…_s43_step100/checkpoint-100` (3.1 GB each, model files only); the 4 preview result files sit in their `eval/` dirs. All 4 previews' final attempts ran on el9_8 nodes (188981 homer-016; 188980 / 188982 / 188983 homer-012).
 Recipe file `expQ/longchunk/pt_text_4b_long.sh` md5 8d3745e9cc343b6fb30d8d4a2bc2cd8c (unchanged; not in git — `expQ/` is gitignored).
 Resolved-config diff, control 188422 vs the 1,024-token arm 188466: `compressor_max_length` 256→1024, `decoder_max_length` 512→2048, `per_device_train_batch_size` 24→6, `gradient_accumulation_steps` 2→8 (effective batch 192 held). Nothing else differs.
@@ -43,11 +45,14 @@ Resolved-config diff, control 188422 vs the 1,024-token arm 188466: `compressor_
 ## Adopted jobs (found running in this project, not launched by the campaign — never killed, never duplicated)
 (none. The freeze and probes campaigns' jobs belong to those sibling campaigns.)
 
+## Hand-offs
+- 5f4e2f → the pisco chats (2026-11-13 07:35): make `eval_mm_4b.sh` skip generation and only judge when the result file already holds every row. Saves the lost GPU time when a gpu-be preemption hits the judge phase. Not blocking.
+
 ## Open arms and the next decision for each
 | arm | chunk / text kept per doc (tokens) | text tokens at 1M docs | stage-1 cost (measured) | status | next decision |
 |---|---|---|---|---|---|
-| C256 control | 256 / 512 | ≈ 0.45 B | 67 GPU-h (done) | stage 1, stage 2, both finetunes done; 4 of 4 previews done; 6 gating evals running / queued | read the 6 full evals when they end; then g1 + MRQA (4 cells) only if an arm adopts |
-| L1024 | 1,024 / 2,048 | ≈ 1.04 B (≈ 0.60 B so far, estimate) | 244 GPU-h (projected) | stage 1 at 57%, healthy | held-out check at step 4,000 (collapse check only); after it ends: ownership probe, then the control's exact stage 2 → finetunes → evals |
+| C256 control | 256 / 512 | ≈ 0.45 B | 67 GPU-h (done) | stage 1, stage 2, both finetunes done; 4 of 4 previews done; 6 gating evals queued | read the 6 full evals when they end; then g1 + MRQA (4 cells) only if an arm adopts |
+| L1024 | 1,024 / 2,048 | ≈ 1.04 B (≈ 0.60 B so far, estimate) | 244 GPU-h (projected) | stage 1 at 58%, healthy | held-out check at step 4,000 (collapse check only); after it ends: ownership probe, then the control's exact stage 2 → finetunes → evals |
 | L2048 | 2,048 / 4,096 | ≈ 1.30 B | 339 GPU-h (projected) | fits; not launched (one stage 1 at a time) | launch after L1024's stage 1 only if spent + projected ≤ 38 GPU-days (law) |
 | SmolLM2 reference | 256 / 512 | ≈ 0.39 B | done | reported as a row only | — |
 
@@ -62,9 +67,9 @@ Known confound (report, do not fix): the long arms see 2.3× / 2.9× more text t
 | uncompressed decoder | — | — | — | — | — | .809 | .717 |
 
 ## Budget (38 GPU-days in the law)
-- Spent: ≈ 7 GPU-h (fit tests) + 66.9 (control stage 1) + 0.05 (ownership probe) + ≈ 138 (L1024 so far, 34.5 h × 4) + 19.2 (control stage 2) + 23.9 (control finetunes, done) + ≈ 0.6 (previews, with preempted partial runs) ≈ 256 GPU-h = 10.7 GPU-days.
-- Projected with measured speeds: ≈ 841 GPU-h = 35.0 GPU-days for the full plan → ≈ 3 GPU-days of slack under 38.
+- Spent: ≈ 7 GPU-h (fit tests) + 66.9 (control stage 1) + 0.05 (ownership probe) + ≈ 140 (L1024 so far, 35.0 h × 4) + 19.2 (control stage 2) + 23.9 (control finetunes, done) + ≈ 1.3 (previews and preempted eval attempts) ≈ 259 GPU-h = 10.8 GPU-days.
+- Projected with measured speeds: ≈ 841 GPU-h = 35.0 GPU-days for the full plan → ≈ 3 GPU-days of slack under 38 (preempted eval reruns eat a little of it).
 
 ## Blockers / needs the owner
-- Nothing now. Budget check for L2048 is due ≈ 2026-11-14 08:30 when L1024's stage 1 ends.
-- Next wake: when the 6 gating control evals have left the queue, max 18 h (covers the L1024 held-out check at step 4,000 ≈ 18:40); a failure of any job wakes earlier. At that wake: read the 6 judge scores, check each image cell's node, record verdicts, fill the C256 row of the results table, refresh `expmon display --exp longchunk`.
+- Nothing now. Budget check for L2048 is due ≈ 2026-11-14 09:00 when L1024's stage 1 ends.
+- Next wake: when the 6 gating control evals have left the queue, max 18 h (covers the L1024 held-out check at step 4,000 ≈ 18:55); a failure of any job wakes earlier. At that wake: read the 6 judge scores, check each image cell's node, record verdicts, fill the C256 row of the results table, refresh `expmon display --exp longchunk`.

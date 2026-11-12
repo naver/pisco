@@ -1,0 +1,77 @@
+== campaign longchunk wake 2026-11-13_0730  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794522601 live=188466:RUNNING,188709:PENDING,188708:PENDING,188707:PENDING,188710:PENDING,188712:PENDING,188711:PENDING running=1 pending=6 problems=3 problems_other=0 new=0 gpuh24=129.2 idle_h=0.0 min_util=100 alert=0 unpushed=60 cron=3 daemon=1 disk_gb=11339 sig=35fac657 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188707,188708,188709,188710,188711,188712_max_18h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 15ddc059-cc24-4b39-bed6-2ca0ca4dd835  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+19 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/15ddc059-cc24-4b39-bed6-2ca0ca4dd835/tool-results/bucgdgy62.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_0730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+249 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+70 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ 1	# Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188707 188708 188709 188710 188711 188712; do scontrol show job $j | grep -oE 'JobState=\S+|Reason=\S+|Restarts=\S+|StartTime=\S+|NodeList=\S+' | tr '\n' ' '; echo " <- $j"; done; sacct -j 188…
+  ↳ JobState=PENDING Reason=Priority Restarts=0 StartTime=2026-11-13T15:15:00 NodeList=(null) NodeList=homer-[005-009] NodeList=homer-010  <- 188707 (+16 lines)
+Checking the campaign: the control model's 6 gating evals were preempted again (benign, known issue). Now reading the law's pre-authorised actions to see if widening the partition is allowed.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 89	## Deliverable — how results reach the owner (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; ls -la ft_cml256_s42/ ft_cml256_s43/ 2>&1 | head -40; find ft_cml256_s42 ft_cml256_s43 -path '*eval*' -newer ft_cml256_s43/model -maxdepth 3 2>/dev/null | head; md5sum ../../eval_mm_4b.s…
+  ↳ ft_cml256_s42/: (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=expQ/longchunk/ft_cml256_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json; ls -la $f; python3 -I -c " ⏎ import json,sys ⏎ d=json.load(open('$f')) ⏎ print(type(d), list(d.keys())[:20] if isins…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 727022 Nov 13 07:18 expQ/longchunk/ft_cml256_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'exist|-f |skip|resume|rescore' eval_mm_4b.sh | head -20; expmon logs 188711 8 2>&1 | tail -10
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188711.out (last 8) <== (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466 2>/dev/null && ls; tail -c 3000 /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log 2>/dev/null | tr '\r' '\n' | grep -E "[0-9]…
+  ↳ checkpoint-2000 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longchunk/pt_text_1M_cml1024_188466/train.log; tail -c 400 expQ/longchunk/pt_text_1M_cml1024_188466/train.log; echo; ls -t pt_text_4b_long*188466* expQ/longchunk/*188466* 2>/dev/null | head…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 26036 Nov 11 20:33 expQ/longchunk/pt_text_1M_cml1024_188466/train.log (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon handoff list 2>&1 | grep -iE 'resume|skip gen|judge.only|eval_mm_4b' | head -5; expmon handoff 2>&1 | head -5
+  ↳ Why (2026-11-10): nle_sim's defect campaign had one way out, BLOCKED.md to the owner, so work for ANOTHER chat (fix a (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon handoff list 2>&1 | head -30
+  ↳ 0 open hand-off(s) for or from pisco
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon handoff add --to pisco "eval_mm_4b.sh: when the eval result json already holds all records (e.g. 1500/1500) but no judge scores, skip generation and run only the judge — a gpu-be preemption duri…
+  ↳ hand-off 5f4e2f filed: pisco:longchunk -> pisco (its chats): eval_mm_4b.sh: when the eval result json already holds all records (e.g. 1500/1500) but no judge scores, skip generation and run only the j (+4 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "tick sensor problems=1 woke a wake-when wake (longchunk 2026-11-13 07:30) for two gpu-be PREEMPTED+requeued evals (Restarts=1, now PENDING) while expmon check printed every camp…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Nothing went wrong and nothing needs you. Two of the control model's scoring jobs were bumped by higher-priority jobs and have rejoined the queue on their own. I launched nothing.
+
+**What happened**
+- At 07:20 the cluster cancelled two of the control's seed-43 scoring jobs to free their GPUs for other work. The control is the model trained on 256-token chunks. The two jobs:
+  - The documents scoring had answered 1,030 of 1,500 questions.
+  - The photos scoring had answered all 1,500 and its judge (the Qwen3-8B model that grades answers) was at 816.
+- Both went back into the queue automatically. They will start again from scratch, because the scoring script cannot resume.
+- The photos job left an ungraded answer file on disk. It is not a result, and the restarted job will overwrite it.
+- The code the scores depend on is unchanged.
+
+**Where things stand**
+- **The model trained on 1,024-token chunks:** its first training stage is healthy. It has seen 580,800 of 1M documents and should finish around 09:00 tomorrow (2026-11-14). Its next loss check is around 18:55 today.
+- **The control's 6 final scoring jobs** (3 test sets × 2 seeds, 1,500 questions each): all are waiting in the queue. The scheduler expects them to start between 15:15 and 17:00 today.
+- **Budget:** about 10.8 of 38 GPU-days used. The full plan projects to about 35.
+
+**What I recorded**
+- A note in the experiment log for each cancelled job, a progress point for the long-chunk training, and an updated row in the campaign's known-issues list.
+- A request to this project's other chats: when a scoring job is cut off after answering every question, it should only re-run the judge, not answer everything again. This saves GPU time on every cut-off; it blocks nothing.
+- A complaint about the monitoring tool: it woke this loop for a job the cluster had already put back in the queue, while every check said OK. This happened twice today.
+- I also fixed a claim the automatic checker flagged in the status file. The 3.3-point gap between the two seeds on 300 questions is one observation, not a measure of noise. At that size no gap is a result; only the paired test on 1,500 questions decides.
+
+**Next wake:** when all 6 scoring jobs have left the queue, or in 18 hours at most. Then I record the 6 scores and fill in the control's row of the results table.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Woken by gpu-be preemption of control evals documents s43 (188711) and photos s43 (188712) at 07:20 on homer-019 — benign, both requeued (restart from scratch; photos had finished generation, judge at 816/1…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2643 turns=22 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Woken by gpu-be preemption of control evals documents s43 (188711) and photos s43 (188712) at 07:20 on homer-019 — benign, both requeued (restart from scratch; photos had finished generation, judge at 816/1500). All 6 gating control evals PENDING (est. start 15:15-17:00). L1024 stage 1 (188466) healthy at 580,800 of 1M docs, ends ~2026-11-14 09:00. Recorded notes + probe, updated known_issues row 1, fixed the verifier's noise-band sentence in STATE.md, filed hand-off 5f4e2f (judge-only resume in eval_mm_4b.sh). Nothing launched; wait unchanged.", "wake_when": "job:188707,188708,188709,188710,188711,188712 max 18h", "launched": [], "verdicts": [], "gripes": ["defect: tick problems sensor woke a wake-when wake for gpu-be PREEMPTED+requeued evals while expmon check showed all OK; suggest excluding requeued preemptions from the problems counter"]}
+== final:
+{"next":"wake-when","summary":"Woken by gpu-be preemption of control evals documents s43 (188711) and photos s43 (188712) at 07:20 on homer-019 — benign, both requeued (restart from scratch; photos had finished generation, judge at 816/1500). All 6 gating control evals PENDING (est. start 15:15-17:00). L1024 stage 1 (188466) healthy at 580,800 of 1M docs, ends ~2026-11-14 09:00. Recorded notes + probe, updated known_issues row 1, fixed the verifier's noise-band sentence in STATE.md, filed hand-off 5f4e2f (judge-only resume in eval_mm_4b.sh). Nothing launched; wait unchanged.","wake_when":"job:188707,188708,188709,188710,188711,188712 max 18h","launched":[],"verdicts":[],"gripes":["defect: tick problems sensor woke a wake-when wake for gpu-be PREEMPTED+requeued evals while expmon check showed all OK; suggest excluding requeued preemptions from the problems counter"]}
+== rc=0 secs=182
+== verify: 11/13
