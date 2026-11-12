@@ -1,0 +1,54 @@
+== verifier 2026-11-13_0430  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session 65e14daf-7fc5-46fc-b829-b3bbb2c61b2f  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+294 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 296	{"ts": "2026-11-11 07:35", "jobid": "188529", "verdict": "closed", "note": "superseded by 188578: same rows 0.0%, but the check script skipped the connector norm gain (absent from the stage-2 init (+95 lines)
+→ Glob: {"pattern": "campaign_freeze/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "expQ/freeze/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze"}
+  ↳ campaign_freeze/ticks/.keep (+39 lines)
+→ Grep: {"pattern": "(?i)refuted|prediction", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 21:(Refuted wake 10, 2026-11-12, kept: the gate FAILED on three seeds — documents −.028 / −.035 / −.041, CI below 0 at (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign freeze — 2026-11-13_0230   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+28 lines)
+→ Grep: {"pattern": "(?i)eval_loss|step 149|Restarts|PREEMPT|189434|checkpoint-100|cmp", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_0430.log", "output_mode": "content", "head_limit": 60}
+  ↳ 20:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/freeze/ft_compfrozen_s42/checkpoint-100/ expQ/freeze/ft_compfrozen_s42/checkpoint-100/*/ ; python3 -c 1 2>/dev/null; grep -o '"eval_loss": (+15 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json", "output_mode": "content", "-C": 3}
+  ↳ 85-      "eval_Rouge-1": 0.49058514534265324, (+6 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42", "glob": "checkpoint-*/trainer_state.json", "output_mode": "content", "-B": 2, "-A": 3}
+  ↳ expQ/freeze/ft_frozen_s42/checkpoint-437/trainer_state.json-86-      "eval_Rouge-2": 0.32047773528608686, (+61 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778", "glob": "checkpoint-*/trainer_state.json", "output_mode": "content"}
+  ↳ expQ/ft_mm_4b_184778/checkpoint-437/trainer_state.json:88:      "eval_loss": 0.5130845308303833, (+8 lines)
+→ Grep: {"pattern": "\"step\"|global_step|max_steps", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json", "output_mode": "content", "head_limit": 10}
+  ↳ 2:  "best_global_step": null, (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json
+  ↳ 40	    { (+39 lines)
+→ Glob: {"pattern": "*1890[69]*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Grep: {"pattern": "ft_freeze_189094|189094\\.out|check_move_freeze_189066", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_0230.verify.log", "output_mode": "content", "head_limit": 5}
+  ↳ 41:→ Grep: {"pattern": "freeze_part|[Tt]rainable param|'loss'|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189094.out", "output_mode": "content", "head_limit": 20} (+2 lines)
+Confirming the A1 run's progress and the A2 smoke's preemption count in the job log and the wake's log.
+→ Grep: {"pattern": "\\| 1[45][0-9]/43[78] \\[", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189094.out", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 4451:| 140/437 [ (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_0430.log
+  ↳ 38	  ↳ Submitted batch job 189434 (+6 lines) (+31 lines)
+→ Grep: {"pattern": "PREEMPT|CANCELLED|freeze_part=connector|Restart|requeue", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189065.out", "output_mode": "content", "head_limit": 10}
+  ↳ 103:[pisco] freeze_part=connector: froze 5 connector tensors (eval mode kept) (+1 lines)
+→ Grep: {"pattern": "189065", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/known_issues.md", "output_mode": "content"}
+  ↳ 7:| gpu-be job shows CANCELLED / PREEMPTED then PENDING or RUNNING again, Restarts>0 (`scontrol show job J`), checkpoints keep advancing; a 20-step smoke or an eval restarts from scratch, and its sche
+→ Grep: {"pattern": "md5|dfe32aa0|50abc167|02bc8748|994cff3d", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_0430.log", "output_mode": "content", "head_limit": 10}
+  ↳ 28:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; grep -nE 'PX|image_max_pixels|limit|LIM' eval_ (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100"}
+  ↳ expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100/decoder_state.pt (+11 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_compfrozen_s42/checkpoint-100"}
+  ↳ expQ/freeze/ft_compfrozen_s42/checkpoint-100/decoder_state.pt (+15 lines)
+→ StructuredOutput: {"claims": [{"claim": "Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −2.8 / −3.5 / −4.1 pt, CI wholly below 0 each; the Failed rule is met by seeds 43 and 44; n = 1,500; jobs 188…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1579 turns=24 is_error=False denials=0
+== declared: {"claims": [{"claim": "Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −2.8 / −3.5 / −4.1 pt, CI wholly below 0 each; the Failed rule is met by seeds 43 and 44; n = 1,500; jobs 188650 / 188701)", "status": "supported", "reason": "Verdicts 188650 / 188701 and grid evals 188596-188599 / 188653-188654 (n=1500): documents −.028 [−.049,−.007], −.035 [−.057,−.014], −.041 [−.062,−.021]. Seeds 43 and 44 are ≤ −3 pt with the CI below 0, which meets the 2-of-3 Failed rule written at wake 6, before the seed-44 result. 'On three seeds' means tested on three seeds; the rule itself is met at 2 of 3, and the bullet says so."}, {"claim": "documents: −.028 [−.049, −.007], −.035 [−.057, −.014], −.041 [−.062, −.021] → FAILED", "status": "supported", "reason": "Matches verdicts 188596 / 188598 (via 188650) and 188701 exactly, with McNemar 111/153 p .011, 109/161 p .002, 103/164 p<.001."}, {"claim": "MRQA text: −.023 [−.040, −.008], −.027 [−.043, −.009], −.025 [−.041, −.009] → below the −2 pt bar at all three seeds, CI below 0, not ≤ −3 pt", "status": "supported", "reason": "Verdicts 188605 / 188612 / 188701 match, n=1500. This set misses 'Validated' but does not reach 'Failed', and the bullet reads it that way."}, {"claim": "photos: −.009 [−.026, +.008], −.013 [−.030, +.004], +.005 [−.013, +.021] → no difference shown at any seed", "status": "supported", "reason": "Verdicts 188601 / 188603 / 188701 match. Every CI spans 0 (McNemar p .31
+== final:
+{"claims":[{"claim":"Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −2.8 / −3.5 / −4.1 pt, CI wholly below 0 each; the Failed rule is met by seeds 43 and 44; n = 1,500; jobs 188650 / 188701)","status":"supported","reason":"Verdicts 188650 / 188701 and grid evals 188596-188599 / 188653-188654 (n=1500): documents −.028 [−.049,−.007], −.035 [−.057,−.014], −.041 [−.062,−.021]. Seeds 43 and 44 are ≤ −3 pt with the CI below 0, which meets the 2-of-3 Failed rule written at wake 6, before the seed-44 result. 'On three seeds' means tested on three seeds; the rule itself is met at 2 of 3, and the bullet says so."},{"claim":"documents: −.028 [−.049, −.007], −.035 [−.057, −.014], −.041 [−.062, −.021] → FAILED","status":"supported","reason":"Matches verdicts 188596 / 188598 (via 188650) and 188701 exactly, with McNemar 111/153 p .011, 109/161 p .002, 103/164 p<.001."},{"claim":"MRQA text: −.023 [−.040, −.008], −.027 [−.043, −.009], −.025 [−.041, −.009] → below the −2 pt bar at all three seeds, CI below 0, not ≤ −3 pt","status":"supported","reason":"Verdicts 188605 / 188612 / 188701 match, n=1500. This set misses 'Validated' but does not reach 'Failed', and the bullet reads it that way."},{"claim":"photos: −.009 [−.026, +.008], −.013 [−.030, +.004], +.005 [−.013, +.021] → no difference shown at any seed","status":"supported","reason":"Verdicts 188601 / 188603 / 188701 match. Every CI spans 0 (McNemar p .319 / .173 / .65)."},{"claim":"HotpotQA (reported, not gating): −.028 [−.045, −.013], −.023 [−.041, −.006], −.026 [−.043, −.010]","status":"supported","reason":"Verdicts 188614 / 188616 / 188701 match, n=1500. It is labelled not gating, as the law says."},{"claim":"The prediction in CAMPAIGN.md 'Mission' (the reference finetune barely moves the connector, so freezing may tie) is refuted and marked there","status":"supported","reason":"CAMPAIGN.md line 21: 'Refuted wake 10, 2026-11-12, kept: the gate FAILED on three seeds — documents −.028 / −.035 / −.041…'. The prediction is kept and marked, not deleted."},{"claim":"The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44); all 8 evals used the eval-code md5 above (node homer-016 per verdict 188701); the paired test exited 0","status":"supported","reason":"Grid 188651 / 188652: parent 184777, init pt_mm_5M_spread, the same factors except the arm. Verdict 188701 records md5 dfe32aa0/50abc167/02bc8748 and homer-016 for all 8 evals. The node rests on that verdict text only, and the claim says so. The 0230 verifier saw '=== EXIT CODE 0 ===' in the 188701 output."},{"claim":"The freeze held over all three full runs: every compressor and connector row changed 0.0%; decoder lora_B 66.7 / 66.3 / 66.7% (188584 / 188585 / 188699); the seed-44 reference moved compressor lora_B 74.1% and the connector MLP 20.7% (188700); the merger and the <MEM> row are not visible to the check","status":"supported","reason":"Verdicts 18858
+== rc=0

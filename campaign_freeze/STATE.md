@@ -1,6 +1,6 @@
 # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append)
 
-last wake: 2026-11-13 02:30 tick (wake 13, woken by a problem-count change: the A2 smoke was preempted on `gpu-be` and requeued; nothing failed)
+last wake: 2026-11-13 04:30 tick (wake 14; woken by the ALERT of the 04:00 wake, which failed in 12 s on the account's 5-hour usage limit, and by A1 seed 42's step-100 checkpoint having appeared at 03:37)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -11,10 +11,10 @@ last wake: 2026-11-13 02:30 tick (wake 13, woken by a problem-count change: the 
   - HotpotQA (reported, not gating): −.028 [−.045, −.013], −.023 [−.041, −.006], −.026 [−.043, −.010].
   - The prediction in CAMPAIGN.md "Mission" (the reference finetune barely moves the connector, so freezing may tie) is refuted and marked there.
 - **The seed-44 pair is clean:** both finetunes ran from the same stage-2 model with the same recipe file (`ft_freeze.sh frozen|unfrozen 44`); all 8 evals used the eval-code md5 above (node homer-016 per verdict 188701; the eval logs do not print the node); the paired test exited 0 (job 188701).
-- **The freeze held over all three full runs** (1.0 epoch, 28,032 rows each): every compressor and connector row, norm gain included, changed 0.0%; decoder lora_B 66.7% / 66.3% / 66.7% of entries changed (seeds 42 / 43 / 44, jobs 188584 / 188585 / 188699). The seed-44 reference run, checked the same way, moved compressor lora_B 74.1% and the connector MLP 20.7% (job 188700): the check sees movement when there is some (not for the `<MEM>` row, see the next bullet).
+- **The freeze held over all three full runs** (1.0 epoch, 28,032 rows each): every compressor and connector row, norm gain included, changed 0.0%; decoder lora_B 66.7% / 66.3% / 66.7% of entries changed (seeds 42 / 43 / 44, jobs 188584 / 188585 / 188699). The seed-44 reference run, checked the same way, moved compressor lora_B 74.1% and the connector MLP 20.7% (job 188700): the check sees movement when there is some. It cannot see the `<MEM>` row (next bullet) and has no row for the merger or the vision tower at all (the check prints only LoRA A / B, the token-adapter group and the connector).
 - **In this bf16 recipe the connector norm gain never moves, even when trainable**: 0.0% changed after 20 steps (jobs 188579, 189066) and after a whole epoch (seed-44 reference, job 188700), value .46094 each time.
-  - provisional: so the frozen-vs-reference difference is compressor LoRA + merger + connector MLP, plus possibly the compressor `<MEM>` row: the check reads that row inside a 1,270M-entry token-adapter group, where one changed 2,560-entry row rounds to 0.0%, and no run shows it moving (no positive control).
-- **Split-freeze setting installed and tested**: `PISCOConfig.freeze_part = compressor | connector` (default unset) in `pisco/model.py` (md5 994cff3d), 5 new `test_freeze.py` cases; staged copy (job 189060) and installed tree (job 189063) both pass `test_positions.py` 12/12, `test_mm_collators.py` 33/33, `test_freeze.py` 10/10, exit 0.
+  - provisional: so the frozen-vs-reference difference is compressor LoRA + connector MLP, plus possibly the merger and the compressor `<MEM>` row — neither is measured: the merger has no row in the check, and the `<MEM>` row sits inside a 1,270M-entry token-adapter group where one changed 2,560-entry row rounds to 0.0% (no positive control for either).
+- **Split-freeze setting installed and tested**: `PISCOConfig.freeze_part = compressor | connector` (default unset) in `pisco/model.py` (md5 994cff3d, unchanged at 04:35), 5 new `test_freeze.py` cases; staged copy (job 189060) and installed tree (job 189063) both pass `test_positions.py` 12/12, `test_mm_collators.py` 33/33, `test_freeze.py` 10/10, exit 0.
 - **Split arm A1 (compressor frozen) feasibility PASS** (20-step smoke, seed 42, 1,280 rows = .046 epoch; jobs 189064 + 189066), every rule of CAMPAIGN.md "Split test gates":
   - log: `[pisco] freeze_part=compressor: froze 501 compressor tensors (eval mode kept)` and `Compressor trainable parameters: 0`; total trainable 176,958,976 = decoder 155,978,240 + connector 20,980,736;
   - module move vs the stage-2 model: compressor lora_A / lora_B / token row 0.0%; connector MLP 28.7% changed; norm gain 0.0% (bf16 lost update, as above); decoder lora_B 76.2%;
@@ -27,23 +27,27 @@ last wake: 2026-11-13 02:30 tick (wake 13, woken by a problem-count change: the 
 
 **Open, and running**
 - **Split test (owner's choice 2026-11-12): A1 first, then A2, seeds 42 and 43, same gates as gate 0.**
-  - A1 = compressor frozen (adapter, `<MEM>` row, merger), connector + decoder LoRA train. Seed-42 full run RUNNING on homer-013 (`gpu`) since 01:34: at 02:30 step 44 of 437 = .10 epoch (2,816 rows), ~71 s/step steady, ends about 10:20. Train loss .677 / .606 / .502 / .503 at .023 / .046 / .069 / .092 epoch (grid probe at .092; the reference 184778 logged .680 at .023 epoch). First eval_loss at step 100 (~03:40). Its 4 judged evals + module check are chained after it.
-  - A2 = connector frozen, compressor LoRA + merger + decoder LoRA train. Its 20-step smoke started 01:51 on homer-016 (`gpu-be`), was PREEMPTED at 02:01 and requeued (Restarts = 1); PENDING Priority, scheduler start estimate 11-14 20:15 (a worst case: its first start came 2 h after submit against a 14-h estimate). Its module check is chained.
-  - Prediction, not a result (written before any A1 / A2 number): A1 fails like F, A2 ties R.
+  - A1 = compressor frozen (adapter, `<MEM>` row, merger), connector + decoder LoRA train. Seed 42 RUNNING on homer-013 (`gpu`): at 04:34 step 149 of 437 = .34 epoch (9,536 rows), ~70 s/step, ends about 10:10.
+    - provisional: healthy at .228 epoch (6,400 rows, step 100): held-out loss (64 rows) .459, vs .513 for the reference 184778 and .455 for the fully frozen F s42 at the same step (grid probe of 189094). Train loss .49-.52 over steps 50-100.
+    - Its step-100 PREVIEW (first 300 documents, judge chained) is queued on `gpu-be` (job 189434; worst-case start estimate 11-15 12:30). Its 4 judged evals + module check are chained after the run.
+  - A1 seed 43: not launched. The training cap (2 in flight) is full: A1 seed 42 + the A2 smoke. See "Blockers".
+  - A2 = connector frozen, compressor LoRA + merger + decoder LoRA train. Its 20-step smoke (job 189065, `gpu-be`) was PREEMPTED twice and requeued (Restarts = 2, last requeue 03:47); PENDING Priority, worst-case start estimate 11-14 03:45. Its module check is chained.
+  - Prediction, not a result (written before any A1 / A2 judge number): A1 fails like F, A2 ties R.
 
 ## Owned jobs (jobid | arm | state | rows seen | eta | note)
-| job | what | state at 02:35 | rows | eta | note |
+| job | what | state at 04:40 | rows | eta | note |
 |---|---|---|---|---|---|
-| 189094 | A1 full `ft_freeze.sh compfrozen 42` | RUNNING (homer-013, `gpu`) | 2,816 of 28,032 (.10 epoch) | ~10:20 | --time 12:21:00; health: eval_loss every 100 steps vs 184778 .513 / .455 / .393 / .394 (kill on NaN or 2 probes above .513) |
+| 189094 | A1 full `ft_freeze.sh compfrozen 42` | RUNNING (homer-013, `gpu`) | 9,536 of 28,032 (.34 epoch) | ~10:10 | --time 12:21:00; health: held-out loss every 100 steps vs 184778 .513 / .455 / .393 / .394 (kill on NaN or 2 probes above .513); step 100 = .459 |
+| 189434 | A1 s42 step-100 PREVIEW, first 300 documents | PENDING (Priority, `gpu-be`) | 300 Q | worst case 11-15 12:30 | on the copy `expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100` (cmp-identical model files, no optimizer); --time 0:40:00 as the arm F preview 188594 |
 | 189095 | A1 s42 documents eval | PENDING afterok 189094 | 1,500 Q | after the run | --time 0:40:00 |
 | 189096 | A1 s42 photos eval | PENDING afterok 189094 | 1,500 Q | | --time 0:25:00 |
 | 189097 | A1 s42 MRQA text eval (CML=4096) | PENDING afterok 189094 | 1,500 Q | | --time 0:22:00 |
 | 189098 | A1 s42 HotpotQA eval (CML=4096 TOPK=10, not gating) | PENDING afterok 189094 | 1,500 Q | | --time 0:29:00 |
 | 189099 | module move, A1 s42 full vs 184777 | PENDING afterok 189094 | — | | --time 0:02:00 |
-| 189065 | A2 smoke `ft_freeze.sh connfrozen 42 20` | PENDING (Priority, `gpu-be`), preempted once | 0 of 1,280 (restarts from scratch) | est. 11-14 20:15 (worst case) | --time 0:45:00 |
+| 189065 | A2 smoke `ft_freeze.sh connfrozen 42 20` | PENDING (Priority, `gpu-be`), preempted twice | 0 of 1,280 (restarts from scratch) | worst case 11-14 03:45 | --time 0:45:00 |
 | 189067 | module move, A2 smoke vs 184777 | PENDING afterok 189065 | — | | --time 0:02:00 |
-All evals: `gpu-be`, `--exclude=homer-[005-009]`, PX=1003520; eval code md5 = gate 0, so the judged reference files of 184778 / 184780 pair as they are.
-GPU budget: ~55 GPU-h used of 192 (gate 0 ~52 + A1 smoke .5 + A1 s42 1 h so far + tests); the split test adds ~4 × 9-11 h finetunes + 16 evals ≈ 55 GPU-h (+ ~22 on a tie).
+All evals: `gpu-be`, `--exclude=homer-[005-009]`, PX=1003520. Eval code md5 re-checked at 04:35: `eval_mm_docqa.py` dfe32aa0, `eval_mm_4b.sh` 50abc167, `judge_mm_docqa.py` 02bc8748 = gate 0 (the working tree shows both files modified against HEAD, but their content equals what gate 0 ran), so the judged reference files of 184778 / 184780 still pair as they are. Re-check before reading the A1 evals.
+GPU budget: ~59 GPU-h used of 192 (gate 0 ~52 + A1 smoke .5 + A1 s42 ~3 h + 2-min checks); the split test adds ~4 × 9-11 h finetunes + 16 evals ≈ 55 GPU-h (+ ~22 on a tie).
 
 ## Adopted jobs
 (none — the other jobs in the queue belong to the sibling campaigns `longchunk` and `probes`)
@@ -52,21 +56,22 @@ GPU budget: ~55 GPU-h used of 192 (gate 0 ~52 + A1 smoke .5 + A1 s42 1 h so far 
 | arm | status | next decision |
 |---|---|---|
 | F frozen vs R reference, seeds 42 / 43 / 44 | decided: FAILED (documents, 2 of 3 seeds) | — |
-| A1 compressor frozen | feasibility PASS; seed 42 full RUNNING + chain | (1) step-100 checkpoint (~03:40): PREVIEW (pre-authorised, one per finetune cell) = `eval_mm_4b.sh <checkpoint-100> pisco 300 eval_data/mm_docqa_1500_1m`, `gpu-be`, `--exclude=homer-[005-009]`, judge chained; copy checkpoint-100 (model files, no optimizer) to `expQ/freeze/ft_compfrozen_s42_step100/` first, because `save_total_limit: 2` deletes it at step 300 (~07:40) and a `gpu-be` preemption restarts the eval. Read it against arm F s42's step-100 preview (job 188594: .583) and the reference final (.610) on the same 300 Q; provisional, never gates. Record the step-100 eval_loss probe vs 184778 .513. (2) seed 43 full (`ft_freeze.sh compfrozen 43`, `--time 12:21:00`, same 4 evals + module check chained) once BOTH hold: a training slot (CAMP_MAX_TRAIN = 2: now A1 s42 + the pending A2 smoke) and a `gpu` slot that is not the owner's last (7 of 8 used at 02:30). (3) paired judge `paired_judge_cpu.sh` A1 vs ref_s42 / ref_s43 when both seeds are judged |
-| A2 connector frozen | smoke PENDING (preempted once) | when 189065 + 189067 end: read against the A2 PASS rule (log `freeze_part=connector: froze N connector tensors`, `Compressor trainable parameters` > 0, connector.linear + norm_gain 0.0%, compressor lora_B > 0%, decoder lora_B > 0%, loss within .05 of .639 / .580, config diff = `freeze_compressor` → `freeze_part` only). Full cells only after A1's two full cells are submitted |
+| A1 compressor frozen | seed 42 RUNNING (.34 epoch, healthy) + preview + chain queued | (1) held-out loss probes at steps 200 / 300 / 400 vs 184778 .455 / .393 / .394; (2) preview 189434: read against arm F s42's preview (188594: .583) and the reference 184778 final (.610) on the same 300 Q, `provisional:`, n = 300, never gates; (3) seed 43 full (`ft_freeze.sh compfrozen 43`, `--partition gpu --constraint gpu_a100 --time 12:21:00` = smoke 81.2 s/step × 438 × 1.25, then 4 evals + module check `afterok`, same commands as seed 42 with `ft_compfrozen_s43/model`) once a training slot frees (A1 s42 ends ~10:10, or the owner approves the swap in BLOCKED.md) and a `gpu` slot that is not the owner's last is free (6 of 8 used at 04:35); (4) paired judge `paired_judge_cpu.sh` A1 vs ref_s42 / ref_s43 when both seeds are judged |
+| A2 connector frozen | smoke PENDING (preempted twice) | when 189065 + 189067 end: read against the A2 PASS rule (log `freeze_part=connector: froze N connector tensors`, `Compressor trainable parameters` > 0, connector.linear + norm_gain 0.0%, compressor lora_B > 0%, decoder lora_B > 0%, loss within .05 of .639 / .580, config diff = `freeze_compressor` → `freeze_part` only). Full cells only after A1's two full cells are submitted |
 | after-gate arms for a VALIDATED gate | void: gate 0 failed | — |
 
 ## Next
-- The tick wakes this loop when A1 s42's checkpoint-100 exists (`expQ/freeze/ft_compfrozen_s42/checkpoint-100/trainer_state.json`, ~03:40), or the A2 smoke's check (189067) or the A1 s42 run (189094) leaves the queue, or at 3 h.
-- At that wake: the A1 preview + eval_loss probe as in the table above. If the A2 smoke still pends, A1 seed 43 still cannot start (training cap); the law gives no pre-authorised way to swap them or to move the smoke to `gpu`, so they stay as they are.
+- The tick wakes this loop when the preview (189434), the A1 s42 run (189094) or the A2 smoke's check (189067) leaves the queue, when the owner answers BLOCKED.md, or at 6 h.
+- If A1 s42 ends first (~10:10): its chained evals start by themselves; launch A1 seed 43 on `gpu` in the freed training slot (with its 4 evals + module check: 6 submissions).
+- If the owner approves the swap first: `expmon kill` 189065 and 189067, launch A1 seed 43 + chain, and re-run the A2 smoke on `gpu` when A1 s42 ends.
 
 ## Deliverable — judge accuracy ↑ (Qwen3-8B rubric judge), n = 1,500 per set; Δ = paired difference arm − reference of the same seed [95% CI] (jobs 188650, 188701)
 | model | what trains | rate (tokens per slot; slots per page) | documents ↑ s42 / s43 / s44 | photos ↑ s42 / s43 / s44 | MRQA text ↑ s42 / s43 / s44 | HotpotQA ↑ s42 / s43 / s44 |
 |---|---|---|---|---|---|---|
 | R reference (184778 / 184780 re-evaluated 11-11; 188652) | compressor LoRA + merger + connector + decoder LoRA | 8; 123 per 1M-px page (980 visual tokens) | .610 / .615 / .620 | .673 / .685 / .671 | .718 / .724 / .721 | .603 / .593 / .603 |
 | F frozen (188582 / 188583 / 188651) | decoder LoRA only | same | .582 / .580 / .579 | .664 / .672 / .675 | .695 / .697 / .697 | .575 / .571 / .577 |
-| A1 compressor frozen (189094 / —) | connector + decoder LoRA | same | s42 training (.10 epoch) / s43 not yet launched | | | |
-| A2 connector frozen | compressor LoRA + merger + decoder LoRA | same | smoke queued (preempted once) | | | |
+| A1 compressor frozen (189094 / —) | connector + decoder LoRA | same | s42 training (.34 epoch; preview queued) / s43 not yet launched | | | |
+| A2 connector frozen | compressor LoRA + merger + decoder LoRA | same | smoke queued (preempted twice) | | | |
 | uncompressed decoder (earlier runs, same questions) | — | 1 (raw tokens) | .809 | .717 | .807 | — |
 
 | paired Δ frozen F − reference ↑ (CI) | seed 42 | seed 43 | seed 44 | mean of the 3 Δ |
@@ -77,6 +82,8 @@ GPU budget: ~55 GPU-h used of 192 (gate 0 ~52 + A1 smoke .5 + A1 s42 1 h so far 
 | HotpotQA | −.028 [−.045, −.013] | −.023 [−.041, −.006] | −.026 [−.043, −.010] | −.026 |
 Discordant pairs (frozen-only right / reference-only right), McNemar p — seeds 42 / 43 / 44: documents 111/153 p .011, 109/161 p .002, 103/164 p < .001; photos 78/92 p .32, 78/97 p .17, 90/83 p .65; MRQA 59/94 p .006, 67/107 p .003, 58/95 p .003; HotpotQA 64/106 p .002, 68/102 p .011, 64/103 p .003.
 
+Held-out loss (64 rows, lower is better) at the same step, seed 42: reference 184778 .513 (step 100) → .414 (final); F .455 → .435; A1 .459 (step 100, running).
+
 ## Module movement (entries changed %, per module, vs the stage-2 model 184777)
 | module | F smoke s42 (188578) | unfrozen smoke s42 (188579) | A1 smoke s42 (189066) | F full s42 (188584) | F full s43 (188585) | F full s44 (188699) | R full s44 (188700) |
 |---|---|---|---|---|---|---|---|
@@ -85,6 +92,7 @@ Discordant pairs (frozen-only right / reference-only right), McNemar p — seeds
 | compressor token-adapter group (holds the `<MEM>` row; 1,270M entries, so one row is invisible) | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 | 0.0 |
 | connector MLP | 0.0 | 25.4 | 28.7 (.0027 of its norm) | 0.0 | 0.0 | 0.0 | 20.7 (.0073 of its norm) |
 | connector norm gain | 0.0 | 0.0 (bf16 lost update) | 0.0 (bf16 lost update) | 0.0 | 0.0 | 0.0 | 0.0 (bf16 lost update) |
+| merger / vision tower | not measured (no row in the check) | | | | | | |
 
 ## Training cost (A100-80GB) — provisional (one same-time pair, two nodes)
 | run | s/step | wall | peak GPU memory (sacct gres/gpumem) | trainable params |
@@ -92,7 +100,7 @@ Discordant pairs (frozen-only right / reference-only right), McNemar p — seeds
 | F frozen s42 / s43 / s44 (188582 / 188583 / 188651) | 71.5 / 76.1 / 71.5 | 8.7 / 9.3 / 8.7 h | 49.9 / 49.9 / 50.0 GB | 155,978,240 (decoder only) |
 | R reference s42 / s43 / s44 (184778 / 184780 / 188652) | 90.3 / 113.2 / 95.1 | 11.0 / 13.8 / 11.6 h | — / — / 34.0 GB | 307,771,392 |
 | A1 smoke s42 (189064), 20 steps | 81.2 overall (~70.5 steady) | 29 min | 49.8 GB | 176,958,976 (decoder + connector) |
-| A1 full s42 (189094), steps 10-44 | ~71 steady | ~8.7 h projected | — (running) | 176,958,976 |
+| A1 full s42 (189094), steps 1-149 | ~70 | ~8.6 h projected | — (running) | 176,958,976 |
 Open question: why a frozen compressor uses MORE GPU memory. A guess, not checked: gradient checkpointing only runs in train mode and the frozen compressor is in eval mode, so its activations are kept. A1 (compressor frozen, connector training) peaks the same as F, consistent with that guess.
 
 ## Proposed text for the owner's chats (gate 0 is decided)
@@ -100,12 +108,16 @@ Open question: why a frozen compressor uses MORE GPU memory. A guess, not checke
 - HANDOFF.md thread 7: "Freezing compressor + connector at finetune fails gate 0 (documents −3.5 pt mean of 3 seeds, MRQA −2.5, photos ~0). `PISCOConfig.freeze_part` (compressor | connector) added by the freeze campaign for the split test; diff in campaign_freeze/patches/split_freeze.diff."
 
 ## Notes this wake
-- Wake cause: the A2 smoke (189065) ran 10 min on `gpu-be` and was preempted (sacct PREEMPTED 01:51-02:01, scontrol Restarts=1). Benign requeue, known_issues row 1 (widened this wake to cover a smoke restarting from scratch and its start estimate jumping). No action.
-- Verifier fix: "the frozen-vs-reference difference is compressor LoRA + merger + connector MLP only" downgraded to provisional, with the `<MEM>` row caveat (the module check cannot see one row inside the token-adapter group).
-- Slip: an empty `python3 -` (no script, it exited at once) ran on the login node inside a listing command. Hard rule 8 forbids python there; no work was done, not repeated.
+- The 04:00 wake failed in 12 s: the account's 5-hour usage limit (reset 04:30). This wake ran after the reset; the ALERT was deleted (nothing for the owner to do). New known_issues row.
+- A1 s42 checkpoint-100 (03:37) copied to `expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100` (model + compressor + connector + tokenizer files, no optimizer; `cmp` identical), because `save_total_limit: 2` deletes it at step 300 (~08:00) and the preview may wait on `gpu-be` past that. The copy took 65 s on the login node (I/O only).
+- Verifier fixes: (1) the merger is not measured by the module check: the "difference = …" bullet and the module table now say so; (2) the eval-code md5 was re-checked this wake (unchanged).
+- Queue check before any training launch: `gpucap free a100` shows 3 free A100s (homer-006 / 007 / 013), but those nodes have 1-2 free CPUs and `ft_freeze.sh` needs 8 (known_issues row 25); a `gpu` job can still preempt `gpu-be` jobs there. Not used this wake (training cap full).
+- Efficiency lines of the brief: "39% waiting for the owner" — the one question this wake (BLOCKED.md) carries one cheap, reversible recommendation with its GPU-hours (0). "33% jobs queued with none running" — the queued jobs are on `gpu-be` (preemptible) by the law's partition rule for evals; the A2 smoke's partition is the question in BLOCKED.md.
+- Slip: two no-op `python3 -c 1` calls ran on the login node inside listing commands (leftovers, exit at once). Hard rule 8 forbids python there; no work was done. Second wake in a row with such a slip: no python word in any login-node command from now on.
 
 ## Patches this wake
 - None. `pisco/model.py` + `test_freeze.py` from wake 11 are still uncommitted (this loop cannot commit `pisco/`); their diff is `campaign_freeze/patches/split_freeze.diff`, md5 d4412015df7ecd2cfd8408693ec3d5ef.
 
 ## Blockers / needs the owner
-- None blocking. An owner's chat should commit `pisco/model.py` and `test_freeze.py` (the split-freeze setting) — the running A1 job uses them from the working tree.
+- BLOCKED.md (one question, not blocking): may the loop cancel the twice-preempted A2 smoke so A1 seed 43 starts now? Recommendation: yes (0 GPU-h lost, A1 result ~1 day earlier). Without an answer the loop keeps the order and launches A1 seed 43 when A1 seed 42 ends (~10:10).
+- An owner's chat should commit `pisco/model.py` and `test_freeze.py` (the split-freeze setting) — the running A1 job uses them from the working tree.

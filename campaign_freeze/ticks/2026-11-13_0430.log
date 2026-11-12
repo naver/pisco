@@ -1,0 +1,77 @@
+== campaign freeze wake 2026-11-13_0430  reasons=alert,problems-standing  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794511802 live=189094:RUNNING,189065:PENDING,189098:PENDING,189097:PENDING,189096:PENDING,189095:PENDING,189099:PENDING,189067:PENDING running=1 pending=7 problems=1 problems_other=0 new=0 gpuh24=8.0 idle_h=0.0 min_util=76 alert=1 unpushed=56 cron=3 daemon=1 disk_gb=11826 sig=c7282c7b same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session 8c2f2a71-8d9e-4291-a498-80b8d285f5d2  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/8c2f2a71-8d9e-4291-a498-80b8d285f5d2/tool-results/bghgmo7fs.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-13_0430   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+271 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ===== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+102 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 40	 (+129 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+111 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/known_issues.md
+  ↳ 1	# Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+25 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/freeze/ft_compfrozen_s42/ 2>/dev/null; ls expQ/freeze/ 2>/dev/null; date; expmon ledger 12 2>/dev/null | tail -5
+  ↳ total 10 (+29 lines)
+Checkpoint 100 of the compressor-frozen run exists; I'm reading its held-out loss and preparing the pre-authorised 300-question preview.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/freeze/ft_compfrozen_s42/checkpoint-100/ expQ/freeze/ft_compfrozen_s42/checkpoint-100/*/ ; python3 -c 1 2>/dev/null; grep -o '"eval_loss": [0-9.]*' expQ/freeze/ft_compfrozen_s42/checkpoint-…
+  ↳ expQ/freeze/ft_compfrozen_s42/checkpoint-100/: (+37 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n '188594\|188595' EXPERIMENTS.md | head -20; ls expQ/freeze/ft_frozen_s42/ ; ls -la expQ/freeze/ft_frozen_s42_step100 2>/dev/null; find expQ/freeze -maxdepth 2 -name '*step100*'
+  ↳ 736:- 2026-11-11 10:03 [job 188594] intent: arm F s42 PREVIEW (law: one per finetune cell): checkpoint-100 (.23 epoch, 6,400 rows seen) of the frozen finetune 188582, PX=1003520, first 300 documents o (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -iE 'show|info|cmd|runs' | head; expmon runs 2>/dev/null | grep -E '^188594|^188596' 
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"188594"\|"jobid": *"188594"\|188594' .expmon/runs.jsonl | head -2 | cut -c1-1500
+  ↳ {"ts": "2026-11-11 10:03", "jobid": "188594", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ft_frozen_s42/checkpoint-100", "pisco", "300", "eval_data/mm_docqa_1500_1m"], "git": "d1d3c2b+dirty", "
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; grep -nE 'PX|image_max_pixels|limit|LIM' eval_mm_4b.sh | head -20
+  ↳ dfe32aa0  scripts/eval_mm_docqa.py (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"jobid": "189095"' .expmon/runs.jsonl | cut -c1-900; sed -n 40,58p eval_mm_4b.sh
+  ↳ {"ts": "2026-11-13 01:33", "jobid": "189095", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ft_compfrozen_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "7e35b70+dirty", "outdir": (+19 lines)
+Copying the step-100 checkpoint (model files only) to a safe folder, since the trainer deletes it at step 300.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; D=ft_compfrozen_s42_step100/checkpoint-100; S=ft_compfrozen_s42/checkpoint-100; mkdir -p $D/compressor && time (cp -p $S/chat_template.jinja $S/config.json $S/connector.pt $S/decoder_state.…
+  ↳ ( cp -p $S/chat_template.jinja $S/config.json $S/connector.pt     $D/ && cp -)  0.00s user 2.67s system 4% cpu 1:05.50 total (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp freeze --stage preview --parent 189094 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_compfrozen_s42_step100/checkpo…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100 pisco 300 eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp freeze --stage preview --parent 189094 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_compfrozen_s42_step100/checkpoint-100 pi…
+  ↳ Submitted batch job 189434 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 189065,189434,189094 -o '%i %T %r %S %P' 2>&1; scontrol show job 189065 | grep -oE 'Restarts=[0-9]+|SubmitTime=[^ ]+|StartTime=[^ ]+'; gpucap land a100 1 2>&1 | tail -4
+  ↳ JOBID STATE REASON START_TIME PARTITION (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 189094 189096 189097 189098 189099 189065; do grep "\"jobid\": \"$j\"" .expmon/runs.jsonl | python3 -c 1 2>/dev/null; grep "\"jobid\": \"$j\"" .expmon/runs.jsonl | grep -oE '"jobid": "[0-9]+"|…
+  ↳ "jobid": "189094" "argv": ["compfrozen", "42"] "slurm": {"partition": "gpu", "constraint": "gpu_a100", "time": "12:21:00"} "parent": "184777" "stage": "ft"  (+9 lines)
+→ Bash: sinfo -p gpu -N -o '%n %C %G %t' 2>&1 | grep -i a100 | head -20; squeue -u hdejean -p gpu -o '%i %j %b %T' 2>&1
+  ↳ homer-006 27/1/0/28 gpu:A100-SXM4-80GB:8(S:0-1) mix (+14 lines)
+Checking whether an A100 node has both a free GPU and 8 free CPUs before starting the second seed of the compressor-frozen run.
+→ Bash: gpucap free a100 2>&1 | head -15
+  ↳ NODE        TYPE                    FREE PARTITIONS                 CUDA (+4 lines)
+Recording the step-100 health check and the preview launch in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 189094 --step 0.228 eval_loss=0.459 2>&1 | tail -2; expmon note -j 189094 "health at .228 epoch (6,400 rows, step 100 of 437): eval_loss .459 (64 held-out rows) vs reference 184778 .513 an…
+  ↳ probe recorded: 189094 @0.228 (eval_loss=0.459)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"jobid": "189064"' .expmon/runs.jsonl | grep -oE '"slurm": \{[^}]*\}'; grep -n '189065' EXPERIMENTS.md | grep -i intent | cut -c1-400
+  ↳ "slurm": {"partition": "gpu", "time": "0:45:00"} (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 189094 400 2>&1 | grep -oE "[0-9]+/437 \[[^]]*\]" | tail -1
+  ↳ 149/437 [2:59:35<5:35:26, 69.89s/it]
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Updating the known-issues table, clearing the resolved alert, and writing the ledger decision.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat >> known_issues.md <<'EOF' ⏎ | ALERT `LLM wake … failed FAST (rc=1 in 12s) — usage-limit: 5-hour limit · resets HH:MM`, tick sensor `cause=usage-limit` | the account's 5-hour quota …
+  ↳ | `gpucap land a100 1` says "yes — N free node(s)" but the finetune pends `Resou (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "decision: freeze wake 14 (2026-11-13 04:30, after the 04:00 wake failed on the 5-hour usage limit). A1 s42 (189094) healthy at .228 epoch: held-out loss .459 vs reference .513 / F .455 at …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c gap "runs.jsonl stores argv + slurm flags but not the env vars a launcher reads (PX, CML, TOPK for eval_mm_4b.sh), so repeating a cell's exact command means reading ledger prose; sugges…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; echo 'wake-when job:189434 job:189094 job:189067 max 6h' > NEXT; cat NEXT
+  ↳ wake-when job:189434 job:189094 job:189067 max 6h
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:189434 job:189094 job:189067 max 6h", "summary": "Freeze wake 14 (04:30, after the 04:00 wake hit the 5-hour usage limit). The compressor-frozen split arm (A1) seed 42 is healthy at .34 epoch (9,536 o…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.0513 turns=32 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:189434 job:189094 job:189067 max 6h", "summary": "Freeze wake 14 (04:30, after the 04:00 wake hit the 5-hour usage limit). The compressor-frozen split arm (A1) seed 42 is healthy at .34 epoch (9,536 of 28,032 rows). Its held-out loss at step 100 is .459, against .513 for the reference run and .455 for the fully frozen arm at the same step. It should end around 10:10. Launched the pre-authorised 300-question documents preview (job 189434) on a byte-identical copy of checkpoint-100. The copy was needed because the trainer deletes that checkpoint at step 300. The connector-frozen smoke test (A2) was preempted twice on gpu-be and holds the second training slot, so A1 seed 43 cannot start. BLOCKED.md asks the owner whether the loop may cancel that smoke test so seed 43 starts now: 0 GPU-hours lost, A1 result about a day earlier. Recommendation: yes. Eval-code hashes are unchanged from gate 0. The resolved usage-limit ALERT was deleted and a known_issues row added. Slip: two no-op `python3 -c 1` calls ran on the login node; this is noted in STATE.md.", "launched": ["189434"], "blocked": "BLOCKED.md (not stopping the plan): may the loop cancel the twice-preempted A2 smoke test (189065, plus its check 189067) so that A1 seed 43 starts now on gpu? Recommended: yes, 0 GPU-hours lost. Without an answer, A1 seed 43 launches when A1 seed 42 ends (~10:10).", "gripes": ["gap: runs.jsonl does not record the launcher env vars (PX, CML, TOPK), so repeati
+== final:
+{"next":"wake-when","wake_when":"job:189434 job:189094 job:189067 max 6h","summary":"Freeze wake 14 (04:30, after the 04:00 wake hit the 5-hour usage limit). The compressor-frozen split arm (A1) seed 42 is healthy at .34 epoch (9,536 of 28,032 rows). Its held-out loss at step 100 is .459, against .513 for the reference run and .455 for the fully frozen arm at the same step. It should end around 10:10. Launched the pre-authorised 300-question documents preview (job 189434) on a byte-identical copy of checkpoint-100. The copy was needed because the trainer deletes that checkpoint at step 300. The connector-frozen smoke test (A2) was preempted twice on gpu-be and holds the second training slot, so A1 seed 43 cannot start. BLOCKED.md asks the owner whether the loop may cancel that smoke test so seed 43 starts now: 0 GPU-hours lost, A1 result about a day earlier. Recommendation: yes. Eval-code hashes are unchanged from gate 0. The resolved usage-limit ALERT was deleted and a known_issues row added. Slip: two no-op `python3 -c 1` calls ran on the login node; this is noted in STATE.md.","launched":["189434"],"blocked":"BLOCKED.md (not stopping the plan): may the loop cancel the twice-preempted A2 smoke test (189065, plus its check 189067) so that A1 seed 43 starts now on gpu? Recommended: yes, 0 GPU-hours lost. Without an answer, A1 seed 43 launches when A1 seed 42 ends (~10:10).","gripes":["gap: runs.jsonl does not record the launcher env vars (PX, CML, TOPK), so repeating a cell's exact command needs ledger prose","defect: expmon display --exp freeze reports 0 table rows from 0 runs while the grid has ~55 judged cells"]}
+== rc=0 secs=447
+== verify: 17/24
