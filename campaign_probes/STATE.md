@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-12 23:30-23:45 KST (woken by the owner's answer: cell cap raised 60 → 65, option A; four cells
-queued, the fifth kept as the one health relaunch)
+last wake: 2026-11-13 00:00-00:15 KST (woken by a watchdog ALERT; both lines false alarms, ALERT deleted, nothing
+launched; the four cells of the raised cap still wait in the queue)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -81,7 +81,8 @@ queued, the fifth kept as the one health relaunch)
   vs raw +.210 / 753 ≈ .028 (about 2×, jobs 188590 / 188441); seed 43 .049 / 107.5 ≈ .046 vs .207 / 753 ≈ .027
   (about 1.7×, jobs 188591 / 188460).
 
-**Open, and running** (4 campaign cells queued at 2026-11-12 23:40, all PENDING for Priority on gpu-be)
+**Open, and running** (4 campaign cells submitted 2026-11-12 23:33, all PENDING for Priority on gpu-be; SLURM start
+estimate at 00:05 on 11-13: 11-15 00:46 / 03:56 / 05:30 / 06:15, it was 11-13 07:45-17:30 at submission)
 - arm E, keep a quarter of the slots at seed 43 (job 189056) — decides whether "three quarters of the slots go
   unused per question" holds at both seeds.
 - arm E, keep an eighth of the slots at seed 42 (job 189057) — finds where slot dropping starts to cost.
@@ -89,28 +90,23 @@ queued, the fifth kept as the one health relaunch)
 - arm F, TextVQA questions answered from OCR text instead of pixels, seed 42 (job 189059) — reported only.
 
 ## What happened this wake
-- Owner answer (file dated 2026-11-12 23:14, question f81678): option A, cell cap 60 → 65. Executed: the new cap
-  and the five cells it buys are written in CAMPAIGN.md "Budget and caps" (citing the answer); the arm rows A, E and F
-  name the queued jobs. The answer file is deleted; BLOCKED.md is deleted (its only question is answered).
-- Launched 4 cells (cells 61-64 of 65), each `expmon launch --force --exp probes` (the `--force` is known issue row 29:
-  the closed-arm guard matches every factorless cell to 188444; each cell dir was new and empty), dry-run first,
-  `-p gpu-be --exclude=homer-[005-009]`, on a new symlinked model dir. The 65th cell is NOT launched: it is the one
-  health relaunch, kept for whichever of the four fails its health check.
-- Placement: `gpu-be` (default) — 3 usable free A100s (homer-012 ×2, homer-016), so gpu-be is not jammed; the owner's
-  `gpu` partition already holds 6 of its 8 GPUs for the sibling `longchunk` campaign (188466 ×4, 188468, 188469).
-- Eval code unchanged since the cells it is compared with: md5 `eval_mm_4b.sh` 50abc167, `scripts/eval_mm_docqa.py`
-  dfe32aa0, `scripts/judge_mm_docqa.py` 02bc8748. The file's last edit (2026-11-11 06:45) touched only the arm G
-  dense branch (ledger 06:47), so the keep-slots, expand and text paths are those of 188538 / 188439 / 188539.
-- `pisco_text` on `probes_textvqa_ocr` is a new mode/path pair: read `main()` → `gen_pisco(text_only=True)`, which
-  drops the images and compresses `docs` (OCR tokens; an empty OCR becomes " "). The flag reaches the branch.
-- HARNESS BUG: the wake hook errored ("the guard failed on this call (error): refused to be safe") on every
-  `expmon note -j <id> …` call (3 tries); `expmon launch`, `ledger`, `gripe` passed. Gripe filed; known_issues row
-  added. The four launch intents are therefore recorded in "Owned jobs" below, not in the ledger.
-- ✗ lines in the brief: none for this campaign (the 4 others belong to sibling campaigns).
-- Verifier (VERIFY.md of the 11-12 09:30 state): 8 lines provisional, 0 unsupported; all were already marked
-  provisional. Fixed this wake: the arm G per-token ratio now quotes seed 43 too (about 1.7×, not 2×).
+- ALERT 2026-11-12 23:58, two lines, both false alarms; ALERT deleted:
+  - "no campaign job ran for 38.7 h — a gate failing CLOSED?": the campaign was idle because the cell cap was used up
+    until the owner raised it (answer 2026-11-12 23:14); the four cells it bought were submitted 23:33 and pend for
+    Priority. Not a closed gate. Gripe filed (the watchdog should count a PENDING campaign job as not idle).
+  - "crontab has no 'campaign tick' line": `expmon campaign` says `armed: yes (tick every 30m)` and the tick sensor
+    reads `cron=3` (known_issues row 33). The wake hook refused my own crontab read (hard rule 3) — expected, noted
+    here, nothing else needed.
+- Queue: the four cells' `eval/` dirs do not exist yet (nothing ran, nothing to rescue). SLURM's start estimate slid
+  from 11-13 morning to 11-15 00:46-06:15. The law's partition widening (`gpu,gpu-be`, at most 2 cells) is allowed only
+  after 6 h PENDING, i.e. from 05:33 on 11-13. The two sibling control finetunes on `gpu` (188469, 188468) end about
+  04:00 and 05:10-06:20, which frees owner `gpu` slots at about the same time.
+- `expmon note -j <id>` works again (known_issues row 35 rewritten): the four launch intents of 23:33 are now in the
+  ledger (cells 61-64).
+- ✗ lines in the brief: none for this campaign. Verifier: 17 supported, 8 provisional, 0 unsupported; all 8 were
+  already marked provisional.
 
-## Owned jobs (jobid | cell | arm | state at 23:40 | intent — the ledger note the guard refused)
+## Owned jobs (jobid | cell | arm | state at 11-13 00:05 | intent — also in the ledger since 11-13 00:05)
 | job | cell dir (`expQ/probes/…`) → model | arm | state | intent |
 |---|---|---|---|---|
 | 189056 | `e_keep025_attng_s43` → 184780 | E | PENDING | cell 61. `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q, judge chained. Baseline plain 184784 .615 (homer-016, el9_8). Gate (written 2026-11-11 before the s42 cell): within .02 of plain at both seeds → three quarters of the slots unused per question; a loss ≥ .05 → the free share lies between 1/2 and 3/4. `--time 4:54:00` = slowest docs cell (184781, 98 min) × 3 |
@@ -135,15 +131,17 @@ queued, the fifth kept as the one health relaunch)
 ## Health and budget
 - cells: 64 of 65 used (61-64 = 189056-189059); the 65th is the ONE health relaunch (a cell failing `unparseable: 0`,
   its row count, or its slot ratio). A preemption requeue is free. Nothing else may launch without the owner.
-- GPU-hours of 40: tick sensor 0.0 GPU-h in the last 24 h at 2026-11-12 23:30; the four cells add about 3-4 GPU-h.
+- GPU-hours of 40: tick sensor 0.0 GPU-h in the last 24 h at 2026-11-13 00:00; the four cells add about 3-4 GPU-h.
 - gpu-be preempts often (8+ campaign attempts on 2026-11-11; 3 sibling previews on 2026-11-12 22:11-22:31). At each
   wake compare each cell's `eval/` file mtime with `sacct -j <id> -D -o NodeList,End` (known issue row 28).
 - Pairing nodes: every image cell needs its node from the attempt that wrote its file (same node rule).
 
 ## Next wake
-- NEXT = `wake-when job:189056,189057 job:189058,189059 max 18h`: wakes when both arm E cells have left the queue
-  (SLURM estimate at 23:40: starts 07:45 / 08:15 on 11-13) or both others (estimates 12:30 / 17:30), whichever
-  pair is first; a failure or a preemption-✗ wakes earlier. Decide the ended pair, then wait on the rest.
+- NEXT = `wake-when job:189056,189057 job:189058,189059 max 6h`: wakes when either pair of cells has left the queue,
+  or at about 06:05 on 11-13 at the latest (6.5 h PENDING). If they still pend then: widen at most 2 cells (the two
+  arm E cells first: they decide an adopted claim) with `scontrol update JobId=… Partition=gpu,gpu-be`, only if the
+  owner's `gpu` share then has room for 2 (sibling jobs counted, never more than 2 campaign cells on `gpu`); if the
+  hook refuses `scontrol`, note it here and keep waiting. Then `wake-when` the same jobs, max 18 h.
 - For each finished cell: `unparseable: 0`, row count (1,500; 500 for 189059), node of the attempt that wrote the file,
   `scripts/paired_judge.py` against its baseline (CI, McNemar), slot ratio from `mems_used`; then `expmon verdict`,
   `expmon probe <id> judge=…`, one ledger note per decided arm (try `expmon note` once; if the guard still errors,
@@ -152,7 +150,8 @@ queued, the fifth kept as the one health relaunch)
   `waiting-owner` is wrong (no question) → write a close-out proposal for the owner or `done`.
 
 ## Blockers / needs the owner
-- none. (Harness bug for the expmon owner, not for this campaign's plan: the wake hook crashes on `expmon note`; gripe filed.)
+- none. (Two expmon defects griped, neither blocks the plan: the watchdog calls a queued campaign idle, and the hook
+  crashed on `expmon note -j` at 11-12 23:30, fine again at 11-13 00:00.)
 
 ## Proposals for the sibling `longchunk` campaign (training is not this campaign's job)
 - Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question) rather than
