@@ -124,7 +124,9 @@ cells only after A1's full cells are submitted (CAMP_MAX_TRAIN = 2, never the la
 ## Budget and caps
 - GPU-days for the whole campaign: **8** (gate 0: 2 finetunes ≤ 28 GPU-h + smoke 1 + evals 8 cells ≈ 8 + reference
   re-runs ≤ 8; a third-seed pair ≈ 30; two follow-up arms × 2 seeds ≈ 70; slack). Over it: BLOCKED.md.
-- at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
+- at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf).
+  "In flight" = submitted and not yet ended, PENDING included; a 20-step smoke counts as a training (clarified wake 12,
+  2026-11-13).
 - every finetune is 1 GPU on `gpu`; the owner's cap is 8 GPUs on `gpu`, shared with the sibling campaign `longchunk`
   (4 GPUs for its stage 1, 1 per stage 2 / finetune): run `gpucap land a100 1` before each training launch and never
   take the last free slot of the cap. Evals and CPU checks go to `gpu-be` (preemptible).

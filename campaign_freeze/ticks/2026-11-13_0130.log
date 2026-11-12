@@ -1,0 +1,97 @@
+== campaign freeze wake 2026-11-13_0130  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794501002 live=189065:PENDING,189067:PENDING running=0 pending=2 problems=0 problems_other=0 new=0 gpuh24=9.8 idle_h=0.3 min_util=- alert=0 unpushed=51 cron=3 daemon=1 disk_gb=11937 sig=fe945a03 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189066_max_12h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: job:189066 (ended)   (NEXT was: wake-when job:189066 max 12h)
+== session 77e24f04-502b-48a8-85ed-86b97cdf21fe  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/77e24f04-502b-48a8-85ed-86b97cdf21fe/tool-results/brpb2f13d.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-13_0130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+257 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat STATE.md; echo ----; cat known_issues.md; ls -la
+  ↳ # CAMPAIGN freeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+221 lines)
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+137 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 189064,189066,189065,189067 -o JobID,JobName%22,State,ExitCode,Elapsed,NodeList,Start,End -X; expmon ledger 12 | tail -12
+  ↳ JobID                       JobName      State ExitCode    Elapsed        NodeList               Start                 End  (+17 lines)
+→ Bash: sacct -j 189064 -o JobID,Partition,AllocTRES%60,MaxRSS,TRESUsageInMax%80 ; expmon logs 189066 80
+  ↳ JobID         Partition                                                    AllocTRES     MaxRSS                                                                   TRESUsageInMax  (+14 lines)
+The compressor-frozen smoke finished cleanly; its module check passes. Now checking the smoke's log lines, losses and config diff against the gate.
+→ Bash: ls expQ/freeze/ ; L=$(ls -t expQ/freeze/*189064* logs/*189064* 2>/dev/null | head -3); echo "$L"; expmon runs 2>/dev/null | grep 189064
+  ↳ check_module_move.sh (+16 lines)
+→ Bash: expmon logs 189064 400 > /tmp/a1smoke.log 2>&1; wc -l /tmp/a1smoke.log; head -3 /tmp/a1smoke.log; grep -nE "freeze_part|froze|trainable parameters|'loss'|eval_loss|train_runtime|Error|Traceback" /tmp/a1smoke.log | head -40
+  ↳ 401 /tmp/a1smoke.log (+37 lines)
+→ Bash: F=ft_freeze_189064.out; wc -l $F; grep -nE "freeze_part|freeze_compressor|froze|[Tt]rainable param" $F | head; grep -nE "^Traceback|Error" $F | head -5; ls expQ/freeze/ft_compfrozen_s42_smoke expQ/freeze/ft_compfrozen_s42_smoke/model 2>/dev…
+  ↳ 4441 ft_freeze_189064.out (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze && diff ft_frozen_s42_smoke/training_config.yaml ft_compfrozen_s42_smoke/training_config.yaml; echo "rc=$?"; grep -nE "decoder_state|token_adapter" ../../ft_freeze_189064.out | head -3
+  ↳ 38c38 (+7 lines)
+A1 (compressor frozen) feasibility smoke passes every rule. Reading the recipe and campaign caps before launching the full A1 runs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -vE "^\s*#|^\s*$" campaign_freeze/campaign.conf; echo ----; cat expQ/freeze/ft_freeze.sh
+  ↳ CAMP_LABEL='freeze'            # the expmon --exp label every campaign run carries (grid/sweep/verdict key) (+94 lines)
+→ Bash: expmon ledger 400 | grep -E "\[job (188582|188596|188601|188605|188614|188584|188651|188653|188672|188674|188676|188699)\] (intent|launch)" | cut -c1-600
+  ↳ - 2026-11-11 07:36 [job 188582] intent: arm F frozen seed 42 full run (28k rows = 1 epoch, 438 steps x 64 rows), module-move check 188584 afterok. Health: eval_loss every 100 steps vs 184778 (.513/.45 (+10 lines)
+→ Bash: expmon help 2>&1 | grep -iE "runs|show|cmd|launch" | head -15; ls .expmon/ | head -30
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+37 lines)
+→ Bash: grep -E '"(188651|188653|188672|188674|188676|188699|189064|189066|189065)"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print(d.get('jobid'), d.get('stage'), d.get('parent'), '|', d.get(…
+  ↳ 188651 ft 184777 | expQ/freeze/ft_freeze.sh ['frozen', '44'] | {'slurm': {'partition': 'gpu', 'constraint': 'gpu_a100', 'time': '11:40:00'}} (+9 lines)
+→ Bash: grep -E '"jobid": ?"188676"' .expmon/runs.jsonl | head -1 | python3 -m json.tool | cut -c1-300 | head -40
+  ↳ { (+39 lines)
+→ Bash: md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; git log -1 --format='%h %ci' -- scripts/eval_mm_docqa.py eval_mm_4b.sh; git diff --stat scripts/eval_mm_docqa.py eval_mm_4b.sh pisco/mod…
+  ↳ dfe32aa0  scripts/eval_mm_docqa.py (+8 lines)
+Eval code is unchanged (same md5 as the reference evals), so the reference scores still pair. Checking GPU cap room before launching the two full compressor-frozen finetunes.
+→ Bash: squeue -u hdejean -p gpu -h -o "%i %j %T %b %D" ; echo ---; gpucap land a100 1 2>&1 | tail -8
+  ↳ 188466 pt_text_4b_long.sh RUNNING gres/gpu:4 1 (+9 lines)
+→ Bash: expmon help 2>&1 | grep -n -iE -A3 "wake-when" | head -30; grep -nE "resume_from_checkpoint|get_last_checkpoint" /beegfs/scratch/user/hdejean/pisco/pisco/train.py | head
+  ↳ 23:from transformers.trainer_utils import get_last_checkpoint (+6 lines)
+→ Bash: grep -rn -iE "wake-when" /beegfs/scratch/user/hdejean/pisco/campaign_freeze/prompt.md | head -5; ls /beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks | tail -3; grep -h "NEXT" /beegfs/scratch/user/hdejean/pisco/campaign_*/NEXT 2>/dev…
+  ↳ /beegfs/scratch/user/hdejean/pisco/campaign_freeze/prompt.md:66:   `wake-when <conditions> [max <N>m|h]` when you wait for something specific — `job:<id>[,<id>]` (all of them (+5 lines)
+→ Bash: sacct -j 188653,188672,188674,188676,188654,188673,188675,188677,188596,188601,188605,188614 -X -o JobID,Elapsed,Timelimit,State,NodeList -n
+  ↳ 188596         00:30:02   00:40:00  COMPLETED       homer-010  (+11 lines)
+→ Bash: expmon help 2>&1 | sed -n '/^  launch /,/^  smoke /p' | head -40
+  ↳ launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid>] [--stage <label>] [--force] (+18 lines)
+→ Bash: expmon launch --dry-run --exp freeze --stage ft --parent 184777 --partition gpu --constraint gpu_a100 --time 12:21:00 expQ/freeze/ft_freeze.sh compfrozen 42 2>&1 | tail -15
+  ↳ would submit: sbatch --partition gpu --constraint gpu_a100 --time 12:21:00 expQ/freeze/ft_freeze.sh compfrozen 42 (+3 lines)
+Launching the compressor-frozen finetune (seed 42) on the `gpu` partition, which leaves one slot of the owner's 8-GPU cap free.
+→ Bash: expmon launch --exp freeze --stage ft --parent 184777 --partition gpu --constraint gpu_a100 --time 12:21:00 expQ/freeze/ft_freeze.sh compfrozen 42 2>&1 | tail -8
+  ↳ Submitted batch job 189094 (+6 lines)
+→ Bash: M=expQ/freeze/ft_compfrozen_s42/model; PX=1003520 expmon launch --dry-run --exp freeze --stage eval --parent 189094 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 --dependency afterok:189094 eval_mm_4b.sh $M pisco "" eval_dat…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 --dependency afterok:189094 eval_mm_4b.sh expQ/freeze/ft_compfrozen_s42/model pisco  eval_data/mm_docqa_1500_1m (+10 lines)
+Dry-run is clean. Submitting the four judged evals (documents, photos, MRQA text, HotpotQA) and the module-movement check, all chained to run after the seed-42 finetune succeeds.
+→ Bash: M=expQ/freeze/ft_compfrozen_s42/model; D="--exp freeze --stage eval --parent 189094 --partition gpu-be --exclude homer-[005-009] --dependency afterok:189094" ⏎ PX=1003520 expmon launch $=D --time 0:40:00 eval_mm_4b.sh $M pisco "" eval_data/…
+  ↳ Submitted batch job 189095 (+4 lines)
+→ Bash: squeue -j 189094,189095,189096,189097,189098,189099 -o "%i %j %P %l %T %r %E" ; sacct -j 189098 --env-vars 2>/dev/null | grep -E "^(PX|CML|TOPK)=" | head
+  ↳ JOBID NAME PARTITION TIME_LIMIT STATE REASON DEPENDENCY (+6 lines)
+→ Bash: squeue --start -j 189094,189065 -h -o "%i %S %r";  ⏎ expmon probe 189064 --step 0.046 loss=0.5952 eval_loss=0.5273 s_per_step=81.2 2>&1 | tail -1 ⏎ expmon verdict 189064 closed "A1 feasibility PASS: log 'freeze_part=compressor: froze 501 co…
+  ↳ 189094 2026-11-13T01:33:43 Resources (+4 lines)
+→ Bash: expmon verdicts 2>/dev/null | grep -E "18906[46]" | tail -2;  ⏎ expmon note -j 189094 "intent: split test A1 (compressor frozen; connector + decoder LoRA train) seed 42 full run, ft_freeze.sh compfrozen 42, 28,032 rows = 1 epoch (438 steps …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: tail -c 3000 .expmon/verdicts.jsonl | grep -E "18906[46]" | cut -c1-200; squeue -j 189094 -h -o "%T %R %N"
+  ↳ {"ts": "2026-11-13 01:33", "jobid": "189064", "verdict": "closed", "note": "A1 feasibility PASS: log 'freeze_part=compressor: froze 501 compressor tensors', Compressor trainable parameters 0 (total 17 (+2 lines)
+Seed-42 chain is queued. Now recording the result, refreshing the campaign page and rewriting STATE.md.
+→ Bash: timeout 120 expmon display --exp freeze 2>&1 | tail -3; timeout 60 expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_freeze.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+→ Bash: squeue -j 189094 -h -o "%T %M %N"; head -4 ft_freeze_189094.out 2>/dev/null; ls -la display_freeze.html; grep -c "<tr" display_freeze.html
+  ↳ RUNNING 0:41 homer-013 (+6 lines)
+A1 seed-42 finetune is running on homer-013. Writing STATE.md now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && python3 - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ i=s.index('## Deliverable'); j=s.index('## Proposed text') ⏎ open('/tmp/freeze_tables.md','w').write(s[i:j]) ⏎ print(len(s[i:j])) ⏎ EOF
+  ↳ 3200
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe -c gap "runs.jsonl does not record the env vars a launch passes (PX/CML/TOPK for eval_mm_4b.sh), and --dry-run prints empty factors for launchers that echo FACTORS at runtime, so a queue…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && grep -n "at most CAMP_MAX_TRAIN trainings in flight" CAMPAIGN.md
+  ↳ 127:- at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 126	  re-runs ≤ 8; a third-seed pair ≈ 30; two follow-up arms × 2 seeds ≈ 70; slack). Over it: BLOCKED.md. (+1 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+Law clarified; writing the wake condition and finishing.
+→ Bash: echo "wake-when job:189067 job:189094 max 6h" > NEXT && cat NEXT && squeue -j 189094,189065 -h -o "%i %T %M %R"
+  ↳ wake-when job:189067 job:189094 max 6h (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:189067 job:189094 max 6h", "summary": "The compressor-frozen split arm (A1: compressor frozen, connector and decoder LoRA train) passed every feasibility rule. Evidence from its 20-step smoke (189064)…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.2793 turns=40 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:189067 job:189094 max 6h", "summary": "The compressor-frozen split arm (A1: compressor frozen, connector and decoder LoRA train) passed every feasibility rule. Evidence from its 20-step smoke (189064) and its module check (189066):\n- The log shows 501 compressor tensors frozen and 0 trainable compressor parameters.\n- Compressor rows changed 0.0%, the connector MLP changed 28.7% and decoder lora_B changed 76.2%.\n- Train loss was .603 at step 10 and .595 at step 20, against .639 / .580 for the unfrozen smoke. Both gaps are within the .05 allowed.\n- The only config difference is freeze_part.\n\nI launched the seed-42 full run (189094, on the gpu partition, time limit 12:21, now RUNNING on homer-013). Chained after it, run only if it succeeds:\n- four judged evals: documents, photos, MRQA text and HotpotQA (189095-189098, on gpu-be, excluding homer-005..009);\n- a module check (189099).\n\nThe eval-code md5s match gate 0, so the reference judged files pair as they are.\n\nSeed 43 of A1 waits, for two reasons:\n- The training cap of 2 is full: the A1 seed-42 run plus the A2 smoke 189065, which is still pending (Priority, estimated start 13:45).\n- On gpu, 7 of the owner's 8 slots are in use, and the law says never take the last one.\n\nOther changes:\n- STATE.md rewritten, including the verifier's fix: the A2 smoke pends for Priority, not for Resources.\n- CAMPAIGN.md now says that a pending smoke counts toward the training cap (a tighte
+== final:
+{"next":"wake-when","wake_when":"job:189067 job:189094 max 6h","summary":"The compressor-frozen split arm (A1: compressor frozen, connector and decoder LoRA train) passed every feasibility rule. Evidence from its 20-step smoke (189064) and its module check (189066):\n- The log shows 501 compressor tensors frozen and 0 trainable compressor parameters.\n- Compressor rows changed 0.0%, the connector MLP changed 28.7% and decoder lora_B changed 76.2%.\n- Train loss was .603 at step 10 and .595 at step 20, against .639 / .580 for the unfrozen smoke. Both gaps are within the .05 allowed.\n- The only config difference is freeze_part.\n\nI launched the seed-42 full run (189094, on the gpu partition, time limit 12:21, now RUNNING on homer-013). Chained after it, run only if it succeeds:\n- four judged evals: documents, photos, MRQA text and HotpotQA (189095-189098, on gpu-be, excluding homer-005..009);\n- a module check (189099).\n\nThe eval-code md5s match gate 0, so the reference judged files pair as they are.\n\nSeed 43 of A1 waits, for two reasons:\n- The training cap of 2 is full: the A1 seed-42 run plus the A2 smoke 189065, which is still pending (Priority, estimated start 13:45).\n- On gpu, 7 of the owner's 8 slots are in use, and the law says never take the last one.\n\nOther changes:\n- STATE.md rewritten, including the verifier's fix: the A2 smoke pends for Priority, not for Resources.\n- CAMPAIGN.md now says that a pending smoke counts toward the training cap (a tightening).\n- Display page refreshed.\n- Slip: one short python3 string operation ran on the login node; it is noted in STATE.md.","launched":["189094","189095","189096","189097","189098","189099"],"verdicts":[{"jobid":"189064","verdict":"closed","note":"A1 feasibility PASS: 501 compressor tensors frozen, compressor trainable 0, loss .603/.595 vs .639/.580, config diff freeze_part only, 81.2 s/step, 49.8 GB"},{"jobid":"189066","verdict":"closed","note":"A1 smoke module check PASS: compressor rows 0.0%, connector MLP 28.7%, decoder lora_B 76.2%"}],"gripes":["gap: runs.jsonl does not store the env vars passed at launch (PX/CML/TOPK), and --dry-run shows empty factors, so a queued chained eval cannot be checked before it starts","defect: expmon display prints '0 table rows ... from 0 runs' while the HTML it wrote has 59 table rows","wish: CAMP_MAX_TRAIN counts a pending 20-step smoke the same as a full run; add a separate smoke cap or a pre-authorised swap"]}
+== rc=0 secs=365
+== verify: 10/14
