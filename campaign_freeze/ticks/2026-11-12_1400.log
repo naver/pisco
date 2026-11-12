@@ -1,0 +1,67 @@
+== campaign freeze wake 2026-11-12_1400  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794459601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=34.2 idle_h=0.4 min_util=- alert=0 unpushed=41 cron=3 daemon=1 disk_gb=12149 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188701_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: job:188701 (ended)   (NEXT was: wake-when job:188701 max 8h)
+== session e498d674-eb7d-422e-bc8c-2a44b899ebf7  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/e498d674-eb7d-422e-bc8c-2a44b899ebf7/tool-results/b5bxsv0uf.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-12_1400   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+224 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Decision gates/,/## Patchable/p' CAMPAIGN.md
+  ↳ ## Decision gates (+72 lines)
+→ Bash: cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+78 lines)
+The seed-44 paired test finished. I'm reading its result to make the three-seed decision.
+→ Bash: cat known_issues.md; echo '----'; ls -la; echo '----'; expmon logs 188701 120 2>&1 | tail -150
+  ↳ # Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+74 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && stat -c '%y %n' scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py; git diff --stat scripts/eval_mm_docqa.py eval_mm_4b.sh; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_m…
+  ↳ 2026-11-11 06:45:22.000000000 +0900 scripts/eval_mm_docqa.py (+17 lines)
+→ Bash: cat campaign_freeze/VERIFY.md | head -60; expmon help 2>&1 | grep -iE 'verdict|probe|display|note' | head
+  ↳ # VERIFY — campaign freeze — 2026-11-12_1300   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+28 lines)
+→ Bash: sacct -j 188651,188652 -o JobID%14,NodeList,TRESUsageInMax%120 -p 2>&1 | grep -E 'gpumem|JobID' | sed 's/cpu=[^,]*,//' | cut -c1-260
+  ↳ JobID|NodeList|TRESUsageInMax| (+38 lines)
+Memory figure confirmed from the job accounting records: 50,020 MB for the frozen run vs 34,044 MB for the reference. Now I'm recording the probes and verdicts.
+→ Bash:  ⏎ expmon probe 188653 --step 1.0 judge=0.579 n=1500 && expmon probe 188672 --step 1.0 judge=0.675 n=1500 && expmon probe 188674 --step 1.0 judge=0.697 n=1500 && expmon probe 188676 --step 1.0 judge=0.577 n=1500 && ⏎ expmon probe 188654 --s…
+→ Bash:  ⏎ expmon verdict 188701 closed "seed-44 paired test (frozen 188651 vs reference 188652, same eval code md5 dfe32aa0/50abc167/02bc8748, all 8 evals on homer-016, n=1500 each): documents -.041 [-.062,-.021] McNemar 103/164 p<.001; photos +.0…
+  ↳ probe recorded: 188653 @1.0 (judge=0.579 n=1500)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+7 lines)
+  ↳ verdict recorded: 188701 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+14 lines)
+Two verdict notes were missing their sample size. I'm re-recording them with n.
+→ Bash:  ⏎ expmon verdict 188651 closed "arm F seed 44 (R3): documents -.041 [-.062,-.021] n=1500 paired vs its reference 188652, McNemar 103/164 p<.001 -> second failing seed; gate 0 FAILED (188701)" && ⏎ expmon verdict 188652 closed "arm R3 refer…
+  ↳ verdict recorded: 188651 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+All verdicts are recorded. Now I'm refreshing the live results page and pulling the summary block for the state file.
+→ Bash: expmon display --exp freeze 2>&1 | tail -5; echo '-----'; expmon campaign report --section leaves 2>&1 | head -60
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_freeze.html   (0 table rows, 0 media files from 0 runs) (+12 lines)
+The results page came out with 0 table rows, even though the campaign table has more than 40 cells. I'm checking whether this is a display bug.
+→ Bash: ls -la display_freeze.html; grep -c '<tr' display_freeze.html; grep -oE 'Settled|Open|no runs[^<]*' display_freeze.html | sort | uniq -c; expmon help 2>&1 | grep -A4 -E '^\s+display'
+  ↳ -rw-r--r-- 1 hdejean hdejean 21188 Nov 12 14:02 display_freeze.html (+8 lines)
+→ Bash: grep -c '188701' display_freeze.html; grep -o 'judge=0\.[0-9]*' display_freeze.html | head -3; expmon gripe --help 2>&1 | head -5
+  ↳ 13 (+2 lines)
+→ Bash: expmon gripe --list 40 --search display 2>&1 | tail -8; echo '-----'; expmon gripe --list 40 --search paired 2>&1 | tail -6
+  ↳ == 3 of 3 entries in project 'pisco', matching 'display' == (+8 lines)
+The display bug is already filed twice, so I won't file it again. Before rewriting the state file, I'm reading the middle part that was cut off earlier (the jobs table and the loss-curve table).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -n '/## Owned jobs/,/## Deliverable/p' STATE.md
+  ↳ ## Owned jobs (jobid | arm | state | rows seen | eta | note) (+38 lines)
+Now I'm updating the files. First, in the campaign law I'm marking the "why it may tie" prediction as refuted, keeping the original wording.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+Now the full rewrite of the state file.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Now the question for the owner, as the law requires after a failed gate.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "freeze wake 10 (2026-11-12 14:00): gate 0 FAILED on 3 seeds (paired judge n=1500 per set, jobs 188650/188701). documents -.028/-.035/-.041 (CI below 0 at all 3, <= -3 pt at s43/s44 -> 2 …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+Last step: the wait-state file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && echo 'waiting-owner' > NEXT && cat NEXT && ls
+  ↳ waiting-owner (+9 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Gate 0 FAILED on three seeds: the question-answering finetune needs its compressor side to train. With the compressor and connector frozen (only the decoder LoRA trains), the judge-accuracy change vs th…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5731 turns=24 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Gate 0 FAILED on three seeds: the question-answering finetune needs its compressor side to train. With the compressor and connector frozen (only the decoder LoRA trains), the judge-accuracy change vs the reference of the same seed (paired per question, n=1,500 per set) was: documents −.028 / −.035 / −.041, CI below 0 at all three seeds and ≤ −3 pt at seeds 43 and 44 (the law's 2-of-3 Failed rule); MRQA text −.023 / −.027 / −.025, CI below 0; photos −.009 / −.013 / +.005 (a tie); HotpotQA −.028 / −.023 / −.026 (jobs 188650 and 188701). The seed-44 pair is clean: same eval-code md5 (files unchanged since 11-11 06:45, as the verifier asked me to re-check) and all 8 evals ran on homer-016. Verdicts are recorded on the 8 seed-44 evals, the paired test and the 4 finetune cells; judge probes are recorded on the 8 evals. The 34.0 GB reference memory peak now has a source (sacct gres/gpumem 34,044 MB vs 50,020 MB frozen). In CAMPAIGN.md, the Mission's 'may tie' prediction is marked refuted (kept). STATE.md was rewritten with a three-seed results table. The law forbids variants of freezing after a FAIL, so BLOCKED.md asks the owner to choose: the split test (freeze the compressor only, or the connector only; needs a new flag in pisco/, ~2 GPU-days), accept the ~3 pt cost, or close. Nothing launched. About 52 of 192 GPU-h used (estimated from wall times).", "launched": [], "verdicts": [{"jobid": "188701", "verdict": "closed", "note": "seed-44 paired
+== final:
+{"next":"waiting-owner","summary":"Gate 0 FAILED on three seeds: the question-answering finetune needs its compressor side to train. With the compressor and connector frozen (only the decoder LoRA trains), the judge-accuracy change vs the reference of the same seed (paired per question, n=1,500 per set) was: documents −.028 / −.035 / −.041, CI below 0 at all three seeds and ≤ −3 pt at seeds 43 and 44 (the law's 2-of-3 Failed rule); MRQA text −.023 / −.027 / −.025, CI below 0; photos −.009 / −.013 / +.005 (a tie); HotpotQA −.028 / −.023 / −.026 (jobs 188650 and 188701). The seed-44 pair is clean: same eval-code md5 (files unchanged since 11-11 06:45, as the verifier asked me to re-check) and all 8 evals ran on homer-016. Verdicts are recorded on the 8 seed-44 evals, the paired test and the 4 finetune cells; judge probes are recorded on the 8 evals. The 34.0 GB reference memory peak now has a source (sacct gres/gpumem 34,044 MB vs 50,020 MB frozen). In CAMPAIGN.md, the Mission's 'may tie' prediction is marked refuted (kept). STATE.md was rewritten with a three-seed results table. The law forbids variants of freezing after a FAIL, so BLOCKED.md asks the owner to choose: the split test (freeze the compressor only, or the connector only; needs a new flag in pisco/, ~2 GPU-days), accept the ~3 pt cost, or close. Nothing launched. About 52 of 192 GPU-h used (estimated from wall times).","launched":[],"verdicts":[{"jobid":"188701","verdict":"closed","note":"seed-44 paired test: docs −.041 [−.062,−.021], photos +.005, MRQA −.025, HotpotQA −.026, n=1500; with 188650 → gate 0 FAILED (documents, 2 of 3 seeds)"},{"jobid":"188651","verdict":"closed","note":"arm F seed 44: second failing seed on documents"},{"jobid":"188652","verdict":"closed","note":"R3 reference seed 44: docs .620 photos .671 MRQA .721 HotpotQA .603"},{"jobid":"188582","verdict":"closed","note":"arm F seed 42: gate 0 FAILED on 3 seeds"},{"jobid":"188583","verdict":"closed","note":"arm F seed 43: gate 0 FAILED on 3 seeds"},{"jobid":"188653","verdict":"closed","note":"frozen s44 documents eval .579"},{"jobid":"188672","verdict":"closed","note":"frozen s44 photos eval .675"},{"jobid":"188674","verdict":"closed","note":"frozen s44 MRQA eval .697"},{"jobid":"188676","verdict":"closed","note":"frozen s44 HotpotQA eval .577"},{"jobid":"188654","verdict":"closed","note":"reference s44 documents eval .620"},{"jobid":"188673","verdict":"closed","note":"reference s44 photos eval .671"},{"jobid":"188675","verdict":"closed","note":"reference s44 MRQA eval .721"},{"jobid":"188677","verdict":"closed","note":"reference s44 HotpotQA eval .603"}],"blocked":"The gate failed and the law gives the next step to the owner (BLOCKED.md): (A) split test — a pisco/ flag to freeze the compressor and the connector separately, then 2 arms × 2 seeds (~2 GPU-days), recommended, compressor-frozen arm first because it keeps stage B cacheable; (B) accept the ~3 pt cost on documents and text; (C) close the campaign.","gripes":[
+== rc=0 secs=256
+== verify: 6/11

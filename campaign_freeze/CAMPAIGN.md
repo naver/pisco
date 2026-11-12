@@ -18,6 +18,9 @@ The deciding number is the paired judge accuracy (Qwen3-8B rubric judge, `script
 finetune minus the reference finetune of the same seed, on documents, photos and text (all three: every capability
 must hold for text, images and mixed). Why it may tie: in the bf16 reference recipe the finetune already moves the
 connector by .03% and a connector that moves more costs ~.03 on photos (training_plan.md, warning 2026-11-01).
+(Refuted wake 10, 2026-11-12, kept: the gate FAILED on three seeds — documents −.028 / −.035 / −.041, CI below 0 at
+all three, ≤ −3 pt at seeds 43 and 44; MRQA −.023 / −.027 / −.025; photos tied −.009 / −.013 / +.005; jobs 188650 /
+188701, n = 1,500 per set. The compressor side's finetune matters for documents and text, not for photos.)
 Project invariants: CLAUDE.md "Multimodal PISCO"; history: docs/training_plan.md, HANDOFF.md thread 7.
 
 ## Arms — what varies, what is held constant

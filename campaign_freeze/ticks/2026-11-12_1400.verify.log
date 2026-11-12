@@ -1,0 +1,79 @@
+== verifier 2026-11-12_1400  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session 22ce7310-b766-4a17-b003-43f5ea820b1d  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+315 lines)
+→ Glob: {"pattern": "campaign_freeze/**"}
+→ Glob: {"pattern": "expQ/freeze/**/*.{log,out,txt,json,md}"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze"}
+  ↳ campaign_freeze/ticks/.keep (+28 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_freeze.sh (+100 lines)
+→ Glob: {"pattern": "*.{out,log,txt,json}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_frozen_s42_smoke/train.log (+100 lines)
+I'm checking each STATE.md claim against the job logs. Next I'm looking for the output of the seed-44 paired-judge test (job 188701).
+→ Glob: {"pattern": "*1887*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-12_1400.log
+  ↳ 1	== campaign freeze wake 2026-11-12_1400  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code) (+66 lines)
+→ Grep: {"pattern": "log", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon.conf", "output_mode": "content"}
+  ↳ 3:# logs: every launcher writes <name>_%j.out at the repo root (stdout+stderr merged) (+1 lines)
+→ Glob: {"pattern": "*_1887*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_188701.out
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Grep: {"pattern": "paired|188701|188650", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-11_1830.log", "output_mode": "content"}
+  ↳ 30:Raw judge accuracy is in: frozen sits 1–3.5 points below the reference on every set. Next: the paired CIs (through SLURM) and the module-move checks. (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign freeze — 2026-11-12_1300   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+19 lines)
+Found the log naming scheme. Now I'm reading the seed-44 paired-test output.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188701.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_frozen_s44:ft_unfrozen_s44 (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188650.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_frozen_s42:ref_s42,ft_frozen_s43:ref_s43 (+72 lines)
+→ Grep: {"pattern": "homer|md5|dfe32aa0|50abc167|02bc8748|EXIT|^[0-9a-f]{7}$", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188653.out", "output_mode": "content", "head_limit": 20}
+  ↳ 1717:=== EXIT CODE 0 ===
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_188653.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-d60e6970-5d8d-c919-cf60-1992f3ba9456) (+29 lines)
+→ Grep: {"pattern": "homer-01[06]|homer-009", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_freeze/ticks/2026-11-12_1400.log:27:→ Bash:  ⏎ expmon verdict 188701 closed "seed-44 paired test (frozen 188651 vs reference 188652, same eval code md5 dfe32aa0/50abc167/02bc8748, all 8 evals (+10 lines)
+→ Grep: {"pattern": "18865[34]|18867[2-7]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-12_1300.log", "output_mode": "content", "head_limit": 20}
+  ↳ 2:== sensors: ts=1794456002 live=188677:PENDING,188675:PENDING,188673:PENDING,188654:PENDING,188701:PENDING,188676:RUNNING,188674:RUNNING,188653:RUNNING,188672:RUNNING running=4 pending=5 problems=0 p (+2 lines)
+Still verifying. The seed-44 paired numbers match the log exactly. Now I'm checking that the two seed-44 training configs differ only in the freeze flag.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s44/.hydra/overrides.yaml
+  ↳ 1	- model_name_or_path=/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_unfrozen_s44/.hydra/overrides.yaml
+  ↳ 1	- model_name_or_path=/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188700.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_unfrozen_s44 (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188699.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_frozen_s44 (+10 lines)
+→ Grep: {"pattern": "dfe32aa0", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks", "output_mode": "content", "head_limit": 10}
+  ↳ campaign_freeze/ticks/2026-11-11_1930.verify.log:23:→ Grep: {"pattern": "md5|dfe32aa0|50abc167|02bc8748|^[0-9a-f]{7,40}$", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_1885{96,97, (+11 lines)
+→ Grep: {"pattern": "dfe32aa0|50abc167|02bc8748", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 10}
+  ↳ 738:- 2026-11-11 10:03 [job 188596] intent: arm F s42 documents cell: final frozen model, PX=1003520, mm_docqa_1500_1m 1,500 Q, judge chained, afterok 188582; paired with the reference re-eval 188597  (+11 lines)
+→ Grep: {"pattern": "refuted", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign freeze   (2026-11-12, wake 10) (+34 lines)
+→ Grep: {"pattern": "homer-016|18865[34]|1886(7[2-7])", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md", "output_mode": "content", "head_limit": 20}
+  ↳ 5:ts=1794457802 live=188701:PENDING,188677:RUNNING,188654:RUNNING running=2 pending=1 problems=0 problems_other=0 new=0 gpuh24=35.1 idle_h=0.0 min_util=- alert=0 unpushed=41 cron=3 daemon=1 disk_gb=12 (+10 lines)
+→ Grep: {"pattern": "(?i)refut|may tie|why it may|Mission", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md", "output_mode": "content", "-C": 2}
+  ↳ 7-compressor, then freeze it and train the decoder LoRA"; "unattended, with judges"). (+28 lines)
+→ Grep: {"pattern": "homer-016|NodeList|gpumem", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+Nearly done. One last check: I'm comparing GPU IDs in the eval logs to confirm all 8 seed-44 evals ran on the same node.
+→ Grep: {"pattern": "^GPU 0:", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_1886{53,54,72,73,74,75,76,77}.out", "output_mode": "content"}
+  ↳ eval_mm_4b_188653.out:1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-d60e6970-5d8d-c919-cf60-1992f3ba9456) (+7 lines)
+→ Grep: {"pattern": "(?i)prefix|re-deriv", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-11_1830.verify.log", "output_mode": "content", "head_limit": 10}
+  ↳ 78:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "(?i).{0,200}re-deriv.{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-11_1830.verify.log", "output_mode": "content", "-o": true, "head_limit": 6}
+  ↳ 78:[Omitted long matching line] (+1 lines)
+→ StructuredOutput: {"claims": [{"claim": "Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −.028 [−.049,−.007] / −.035 [−.057,−.014] / −.041 [−.062,−.021]; MRQA −.023/−.027/−.025, CI below 0; photos −…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4532 turns=35 is_error=False denials=0
+== declared: {"claims": [{"claim": "Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −.028 [−.049,−.007] / −.035 [−.057,−.014] / −.041 [−.062,−.021]; MRQA −.023/−.027/−.025, CI below 0; photos −.009/−.013/+.005; HotpotQA −.028/−.023/−.026; n = 1,500 per set; jobs 188650 / 188701; Mission prediction marked refuted)", "status": "provisional", "reason": "Every number matches exactly. The ALL rows are in paired_judge_freeze_188650.out (n=1500, EXIT 0) and paired_judge_freeze_188701.out lines 8/16/24/35 (docs −0.041 [−0.062,−0.021], 103/164, p 0.000), and so do the discordant counts. The law's 2-of-3 Failed rule is read correctly: documents s43 −.035 and s44 −.041 are both ≤ −3 pt with the CI wholly below 0; s42 −.028 is not. CAMPAIGN.md lines 21-23 carry the refuted mark. Downgraded ONLY because the law requires a 'provisional:' prefix on a headline until the NEXT wake re-derives it from the grid and paired_judge.py. This result was first derived in this wake and is listed under Settled with no prefix. The evidence itself is complete."}, {"claim": "The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44); all 8 evals on the same node (homer-016) with the eval-code md5 above; the paired test exited 0 (job 188701)", "status": "supported", "reason": "ft_frozen_s44 and ft_unfrozen_s44 .hydra/overrides.yaml are identical (same pt_mm_5M_spread model, data, bs/accum/lr, 1003520 px, seed=44) except '+m
+== final:
+{"claims":[{"claim":"Gate 0 FAILED on three seeds: the question-answering finetune needs the compressor side to train (documents −.028 [−.049,−.007] / −.035 [−.057,−.014] / −.041 [−.062,−.021]; MRQA −.023/−.027/−.025, CI below 0; photos −.009/−.013/+.005; HotpotQA −.028/−.023/−.026; n = 1,500 per set; jobs 188650 / 188701; Mission prediction marked refuted)","status":"provisional","reason":"Every number matches exactly. The ALL rows are in paired_judge_freeze_188650.out (n=1500, EXIT 0) and paired_judge_freeze_188701.out lines 8/16/24/35 (docs −0.041 [−0.062,−0.021], 103/164, p 0.000), and so do the discordant counts. The law's 2-of-3 Failed rule is read correctly: documents s43 −.035 and s44 −.041 are both ≤ −3 pt with the CI wholly below 0; s42 −.028 is not. CAMPAIGN.md lines 21-23 carry the refuted mark. Downgraded ONLY because the law requires a 'provisional:' prefix on a headline until the NEXT wake re-derives it from the grid and paired_judge.py. This result was first derived in this wake and is listed under Settled with no prefix. The evidence itself is complete."},{"claim":"The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44); all 8 evals on the same node (homer-016) with the eval-code md5 above; the paired test exited 0 (job 188701)","status":"supported","reason":"ft_frozen_s44 and ft_unfrozen_s44 .hydra/overrides.yaml are identical (same pt_mm_5M_spread model, data, bs/accum/lr, 1003520 px, seed=44) except '+model_config_overrides.freeze_compressor=true'. paired_judge_freeze_188701.out ends with '=== EXIT CODE 0 ==='. The md5s dfe32aa0/50abc167/02bc8748 were ledgered at submit time, and the 1400 tick confirms mtime 11-11 06:45. On the node: the 4 frozen evals were seen running on homer-016 at 13:00, and the GPU UUIDs of reference evals 188654/188673/188677 match three of those GPUs. 188675 (MRQA, text only) ran on a fifth GPU UUID (aefc9e27) whose node I cannot place."},{"claim":"The freeze held over all three full runs (1.0 epoch, 28,032 rows each): every compressor and connector row, norm gain included, changed 0.0%; decoder lora_B 66.7% / 66.3% / 66.7% (188584 / 188585 / 188699). The seed-44 reference moved compressor lora_B 74.1% and the connector MLP 20.7% (188700): the check sees movement when there is some.","status":"supported","reason":"check_move_freeze_188699.out shows compressor lora_A/B, token_adapter, connector.linear and norm_gain all at 0.0%, with decoder lora_B 66.7%. check_move_freeze_188700.out shows compressor lora_B 74.1% and connector.linear 20.7% (.0073 of its norm). Verdicts 188584/188585 give 0.0% with lora_B 66.7%/66.3%. Minor caveat: the check has no row for the vision merger. That the merger is frozen rests on the eval log line 'Compressor trainable parameters: 0' (eval_mm_4b_188653.out line 17)."},{"claim":"In this bf16 recipe the connector norm gain never moves, even when trainable: 0.0% after 20 steps (188579) and after a whole epoch (seed-44 reference, 188700),
+== rc=0
