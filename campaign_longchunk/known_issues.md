@@ -4,7 +4,7 @@ The LLM wake adds one row per NEW symptom it resolved. Seeded from the splare, r
 
 | symptom | verdict | action |
 |---|---|---|
-| gpu-be job shows CANCELLED then RUNNING again, Restarts>0, checkpoints keep advancing | benign preemption + requeue | verify world size (`sacct -j J -o AllocTRES`); no action |
+| gpu-be job shows CANCELLED / PREEMPTED then PENDING or RUNNING again (`scontrol show job J` → Restarts>0); `expmon check` prints `✗ slurm-cancelled` on the PENDING id (previews 188980 / 188981, 2026-11-12 22:11 — griped) | benign preemption + requeue; `eval_mm_4b.sh` has no resume logic, so an eval simply restarts from scratch | multi-GPU training: verify world size (`sacct -j J -o AllocTRES`); evals: check the eval dir holds no partial file and the code md5 is unchanged; then no action |
 | many probe/eval jobs FAILED within seconds, `OSError: Repo id must be in the form` | snapshot self-clean race, benign | ignore; re-run later only if the metric is needed |
 | RUNNING, log empty for >10 min, `↳ hint` from expmon check | block-buffered stdout in the launcher (python \| grep/tee) | `expmon occupancy J`; if GPUs are busy, no action; fix the launcher (`python -u`) at the next relaunch |
 | `starved util=NN%` on a run older than 1 h | wrong bs/ga or a data-loading bottleneck — the 15%-for-34-days class | `expmon occupancy`; kill + `expmon optimize` before any relaunch; never "just relaunch" |
