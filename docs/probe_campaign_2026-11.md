@@ -6,20 +6,23 @@ cell on the same questions (95% bootstrap CI, exact McNemar p). Compression: 1 s
 (`compr_rate: 8` in every model here). Document set (`mm_docqa_1500_1m`, PX=1003520, 4 pages per question): the plain
 cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per question): about 177 slots per question.
 
-## Status (2026-11-11 09:45 KST)
-- **Every arm is decided or closed for the cell cap (60 of 60 cells used).** What is left needs the owner to raise the
-  cap (`campaign_probes/BLOCKED.md`): the keep-a-quarter repeat at seed 43, keep an eighth, TextVQA as OCR text.
+## Status (2026-11-13 06:45 KST)
+- **64 of 65 cells used; three cells still wait in the queue.** The owner raised the cap to 65 on 2026-11-12 for four
+  cells (the 65th is one health relaunch in reserve). Arm F ran and is decided (below). Still queued: keep a quarter
+  at seed 43 (job 189056), keep an eighth at seed 42 (job 189057), evidence-then-answer at seed 43 (job 189058); each
+  was preempted on `gpu-be` (the best-effort partition) before it could write a result.
 - **Arm A decided at both seeds.** Showing the one page the model picks as raw pixels, the other three as slots,
   recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
   Removing the three distractor pages gains only about 2 pt; asking the decoder to copy the evidence before answering
-  gains nothing (+.001, seed 42; provisional: a tie needs the seed-43 repeat, not run for the cell cap). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
+  gains nothing (+.001, seed 42; provisional: a tie needs the seed-43 repeat, job 189058, queued). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
 - **Arm G decided at both seeds: twice the slots on the picked page is NOT enough.** Re-compressing the picked page at
   rate 4 (other pages rate 8) gains +.063 / +.049, below the +.14 gate (route1, the page raw, gains +.210 / +.207). It
   costs only 1/7 of route1's extra decoder tokens. The models were trained at rate 8 only.
 - **Arm E decided at both seeds: given the question, half the slots carry everything the decoder uses.** Keeping the
   half the decoder attends to most gives the plain score (.610 = .610, .615 = .615) and beats a blind half by +.105 /
-  +.107. provisional (seed 42 only): keeping a QUARTER still gives the plain score (.611 vs .610, slots .246×).
-  The half also holds on photos (seed 42).
+  +.107. provisional (seed 42 only): keeping a QUARTER still gives the plain score (.611 vs .610, slots .246×);
+  its seed-43 repeat (job 189056) and the next level, an eighth (job 189057), are queued. The half also holds on
+  photos (seed 42).
 - **Arm B decided at both seeds: the long-chunk gain is context between the two answer passages.** Golds joined beats
   ten chunks by +.073 / +.067 and one chunk of all ten by +.038 / +.053. One chunk of all ten gains +.035 (seed 42,
   p = .004) but only +.014 (n.s.) at seed 43. Ranking passages by attention and joining the top 3 is no better than
@@ -27,7 +30,8 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
 - **Arm D decided:** attention picks image pages better than the digit prompt (+2.5 pt), the digit prompt picks text
   passages better (+4.9 pt); the end-to-end judge effect of either is too small to measure.
 - **Arm C (evidence-then-answer on text) did not close the text gap** at seed 42.
-- Arm F (TextVQA as text): set built, no cell (cell cap).
+- **Arm F decided (seed 42, reported only): reading a photo's text as OCR words is far worse than reading its
+  pixels.** TextVQA, 500 questions: OCR text .346 vs pixels .780, −.434. No mixed-input arm is motivated.
 
 ## Findings (ranked)
 1. **The document loss is reading the compressed answer page — route-then-expand removes it.** Picked page raw:
@@ -75,6 +79,11 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
    Product fusion never loses (+.019 / +.006). No judge cell: the expected judge gain is +.025 × the hit-minus-miss
    judge gap of the picked-page-raw cells (.252 at seed 42: 1,479 hits .824 vs 21 misses .571; .325 at seed 43 on
    16 misses) ≈ +.006 to +.008, below the .02 noise band.
+8. **The photo-text loss is not an OCR-reading loss: giving the decoder the OCR words instead of the pixels is far
+   worse.** TextVQA, model 184778 (seed 42), 500 questions paired on question id with the pixel cell: OCR text .346 vs
+   pixels .780, −.434 [−.480, −.384], 17 up / 234 down, McNemar p = 6e-50; slots .081× (4.4 vs 54.2 per question).
+   A gold answer appears word for word in the OCR on only .596 of rows, below what the pixels already score. Closes
+   "text instead of pixels" for photo text; no mixed-input arm is motivated (gate: a gain ≥ 5 pt).
 
 ## Arm A — use-recovery on documents (reference models, `mm_docqa_1500_1m`, PX=1003520, 1,500 questions)
 Baselines: plain compressed cells of the same model (seed 42: job 184781, homer-011; seed 43: job 184784, homer-016).
@@ -92,8 +101,9 @@ Compression column: slots per question (1 slot per 8 visual tokens) and the deco
 By source, picked page raw vs plain (seed 42): infographics .716 vs .480, multi-page .922 vs .666, slides .822 vs .684.
 Evidence-then-answer by source (seed 42): infographics .480 = .480, multi-page .656 vs .666, slides .698 vs .684.
 Context (older cells, not paired on node): uncompressed reader, all 4 pages raw .809; gold page only raw .841. The
-distractor pages cost about 2-3 pt whether they are raw or compressed. Evidence-then-answer was not repeated at seed
-43 (cell cap); a tie at one seed is not a result under the law, so it reads "no gain seen", not "proven useless".
+distractor pages cost about 2-3 pt whether they are raw or compressed. Evidence-then-answer at seed 43 (job 189058)
+is queued; until it runs, a tie at one seed is not a result under the law, so it reads "no gain seen", not "proven
+useless".
 
 ## Arm B — long-chunk mechanism (HotpotQA, 10 passages, 1,500 questions; 183814 = seed 42, 183816 = seed 43)
 Baselines, all on today's code: g1 = each passage its own chunk (seed 42 job 188486 .582; seed 43 job 188509 .601);
@@ -179,7 +189,9 @@ Answers identical to plain: s42 half overall 1,289 / 1,500, quarter 1,197, per c
 Gate (attention-picked minus the better blind half ≥ +4 pt, CI above 0, both seeds): seed 42 +.105 [+.085, +.126],
 205 / 47, p = 1e-24 (188485 − 188483); seed 43 +.107 [+.087, +.127], 203 / 43, p = 5e-26 (188522 − 188537). **Met:
 adopted.** Quarter (gate written before the cell: within .02 of plain → three quarters unused per question): met at
-seed 42; the seed-43 cell is not run (cell cap), so it stays provisional.
+seed 42; the seed-43 cell (job 189056) is queued, so it stays provisional. An eighth (job 189057, seed 42, gate
+written before any cell: within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8)
+is queued.
 
 ## Arm G — route then densify (accepted by the owner 2026-11-11)
 The page the model picks (same pick as "picked page raw", 1,500 / 1,500 picks identical) is re-compressed at rate 4
@@ -210,8 +222,16 @@ plain (judge .610 = .610, slots 118,147 both).
 `eval_data/probes_textvqa_ocr` is built (job 188545, `scripts/probes/build_textvqa_ocr.py`): the 500 TextVQA rows of
 the photo set, unchanged, with the OCR tokens of the same TextVQA validation row as text; 500 / 500 questions matched.
 OCR text: 13 tokens per row on average (median 7, 14 rows empty); a gold answer appears word for word in it on .596 of
-rows. The text-only cell (seed 42, paired with the TextVQA rows of the pixel cell, n = 500) is not run: cell cap. The
-seed-43 photo baseline (job 184785) ran on homer-008, the node that changes image answers, so only seed 42 pairs cleanly.
+rows. Baseline: the 500 TextVQA rows of the photo cell of 184778 (job 184783, homer-011, pixels at PX=1003520).
+| cell | model | n | judge accuracy ↑ | baseline judge accuracy ↑ (pixels) | difference (95% CI) | McNemar p (up / down) | health (unparseable, rows, slots vs baseline) | compression: slots / question, decoder prompt tokens |
+|---|---|---|---|---|---|---|---|---|
+| OCR text instead of pixels, `pisco_text` (job 189059, homer-012) | 184778 s42 | 500 | .346 | .780 | −.434 [−.480, −.384] | 6e-50 (17 / 234) | 0, 500, 0.081 | 4.4 (pixels 54.2), 65 (pixels 115) |
+EM: .292 vs .714, −.422 [−.470, −.372]. The input changes by design (text of a few words instead of the image), so
+the comparison is "same questions, this input instead of that one", not "same budget". Reading: the OCR words lose
+too much (layout, which word is the brand, context in the picture) for the decoder to answer from them; the pixels
+already score above the share of rows whose answer is in the OCR at all (.780 vs .596). Gate (reported only; a gain
+≥ 5 pt motivates a mixed-input arm): no gain. Seed 43 is not run: its photo baseline (job 184785) ran on homer-008,
+the node that changes image answers.
 
 ## The instrument: same answers on re-run?
 | check | model | set | n | node of the re-run (image) | node of the recorded run | answers identical | judge accuracy ↑, re-run vs recorded |
@@ -250,3 +270,4 @@ on images and on text). The code date does not move compressed text answers (188
 - A judge cell for a fused page picker (expected gain below the noise band).
 - Blind slot halving on the reference models: −.105 / −.115 (seed 42), −.107 (seed 43).
 - The picked page at twice the slots (rate 4), untrained: +.063 / +.049 over plain, below the +.14 gate at both seeds.
+- Photo text read as OCR words instead of pixels (TextVQA, seed 42): −.434 (finding 8). No mixed-input arm.

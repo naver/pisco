@@ -1,0 +1,128 @@
+== campaign probes wake 2026-11-13_0630  reasons=problems-standing,scheduled  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794519001 live=189057:PENDING,189058:PENDING,189056:PENDING running=0 pending=3 problems=3 problems_other=0 new=0 gpuh24=0.1 idle_h=3.7 min_util=- alert=0 unpushed=58 cron=3 daemon=1 disk_gb=11463 sig=c73db9c3 same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189056,189057_job:189058,189059_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session 4694afa9-add1-49c1-bd7a-c32fd353b3bd  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/4694afa9-add1-49c1-bd7a-c32fd353b3bd/tool-results/bv72aq4xh.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-13_0630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+297 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la && cat STATE.md
+  ↳ 193 CAMPAIGN.md (+177 lines)
+→ Bash: cat CAMPAIGN.md
+→ Bash: cat known_issues.md
+  ↳ # CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+192 lines)
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 189056,189057,189058,189059 -D -o JobID%16,State%14,NodeList%12,Start,End,Elapsed,ExitCode 2>&1 | head -40; for c in f_text_s42 e_keep025_attng_s43 e_keep0125_attng a_expand_s43; do echo "==…
+  ↳ JobID          State     NodeList               Start                 End    Elapsed ExitCode  (+35 lines)
+Checking the four queued probe cells: the TextVQA-as-OCR-text cell finished; three others are still waiting in the queue. Reading its result now.
+→ Bash: expmon logs 189059 80 2>&1 | tail -60
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+61 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/probes/f_text_s42/eval/mm_docqa_pisco_text_px1003520_probes_textvqa_ocr.json')) ⏎ print(type(a), list(a.keys())[:20] if isinstance(a,dict) else len(a)) ⏎ rows = a['rows'] if isinstanc…
+  ↳ <class 'dict'> ['summary', 'records'] (+15 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/probes/f_text_s42/eval/mm_docqa_pisco_text_px1003520_probes_textvqa_ocr.json')) ⏎ R=a['records']; print(len(R)); print({k:(str(v)[:100]) for k,v in R[0].items()}) ⏎ b=json.load(open('…
+  ↳ 500 (+64 lines)
+→ Bash: timeout 60 python3 scripts/paired_judge.py expQ/probes/f_text_s42/eval/mm_docqa_pisco_text_px1003520_probes_textvqa_ocr.json expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json --names ocr_text pixels 2>&1 | tail -20; …
+  ↳ judge: ocr_text = expQ/probes/f_text_s42/eval/mm_docqa_pisco_text_px1003520_probes_textvqa_ocr.json (+9 lines)
+→ Bash: ls -la eval_data/probes_textvqa_ocr/ && grep -n "verbatim\|ceiling\|ocr_hit\|in_ocr" scripts/probes/build_textvqa_ocr.py | head; python3 - <<'EOF' ⏎ import json ⏎ a={r['query_id']:r for r in json.load(open('expQ/probes/f_text_s42/eval/mm_do…
+  ↳ total 2 (+9 lines)
+→ Bash: scontrol show reservation 2>&1 | head -30; echo ---; squeue -u hdejean -p gpu -o "%.10i %.20j %.8T %.10b %.6D %R" 2>&1; echo ---; squeue -j 189056,189057,189058 -o "%.10i %.8T %.20S %.12l %R" 2>&1
+  ↳ No reservations in the system (+11 lines)
+Arm F (TextVQA read as OCR text instead of pixels) is decided: far worse than pixels. Now checking whether the three cells stuck in the queue for 7 hours can be widened to the `gpu` partition.
+→ Bash: gpucap land a100 1 2>&1 | tail -15; gpucap free a100 2>&1 | tail -8
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+10 lines)
+→ Bash: expmon note -j 189056 "intent: widen to gpu,gpu-be (law row: PENDING > 6 h on gpu-be for Priority; submitted 11-12 23:33, preempted twice on homer-013, start estimate 11-18 01:00). Owner gpu share 6 of 8 (gpucap), so 2 cells fit; exclude ho…
+→ Bash: scontrol update JobId=189056 Partition=gpu,gpu-be 2>&1; scontrol update JobId=189058 Partition=gpu,gpu-be 2>&1; squeue -j 189056,189057,189058 -o "%.10i %.12P %.8T %.20S %.12l %R" 2>&1
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+  ↳ JOBID    PARTITION    STATE           START_TIME   TIME_LIMIT NODELIST(REASON) (+3 lines)
+→ Bash: python3 -c " ⏎ import math ⏎ n=251;k=17 ⏎ p=2*sum(math.comb(n,i) for i in range(k+1))/2**n ⏎ print('%.1e'%p) ⏎ "; squeue -j 189056,189058 -o "%.10i %.12P %.8T %.20S %R" 2>&1
+  ↳ 6.0e-50 (+3 lines)
+→ Bash: expmon probe 189059 judge=0.346 em=0.292 2>&1 | tail -1; expmon verdict 189059 closed "arm F s42 (reported only): TextVQA read as OCR text instead of pixels, model 184778, 500 questions paired on query_id with the TextVQA rows of 184783 (ph…
+  ↳ probe recorded: 189059 (judge=0.346 em=0.292)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: wc -l docs/probe_campaign_2026-11.md && grep -n "^#\|arm F\|F\. \|f_text\|189059\|TextVQA" docs/probe_campaign_2026-11.md | head -60
+  ↳ 252 docs/probe_campaign_2026-11.md (+19 lines)
+→ Bash: sed -n 1,80p docs/probe_campaign_2026-11.md
+  ↳ # Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+79 lines)
+Updating the results page (`docs/probe_campaign_2026-11.md`) with the arm F result and the current status.
+→ Bash: sed -n 159,252p docs/probe_campaign_2026-11.md
+  ↳ ## Arm E — attention-guided slot pruning (documents; photos for one cell) (+93 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 79	## Arm A — use-recovery on documents (reference models, `mm_docqa_1500_1m`, PX=1003520, 1,500 questions) (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+31 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+Now the findings list, the arm A / arm E notes, the arm F section and the Closed list.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Bash: grep -n "Seed-42 cell \`f_text_s42\` = 189059" campaign_probes/CAMPAIGN.md | cut -c1-80
+  ↳ 44:| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 44	| F. photo text (TextVQA .77 vs .85) | `eval_mm_4b.sh <ref> pisco_text` (OCR text instead of pixels) on a NEW set `eval_data/probes_textvqa_ocr` (the 500 TextVQA rows of `mm_naturalqa_1500` with th
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: timeout 110 expmon display --exp probes 2>&1 | tail -5; squeue -j 189056,189057,189058 -o "%.10i %.12P %.8T %.20S %R" 2>&1
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs) (+4 lines)
+→ Bash: timeout 60 expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+12 lines)
+→ Bash: squeue -j 189056,189057,189058 -o "%.10i %.12P %.8T %.10M %.20S %R" 2>&1; sacct -j 189058 -X -o JobID,Partition,State,NodeList,Start 2>&1 | tail -3
+  ↳ JOBID    PARTITION    STATE       TIME           START_TIME NODELIST(REASON) (+6 lines)
+The evidence-then-answer repeat (seed 43) just started on the `gpu` partition after the widening; recording that, then rewriting STATE.md.
+→ Bash: expmon note -j 189058 "result of the widening: started 06:34 on partition gpu (not preemptible), homer-011 (el9_8; baseline 184784 homer-016, el9_8 nodes agree per 188476). Slowest expand docs cell 104 min, so it ends by ~08:20" 2>&1 | tail…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 34	| ALERT "no campaign GPU-second for 24.0h" / "no campaign job ran for N h (cap 24h) — a gate failing CLOSED?" while the campaign either waits on the owner (NEXT `waiting-owner`, cap used up, questi (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat >> known_issues.md <<'EOF' ⏎ | cells PENDING > 6 h on `gpu-be` with SLURM start estimates days out (11-18), reason `Priority` or `ReqNodeNotAvail, UnavailableNodes:homer-[…]` alth…
+  ↳ | cells PENDING > 6 h on `gpu-be` with SLURM start estimates days out (11-18), r
+Now rewriting STATE.md in full.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "decision: probes wake 2026-11-13 06:30. Arm F decided (reported only, seed 42): TextVQA as OCR text .346 vs pixels .780 on the same 500 questions, -.434 [-.480, -.384], 17/234, p=6e-50, …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Reading photo text as OCR words instead of pixels is far worse, so that idea is closed. Two of the three cells stuck in the queue were moved to a second partition, and one of them is now running. Nothing needed from you.
+
+## Done this wake
+- **TextVQA as OCR text, seed 42 (decided).** I gave the model the OCR words instead of the image, on 500 TextVQA questions. Each answer was compared with the pixel answer to the same question:
+
+  | input | questions | judge accuracy ↑ | difference (95% CI) | slots per question |
+  |---|---|---|---|---|
+  | pixels (baseline) | 500 | .780 | — | 54.2 |
+  | OCR text | 500 | .346 | −.434 [−.480, −.384], 17 better / 234 worse, McNemar p = 6e-50 | 4.4 (.081× of pixels) |
+
+  - The gold answer appears in the OCR words on only 59.6% of questions, which is below what the pixels already score.
+  - So the photo-text loss is not an OCR-reading problem. No "pixels plus OCR" run is motivated (the bar was a gain of at least 5 points).
+- **Queue fix.** Three cells had waited 6.5–7 hours on `gpu-be` (the best-effort partition, where running jobs can be stopped). SLURM's start estimates ran as far out as 18 November. The campaign rules allow moving at most 2 cells to `gpu,gpu-be` after 6 hours.
+  - I moved the two cells that each settle a result at both seeds.
+  - The evidence-then-answer repeat started within a minute.
+  - The other moved cell's estimate went from 18 November to 14:49 today.
+- **Results page.** `docs/probe_campaign_2026-11.md` now has the new status, a new finding (#8), a table for this result and an updated "Closed" list. `STATE.md` and the campaign rules are updated to match.
+
+## Running now
+| what it tests | state |
+|---|---|
+| Copy the evidence, then answer (seed 43). This repeats a tie seen at seed 42 | running on `gpu`, which cannot be preempted; ends about 08:20 |
+| Keep only the most-attended quarter of the slots (seed 43) | waiting, estimate 14:49 |
+| Keep only an eighth of the slots (seed 42) | waiting on `gpu-be`, estimate 16:30 |
+
+## Budget and next wake
+- 64 of 65 cells are used. The last one is kept for a single relaunch if a cell fails its health check.
+- The loop wakes when the evidence-then-answer cell finishes, or when both slot-pruning cells have, or after 12 hours at most.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm F decided (reported only, seed 42): TextVQA read as OCR text .346 vs pixels .780 on the same 500 questions, -.434 [-.480,-.384], 17/234, p=6e-50, slots .081x (job 189059) -> no mixed-input arm, arm clos…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3507 turns=43 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm F decided (reported only, seed 42): TextVQA read as OCR text .346 vs pixels .780 on the same 500 questions, -.434 [-.480,-.384], 17/234, p=6e-50, slots .081x (job 189059) -> no mixed-input arm, arm closed. Widened 189056 and 189058 to gpu,gpu-be after 6.5-7 h pending (law row, owner gpu share 6/8): 189058 (evidence-then-answer s43) started 06:34 on gpu homer-011; 189056 estimate moved 11-18 -> 11-13 14:49; 189057 stays on gpu-be (est. 16:30). Docs page, CAMPAIGN.md arm F row, STATE.md, known_issues rewritten; display refreshed. 64 of 65 cells used.", "launched": [], "verdicts": [{"jobid": "189059", "verdict": "closed", "note": "arm F s42: OCR text .346 vs pixels .780, -.434 [-.480,-.384], 17/234, p=6e-50, n=500, slots .081x; no mixed-input arm"}], "gripes": ["gap: wake brief 'new result files' listed 84 old non-campaign LongBench files and none of the campaign's own; filter to the campaign's runs"], "wake_when": "job:189058 job:189056,189057 max 12h"}
+== final:
+{"next":"wake-when","summary":"Arm F decided (reported only, seed 42): TextVQA read as OCR text .346 vs pixels .780 on the same 500 questions, -.434 [-.480,-.384], 17/234, p=6e-50, slots .081x (job 189059) -> no mixed-input arm, arm closed. Widened 189056 and 189058 to gpu,gpu-be after 6.5-7 h pending (law row, owner gpu share 6/8): 189058 (evidence-then-answer s43) started 06:34 on gpu homer-011; 189056 estimate moved 11-18 -> 11-13 14:49; 189057 stays on gpu-be (est. 16:30). Docs page, CAMPAIGN.md arm F row, STATE.md, known_issues rewritten; display refreshed. 64 of 65 cells used.","launched":[],"verdicts":[{"jobid":"189059","verdict":"closed","note":"arm F s42: OCR text .346 vs pixels .780, -.434 [-.480,-.384], 17/234, p=6e-50, n=500, slots .081x; no mixed-input arm"}],"gripes":["gap: wake brief 'new result files' listed 84 old non-campaign LongBench files and none of the campaign's own; filter to the campaign's runs"],"wake_when":"job:189058 job:189056,189057 max 12h"}
+== rc=0 secs=343
+== verify: 17/25
