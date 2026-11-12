@@ -1,1 +1,1 @@
-wake-when job:189094 job:189434 max 6h
+wake-when job:189094 max 4h
