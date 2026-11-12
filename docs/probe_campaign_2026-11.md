@@ -6,22 +6,23 @@ cell on the same questions (95% bootstrap CI, exact McNemar p). Compression: 1 s
 (`compr_rate: 8` in every model here). Document set (`mm_docqa_1500_1m`, PX=1003520, 4 pages per question): the plain
 cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per question): about 177 slots per question.
 
-## Status (2026-11-13 06:45 KST)
-- **64 of 65 cells used; three cells still wait in the queue.** The owner raised the cap to 65 on 2026-11-12 for four
-  cells (the 65th is one health relaunch in reserve). Arm F ran and is decided (below). Still queued: keep a quarter
-  at seed 43 (job 189056), keep an eighth at seed 42 (job 189057), evidence-then-answer at seed 43 (job 189058); each
-  was preempted on `gpu-be` (the best-effort partition) before it could write a result.
-- **Arm A decided at both seeds.** Showing the one page the model picks as raw pixels, the other three as slots,
-  recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
+## Status (2026-11-13 08:50 KST)
+- **64 of 65 cells used; one cell still waits in the queue.** The owner raised the cap to 65 on 2026-11-12 for four
+  cells (the 65th is one health relaunch in reserve, not needed so far). Three of the four are decided: OCR text for
+  photos (arm F), evidence-then-answer at seed 43 (arm A), keep a quarter at seed 43 (arm E). Still queued: keep an
+  eighth of the slots at seed 42 (job 189057), widened at 08:45 to both partitions.
+- **Arm A decided at both seeds, every probe.** Showing the one page the model picks as raw pixels, the other three as
+  slots, recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
   Removing the three distractor pages gains only about 2 pt; asking the decoder to copy the evidence before answering
-  gains nothing (+.001, seed 42; provisional: a tie needs the seed-43 repeat, job 189058, queued). Slots stored in int8 lose nothing at both seeds: adopted as a serving option.
+  gains nothing at either seed (+.001 / −.009). Slots stored in int8 lose nothing at both seeds: adopted as a serving
+  option.
 - **Arm G decided at both seeds: twice the slots on the picked page is NOT enough.** Re-compressing the picked page at
   rate 4 (other pages rate 8) gains +.063 / +.049, below the +.14 gate (route1, the page raw, gains +.210 / +.207). It
   costs only 1/7 of route1's extra decoder tokens. The models were trained at rate 8 only.
-- **Arm E decided at both seeds: given the question, half the slots carry everything the decoder uses.** Keeping the
-  half the decoder attends to most gives the plain score (.610 = .610, .615 = .615) and beats a blind half by +.105 /
-  +.107. provisional (seed 42 only): keeping a QUARTER still gives the plain score (.611 vs .610, slots .246×);
-  its seed-43 repeat (job 189056) and the next level, an eighth (job 189057), are queued. The half also holds on
+- **Arm E decided at both seeds: given the question, a quarter of the slots carry everything the decoder uses.**
+  Keeping the half the decoder attends to most gives the plain score (.610 = .610, .615 = .615) and beats a blind half
+  by +.105 / +.107. Keeping the most-attended QUARTER still gives the plain score at both seeds (.611 vs .610,
+  .619 vs .615, slots .246×). The next level, an eighth (job 189057, seed 42), is queued. The half also holds on
   photos (seed 42).
 - **Arm B decided at both seeds: the long-chunk gain is context between the two answer passages.** Golds joined beats
   ten chunks by +.073 / +.067 and one chunk of all ten by +.038 / +.053. One chunk of all ten gains +.035 (seed 42,
@@ -36,7 +37,7 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
 ## Findings (ranked)
 1. **The document loss is reading the compressed answer page — route-then-expand removes it.** Picked page raw:
    +.210 [+.187, +.233] (seed 42) and +.207 [+.183, +.232] (seed 43), n = 1,500 each, McNemar p < 1e-60; the pick is
-   right on 98.6% / 98.9% of questions. Gold page alone, compressed: +.022 / +.025. Evidence-then-answer: +.001.
+   right on 98.6% / 98.9% of questions. Gold page alone, compressed: +.022 / +.025. Evidence-then-answer: +.001 / −.009.
    Motivates: serve with route-then-expand (decoder prompt 1,264 tokens vs 511 compressed), and put training effort
    into how well one page's slots can be read (stage 1/2), not into distractor robustness or answer-format labels.
    The cheaper version, the picked page at twice the slots instead of raw, recovers only a quarter to a third of it
@@ -49,12 +50,13 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
    per 100 tokens; consistent with, not a gate). The models never saw rate 4 in training. Motivates (for the
    `longchunk` campaign): a stage-2 arm that trains a mixed rate (picked page at rate 4); closes "densify instead of
    expand" as a training-free serving mode.
-3. **Given the question, the decoder uses at most half of the slots — maybe a quarter.** Keep the most-attended half
+3. **Given the question, the decoder uses at most a quarter of the slots, at both seeds.** Keep the most-attended half
    over all pages, documents, n = 1,500 each, slots .496×: seed 42 .610 vs .610, +.000 [−.009, +.010], 27 / 27; seed 43
    .615 vs .615, +.000 [−.009, +.009], 25 / 25. Blind halves at the same slot count: every 2nd slot .505 / .508, so the
-   attention half is +.105 [+.085, +.126] (p = 1e-24) and +.107 [+.087, +.127] (p = 5e-26) better. provisional, one
-   seed: the most-attended QUARTER (slots .246×, 106 per question instead of 431) gives .611 vs .610, +.001 [−.009,
-   +.012], 37 / 35, 1,197 / 1,500 answers identical. Photos (one seed): the half gives .677 = .677. The selection
+   attention half is +.105 [+.085, +.126] (p = 1e-24) and +.107 [+.087, +.127] (p = 5e-26) better. The most-attended
+   QUARTER (slots .246×, 106 per question instead of 431): seed 42 .611 vs .610, +.001 [−.009, +.012], 37 / 35,
+   1,197 / 1,500 answers identical; seed 43 .619 vs .615, +.005 [−.007, +.017], 45 / 38, p = .51, 1,200 / 1,500
+   identical. An eighth (seed 42) is queued. Photos (one seed): the half gives .677 = .677. The selection
    needs one full pass over every slot with the question, so it saves decoder context, not storage. Motivates: a
    query-aware slot budget, or nested-budget training so the needed quarter can be found without the full pass.
 4. **The long-chunk gain is context between the passages that answer together.** Golds joined (9 chunks) vs ten
@@ -72,7 +74,8 @@ cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per 
 6. **Giving the decoder room to reason or copy does not close the gap.** Evidence-then-answer on MRQA text: compressed
    .699 vs .718 plain; raw .807 vs .807. The gap on DROP shrinks from −.204 to −.172 (below the 5 pt gate) and grows on
    DuoRC (−.084 → −.156) and RACE (−.152 → −.188); BioASQ drops .912 → .812 (the slots do not hold exact strings well).
-   On documents (seed 42): .611 vs .610, +.001 [−.017, +.021], 108 / 106. Motivates: stage-1/2 objectives for exact
+   On documents: seed 42 .611 vs .610, +.001 [−.017, +.021], 108 / 106; seed 43 .606 vs .615, −.009 [−.027, +.011],
+   98 / 111, p = .41 (infographics −.036 [−.070, −.002]). Motivates: stage-1/2 objectives for exact
    content (the transcription side), not reasoning labels. Closes evidence-then-answer labels.
 7. **Which page picker to use depends on the modality.** Attention mass: +.025 pick@1 on 10-page documents, −.049 on
    HotpotQA. A per-source switch passes the arm D gate, but it was chosen on the same questions it is scored on.
@@ -95,15 +98,16 @@ Compression column: slots per question (1 slot per 8 visual tokens) and the deco
 | gold page only (job 188440, homer-011) | 184778 s42 | 1,500 | .632 | .610 | +.022 [+.005, +.040] | .020 (111 / 78) | 0, 1,500, 0.270 | 116.4, 185 |
 | gold page only (job 188459, homer-013) | 184780 s43 | 1,500 | .639 | .615 | +.025 [+.006, +.043] | .010 (116 / 79) | 0, 1,500, 0.270 | 116.4, 185 |
 | evidence, then answer (job 188439, homer-011) | 184778 s42 | 1,500 | .611 | .610 | +.001 [−.017, +.021] | .95 (108 / 106) | 0, 1,500, 1.000 | 430.7, 544 (+ a longer answer) |
+| evidence, then answer (job 189058, homer-011) | 184780 s43 | 1,500 | .606 | .615 | −.009 [−.027, +.011] | .41 (98 / 111) | 0, 1,500, 1.000 | 430.7, 544 (+ a longer answer) |
 | slots in int8 (job 188478, homer-016) | 184778 s42 | 1,500 | .611 | .610 | +.001 [−.003, +.006] | .77 (7 / 5) | 0, 1,500, 1.000 | 430.7, 511 |
 | slots in int8 (job 188536, homer-011) | 184780 s43 | 1,500 | .613 | .615 | −.001 [−.005, +.003] | .75 (4 / 6) | 0, 1,500, 1.000 | 430.7, 511 |
 
 By source, picked page raw vs plain (seed 42): infographics .716 vs .480, multi-page .922 vs .666, slides .822 vs .684.
-Evidence-then-answer by source (seed 42): infographics .480 = .480, multi-page .656 vs .666, slides .698 vs .684.
-Context (older cells, not paired on node): uncompressed reader, all 4 pages raw .809; gold page only raw .841. The
-distractor pages cost about 2-3 pt whether they are raw or compressed. Evidence-then-answer at seed 43 (job 189058)
-is queued; until it runs, a tie at one seed is not a result under the law, so it reads "no gain seen", not "proven
-useless".
+Evidence-then-answer by source: seed 42 infographics .480 = .480, multi-page .656 vs .666, slides .698 vs .684; seed 43
+infographics .444 vs .480 (−.036 [−.070, −.002], p = .05), multi-page .668 vs .678, slides .706 vs .686. Answers
+identical to plain at seed 43: 889 / 1,500 (the answer format changes). Gate (≥ +3 pt, CI above 0, both seeds): failed
+at both seeds, closed. Context (older cells, not paired on node): uncompressed reader, all 4 pages raw .809; gold page
+only raw .841. The distractor pages cost about 2-3 pt whether they are raw or compressed.
 
 ## Arm B — long-chunk mechanism (HotpotQA, 10 passages, 1,500 questions; 183814 = seed 42, 183816 = seed 43)
 Baselines, all on today's code: g1 = each passage its own chunk (seed 42 job 188486 .582; seed 43 job 188509 .601);
@@ -181,17 +185,19 @@ recorded (job 188481). All cells on el9_8 nodes, as the baselines (184781 homer-
 | s42 keep every 2nd slot (job 188483, homer-016) | 1,500 | .505 | .610 | −.105 [−.127, −.085] | 3e-24 (49 / 207) | 0, 1,500, 0.504 | 216.9, 297 |
 | s42 keep the first half of each chunk (job 188482, homer-013) | 1,500 | .495 | .610 | −.115 [−.136, −.095] | 4e-28 (46 / 219) | 0, 1,500, 0.496 | 213.8, 294 |
 | s43 keep the most-attended half overall (job 188522, homer-012) | 1,500 | **.615** | .615 | **+.000 [−.009, +.009]** | 1.0 (25 / 25) | 0, 1,500, 0.496 | 213.8, 294 |
+| s43 keep the most-attended QUARTER overall (job 189056, homer-019) | 1,500 | **.619** | .615 | **+.005 [−.007, +.017]** | .51 (45 / 38) | 0, 1,500, 0.246 | 106.0, 186 |
 | s43 keep every 2nd slot (job 188537, homer-012) | 1,500 | .508 | .615 | −.107 [−.127, −.087] | 8e-26 (44 / 204) | 0, 1,500, 0.504 | 216.9, 297 |
 | photos s42, keep the most-attended half overall (job 188539, homer-016) | 1,500 | .677 | .677 | +.000 [−.013, +.013] | 1.0 (49 / 49) | 0, 1,500, 0.492 | 26.0 (plain 52.9), 97 (plain 124) |
 Answers identical to plain: s42 half overall 1,289 / 1,500, quarter 1,197, per chunk 1,230, every 2nd 917, first half
-924; s43 half overall 1,306, every 2nd 903; photos half 1,186. By source, quarter vs plain (s42): infographics .474 vs
-.480, multi-page .680 vs .666, slides .680 vs .684.
+924; s43 half overall 1,306, quarter 1,200, every 2nd 903; photos half 1,186. By source, quarter vs plain: s42
+infographics .474 vs .480, multi-page .680 vs .666, slides .680 vs .684; s43 infographics .486 vs .480, multi-page
+.686 vs .678, slides .686 vs .686.
 Gate (attention-picked minus the better blind half ≥ +4 pt, CI above 0, both seeds): seed 42 +.105 [+.085, +.126],
 205 / 47, p = 1e-24 (188485 − 188483); seed 43 +.107 [+.087, +.127], 203 / 43, p = 5e-26 (188522 − 188537). **Met:
 adopted.** Quarter (gate written before the cell: within .02 of plain → three quarters unused per question): met at
-seed 42; the seed-43 cell (job 189056) is queued, so it stays provisional. An eighth (job 189057, seed 42, gate
-written before any cell: within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8)
-is queued.
+both seeds (+.001, +.005). **Adopted.** An eighth (job 189057, seed 42, gate written before any cell: within .02 →
+seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8) is queued. The s43 quarter cell ran on
+homer-019 and its baseline on homer-016, both el9_8 (that image agrees with itself, job 188476).
 
 ## Arm G — route then densify (accepted by the owner 2026-11-11)
 The page the model picks (same pick as "picked page raw", 1,500 / 1,500 picks identical) is re-compressed at rate 4
@@ -262,7 +268,7 @@ on images and on text). The code date does not move compressed text answers (188
 
 ## Closed
 - Gold page only (both seeds): +.022 / +.025, below the +3 pt gate. Distractor pages are not the main loss.
-- Evidence-then-answer: documents +.001 (seed 42), text −.019 (seed 42); no gain seen (finding 6).
+- Evidence-then-answer: documents +.001 (seed 42) and −.009 (seed 43), text −.019 (seed 42); no gain (finding 6).
 - Passage order inside a long chunk: −.002 (seed 42), +.003 (seed 43). Unused.
 - Joining the distractor passages: +.022 (p = .027) at seed 42, +.016 (n.s.) at seed 43 over ten chunks; not adopted.
 - "Rank by attention, then join the top 3" as a serving mode: equals joining all ten at both seeds; +.013 (n.s.) over

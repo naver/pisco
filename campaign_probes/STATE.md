@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-13 06:30-06:50 KST (woken by the 4-hour cap of the last wait; arm F decided; two queued cells
-widened to `gpu,gpu-be`, one of them started at once)
+last wake: 2026-11-13 08:30-08:55 KST (woken as the arm A seed-43 cell left the queue; arm A evidence-then-answer
+closed at both seeds, arm E quarter adopted at both seeds; the last open cell widened to `gpu,gpu-be`)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -9,6 +9,11 @@ widened to `gpu,gpu-be`, one of them started at once)
   350 up / 35 down, McNemar p<1e-60, slots .749× plain + one raw page (job 188441, verdict best); seed 43 .822 vs .615
   = +.207 [+.183, +.232], 349 / 38, slots .748× + one raw page (job 188460, verdict best). The pick is right on 98.6% /
   98.9% of questions; the all-raw reader scores .809.
+- Asking the decoder to copy the evidence before answering gains nothing on documents, at both seeds (arm A
+  evidence-then-answer closed). n=1,500 each, slots 1.000×: seed 42 .611 vs .610 = +.001 [−.017, +.021], 108 / 106,
+  p=.95 (job 188439, homer-011 = baseline's node, verdict closed); seed 43 .606 vs .615 = −.009 [−.027, +.011],
+  98 / 111, p=.41, 889/1,500 answers identical, infographics −.036 [−.070, −.002] (job 189058, homer-011 vs baseline
+  184784 on homer-016, both el9_8, verdict closed). Gate ≥ +3 pt failed at both seeds.
 - Twice the slots on the picked page is NOT enough (arm G closed). Picked page re-compressed at rate 4, other pages
   rate 8, documents, n=1,500 each, slots 1.250× plain: seed 42 .673 vs plain .610 = +.063 [+.043, +.083], 158 / 64,
   p<.001 (job 188590, homer-011 = baseline's node, verdict closed); seed 43 .663 vs .615 = +.049 [+.030, +.067],
@@ -27,6 +32,11 @@ widened to `gpu,gpu-be`, one of them started at once)
   Blind every-2nd half at the same slot count: seed 42 .505 (job 188483), seed 43 .508 (job 188537, verdict closed),
   so attention minus blind = +.105 [+.085, +.126], 205 / 47, p=1e-24 and +.107 [+.087, +.127], 203 / 43, p=5e-26.
   Gate (≥ +4 pt, CI above 0, both seeds) met.
+- Even the most-attended QUARTER of the slots carries what the decoder uses, at both seeds (gate: within .02 of
+  plain → three quarters unused per question; met). Documents, n=1,500 each, slots .246× (106 per question instead
+  of 431): seed 42 .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500 identical (job 188538, homer-013,
+  verdict best); seed 43 .619 vs .615 = +.005 [−.007, +.017], 45 / 38, p=.51, 1,200/1,500 identical (job 189056,
+  homer-019 vs baseline 184784 on homer-016, both el9_8, verdict best).
 - The long-chunk gain is context between the two answer passages, at both seeds. HotpotQA, 1,500 Q each, golds
   joined in one chunk (others alone) vs ten separate chunks on today's code: seed 42 (183814) .655 vs .582 = +.073
   [+.051, +.095], p=1.5e-10 (jobs 188471 vs 188486); seed 43 (183816) .669 vs .601 = +.067 [+.046, +.088], 186 / 85,
@@ -57,13 +67,7 @@ widened to `gpu,gpu-be`, one of them started at once)
 - Data: three grouped HotpotQA sets (job 188465), six no-oracle grouped sets (job 188516), 1,500 rows each;
   `eval_data/probes_textvqa_ocr` (job 188545): 500 TextVQA rows, 500/500 questions matched.
 
-**Provisional (one seed, or a tie the law wants repeated)**
-- provisional (a tie at one seed; its seed-43 repeat 189058 is RUNNING): evidence-then-answer on documents gains
-  nothing at seed 42: .611 vs .610 = +.001 [−.017, +.021], 108 / 106, p=.95, n=1,500, slots 1.000× (job 188439,
-  verdict closed; file from the homer-011 attempt, same node as 184781).
-- provisional (one seed; its seed-43 repeat 189056 is queued): keeping only the most-attended QUARTER still ties
-  plain. 184778, documents, n=1,500, slots .246×: .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500
-  identical (job 188538, verdict best, homer-013).
+**Provisional (one seed, or no control)**
 - provisional (one seed, no blind control on photos): the attention half ties plain on photos. 184778,
   `mm_naturalqa_1500`, n=1,500, slots .492×: .677 vs .677, +.000 [−.013, +.013], 49 / 49 (job 188539, verdict closed).
 - provisional: the instrument gives the same answers on re-run on every node tested except homer-008: plain document
@@ -71,8 +75,7 @@ widened to `gpu,gpu-be`, one of them started at once)
   (188477) and homer-013 (188580); compressed text 1,500/1,500 between homer-016 and homer-007 (188471 rerun) and
   between 11-07 and 11-11 code (188518 vs 185601); homer-008 changed 57/300 image answers (188458). homer-006 is
   suspected (by elimination) of the 55/1,500 compressed-text drift of 185505 vs 188486; homer-005 and 009 are untested;
-  homer-012 (el9_8) carries 188522, 188537, 188546, 188591, 189059 without a check of its own. All el9_7 nodes are
-  excluded.
+  homer-012 and homer-019 (el9_8) carry cells without a check of their own. All el9_7 nodes are excluded.
 - provisional: page picking (arm D, model 183814, n=1,500 per set, job 188515): 10-page documents digit .861,
   attention .885 (+.025 [+.010, +.039]); HotpotQA digit .922, attention .873. The per-source switch that passes the
   gate was chosen on the same questions. Expected judge gain ≈ +.006 to +.008 (under the .02 band), no judge cell.
@@ -88,76 +91,67 @@ widened to `gpu,gpu-be`, one of them started at once)
   vs raw +.210 / 753 ≈ .028 (about 2×, jobs 188590 / 188441); seed 43 .049 / 107.5 ≈ .046 vs .207 / 753 ≈ .027
   (about 1.7×, jobs 188591 / 188460).
 
-**Open, and running** (3 cells of the raised cap, submitted 2026-11-12 23:33; each preempted on `gpu-be` 1-2 times
-before writing anything)
-- arm A, evidence-then-answer at seed 43 (job 189058) — RUNNING since 06:34 on partition `gpu` (not preemptible),
-  homer-011; the law's repeat after the seed-42 tie. Slowest cell of this kind 104 min → ends by about 08:20.
-- arm E, keep a quarter of the slots at seed 43 (job 189056) — PENDING on `gpu,gpu-be`, start estimate 11-13 14:49;
-  decides whether "three quarters of the slots go unused per question" holds at both seeds.
-- arm E, keep an eighth of the slots at seed 42 (job 189057) — PENDING on `gpu-be`, start estimate 11-13 16:30;
-  finds where slot dropping starts to cost.
+**Open, and running** (1 cell of the raised cap)
+- arm E, keep an eighth of the slots at seed 42 (job 189057) — PENDING on `gpu,gpu-be` (widened 08:45, after 7 h on
+  `gpu-be`), SLURM start estimate 11-13 13:55. Finds where dropping slots starts to cost: within .02 of plain →
+  seven eighths unused per question; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional.
 
 ## What happened this wake
-- Arm F's cell 189059 COMPLETED (attempt 2, homer-012, 02:40-02:47; attempt 1 on the same node also completed at
-  02:20 before its preemption, so the file was rewritten by the same node). Paired with `scripts/paired_judge.py`
-  against the 500 TextVQA rows of 184783; recorded `expmon probe 189059 judge=0.346 em=0.292`, verdict closed, ledger
-  note; arm F row of CAMPAIGN.md marked DECIDED (it first read the pixel baseline as .677, the whole photo set; the
-  TextVQA rows score .780).
-- Queue: the three other cells had pended 6.5-7 h (more than the law's 6 h) with start estimates up to 11-18.
-  `gpucap land a100 1`: owner share on `gpu` 6 of 8, 1 free non-excluded node there. Widened the two cells that each
-  decide a claim at both seeds (189056, 189058) with `scontrol update … Partition=gpu,gpu-be` (the law's limit is 2;
-  the last STATE named the two arm E cells, changed because 189057 is one seed only and had the earliest estimate).
-  189058 started on `gpu` within a minute; 189056's estimate moved from 11-18 01:00 to 11-13 14:49. Owner `gpu` share
-  now 7 of 8. New known_issues row.
-- Deliverable: `docs/probe_campaign_2026-11.md` rewritten (status of 11-13, finding 8, arm F table, closed list);
-  `expmon display --exp probes` refreshed (still 0 table rows: known issue, gripe already filed).
-- Efficiency lines of the brief: "waiting for the owner 72 %" was the cap wait of 11-12 (answered 23:14), nothing open
-  for the owner now; "25 % queued with none running" — acted on: `gpucap land` before the widening, as the line asks.
-- Verifier: 0 unsupported; its 8 provisional items stay provisional (unchanged).
-- Gripe filed: the brief's "new result files" list shows old non-campaign LongBench files, not the campaign's own.
+- Arm A seed-43 cell 189058 and arm E seed-43 quarter cell 189056 left the queue. sacct labels both jobs PREEMPTED,
+  but the last attempt's `.batch` step COMPLETED with exit 0 and nothing requeued (189058: partition `gpu`, homer-011,
+  06:34-08:03, file 08:03:27; 189056: `gpu`, homer-019, 07:01-07:32, file 07:32:26). Health: unparseable 0, 1,500 rows,
+  `mems_used` 646,042 = baseline (189058, 1.000×) and 159,057 (189056, .246×, by design). known_issues row refined.
+- Paired with `scripts/paired_judge.py` against 184784 (`expQ/ft_mm_4b_184780/eval/…mm_docqa_1500_1m.json`).
+  Recorded `expmon probe` (judge .606 / .6193), verdict 189058 closed and 189056 best, ledger decision note.
+- CAMPAIGN.md arm A and arm E rows marked DECIDED for these two probes.
+- 189057 had pended 7 h on `gpu-be` (estimate 11-16 08:15). `gpucap land a100 1`: owner share on `gpu` 6 of 8, two
+  non-excluded free nodes (homer-013, homer-019). Widened with `scontrol update … Partition=gpu,gpu-be` (0 cells were
+  widened before; the law allows 2); estimate moved to 11-13 13:55.
+- Deliverable: `docs/probe_campaign_2026-11.md` rewritten (status 08:50, findings 1/3/6, arm A and arm E tables,
+  closed list); `expmon display --exp probes` refreshed (still 0 table rows: known issue, gripe already filed).
+- Verifier: 0 unsupported; the two provisional items it listed for these cells are now settled at both seeds.
 
-## Owned jobs (jobid | cell | arm | state at 11-13 06:45 | intent — also in the ledger)
+## Owned jobs (jobid | cell | arm | state at 11-13 08:50 | intent — also in the ledger)
 | job | cell dir (`expQ/probes/…`) → model | arm | state | intent |
 |---|---|---|---|---|
-| 189058 | `a_expand_s43` → 184780 | A | RUNNING on `gpu`, homer-011 (el9_8), since 06:34 | cell 64. `STYLE=expand PX=1003520`, documents, 1,500 Q. Baseline plain 184784 .615 (homer-016, el9_8; el9_8 nodes agree, 188476). Gate ≥ +3 pt with CI above 0 at both seeds (s42 +.001). `--time 5:12:00` = slowest expand docs cell (174852, 104 min) × 3 |
-| 189056 | `e_keep025_attng_s43` → 184780 | E | PENDING `gpu,gpu-be` (preempted twice, homer-013), est. 14:49 | cell 61. `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q, judge chained. Baseline plain 184784 .615. Gate (written 2026-11-11 before the s42 cell): within .02 of plain at both seeds → three quarters of the slots unused per question; a loss ≥ .05 → the free share lies between 1/2 and 3/4. `--time 4:54:00` |
-| 189057 | `e_keep0125_attng` → 184778 | E | PENDING `gpu-be` (preempted once, homer-013), est. 16:30 | cell 62. `KEEPF=0.125 KEEPM=attn_global PX=1003520`, documents, 1,500 Q. Baseline plain 184781 .610 (homer-011). Gate (written 2026-11-11 before any cell): within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional. `--time 4:54:00` |
-| 189059 | `f_text_s42` → 184778 | F | COMPLETED 02:47, decided | see Settled |
+| 189057 | `e_keep0125_attng` → 184778 | E | PENDING `gpu,gpu-be`, est. 13:55 | cell 62. `KEEPF=0.125 KEEPM=attn_global PX=1003520`, documents, 1,500 Q, judge chained. Baseline plain 184781 .610 (homer-011, el9_8). Gate (written 2026-11-11 before any cell): within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional. `--time 4:54:00`. Exclude homer-[005-009] |
+| 189058 | `a_expand_s43` → 184780 | A | done 08:03, decided | see Settled |
+| 189056 | `e_keep025_attng_s43` → 184780 | E | done 07:32, decided | see Settled |
+| 189059 | `f_text_s42` → 184778 | F | done 02:47, decided | see Settled |
 
 ## Adopted jobs
-(none. 188466, 188707-188712 belong to the sibling `longchunk` campaign; 189094, 189095-189099, 189434, 189445-189450
-to the sibling `freeze` campaign.)
+(none. 188466, 188707-188712, 189691-189695 belong to the sibling `longchunk` campaign; 189094, 189095-189099,
+189434, 189445-189450 to the sibling `freeze` campaign.)
 
 ## Open arms and the next decision for each
 | arm | status | next action |
 |---|---|---|
-| A. use-recovery | route1 adopted, int8 adopted, gold-only closed; evidence-then-answer a tie at s42 | when 189058 ends: health, node of the attempt that wrote the file, pair with 184784, decide the arm at both seeds |
+| A. use-recovery | decided at both seeds: route1 adopted, int8 adopted, gold-only closed, evidence-then-answer closed | none |
 | B. long-chunk mechanism | closed | none |
 | C. reasoning vs reading | closed for budget | none |
 | D. page picking | decided, caveat: rule chosen in-sample | none |
-| E. attention-guided pruning | half adopted (both seeds); quarter met at s42 | when 189056 ends: pair with 184784 → quarter at both seeds; when 189057 ends: pair with 184781 → eighth gate (one seed, provisional) |
+| E. attention-guided pruning | half adopted, quarter adopted (both seeds) | when 189057 ends: health, node of the attempt that wrote the file, pair with 184781 → eighth gate (one seed, provisional) |
 | F. photo text vs pixels | decided 11-13 (−.434), closed | none |
 | G. route then densify | closed (both seeds below the gate) | none |
 
 ## Health and budget
-- cells: 64 of 65 used (61-64 = 189056-189059); the 65th is the ONE health relaunch (a cell failing `unparseable: 0`,
-  its row count, or its slot ratio). A preemption requeue is free. Nothing else may launch without the owner.
-- GPU-hours of 40: tick sensor 0.1 GPU-h in the last 24 h; the three open cells add about 3-5 GPU-h.
-- Widened cells: 189056, 189058 (the law's limit of 2 is used). When 189058 ends, 189057 may be widened if it still
-  pends, provided the owner's `gpu` share has room (sibling jobs counted, never more than 2 campaign cells on `gpu`).
+- cells: 64 of 65 used (61-64 = 189056-189059); the 65th is the ONE health relaunch, unused (61, 63, 64 passed
+  health). A preemption requeue is free. Nothing else may launch without the owner.
+- GPU-hours of 40: tick sensor 2.1 GPU-h in the last 24 h; 189057 adds about 0.5-1.6 GPU-h.
+- Widened cells: 189057 only (the law's limit is 2). Owner `gpu` share 7 of 8 once it starts.
 - Pairing nodes: every image cell needs its node from the attempt that wrote its file (same node rule; compare the
-  `eval/` file mtime with `sacct -j <id> -D -o NodeList,End`, preemption often races the end).
+  `eval/` file mtime with `sacct -j <id> -D -o NodeList,End`; a job-level PREEMPTED label can hide a completed attempt).
 
 ## Next wake
-- NEXT = `wake-when job:189058 job:189056,189057 max 12h`: wakes when the running arm A cell leaves the queue (about
-  08:20), or when both arm E cells have, or at 18:45 at the latest.
-- On wake: for each finished cell, `unparseable: 0`, row count 1,500, node of the attempt that wrote the file,
-  `scripts/paired_judge.py` against its baseline (CI, McNemar), slot ratio from `mems_used`; then `expmon verdict`,
-  `expmon probe <id> judge=…`, one ledger note per decided arm, rewrite `docs/probe_campaign_2026-11.md`, refresh
-  `expmon display --exp probes`. If 189057 still pends then, widen it (see Health). Then `wake-when` the remaining
-  cells, max 12 h.
-- When all three are decided and no health relaunch is needed: every arm is decided or closed for the cap → write
-  `done` and a close-out summary for the owner (the window runs to 2027-02-09; close-out steps in CAMPAIGN.md).
+- NEXT = `wake-when job:189057 max 12h`: wakes when the keep-an-eighth cell leaves the queue (start estimate 13:55,
+  about 30-100 min of run), or at 20:55 at the latest.
+- On wake: `unparseable: 0`, 1,500 rows, node of the attempt that wrote the file (must be el9_8 like 184781 on
+  homer-011), `scripts/paired_judge.py` against `expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json`,
+  slot ratio from `mems_used` (≈ .125×); `expmon probe`, `expmon verdict`, ledger note, CAMPAIGN.md arm E row,
+  `docs/probe_campaign_2026-11.md` (finding 3, arm E table), `expmon display`. If it fails health: the 65th cell is
+  its one relaunch (same command, `--time 4:54:00`).
+- Then every arm is decided or closed for the cap → write `done` and a close-out summary for the owner (the window
+  runs to 2027-02-09; close-out steps in CAMPAIGN.md apply after that date).
 
 ## Blockers / needs the owner
 - none.
@@ -166,9 +160,10 @@ to the sibling `freeze` campaign.)
 - Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question) rather than
   random long chunks: +.067-.073 with the golds together (both seeds), +.058 on the tail layout. Joining all ten:
   +.035 (seed 42) / +.014 n.s. (seed 43). A ranker's top 3 joined does no better than all ten.
-- A query-aware slot budget (nested-budget training): half the slots, picked by the decoder's attention with the
-  question, lose nothing at both seeds; a quarter loses nothing at seed 42 (seed 43 queued).
+- A query-aware slot budget (nested-budget training): a quarter of the slots, picked by the decoder's attention with
+  the question, lose nothing at both seeds (+.001 / +.005); an eighth is being measured.
 - A mixed-rate stage 2 (the picked page at rate 4, others at rate 8): untrained, rate 4 on the picked page gains
   +.063 / +.049 at 1/7 of the raw page's extra decoder tokens; whether training at rate 4 closes more of the raw
   page's +.21 is open.
-- Not proposed: OCR text as an extra input for photos (arm F: OCR words instead of pixels −.434 on TextVQA).
+- Not proposed: evidence-then-answer labels (no gain on documents at either seed, none on text at seed 42); OCR text
+  as an extra input for photos (arm F: OCR words instead of pixels −.434 on TextVQA).

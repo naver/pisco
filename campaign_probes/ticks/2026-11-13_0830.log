@@ -1,0 +1,143 @@
+== campaign probes wake 2026-11-13_0830  reasons=problems-standing,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794526202 live=189057:PENDING running=0 pending=1 problems=1 problems_other=0 new=0 gpuh24=2.1 idle_h=0.4 min_util=- alert=0 unpushed=63 cron=3 daemon=1 disk_gb=11248 sig=6a401d6c same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189058_job:189056,189057_max_12h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:189058 (ended)   (NEXT was: wake-when job:189058 job:189056,189057 max 12h)
+== session fba826a1-5d82-4e5e-8069-3d701a85b62e  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/fba826a1-5d82-4e5e-8069-3d701a85b62e/tool-results/b1epzg229.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-13_0830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+299 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 193 CAMPAIGN.md (+196 lines)
+→ Bash: cat STATE.md && echo ======== && cat known_issues.md
+  ↳ Exit code 1 (+107 lines)
+→ Bash: sed -n 60,130p STATE.md
+→ Bash: cat known_issues.md; ls -la
+  ↳ **Provisional (one seed, or a tie the law wants repeated)** (+69 lines)
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+45 lines)
+Checking why the two cells I was waiting on show as preempted, then I'll decide what to do.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 189058,189056,189057 -D -o JobID%16,State%14,Partition,NodeList,Start,End,Elapsed,ExitCode 2>&1 | head -50; squeue -j 189058,189056,189057 -o "%i %T %P %r %S" 2>&1
+  ↳ JobID          State  Partition        NodeList               Start                 End    Elapsed ExitCode  (+17 lines)
+Both cells actually finished their work before the preemption flag (a known race). Checking their result files.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/probes && ls -la --time-style=full-iso a_expand_s43/eval/ e_keep025_attng_s43/eval/ e_keep0125_attng/eval/ 2>&1; ls a_expand_s43 e_keep025_attng_s43
+  ↳ a_expand_s43/eval/: (+22 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -t logs/ 2>/dev/null | head -3; ls -t *.out 2>/dev/null | head; find . -maxdepth 2 -name "eval_mm_4b_18905[68]*" -newer campaign_probes/campaign.conf 2>/dev/null | head
+  ↳ rejudge_rubric_174675.log (+14 lines)
+→ Bash: for j in 189058 189056; do echo "== $j"; grep -nE "unparseable|judge|mems_used|^em|rows|Traceback|Error|error" eval_mm_4b_$j.out | tail -25; tail -5 eval_mm_4b_$j.out; done
+  ↳ == 189058 (+45 lines)
+Both files are complete: 1,500 rows, no unparseable answers, exit 0. Now pairing each against its plain baseline.
+→ Bash: sed -n 1,40p scripts/paired_judge.py | head -60; grep -n "argparse\|add_argument\|n_boot\|import" scripts/paired_judge.py | head -30; ls expQ/ft_mm_4b_184780/eval/ | grep mm_docqa_pisco_px1003520
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+52 lines)
+→ Bash: B=expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; time timeout 60 python3 scripts/paired_judge.py expQ/probes/a_expand_s43/eval/mm_docqa_pisco_px1003520_expand_mm_docqa_1500_1m.json $B --names expand_s43 plain_s43;…
+  ↳ judge: expand_s43 = expQ/probes/a_expand_s43/eval/mm_docqa_pisco_px1003520_expand_mm_docqa_1500_1m.json (+14 lines)
+Now the slot counts and how many answers are identical to the baseline.
+→ Bash: timeout 60 python3 - <<'EOF' ⏎ import json ⏎ B=json.load(open("expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json")) ⏎ print(list(B.keys())); r=B["records"][0]; print(sorted(r.keys())) ⏎ bm={r["query_id"]:r for r in B[…
+  ↳ ['summary', 'records'] (+11 lines)
+→ Bash: scontrol show job 189056 2>&1 | head -5; scontrol show job 189058 2>&1 | head -5; sacct -j 189056,189058 -X -o JobID,State,Start,End,NodeList 2>&1
+  ↳ slurm_load_jobs error: Invalid job id specified (+5 lines)
+→ Bash: timeout 60 gpucap land a100 1 2>&1 | tail -25; squeue -u hdejean -p gpu -t R,PD -o "%i %j %T %P %b %N" 2>&1 | head -20
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+13 lines)
+The owner's share of the non-preemptible partition is 6 of 8 GPUs, so one more fits. Recording intent, then widening the pending cell.
+→ Bash: expmon note -j 189057 "intent: widen to gpu,gpu-be (law: PENDING > 6 h on gpu-be, at most 2 campaign cells widened; 0 are now). Pending since 01:34 requeue, SLURM estimate 11-16 08:15. gpucap: owner share on gpu 6 of 8, 4 free a100 nodes. E…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+Widened. Recording the two decided cells while the scheduler picks it up.
+→ Bash: expmon probe 189058 judge=0.606 em=0.5107 2>&1 | tail -1; expmon probe 189056 judge=0.6193 em=0.518 2>&1 | tail -1; expmon verdict 189058 closed "arm A evidence-then-answer s43: .606 vs plain .615 (184784) = -.009 [-.027,+.011], 98/111, p=.…
+→ Bash: squeue -j 189057 -o "%i %T %P %r %S %N" 2>&1
+  ↳ probe recorded: 189058 (judge=0.606 em=0.5107)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+3 lines)
+  ↳ JOBID STATE PARTITION REASON START_TIME NODELIST (+1 lines)
+→ Bash: timeout 60 gpucap free a100 2>&1 | tail -12; scontrol show job 189057 2>&1 | grep -E "ExcNodeList|Features|Partition|Reason|TimeLimit|Priority"
+  ↳ NODE        TYPE                    FREE PARTITIONS                 CUDA (+11 lines)
+Not started yet (other jobs ahead in priority; two free nodes qualify). I'll check again later. Updating the law's arm rows for the two decided arms.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 28	repeated on its seed-43 twin `183816` (183814's recipe + `hf_training.seed=43`) before it is adopted. The deliverable is a ranked list of findings, each with (+11 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && grep -o "keep-25% s42 .611 vs .610[^|]*" CAMPAIGN.md
+  ↳ keep-25% s42 .611 vs .610 (188538, slots .246×): met at one seed → provisional; s43 repeat 189056 queued 2026-11-12 under the raised cap. Photos s42 half .677 = .677 (188539). Next level, cell 189057 
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+Now the deliverable document for the owner.
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+273 lines)
+Getting the decoder prompt lengths for the two new rows of the document's tables.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && timeout 60 python3 - <<'EOF' ⏎ import json ⏎ for p in ["expQ/probes/a_expand_s43/eval/mm_docqa_pisco_px1003520_expand_mm_docqa_1500_1m.json","expQ/probes/e_keep025_attng_s43/eval/mm_docqa_pisco_px100…
+  ↳ a_expand_s43 1500 430.7 544.1 unparseable judge_raw None: 0 (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Now the arm A and arm E tables of the document.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Document updated. Checking the queued cell again and refreshing the results page.
+→ Bash: squeue -j 189057 -o "%i %T %P %r %S %N" 2>&1; timeout 120 expmon display --exp probes 2>&1 | tail -5
+  ↳ JOBID STATE PARTITION REASON START_TIME NODELIST (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && grep -n "preemption raced the end" known_issues.md | cut -c1-80
+  ↳ 28:| sacct shows a job PREEMPTED and requeued, but its `.batch` step COMPLETED a
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ 28	| sacct shows a job PREEMPTED and requeued, but its `.batch` step COMPLETED and the result file is complete (or the file is judged and dated seconds before the preemption) | preemption raced the en
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md has been updated successfully.
+Recording the wake's decision in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "decision: probes wake 2026-11-13 08:30 — woken as arm A s43 (189058) and arm E quarter s43 (189056) left the queue; both COMPLETED their last attempt (job label PREEMPTED, batch exit 0),…
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && timeout 60 expmon campaign report --section leaves 2>&1 | head -60
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ **Settled** (+10 lines)
+Now rewriting STATE.md. Reading its full current text first.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+59 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Checking the grid now carries the two new numbers (the verifier reads it), then writing the wait.
+→ Bash: timeout 60 expmon grid probes 2>&1 | grep -E "^(189058|189056|189057) " | awk '{print $1,$2,$4,$5,$NF,$(NF-1),$(NF-2)}'; squeue -j 189057 -o "%i %T %P %r %S" -h
+  ↳ 189058 A ended closed em=0.5107 judge=0.606 probe (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && echo "wake-when job:189057 max 12h" > NEXT && cat NEXT
+  ↳ wake-when job:189057 max 12h
+Two of the last three test runs are done and decided. The third is waiting in the queue. Nothing new was launched.
+
+**What the two finished runs show** (document questions, 1,500 per run; score = share of answers the judge model accepts, higher is better):
+
+| Test | Seed | Score with the change ↑ | Plain compressed score ↑ | Difference (95% range) | Share of compressed slots kept | Decision |
+|---|---|---|---|---|---|---|
+| Ask the model to copy the evidence, then answer | 43 | .606 | .615 | −.009 [−.027, +.011] | 1.00× | Closed: no gain at either seed (seed 42 was +.001) |
+| Keep only the quarter of slots the model looks at most | 43 | .619 | .615 | +.005 [−.007, +.017] | .25× (106 per question instead of 431) | Adopted: no loss at either seed (seed 42 was +.001) |
+
+A "slot" is one compressed vector standing in for about 8 tokens of the page.
+
+- **Main finding:** once the question is known, the model uses only about a quarter of the slots. This supports training with a question-aware slot budget. It does not save storage, because choosing the quarter needs one pass over every slot.
+- **Checks passed on both runs:** no unreadable answers, all 1,500 rows present, and run on the same kind of node as their baselines.
+- **One oddity:** the scheduler labels both jobs "preempted", but their last attempts finished cleanly with exit 0. I added this case to the known-issues file.
+
+**Still running:** the test that keeps only an eighth of the slots (seed 42). It had waited 7 hours on the best-effort partition, so I let it use the regular partition too, which the campaign rules allow. Its start estimate moved from Monday to today about 13:55.
+
+**Budget:** 64 of 65 runs used. The last one is kept to rerun a test whose output fails the checks.
+
+**Next:** the campaign wakes when the eighth-of-slots test ends, or in 12 hours at the latest. Once it is recorded, every test in the plan is decided.
+
+I updated the results summary for you, `docs/probe_campaign_2026-11.md`, plus the campaign rules file and state file.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm A evidence-then-answer s43 (189058): .606 vs plain .615 = -.009 [-.027,+.011], p=.41, n=1,500 -> closed at both seeds. Arm E keep-quarter s43 (189056): .619 vs .615 = +.005 [-.007,+.017], p=.51, slots .…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3352 turns=48 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm A evidence-then-answer s43 (189058): .606 vs plain .615 = -.009 [-.027,+.011], p=.41, n=1,500 -> closed at both seeds. Arm E keep-quarter s43 (189056): .619 vs .615 = +.005 [-.007,+.017], p=.51, slots .246x -> adopted at both seeds (three quarters of slots unused per question). Both COMPLETED their last attempt despite the job-level PREEMPTED label; health OK, el9_8 nodes. Keep-eighth s42 (189057) widened to gpu,gpu-be after 7 h pending; estimate 13:55. Cells 64/65, reserve unused. CAMPAIGN.md arm rows, docs/probe_campaign_2026-11.md, STATE.md, known_issues refreshed.", "launched": [], "verdicts": [{"jobid": "189058", "verdict": "closed", "note": "evidence-then-answer s43 -.009 [-.027,+.011]; gate +3 pt failed at both seeds"}, {"jobid": "189056", "verdict": "best", "note": "keep-25% attn_global s43 +.005 [-.007,+.017], slots .246x; within .02 at both seeds, adopted"}], "wake_when": "job:189057 max 12h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"Arm A evidence-then-answer s43 (189058): .606 vs plain .615 = -.009 [-.027,+.011], p=.41, n=1,500 -> closed at both seeds. Arm E keep-quarter s43 (189056): .619 vs .615 = +.005 [-.007,+.017], p=.51, slots .246x -> adopted at both seeds (three quarters of slots unused per question). Both COMPLETED their last attempt despite the job-level PREEMPTED label; health OK, el9_8 nodes. Keep-eighth s42 (189057) widened to gpu,gpu-be after 7 h pending; estimate 13:55. Cells 64/65, reserve unused. CAMPAIGN.md arm rows, docs/probe_campaign_2026-11.md, STATE.md, known_issues refreshed.","launched":[],"verdicts":[{"jobid":"189058","verdict":"closed","note":"evidence-then-answer s43 -.009 [-.027,+.011]; gate +3 pt failed at both seeds"},{"jobid":"189056","verdict":"best","note":"keep-25% attn_global s43 +.005 [-.007,+.017], slots .246x; within .02 at both seeds, adopted"}],"wake_when":"job:189057 max 12h","gripes":[]}
+== rc=0 secs=327
+== verify: 17/23

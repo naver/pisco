@@ -1,0 +1,53 @@
+== verifier 2026-11-13_0830  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+== session 26e52552-7a6b-439d-accb-4c77b19ce456  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign probes (+271 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/VERIFY_INPUT.md
+  ↳ 273	188446     C    185775   ended     closed     -        eval_mm  c_expand_s42 text_mrqa_ood_1500 4        -        -        -        -        -        pisco    all      ckpt       1003520    0      (+170 lines)
+→ Glob: {"pattern": "expQ/probes/{a_expand_s43,e_keep025_attng_s43,e_keep0125_attng,b_pred3_attn_s43}/**/*"}
+→ Grep: {"pattern": "188546|189058|189056", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes", "output_mode": "content", "glob": "*.jsonl"}
+  ↳ No matches found
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/a_expand_s43/eval"}
+  ↳ expQ/probes/a_expand_s43/eval/mm_docqa_pisco_px1003520_expand_mm_docqa_1500_1m.json
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/e_keep025_attng_s43/eval"}
+  ↳ expQ/probes/e_keep025_attng_s43/eval/mm_docqa_pisco_px1003520_keep025_attn_global_mm_docqa_1500_1m.json
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/b_pred3_attn_s43/eval"}
+  ↳ expQ/probes/b_pred3_attn_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_pred3_attn.json
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes"}
+  ↳ campaign_probes/ticks/.keep (+50 lines)
+→ Grep: {"pattern": "188546", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/ticks/2026-11-13_0830.log
+  ↳ 1	== campaign probes wake 2026-11-13_0830  reasons=problems-standing,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+142 lines)
+Checking the two new seed-43 result files (189058, 189056) against the claims; then I'll write the verdict.
+→ Grep: {"pattern": "unparseable|judge|mems_used|node|homer", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189058.out", "output_mode": "content", "head_limit": 40}
+  ↳ 1694:[judge] loading Qwen/Qwen3-8B (+15 lines)
+→ Grep: {"pattern": "unparseable|judge|mems_used|node|homer", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189056.out", "output_mode": "content", "head_limit": 40}
+  ↳ 1695:[judge] loading Qwen/Qwen3-8B (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189058.out
+  ↳ 1640	Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189056.out
+  ↳ 1670	Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+50 lines)
+→ Grep: {"pattern": "^(Host|Node|hostname)|homer-0|SLURM_JOB_NODELIST|attempt", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189058.out", "output_mode": "content", "head_limit": 10}
+  ↳ No matches found
+→ Grep: {"pattern": "\"judge/infovqa\"|\"judge\": 0|\"mems_used_total\"|\"judge\"\\s*:\\s*0\\.\\d+,\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "conten…
+  ↳ 42:  "judge": 0.6146666666666667, (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 1	{ (+59 lines)
+→ Grep: {"pattern": "^  \"(judge|n|judge_unparseable)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes/b_pred3_attn_s43/eval/mm_docqa_pisco_k10_cml4096_probes_hotpot_pred3_attn.json", "output_mode": "content"}
+  ↳ 15:  "n": 1500, (+2 lines)
+→ Grep: {"pattern": "188546", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md", "output_mode": "content"}
+  ↳ 31:| a job the last wake launched (e.g. 188546) is missing from `expmon grid probes`; `expmon runs` shows it `adopted` with no exp | the launch left only an adopted manifest row (gripe filed 2026-11-1
+Nearly done: checking where the verdict for job 188546 is recorded, then I'll write the verdict.
+→ Glob: {"pattern": "*.jsonl", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon"}
+  ↳ .expmon/runs.jsonl (+5 lines)
+→ Grep: {"pattern": "18854[56]", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl", "output_mode": "content"}
+  ↳ 139:{"ts": "2026-11-11 06:37", "jobid": "188521", "verdict": "best", "note": "provisional s42: no-oracle grouping, top 3 passages by attention joined, 183814 HotpotQA 1,500 Q: .614 vs ten chunks .582  (+3 lines)
+→ StructuredOutput: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1550 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9%; all-raw .809)", "status": "supported", "reason": "Grid rows 188441 and 188460 are 'best' with judge .820/.822. The verdicts give the same CIs, counts, n=1,500, route hit .986/.989, raw .809 and slots .749×/.748×. Nodes are el9_8 on both sides. The arm A gate (≥ +3 pt, CI above 0, both seeds) is cleared by a wide margin."}, {"claim": "Asking the decoder to copy the evidence before answering gains nothing on documents, at both seeds (s42 +.001 [−.017,+.021], job 188439; s43 .606 vs .615 = −.009 [−.027,+.011], 98/111, p=.41, job 189058)", "status": "supported", "reason": "Grid 189058 is 'closed' with judge .606. eval_mm_4b_189058.out:1710 reads judge 0.6060 and :1715 reads unparseable 0. The baseline file 184780 has judge .6147, so −.009. Infographics: .444 in the log vs .480 in the baseline summary = −.036, which matches. Verdicts carry the CI, the counts, n=1,500 and el9_8 on both sides. s42 188439 is 'closed' at +.001. The +3 pt gate fails at both seeds."}, {"claim": "Twice the slots on the picked page is NOT enough (arm G closed): s42 .673 vs .610 = +.063 [+.043,+.083], job 188590; s43 .663 vs .615 = +.049 [+.030,+.067], job 188591; tokens +107.5 vs +752.9 = .143×", "status": "supported", "reason": "Grid 188590 judge .6727 and 188591 ju
+== final:
+{"claims":[{"claim":"Showing the routed page raw recovers the whole document gap, at both seeds (s42 .820 vs .610 = +.210 [+.187,+.233], 350/35, job 188441; s43 .822 vs .615 = +.207 [+.183,+.232], 349/38, job 188460; pick right 98.6%/98.9%; all-raw .809)","status":"supported","reason":"Grid rows 188441 and 188460 are 'best' with judge .820/.822. The verdicts give the same CIs, counts, n=1,500, route hit .986/.989, raw .809 and slots .749×/.748×. Nodes are el9_8 on both sides. The arm A gate (≥ +3 pt, CI above 0, both seeds) is cleared by a wide margin."},{"claim":"Asking the decoder to copy the evidence before answering gains nothing on documents, at both seeds (s42 +.001 [−.017,+.021], job 188439; s43 .606 vs .615 = −.009 [−.027,+.011], 98/111, p=.41, job 189058)","status":"supported","reason":"Grid 189058 is 'closed' with judge .606. eval_mm_4b_189058.out:1710 reads judge 0.6060 and :1715 reads unparseable 0. The baseline file 184780 has judge .6147, so −.009. Infographics: .444 in the log vs .480 in the baseline summary = −.036, which matches. Verdicts carry the CI, the counts, n=1,500 and el9_8 on both sides. s42 188439 is 'closed' at +.001. The +3 pt gate fails at both seeds."},{"claim":"Twice the slots on the picked page is NOT enough (arm G closed): s42 .673 vs .610 = +.063 [+.043,+.083], job 188590; s43 .663 vs .615 = +.049 [+.030,+.067], job 188591; tokens +107.5 vs +752.9 = .143×","status":"supported","reason":"Grid 188590 judge .6727 and 188591 judge .6633 are both 'closed'. The verdicts give the same CIs, 158/64 and 147/74, n=1,500, slots 1.250×, the gaps to the raw page (−.147/−.159), tokens .143×, and nodes el9_8. The law's ≥ +.14 gate fails at both seeds."},{"claim":"Removing the distractor pages gains only about 2 pt, below the +3 pt gate at both seeds (s42 +.022 [+.005,+.040], p=.020, job 188440; s43 +.025 [+.006,+.043], p=.010, job 188459), slots .270×","status":"supported","reason":"Grid 188440 judge .632 and 188459 judge .639 are both 'closed'. The verdicts give the same CIs, p-values, n=1,500 and .270× slots. Both seeds fall below the +3 pt gate."},{"claim":"Slots stored in int8 change nothing, at both seeds (s42 +.001 [−.003,+.006], 1,445/1,500 identical, job 188478; s43 −.001 [−.005,+.003], 4/6, 1,444/1,500, job 188536); adopted as a serving option","status":"supported","reason":"Grid 188478 judge .611 and 188536 judge .6133 match the verdicts: same CIs, identical-answer counts, mems 1.000×, n=1,500. Both differences are well inside the .02 band at two seeds. CAMPAIGN.md arm A records the adoption as a serving option."},{"claim":"Given the question, the most-attended half of the slots carries what the decoder uses, at both seeds (arm E adopted): .610=.610 (188485), .615=.615 (188522); attention minus blind every-2nd +.105 [+.085,+.126] and +.107 [+.087,+.127]","status":"supported","reason":"Grid 188485 is .610 and 188522 is .615 ('best'). The blind cells 188483 (.505) and 188537 (.508) are in the grid. The 188537 and 188522
+== rc=0
