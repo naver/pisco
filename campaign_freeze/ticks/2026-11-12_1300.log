@@ -1,0 +1,52 @@
+== campaign freeze wake 2026-11-12_1300  reasons=scheduled  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794456002 live=188677:PENDING,188675:PENDING,188673:PENDING,188654:PENDING,188701:PENDING,188676:RUNNING,188674:RUNNING,188653:RUNNING,188672:RUNNING running=4 pending=5 problems=0 problems_other=0 new=0 gpuh24=34.3 idle_h=0.0 min_util=- alert=0 unpushed=40 cron=3 daemon=1 disk_gb=12150 sig=61f57b99 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188701_max_16h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session c643550b-68df-411e-a151-8dc8656a4923  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/c643550b-68df-411e-a151-8dc8656a4923/tool-results/bc07l344q.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-12_1300   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+249 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ======= && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+112 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 40	184778 / 184780 on the same set written by the SAME code version (eval answers drifted between the 11-07 and 11-11 (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+114 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/known_issues.md
+  ↳ 1	# Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+24 lines)
+→ Bash: expmon ledger 40 2>&1 | tail -30; sacct -j 188651,188652,188699,188700 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList 2>&1
+  ↳ - 2026-11-11 18:36 [job 188616] verdict: closed — frozen s43 HotpotQA judge .571 (n 1500, not gating); vs ref 188617 .593: -.023 [-.041,-.006], 68/102, p .011 (188650) (+35 lines)
+Both seed-44 finetunes finished; I'm reading their module-movement checks and the training logs, then updating the campaign state.
+→ Bash: ls expQ/freeze/ | head -50; for j in 188699 188700; do f=$(find expQ/freeze -maxdepth 2 -name "*${j}*" 2>/dev/null | head -3); echo "== $j: $f"; done
+  ↳ check_module_move.sh (+12 lines)
+→ Bash: expmon logs 188699 40 2>&1 | tail -40; echo '-----'; expmon logs 188700 40 2>&1 | tail -40
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/check_move_freeze_188699.out (last 40) <== (+22 lines)
+→ Bash: for j in 188651 188652; do f=$(ls ft_freeze_${j}.out 2>/dev/null || find . -maxdepth 2 -name "*${j}.out" | head -1); echo "== $j $f"; grep -oE "'eval_loss': [0-9.]+|'epoch': [0-9.]+|train_runtime': [0-9.]+|'train_loss': [0-9.]+" $f | paste …
+  ↳ Exit code 1 (+4 lines)
+→ Bash: grep -n "eval_loss\|train_runtime" ft_freeze_188651.out | tail -8; echo '---'; grep -n "eval_loss\|train_runtime" ft_freeze_188652.out | tail -8; ls -la ft_freeze_18865*.out; ls expQ/freeze/ft_frozen_s44 expQ/freeze/ft_unfrozen_s44
+  ↳ 4444: (+56 lines)
+→ Bash: scontrol show res 2>&1 | head -20; sinfo -p gpu-be -o "%n %t %G %E" 2>&1 | head -25; sacct -j 188651,188652 -o JobID,TRESUsageInMax%120 2>&1 | grep -oE "^[0-9.a-z]+|gres/gpumem=[0-9A-Z.]+" | paste - - 2>/dev/null | head
+  ↳ No reservations in the system (+26 lines)
+→ Bash: for j in 188651 188652; do echo "$j: $(sacct -j $j -o JobID,TRESUsageInMax -P -n 2>/dev/null | grep -oE 'gres/gpumem=[0-9]+[MG]' | sort -t= -k2 -h | tail -1)"; done; gpucap free a100 2>&1 | tail -5
+  ↳ 188651: gres/gpumem=50020M (+6 lines)
+Seed-44 training is done and the freeze held; four of the eight evals are running and four wait for a free GPU. Checking eval progress, then recording results.
+→ Bash: for j in 188653 188672 188674 188676; do echo "== $j"; expmon logs $j 3 2>&1 | tail -2 | cut -c1-200; done
+  ↳ == 188653 (+11 lines)
+→ Bash: expmon probe 188651 --step 1.0 eval_loss=0.427 s_per_step=71.5 2>&1 | tail -2; expmon probe 188652 --step 1.0 eval_loss=0.401 s_per_step=95.1 2>&1 | tail -2; expmon verdict 188699 closed "frozen s44 full run (1.0 epoch, 28,032 rows): every …
+  ↳ probe recorded: 188651 @1.0 (eval_loss=0.427 s_per_step=71.5)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+3 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "freeze wake 9 (2026-11-12 13:00): seed-44 finetunes COMPLETED (frozen 8.7 h, 71.5 s/step, eval_loss .427, peak 50.0 GB; reference 11.6 h, 95.1 s/step, eval_loss .401, peak 34.0 GB). Module-move: frozen s44 every compressor/conn…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && echo "wake-when job:188701 max 8h" > NEXT && cat NEXT
+  ↳ wake-when job:188701 max 8h
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:188701 max 8h", "summary": "Wake 9 (scheduled; the 16 h wait had run out). Seed 44 is the third seed, which breaks the two-seed tie. Both seed-44 finetunes completed with exit 0 and no NaN. Frozen run…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3827 turns=21 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:188701 max 8h", "summary": "Wake 9 (scheduled; the 16 h wait had run out). Seed 44 is the third seed, which breaks the two-seed tie. Both seed-44 finetunes completed with exit 0 and no NaN. Frozen run (only the decoder LoRA, the small trainable add-on, trains): 8.7 h, 71.5 s/step, final eval loss .427, peak GPU memory 50.0 GB. Reference run (trains everything): 11.6 h, 95.1 s/step, final eval loss .401, peak 34.0 GB. Weight-change checks: in the frozen run every compressor and connector weight changed 0.0%, so the freeze held over a full epoch. In the reference run the compressor LoRA changed 74.1% and the connector MLP 20.7%, so the check does see movement. The connector norm gain changed 0.0% even though it was trainable: in bf16, its updates are too small to register. The 8 judge-scored evals waited about 9.5 h because every gpu-be GPU was busy. The 4 frozen-side evals have been running since 12:45; the 4 reference-side evals are still waiting for a GPU. The paired test that decides the 3-seed reading (2 of 3) is chained after all 8. Nothing launched or patched. STATE.md rewritten; ledger note and probes recorded; checks 188699 and 188700 marked closed.", "launched": [], "verdicts": [{"jobid": "188699", "verdict": "closed", "note": "frozen seed 44, full epoch: every compressor and connector weight changed 0.0%; decoder lora_B 66.7%"}, {"jobid": "188700", "verdict": "closed", "note": "reference seed 44: compressor lora_B 74.1%, connec
+== final:
+{"next":"wake-when","wake_when":"job:188701 max 8h","summary":"Wake 9 (scheduled; the 16 h wait had run out). Seed 44 is the third seed, which breaks the two-seed tie. Both seed-44 finetunes completed with exit 0 and no NaN. Frozen run (only the decoder LoRA, the small trainable add-on, trains): 8.7 h, 71.5 s/step, final eval loss .427, peak GPU memory 50.0 GB. Reference run (trains everything): 11.6 h, 95.1 s/step, final eval loss .401, peak 34.0 GB. Weight-change checks: in the frozen run every compressor and connector weight changed 0.0%, so the freeze held over a full epoch. In the reference run the compressor LoRA changed 74.1% and the connector MLP 20.7%, so the check does see movement. The connector norm gain changed 0.0% even though it was trainable: in bf16, its updates are too small to register. The 8 judge-scored evals waited about 9.5 h because every gpu-be GPU was busy. The 4 frozen-side evals have been running since 12:45; the 4 reference-side evals are still waiting for a GPU. The paired test that decides the 3-seed reading (2 of 3) is chained after all 8. Nothing launched or patched. STATE.md rewritten; ledger note and probes recorded; checks 188699 and 188700 marked closed.","launched":[],"verdicts":[{"jobid":"188699","verdict":"closed","note":"frozen seed 44, full epoch: every compressor and connector weight changed 0.0%; decoder lora_B 66.7%"},{"jobid":"188700","verdict":"closed","note":"reference seed 44: compressor lora_B 74.1%, connector MLP 20.7% (check sees movement); norm gain 0.0% over a full epoch (bf16 updates too small to register)"}],"gripes":["gap: grid shows '-' for every factor of chained eval cells until the job prints its FACTORS line; record launch-time factors at submission"]}
+== rc=0 secs=177
+== verify: 7/11
