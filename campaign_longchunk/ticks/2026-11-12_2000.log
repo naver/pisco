@@ -1,0 +1,89 @@
+== campaign longchunk wake 2026-11-12_2000  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794481202 live=188466:RUNNING,188469:RUNNING,188468:RUNNING,188712:PENDING,188711:PENDING,188710:PENDING,188709:PENDING,188708:PENDING,188707:PENDING running=3 pending=6 problems=0 problems_other=0 new=0 gpuh24=122.0 idle_h=0.0 min_util=98 alert=0 unpushed=43 cron=3 daemon=1 disk_gb=12034 sig=38981c43 same=6 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json_max_24h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json (exists)   (NEXT was: wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json max 24h)
+== session 6a1a5346-193a-4dbb-9a62-fd123baa707c  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+17 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/6a1a5346-193a-4dbb-9a62-fd123baa707c/tool-results/bnfeqk18y.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-12_2000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+204 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ 1	# Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+26 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 89	## Deliverable — how results reach the owner (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 2>&1 | tail -45
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+40 lines)
+Woken because the 1,024-token arm wrote its step-2,000 checkpoint. Reading its held-out loss and checking the control's image stage and finetunes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; ls; python3 - <<'EOF' ⏎ import json ⏎ for p in ['pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json']: ⏎     s=json.load(open(p)) ⏎     ev=[h for h in s['log_history'] if 'eval…
+  ↳ build_msmarco_docs.sbatch (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; sacct -j 188467,188468,188469 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList -P; ls pt_mm_cml256 ft_cml256_s42 ft_cml256_s43; ls pt_mm_cml256/model 2>/dev/null | head; grep -h "sa…
+  ↳ JobID|State|ExitCode|Elapsed|Start|End|NodeList (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; du -sh ft_cml256_s42/checkpoint-100; ls ft_cml256_s42/checkpoint-100; tail -c 600 ft_cml256_s42/train.log; echo; tail -c 400 ft_cml256_s43/train.log; echo; grep -n "preview" /beegfs/scra…
+  ↳ 4.1G	ft_cml256_s42/checkpoint-100 (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; du -sh expQ/longchunk/ft_cml256_s42/checkpoint-100/* | sort -h | tail -6; grep -E "WRITE_ROOTS|MAX_TRAIN|MAX_SUBMIT" campaign_longchunk/campaign.conf; expmon runs 2>/dev/null | grep -E "^18859[45]|^188…
+  ↳ 15K	expQ/longchunk/ft_cml256_s42/checkpoint-100/rng_state.pth (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,60p eval_mm_4b.sh; grep -n "188594" EXPERIMENTS.md | head -3; cat expQ/188594/manifest.json 2>/dev/null | head -40; ls expQ/188594
+  ↳ Exit code 2 (+64 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py | cut -c1-8,33-; stat -c '%y %n' eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py expQ/longchunk/ft_cml256_s4?/ch…
+  ↳ 50abc167  eval_mm_4b.sh (+10 lines)
+The control's finetunes are at step ~100 of 437; their step-100 checkpoints get rotated out around 00:40. Saving copies so later arm previews can pair against them, then queuing the previews.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; for s in 42 43; do d=ft_cml256_s${s}_step100/checkpoint-100; mkdir -p $d; for f in chat_template.jinja config.json connector.pt tokenizer_config.json tokenizer.json trainer_state.json rn…
+  ↳ 3.1G	ft_cml256_s42_step100 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "training_args\|scheduler.pt\|optimizer.pt\|trainer_state" pisco/model.py scripts/eval_mm_docqa.py | head
+  ↳ (Bash completed with no output)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp longchunk --stage eval --parent 188468 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh $R/expQ…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 eval_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42_step100/checkpoint-100 pisco 300 /beegfs/ (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=/beegfs/scratch/user/hdejean/pisco; for s in 42 43; do P=$([ $s = 42 ] && echo 188468 || echo 188469); C=$R/expQ/longchunk/ft_cml256_s${s}_step100/checkpoint-100; PX=1003520 expmon launch --exp longc…
+  ↳ Submitted batch job 188980 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; python3 - <<'EOF' ⏎ import json ⏎ s=json.load(open('pt_mm_cml256/checkpoint-1562/trainer_state.json')) ⏎ lh=s['log_history'] ⏎ ev=[h for h in lh if 'eval_loss' in h]; tr=[h for h in lh i…
+  ↳ 1562 1562 n_eval 7 (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; stat -c '%y' pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json; sacct -j 188466 -X -o Start,TimeLimit,NodeList -P | tail -1; python3 -c " ⏎ import json;s=json.load(open('pt_te…
+  ↳ 2026-11-12 19:43:46.000000000 +0900 (+2 lines)
+Step-2,000 loss is healthy (train 2.17 → .81, held-out .611, no NaN). Recording the probe, the stage-2 verdict and the preview notes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 188466 --step 2000 eval_loss=0.611 eval_rougeL=0.790 docs_seen=384000 2>&1 | tail -2 ⏎ expmon verdict 188467 closed "C256 stage 2 COMPLETED 19:12 h on homer-020, exit 0, 1,562/1,562 steps …
+  ↳ probe recorded: 188466 @2000 (eval_loss=0.611 eval_rougeL=0.790 docs_seen=384000)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+6 lines)
+→ Bash: squeue -j 188980,188981,188982,188983 -o "%.8i %.8T %.10M %.12R" 2>&1
+  ↳ JOBID    STATE       TIME NODELIST(REASON) (+4 lines)
+Previews are queued behind priority; the saved copies make the wait safe. Updating known issues, tightening the preview rule, and rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; python3 - <<'EOF' ⏎ p='known_issues.md'; t=open(p).read() ⏎ row="| a finetune's `checkpoint-100` (the law's preview point) vanishes at step 300: `save_total_limit: 2` in the finetune…
+  ↳ CAMPAIGN.md:1 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "decision: longchunk wake 2026-11-12 20:00 — L1024 stage 1 (188466) healthy at step 2000 (384k of 1M docs): train 2.17->.81, held-out .611, no NaN; ends ~11-14 09:00. Control stage 2 (18846…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+The 1,024-token arm is healthy at step 2,000 of 5,208, and the control's image stage has finished cleanly. There is still no accuracy number for any arm.
+
+**Done this wake**
+- **1,024-token arm, stage 1 (text pretraining):** 384,000 of 1M documents seen. Train loss fell from 2.17 to 0.81. Held-out loss is 0.611 on 64 rows, with no NaN, so the run has not collapsed. It should end around 2026-11-14 09:00, well before its time limit.
+- **Control (256-token chunks), stage 2 (image training):** finished in 19.2 h on 100k rows, exit 0. Final held-out loss is 0.785. Marked closed.
+- **Control finetunes (seeds 42 and 43):** both are past step 100 of 437. Held-out loss at step 100 is 0.465 and 0.468.
+- **Early-look evals queued:** 4 cells of 300 questions each, judge chained, on documents and on the long-chunk HotpotQA set. Each later arm's step-100 early look will be compared against these, at the same step and seed.
+- **Step-100 checkpoints saved:** the finetune keeps only its 2 newest checkpoints, so it would delete step 100 at step 300 (around 00:40). The sibling freeze campaign lost its pairing point this way. I copied the model files to `expQ/longchunk/ft_cml256_s4{2,3}_step100`, and the early-look evals read those copies.
+- **Records:** I added this rule to the campaign law and a matching row to the known-issues file. I also filed two complaints about the expmon tool: probe numbers must be typed by hand, and nothing warns when a checkpoint will be rotated away.
+
+**Running now**
+- The 1,024-token stage 1 and both control finetunes, which should end around 04:10 and 04:45 on 2026-11-13.
+- The 6 control evals that decide the comparison, chained on the finetunes.
+- The 4 early-look evals, waiting for a free GPU on the shared partition.
+
+**Next**
+- The next wake comes when all 10 evals have left the queue (around 2026-11-13 06:00, 18 h at most). A failure wakes it earlier.
+- The 2,048-token arm launches only after the 1,024-token stage 1 ends, and only if budget allows. So far 8.1 of the 38 GPU-days are spent, and the full plan projects to 35.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "L1024 stage 1 healthy at step 2000 (384k of 1M docs; train 2.17->.81, held-out .611, no NaN; ends ~11-14 09:00). Control stage 2 188467 COMPLETED (19:12 h, held-out .785) -> verdict closed. Control finetune…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7170 turns=28 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "L1024 stage 1 healthy at step 2000 (384k of 1M docs; train 2.17->.81, held-out .611, no NaN; ends ~11-14 09:00). Control stage 2 188467 COMPLETED (19:12 h, held-out .785) -> verdict closed. Control finetunes past step 100 (held-out .465/.468). Preserved their checkpoint-100 (save_total_limit=2 deletes it at step 300) and queued the 4 law previews (docs + g10, 300 Q, judge) as the pairing point for later arm previews. Law tightened (preview row), known_issues row added, STATE.md rewritten. Budget 8.1 of 38 GPU-days spent, projection 35.", "launched": ["188980", "188981", "188982", "188983"], "verdicts": [{"jobid": "188467", "verdict": "closed", "note": "C256 stage 2 completed 19:12 h, 1,562/1,562 steps, held-out loss .785, no NaN"}], "gripes": ["gap: expmon probe needs numbers typed by hand from trainer_state.json; suggest --from-ckpt", "wish: warn/pin when a law-named preview checkpoint will be rotated away by save_total_limit"], "wake_when": "job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983 max 18h"}
+== final:
+{"next":"wake-when","summary":"L1024 stage 1 healthy at step 2000 (384k of 1M docs; train 2.17->.81, held-out .611, no NaN; ends ~11-14 09:00). Control stage 2 188467 COMPLETED (19:12 h, held-out .785) -> verdict closed. Control finetunes past step 100 (held-out .465/.468). Preserved their checkpoint-100 (save_total_limit=2 deletes it at step 300) and queued the 4 law previews (docs + g10, 300 Q, judge) as the pairing point for later arm previews. Law tightened (preview row), known_issues row added, STATE.md rewritten. Budget 8.1 of 38 GPU-days spent, projection 35.","launched":["188980","188981","188982","188983"],"verdicts":[{"jobid":"188467","verdict":"closed","note":"C256 stage 2 completed 19:12 h, 1,562/1,562 steps, held-out loss .785, no NaN"}],"gripes":["gap: expmon probe needs numbers typed by hand from trainer_state.json; suggest --from-ckpt","wish: warn/pin when a law-named preview checkpoint will be rotated away by save_total_limit"],"wake_when":"job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983 max 18h"}
+== rc=0 secs=450
+== verify: 10/11

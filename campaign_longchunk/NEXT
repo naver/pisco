@@ -1,1 +1,1 @@
-wake-when file:/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json max 24h
+wake-when job:188707,188708,188709,188710,188711,188712,188980,188981,188982,188983 max 18h
