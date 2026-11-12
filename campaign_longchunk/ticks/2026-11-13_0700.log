@@ -1,0 +1,66 @@
+== campaign longchunk wake 2026-11-13_0700  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794520802 live=188466:RUNNING,188712:PENDING,188711:PENDING,188709:PENDING,188708:PENDING,188707:PENDING,188710:PENDING running=1 pending=6 problems=1 problems_other=0 new=0 gpuh24=129.7 idle_h=0.0 min_util=100 alert=0 unpushed=59 cron=3 daemon=1 disk_gb=11392 sig=d2a11004 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188707,188708,188709,188710,188711,188712_max_18h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 3663e1d7-afb0-41e4-be12-bde5ba101c41  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+23 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3663e1d7-afb0-41e4-be12-bde5ba101c41/tool-results/b64fvdn7i.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_0700   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+249 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; sed -n '/^Downstream of stage 1/,/^## Patchable/p' CAMPAIGN.md
+  ↳ Downstream of stage 1, every arm uses EXACTLY the control's commands, only the init model changes: (+76 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat STATE.md
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+68 lines)
+Checking the finished control finetunes and the three preview evals that ended without a recorded score.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 188468,188469,188980,188982,188983,188710 -X --format=JobID,State,ExitCode,Elapsed,Start,End,NodeList%12 2>&1 | head -20; ls -la expQ/longchunk/ | head -40
+  ↳ JobID             State ExitCode    Elapsed               Start                 End     NodeList  (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; for d in ft_cml256_s42 ft_cml256_s43 ft_cml256_s42_step100 ft_cml256_s43_step100; do echo "== $d"; ls -la $d; ls -la $d/eval 2>/dev/null; done
+  ↳ == ft_cml256_s42 (+47 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188980 188982 188983; do echo "== $j"; f=$(ls expQ/*/eval_mm_4b_${j}.out expQ/${j}/*.out 2>/dev/null | head -1); echo $f; grep -iE "judge|^em|match|anls|node|host|SLURM_NODELIST|unparse" "$f" …
+  ↳ == 188980 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/188980 expQ/188983 2>&1 | head; find . -maxdepth 3 -name "*188980*" -o -maxdepth 3 -name "*188983*" 2>/dev/null | head
+  ↳ ls: cannot access 'expQ/188980': No such file or directory (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188980 188982 188983; do echo "== $j"; grep -E "judge|em=|EM|match|ANLS|anls|homer|unparse|rows" eval_mm_4b_${j}.out | tail -10; done
+  ↳ == 188980 (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188980 188982 188983; do echo "== $j"; awk '/\[judge\].*176\/300/{f=1} f' eval_mm_4b_${j}.out | head -30; grep -m3 -E "homer-|Restart|node" eval_mm_4b_${j}.out; done; sacct -j 188980,188982,18…
+  ↳ == 188980 (+42 lines)
+Recording the three finished control previews next; first reading the finetunes' final held-out losses and the 1,024-token run's progress.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188468 188469; do f=$(ls ft_mm_4b_${j}.out expQ/*/ft_mm_4b_${j}.out 2>/dev/null | head -1); echo "== $j $f"; grep -oE "'eval_loss': [0-9.]+|'epoch': [0-9.]+" "$f" | paste - - | tail -6; grep -…
+  ↳ Exit code 2 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls *188468* *188469* *188466* 2>/dev/null; ls expQ/longchunk/*/*.out 2>/dev/null | head
+  ↳ ft_mm_4b_188468.out (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in ft_mm_4b_188468.out ft_mm_4b_188469.out; do echo "== $f"; grep -oE "'eval_loss': '?[0-9.]+|'epoch': '?[0-9.]+" "$f" | paste - - | tail -6; grep -oE "train_loss'?: '?[0-9.]+" "$f" | tail -1; gr…
+  ↳ == ft_mm_4b_188468.out (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; date; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; ls -la --time-style=+%m-%d_%H:%M eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_do…
+  ↳ Fri Nov 13 07:02:05 AM KST 2026 (+9 lines)
+→ Bash: expmon probe --help 2>&1 | head -20
+  ↳ (Bash completed with no output)
+→ Bash: expmon help 2>&1 | grep -iE "probe|verdict|note" | head -10; grep -n "188981" /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md | head -5
+  ↳ to a PASS/FAIL verdict; blocking — background it. Rungs land in the (+14 lines)
+Recording the three preview scores and the finetune results in the ledger now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon probe 188980 --step 100 judge=0.5967 n_q=300 em=0.467 match=0.530 anls=0.549 2>&1 | tail -1 ⏎ expmon probe 188982 --step 100 judge=0.6033 n_q=300 em=0.470 match=0.520 anls=0.551 2>&1 | tail -…
+  ↳ probe recorded: 188980 @100 (judge=0.5967 n_q=300 em=0.467 match=0.530 anls=0.549)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 188468 closed "C256 finetune s42 done: 28k rows (1.0 epoch), exit 0, held-out .367 at step 437, no NaN; its scores come from evals 188707-188709" 2>&1 | tail -1 ⏎ expmon verdict 18846…
+  ↳ ⚠ the note states no n (cells / pairs / queries, e.g. n=12, 12/12, 12 of 12, 12 clips), p or control — a closing number without its denominator is not a result (law: Decision gates; VOID / superseded  (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict 2>&1 | grep -E "18846[89]" | head; cat campaign_longchunk/known_issues.md | head -40
+  ↳ 188468     closed     2026-11-13 07:02 C256 finetune s42 done: 28k rows (1.0 epoch), exit 0, held-out .367 at step 437, no NaN; its scores come from evals 188707-188709 (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "188476" EXPERIMENTS.md | head -4; grep -rn "el9_8" campaign_probes/known_issues.md campaign_freeze/known_issues.md 2>/dev/null | head -5
+  ↳ 609:- 2026-11-11 04:12 [job 188458] result: the law's fix check FAILS its letter but not on the fix: reference model plain, first 300 document questions, on homer-008 (kernel el9_7): EM .490 vs .477 r (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -c 1500 campaign_longchunk/ticks/2026-11-13_0700.log; grep -iE "woken|problem|reason" campaign_longchunk/ticks/2026-11-13_0700.log | head
+  ↳ == campaign longchunk wake 2026-11-13_0700  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code) (+10 lines)
+Writing the new state file and the closing ledger entry.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon note "decision: longchunk wake 2026-11-13 07:00 — woken by the preemption of control eval g10 s43 (188710, gpu-be, requeued, benign). Control finetunes done: s42 188468 (28k rows, 12:53 h, he…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "No failures. The wake was triggered by a benign preemption: the control's seed-43 grouped-HotpotQA eval (188710) was preempted on gpu-be and requeued. Both control finetunes finished cleanly: seed 42 (18846…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4355 turns=27 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "No failures. The wake was triggered by a benign preemption: the control's seed-43 grouped-HotpotQA eval (188710) was preempted on gpu-be and requeued. Both control finetunes finished cleanly: seed 42 (188468) and seed 43 (188469), 28k rows each (1.0 epoch), final held-out loss .367 / .370, no NaN; both closed. The last 3 control step-100 previews also finished (300 questions each, all provisional, used only as pairing points): documents .597 (seed 42) and .603 (seed 43), grouped HotpotQA .570 (seed 43) against .603 for seed 42. So the two seeds differ by 3.3 points on grouped HotpotQA at this size, and a smaller preview gap is noise. Probes and verdicts are recorded. The 1,024-token arm's stage 1 (188466) is healthy at 572k of 1M documents and should end around 2026-11-14 08:30. The 6 gating control evals (1,500 questions each, judge chained) are queued: 2 running on homer-019, 4 pending with estimated starts between 07:25 and 16:00. The eval code md5s are unchanged. Spend so far is about 256 GPU-h (10.7 of 38 GPU-days). Nothing was launched. STATE.md was rewritten and NEXT keeps the same wait.", "launched": [], "verdicts": [{"jobid": "188980", "verdict": "closed", "note": "control documents preview s42 step 100: judge .597, n=300, provisional pairing point"}, {"jobid": "188982", "verdict": "closed", "note": "control documents preview s43 step 100: judge .603, n=300, provisional pairing point"}, {"jobid": "188983", "verdict": "closed", "note"
+== final:
+{"next":"wake-when","summary":"No failures. The wake was triggered by a benign preemption: the control's seed-43 grouped-HotpotQA eval (188710) was preempted on gpu-be and requeued. Both control finetunes finished cleanly: seed 42 (188468) and seed 43 (188469), 28k rows each (1.0 epoch), final held-out loss .367 / .370, no NaN; both closed. The last 3 control step-100 previews also finished (300 questions each, all provisional, used only as pairing points): documents .597 (seed 42) and .603 (seed 43), grouped HotpotQA .570 (seed 43) against .603 for seed 42. So the two seeds differ by 3.3 points on grouped HotpotQA at this size, and a smaller preview gap is noise. Probes and verdicts are recorded. The 1,024-token arm's stage 1 (188466) is healthy at 572k of 1M documents and should end around 2026-11-14 08:30. The 6 gating control evals (1,500 questions each, judge chained) are queued: 2 running on homer-019, 4 pending with estimated starts between 07:25 and 16:00. The eval code md5s are unchanged. Spend so far is about 256 GPU-h (10.7 of 38 GPU-days). Nothing was launched. STATE.md was rewritten and NEXT keeps the same wait.","launched":[],"verdicts":[{"jobid":"188980","verdict":"closed","note":"control documents preview s42 step 100: judge .597, n=300, provisional pairing point"},{"jobid":"188982","verdict":"closed","note":"control documents preview s43 step 100: judge .603, n=300, provisional pairing point"},{"jobid":"188983","verdict":"closed","note":"control grouped-HotpotQA preview s43 step 100: judge .570, n=300, provisional pairing point"},{"jobid":"188468","verdict":"closed","note":"control finetune s42 done: 28k rows, 1.0 epoch, held-out .367, exit 0"},{"jobid":"188469","verdict":"closed","note":"control finetune s43 done: 28k rows, 1.0 epoch, held-out .370, exit 0"}],"gripes":["gap: the brief's Sensors block omits the triggering tick's own line (problems=1), and its ✗ list showed only OK lines, so the wake reason had to be dug out of ticks/<ts>.log; suggest putting the triggering sensor line first and naming the job + check line"],"wake_when":"job:188707,188708,188709,188710,188711,188712 max 18h"}
+== rc=0 secs=198
+== verify: 11/14
