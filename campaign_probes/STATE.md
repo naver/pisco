@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-12 09:30-09:40 KST (alert: "no campaign GPU job for 24 h", the expected result of the unanswered
-cap question; nothing else changed since 2026-11-11 09:50)
+last wake: 2026-11-12 23:30-23:45 KST (woken by the owner's answer: cell cap raised 60 → 65, option A; four cells
+queued, the fifth kept as the one health relaunch)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -52,12 +52,12 @@ cap question; nothing else changed since 2026-11-11 09:50)
   `eval_data/probes_textvqa_ocr` (job 188545): 500 TextVQA rows, 500/500 questions matched.
 
 **Provisional (one seed, or a tie the law wants repeated)**
-- provisional (a tie at one seed; the law's repeat at seed 43 was not run for the cell cap): evidence-then-answer on
-  documents gains nothing at seed 42: .611 vs .610 = +.001 [−.017, +.021], 108 / 106, p=.95, n=1,500, slots 1.000×
-  (job 188439, verdict closed; file from the homer-011 attempt, same node as 184781).
-- provisional (one seed): keeping only the most-attended QUARTER still ties plain. 184778, documents, n=1,500, slots
-  .246×: .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500 identical (job 188538, verdict best,
-  homer-013). Seed 43 not run (cell cap: BLOCKED.md asks the owner).
+- provisional (a tie at one seed; its seed-43 repeat 189058 is queued): evidence-then-answer on documents gains
+  nothing at seed 42: .611 vs .610 = +.001 [−.017, +.021], 108 / 106, p=.95, n=1,500, slots 1.000× (job 188439,
+  verdict closed; file from the homer-011 attempt, same node as 184781).
+- provisional (one seed; its seed-43 repeat 189056 is queued): keeping only the most-attended QUARTER still ties
+  plain. 184778, documents, n=1,500, slots .246×: .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500
+  identical (job 188538, verdict best, homer-013).
 - provisional (one seed, no blind control on photos): the attention half ties plain on photos. 184778,
   `mm_naturalqa_1500`, n=1,500, slots .492×: .677 vs .677, +.000 [−.013, +.013], 49 / 49 (job 188539, verdict closed).
 - provisional: the instrument gives the same answers on re-run on every node tested except homer-008: plain document
@@ -76,62 +76,90 @@ cap question; nothing else changed since 2026-11-11 09:50)
   .718 (−.019 [−.041, +.003], p=.11, job 188446); uncompressed .807 = .807 (job 188457). The law's ".695" baseline is
   model 183814 with 256-token chunks (job 185775); the arm uses the reference model 184778 with one chunk per passage
   (job 188445, .718).
-- provisional (not a gate, derived from the two arm G cells): per extra decoder token, rate 4 on the picked page
-  recovers about twice what the raw page does: +.063 / 107.5 tokens ≈ .059 per 100 tokens (s42) vs +.210 / 753 ≈ .028.
+- provisional (not a gate, a wake-designed ratio from the two arm G cells, no CI, no control): per extra decoder token,
+  rate 4 on the picked page recovers more than the raw page does: seed 42 +.063 / 107.5 tokens ≈ .059 per 100 tokens
+  vs raw +.210 / 753 ≈ .028 (about 2×, jobs 188590 / 188441); seed 43 .049 / 107.5 ≈ .046 vs .207 / 753 ≈ .027
+  (about 1.7×, jobs 188591 / 188460).
 
-**Open, and running** (0 campaign jobs at 2026-11-12 09:35)
-- none running. Every arm is decided or closed for the cell cap (60 of 60 used).
-- owner: BLOCKED.md asks to raise the cell cap 60 → 65 (keep a quarter at seed 43 is the main reason).
+**Open, and running** (4 campaign cells queued at 2026-11-12 23:40, all PENDING for Priority on gpu-be)
+- arm E, keep a quarter of the slots at seed 43 (job 189056) — decides whether "three quarters of the slots go
+  unused per question" holds at both seeds.
+- arm E, keep an eighth of the slots at seed 42 (job 189057) — finds where slot dropping starts to cost.
+- arm A, evidence-then-answer at seed 43 (job 189058) — the law's repeat after the seed-42 tie.
+- arm F, TextVQA questions answered from OCR text instead of pixels, seed 42 (job 189059) — reported only.
 
 ## What happened this wake
-- ALERT (09:17): "no campaign GPU-second for 24.0 h — a gate failing closed?". Not a closed gate: the campaign is
-  idle because all 60 of 60 cells are used and the owner question in BLOCKED.md (raise the cap 60 → 65, expmon id
-  f81678) has had no answer for 24 h; `expmon campaign` says `armed: yes`. ALERT deleted, known_issues row added,
-  gripe filed (the idle watchdog should stay quiet while NEXT = `waiting-owner` and a question is open), ledger
-  decision written.
-- ✗ lines in the brief: none (every campaign line in `expmon check` is OK; the running and pending jobs belong to
-  the sibling campaigns `longchunk` and `freeze`).
-- Verifier: 15 supported, 8 provisional, 0 unsupported. Every provisional line it lists is already marked
-  provisional below; nothing to fix.
-- Nothing launched.
+- Owner answer (file dated 2026-11-12 23:14, question f81678): option A, cell cap 60 → 65. Executed: the new cap
+  and the five cells it buys are written in CAMPAIGN.md "Budget and caps" (citing the answer); the arm rows A, E and F
+  name the queued jobs. The answer file is deleted; BLOCKED.md is deleted (its only question is answered).
+- Launched 4 cells (cells 61-64 of 65), each `expmon launch --force --exp probes` (the `--force` is known issue row 29:
+  the closed-arm guard matches every factorless cell to 188444; each cell dir was new and empty), dry-run first,
+  `-p gpu-be --exclude=homer-[005-009]`, on a new symlinked model dir. The 65th cell is NOT launched: it is the one
+  health relaunch, kept for whichever of the four fails its health check.
+- Placement: `gpu-be` (default) — 3 usable free A100s (homer-012 ×2, homer-016), so gpu-be is not jammed; the owner's
+  `gpu` partition already holds 6 of its 8 GPUs for the sibling `longchunk` campaign (188466 ×4, 188468, 188469).
+- Eval code unchanged since the cells it is compared with: md5 `eval_mm_4b.sh` 50abc167, `scripts/eval_mm_docqa.py`
+  dfe32aa0, `scripts/judge_mm_docqa.py` 02bc8748. The file's last edit (2026-11-11 06:45) touched only the arm G
+  dense branch (ledger 06:47), so the keep-slots, expand and text paths are those of 188538 / 188439 / 188539.
+- `pisco_text` on `probes_textvqa_ocr` is a new mode/path pair: read `main()` → `gen_pisco(text_only=True)`, which
+  drops the images and compresses `docs` (OCR tokens; an empty OCR becomes " "). The flag reaches the branch.
+- HARNESS BUG: the wake hook errored ("the guard failed on this call (error): refused to be safe") on every
+  `expmon note -j <id> …` call (3 tries); `expmon launch`, `ledger`, `gripe` passed. Gripe filed; known_issues row
+  added. The four launch intents are therefore recorded in "Owned jobs" below, not in the ledger.
+- ✗ lines in the brief: none for this campaign (the 4 others belong to sibling campaigns).
+- Verifier (VERIFY.md of the 11-12 09:30 state): 8 lines provisional, 0 unsupported; all were already marked
+  provisional. Fixed this wake: the arm G per-token ratio now quotes seed 43 too (about 1.7×, not 2×).
 
-## Owned jobs (jobid | arm | state at 2026-11-12 09:35 | node | note)
-(none running)
+## Owned jobs (jobid | cell | arm | state at 23:40 | intent — the ledger note the guard refused)
+| job | cell dir (`expQ/probes/…`) → model | arm | state | intent |
+|---|---|---|---|---|
+| 189056 | `e_keep025_attng_s43` → 184780 | E | PENDING | cell 61. `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `mm_docqa_1500_1m`, 1,500 Q, judge chained. Baseline plain 184784 .615 (homer-016, el9_8). Gate (written 2026-11-11 before the s42 cell): within .02 of plain at both seeds → three quarters of the slots unused per question; a loss ≥ .05 → the free share lies between 1/2 and 3/4. `--time 4:54:00` = slowest docs cell (184781, 98 min) × 3 |
+| 189057 | `e_keep0125_attng` → 184778 | E | PENDING | cell 62. `KEEPF=0.125 KEEPM=attn_global PX=1003520`, documents, 1,500 Q. Baseline plain 184781 .610 (homer-011). Gate (written 2026-11-11 before any cell): within .02 → seven eighths unused; a loss ≥ .05 → the free share lies between 3/4 and 7/8. One seed = provisional. `--time 4:54:00` |
+| 189058 | `a_expand_s43` → 184780 | A | PENDING | cell 64. `STYLE=expand PX=1003520`, documents, 1,500 Q. Baseline plain 184784 .615. Gate ≥ +3 pt with CI above 0 at both seeds (s42 +.001). `--time 5:12:00` = slowest expand docs cell (174852, 104 min) × 3 |
+| 189059 | `f_text_s42` → 184778 | F | PENDING | cell 63. mode `pisco_text`, `PX=1003520` (file suffix only), `eval_data/probes_textvqa_ocr`, 500 rows. Pair on query_id with the 500 TextVQA rows of 184778's photo file (`expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json`, cell 184783, homer-011). Reported only; a gain ≥ 5 pt motivates a mixed-input arm. Text ceiling: a gold answer is verbatim in the OCR on .596 of rows. `--time 2:12:00` (no measured cell of this kind; 500 short rows) |
 
 ## Adopted jobs
-(none. 188422, 188466-188470 belong to the sibling `longchunk` campaign; 188582-188585 to `freeze`.)
+(none. 188466-188469, 188707-188712, 188980-188983 belong to the sibling `longchunk` campaign.)
 
 ## Open arms and the next decision for each
 | arm | status | next action |
 |---|---|---|
-| A. use-recovery | decided: route1 adopted, int8 adopted, gold-only closed, evidence-then-answer closed at one seed (provisional tie) | expand s43 only if the cap is raised |
+| A. use-recovery | route1 adopted, int8 adopted, gold-only closed; evidence-then-answer a tie at s42 | when 189058 ends: health, pair with 184784 (same node image), decide the arm at both seeds |
 | B. long-chunk mechanism | closed | none |
 | C. reasoning vs reading | closed for budget | none |
 | D. page picking | decided, caveat: rule chosen in-sample | none |
-| E. attention-guided pruning | half adopted (both seeds); quarter met at s42 | if the cap is raised: `e_keep025_attng_s43` (→ 184780, parent 184784, `KEEPF=0.25 KEEPM=attn_global PX=1003520`, `--time 4:54:00`) and `e_keep0125_attng` (→ 184778, parent 184781, `KEEPF=0.125`); dirs to create with the symlink rule |
-| F. photo text vs pixels | set built (188545) | only if the cap is raised: `f_text_s42` → 184778 symlink, `pisco_text "" eval_data/probes_textvqa_ocr`, PX=1003520, `--time 2:12:00`, paired on query_id with the TextVQA rows of 184783's photo file (n=500) |
+| E. attention-guided pruning | half adopted (both seeds); quarter met at s42 | when 189056 ends: pair with 184784 → quarter at both seeds; when 189057 ends: pair with 184781 → eighth gate (one seed, provisional) |
+| F. photo text vs pixels | s42 cell 189059 queued | when it ends: pair its 500 rows with the TextVQA rows of 184783 on query_id; report the difference, the slot ratio, and the OCR ceiling (.596) |
 | G. route then densify | closed (both seeds below the gate) | none |
 
 ## Health and budget
-- cells: 60 of 60 used (every submission counts, killed ones too; 188546 counted by hand). A launch needs the owner.
-- GPU-hours of 40: tick sensor 0.5 GPU-h in the last 24 h at 2026-11-12 09:30 (the tail of the 11-11 cells; no campaign GPU
-  job since 11-11 09:15).
-- gpu-be preempted 8+ campaign attempts on 2026-11-11; the two arm G cells were not preempted.
+- cells: 64 of 65 used (61-64 = 189056-189059); the 65th is the ONE health relaunch (a cell failing `unparseable: 0`,
+  its row count, or its slot ratio). A preemption requeue is free. Nothing else may launch without the owner.
+- GPU-hours of 40: tick sensor 0.0 GPU-h in the last 24 h at 2026-11-12 23:30; the four cells add about 3-4 GPU-h.
+- gpu-be preempts often (8+ campaign attempts on 2026-11-11; 3 sibling previews on 2026-11-12 22:11-22:31). At each
+  wake compare each cell's `eval/` file mtime with `sacct -j <id> -D -o NodeList,End` (known issue row 28).
+- Pairing nodes: every image cell needs its node from the attempt that wrote its file (same node rule).
 
 ## Next wake
-Only the owner can unblock (NEXT = `waiting-owner`). If the cap is raised: launch the cells in the arm table above
-(quarter s43 first), each `--exclude=homer-[005-009]`, symlink rule, dry-run first. If the owner chooses to keep 60:
-close-out is NOT due before 2027-02-09; the owner disarms.
+- NEXT = `wake-when job:189056,189057 job:189058,189059 max 18h`: wakes when both arm E cells have left the queue
+  (SLURM estimate at 23:40: starts 07:45 / 08:15 on 11-13) or both others (estimates 12:30 / 17:30), whichever
+  pair is first; a failure or a preemption-✗ wakes earlier. Decide the ended pair, then wait on the rest.
+- For each finished cell: `unparseable: 0`, row count (1,500; 500 for 189059), node of the attempt that wrote the file,
+  `scripts/paired_judge.py` against its baseline (CI, McNemar), slot ratio from `mems_used`; then `expmon verdict`,
+  `expmon probe <id> judge=…`, one ledger note per decided arm (try `expmon note` once; if the guard still errors,
+  STATE.md), rewrite `docs/probe_campaign_2026-11.md`, refresh `expmon display --exp probes`.
+- When all four are decided and no health relaunch is needed: every arm is decided or closed for the cap → NEXT
+  `waiting-owner` is wrong (no question) → write a close-out proposal for the owner or `done`.
 
 ## Blockers / needs the owner
-- BLOCKED.md: raise the cell cap 60 → 65 (recommended) so the keep-a-quarter result gets its second seed.
+- none. (Harness bug for the expmon owner, not for this campaign's plan: the wake hook crashes on `expmon note`; gripe filed.)
 
 ## Proposals for the sibling `longchunk` campaign (training is not this campaign's job)
 - Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question) rather than
   random long chunks: +.067-.073 with the golds together (both seeds), +.058 on the tail layout. Joining all ten:
   +.035 (seed 42) / +.014 n.s. (seed 43). A ranker's top 3 joined does no better than all ten.
 - A query-aware slot budget (nested-budget training): half the slots, picked by the decoder's attention with the
-  question, lose nothing at both seeds; a quarter loses nothing at seed 42.
+  question, lose nothing at both seeds; a quarter loses nothing at seed 42 (seed 43 queued).
 - A mixed-rate stage 2 (the picked page at rate 4, others at rate 8): untrained, rate 4 on the picked page gains
   +.063 / +.049 at 1/7 of the raw page's extra decoder tokens; whether training at rate 4 closes more of the raw
   page's +.21 is open.
