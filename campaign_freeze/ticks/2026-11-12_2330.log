@@ -1,0 +1,178 @@
+== campaign freeze wake 2026-11-12_2330  reasons=gate,request  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794493802 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=13.4 idle_h=9.9 min_util=- alert=0 unpushed=46 cron=3 daemon=1 disk_gb=11971 sig=ba6a75f0 same=19 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session 1ecf6bdd-2e90-4587-b9e5-f5a72ef6a723  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+17 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/1ecf6bdd-2e90-4587-b9e5-f5a72ef6a723/tool-results/bibgapnft.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-12_2330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+270 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && ls -la && cat REQUEST && echo ---GATE--- && cat GATE && echo ---CAMPAIGN--- && cat CAMPAIGN.md
+  ↳ total 64 (+199 lines)
+→ Bash: cat STATE.md && echo ---KI--- && cat known_issues.md && echo ---CONF--- && grep -E '^CAMP_' campaign.conf
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+164 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && git status --short | head -30 && git log --oneline -3 && grep -n "freeze_compressor\|freeze_norm_gain\|frozen_base_dtype" pisco/model.py | head -60 && wc -l test_freeze.py pisco/model.py
+  ↳ M HANDOFF.md (+39 lines)
+Reading the owner's request: write a split-freeze flag in `pisco/model.py`, test it, then set up arms A1/A2. Now reading the freeze code.
+→ Bash: sed -n 75,100p pisco/model.py && echo ... && sed -n 215,275p pisco/model.py && echo ... && sed -n 605,645p pisco/model.py && echo ... && sed -n 1260,1285p pisco/model.py && echo ---TEST--- && cat test_freeze.py
+  ↳ load_decoder: bool = True, (+229 lines)
+→ Bash: cat expQ/freeze/ft_freeze.sh && echo ---- && ls expQ/freeze/ && grep -n "requires_grad\|param_groups\|connector_lr\|optimizer" pisco/train.py | head -30
+  ↳ #!/bin/bash (+75 lines)
+→ Bash: grep -n "model_config_overrides" -r pisco/*.py | head && grep -n "def from_pretrained" -A40 pisco/model.py | grep -n "overrides\|kwargs\|setattr\|PISCOConfig" | head -20 && cat expQ/freeze/check_module_move.sh | head -60
+  ↳ pisco/train.py:160:        # e.g. +model_config_overrides.frozen_base_dtype=float16 for a V100 finetune. (+57 lines)
+→ Bash: cat .gitignore | head -40; echo ---; ls; echo ---; du -sh pisco; ls pisco; echo ---; find . -maxdepth 3 -name run_tests_cpu.sh; sacct -j 188655 -o JobID,Start,End,Elapsed,NodeList,State -X
+  ↳ # Byte-compiled / optimized / DLL files (+1035 lines)
+→ Bash: cat run_tests_cpu.sh; tail -5 run_tests_cpu_188655.out; ls pisco/outputs | head
+  ↳ #!/bin/bash (+29 lines)
+→ Bash: expmon help 2>&1 | grep -iE "launch|wrap|smoke" | head -20; expmon launch --help 2>&1 | head -40
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+25 lines)
+Next: writing the owner's one-time exception into the law, before touching code.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+→ Bash: mkdir -p expQ/freeze/split_stage campaign_freeze/patches && cp -r pisco expQ/freeze/split_stage/ && cp test_freeze.py test_positions.py test_mm_collators.py expQ/freeze/split_stage/ && md5sum pisco/model.py test_freeze.py expQ/freeze/split_…
+  ↳ e48f99456187b58be355602d22793a1d  pisco/model.py (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage && sed -n 1,30p pisco/model.py | grep -n "import" 
+  ↳ 14:import contextlib (+8 lines)
+Now patching the staged copy of `pisco/model.py`.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py has been updated successfully.
+Now the new test cases (the 5 existing ones untouched).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/test_freeze.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/test_freeze.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/test_freeze.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/test_freeze.py has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && diff -u pisco/model.py expQ/freeze/split_stage/pisco/model.py; diff -u test_freeze.py expQ/freeze/split_stage/test_freeze.py | head -5
+  ↳ --- pisco/model.py	2026-11-11 06:03:47.000000000 +0900 (+82 lines)
+Staged patch looks right. Writing a small CPU test launcher that runs the suite against a given tree.
+→ Write: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/run_tests_freeze.sh
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/run_tests_freeze.sh (file state is current in your context — no need to Read it back)
+→ Bash: chmod +x expQ/freeze/run_tests_freeze.sh && bash -n expQ/freeze/run_tests_freeze.sh && expmon launch --dry-run --exp freeze --stage test expQ/freeze/run_tests_freeze.sh expQ/freeze/split_stage 2>&1 | tail -15
+  ↳ would submit: sbatch expQ/freeze/run_tests_freeze.sh expQ/freeze/split_stage (+3 lines)
+→ Bash: sacct -j 188517,188523,188479,188455,188655 -X -o JobID,Elapsed,State,NodeList 2>&1 | tail -6; gpucap land a100 1 2>&1 | tail -8; squeue -u hdejean -p gpu -h -o "%i %j %b %T" 
+  ↳ ------------ ---------- ---------- ---------------  (+14 lines)
+Capacity: 2 of my 8 `gpu` GPUs are free, so one smoke can go on `gpu` and the other must go on preemptible `gpu-be`. Submitting the staged tests first.
+→ Bash: expmon launch --exp freeze --stage test --time 0:05:00 expQ/freeze/run_tests_freeze.sh expQ/freeze/split_stage 2>&1 | tail -6
+  ↳ job id:  189060 (+5 lines)
+→ Bash: expmon note -j 189060 "intent: split-freeze patch (owner REQUEST 2026-11-12 23:14, one-time Patchable exception): unit tests (test_positions, test_mm_collators, test_freeze 5 old + 5 new) on the STAGED copy expQ/freeze/split_stage before in…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+10 lines)
+Smokes measured at 31–36 min, so the new 20-step smokes get `--time 0:45:00`. Now writing both arms and their gates into the law.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md has been updated successfully.
+Now the two new `ARM)` cases in the recipe file.
+→ Bash: python3 - <<'EOF' 2>/dev/null || echo "no python on login node - use sed" ⏎ EOF ⏎ cp expQ/freeze/ft_freeze.sh /tmp/ft_freeze.sh.orig && md5sum expQ/freeze/ft_freeze.sh
+  ↳ 98feae568627cec603670090b1d82abd  expQ/freeze/ft_freeze.sh
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh has been updated successfully.
+→ Bash: bash -n expQ/freeze/ft_freeze.sh && echo SYNTAX_OK && diff /tmp/ft_freeze.sh.orig expQ/freeze/ft_freeze.sh; expmon status 2>&1 | grep 189060
+  ↳ SYNTAX_OK (+10 lines)
+→ Bash: sed -n 1344,1352p pisco/model.py && sed -n 155,170p pisco/train.py
+  ↳ """ (+24 lines)
+Staged tests are running. Waiting for them with a monitor.
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: sacct -j 189060 -X -o JobID,State,Elapsed -n; tail -30 /beegfs/scratch/user/hdejean/pisco/run_tests_freeze_189060.out
+  ↳ 189060          RUNNING   00:00:51  (+4 lines)
+→ Bash: timeout 420 bash -c 'until sacct -j 189060 -X -n -o State | grep -qvE "RUNNING|PENDING"; do sleep 15; done'; sacct -j 189060 -X -o JobID,State,Elapsed,ExitCode -n; grep -E "pisco.model from|^=== |Ran |OK|FAIL|Error|ok$" /beegfs/scratch/user…
+  ↳ 189060        COMPLETED   00:04:00      0:0  (+40 lines)
+→ Bash: grep -E "pisco.model from|=== test_|^Ran " run_tests_freeze_189060.out
+  ↳ pisco.model from /beegfs/scratch/user/hdejean/pisco/expQ/freeze/split_stage/pisco/model.py (+6 lines)
+Staged tests pass (12/12, 33/33, 10/10, imported from the staged copy). Installing the two files atomically, after checking nobody changed them since staging.
+→ Bash: md5sum pisco/model.py test_freeze.py && [ "$(md5sum < pisco/model.py)" = "e48f99456187b58be355602d22793a1d  -" ] && [ "$(md5sum < test_freeze.py)" = "0198640e2496d6ac0e05f1b54db11349  -" ] && cp expQ/freeze/split_stage/pisco/model.py pisco/…
+  ↳ e48f99456187b58be355602d22793a1d  pisco/model.py (+8 lines)
+Fixing one cosmetic missing space in the new test (`opt =torch`) before the installed-tree test run.
+→ Bash: sed -i 's/^    opt =torch\.optim/    opt = torch.optim/' test_freeze.py expQ/freeze/split_stage/test_freeze.py && grep -n "opt = torch.optim.SGD(\[p for p in m.parameters() if p.requires_grad\], lr=0.1)" test_freeze.py && cmp test_freeze.py…
+  ↳ 62:        opt = torch.optim.SGD([p for p in m.parameters() if p.requires_grad], lr=0.1) (+4 lines)
+Now the chain: installed-tree tests → both 20-step smokes → module-movement checks. Checking node types and check-job durations first.
+→ Bash: sinfo -p gpu-be -h -o "%N %G %f" | head; sinfo -p gpu -h -o "%N %G %f" | head -5; sacct -j 188578,188579,188584,188699 -X -n -o JobID,Elapsed,State; gpucap free a100 2>&1 | tail -8
+  ↳ homer-018 gpu:A100-SXM4-80GB:8(S:0-1) gpu_12g+,gpu_16g+,gpu_22g+,gpu_32g,gpu_32g+,gpu_40g,gpu_40g+,gpu_80g,gpu_80g+,gpu_a100,gpu_nvlink,DS_150G,DS_125G,DS_100G,DS_75G,DS_50G,DS_25G,cudadriver_595,cuda (+13 lines)
+→ Bash: expmon launch --exp freeze --stage test --time 0:05:00 expQ/freeze/run_tests_freeze.sh 2>&1 | grep -E "job id|slurm:"
+  ↳ job id:  189063 (+1 lines)
+→ Bash: expmon launch --dry-run --exp freeze --stage smoke --parent 184777 --time 0:45:00 --dependency afterok:189063 expQ/freeze/ft_freeze.sh compfrozen 42 20 2>&1 | tail -5; expmon launch --dry-run --exp freeze --stage smoke --parent 184777 --tim…
+  ↳ would submit: sbatch --time 0:45:00 --dependency afterok:189063 expQ/freeze/ft_freeze.sh compfrozen 42 20 (+7 lines)
+→ Bash: expmon launch --exp freeze --stage smoke --parent 184777 --time 0:45:00 --dependency afterok:189063 expQ/freeze/ft_freeze.sh compfrozen 42 20 2>&1 | grep -E "job id|slurm:"; expmon launch --exp freeze --stage smoke --parent 184777 --time 0:…
+  ↳ job id:  189064 (+3 lines)
+→ Bash: S2=expQ/archq3/pt_mm_5M_spread/model && ls $S2 >/dev/null && expmon launch --exp freeze --stage check --parent 189064 --time 0:02:00 --dependency afterok:189064 expQ/freeze/check_module_move.sh $S2 expQ/freeze/ft_compfrozen_s42_smoke/model …
+  ↳ job id:  189066 (+3 lines)
+All 6 submissions made (the wake's cap). Recording intents in the ledger.
+→ Bash: expmon note -j 189060 "result: COMPLETED 4:00, exit 0, on the STAGED copy (pisco.model imported from expQ/freeze/split_stage): test_positions 12/12, test_mm_collators 33/33, test_freeze 10/10 (5 old unchanged + 5 new: config default/roundtr…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: expmon verdict 189060 closed "split-freeze patch passes on the staged copy: 12/12, 33/33, 10/10, exit 0" 2>&1 | tail -1; sacct -j 189063,189064,189065 -X -n -o JobID,State,Elapsed,NodeList; expmon campaign report --section leaves 2>&1 | hea…
+  ↳ verdict recorded: 189060 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+18 lines)
+→ Bash: head -12 campaign_freeze/VERIFY.md | cut -c1-400
+  ↳ # VERIFY — campaign freeze — 2026-11-12_1400   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+11 lines)
+→ Bash: grep -nE "ALL|EXIT" paired_judge_freeze_188650.out paired_judge_freeze_188701.out | cut -c1-200 | head -20
+  ↳ paired_judge_freeze_188650.out:8:ALL             1500   0.582   0.610   -0.028   0.011 [-0.049, -0.007]     111     153    0.011 (+13 lines)
+Gate-0 numbers re-derived from the paired-test outputs (all match), so the headline can drop its "provisional" label. Writing STATE.md now.
+→ Bash: sacct -j 189063 -X -n -o JobID,State,Elapsed,ExitCode; grep -E "pisco.model from|=== test_|^Ran |^OK|FAILED|EXIT" run_tests_freeze_189063.out 2>/dev/null
+  ↳ 189063          RUNNING   00:01:03      0:0
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: git diff --numstat pisco/model.py test_freeze.py; timeout 300 bash -c 'until sacct -j 189063 -X -n -o State | grep -qvE "RUNNING|PENDING"; do sleep 15; done'; sacct -j 189063,189064,189065 -X -n -o JobID,State,Elapsed,ExitCode,NodeList; gre…
+  ↳ 33	7	pisco/model.py (+15 lines)
+Installed-tree tests pass too (12/12, 33/33, 10/10, from `pisco/model.py`). Took 4:46 of a 5:00 limit — noting that for next time. Checking why the smokes still pend.
+→ Bash: squeue -j 189064,189065,189066,189067 -o "%i %j %P %T %r %S" ; cd /beegfs/scratch/user/hdejean/pisco && expmon verdict 189063 closed "split-freeze patch passes on the INSTALLED tree (pisco.model from pisco/model.py md5 994cff3d): 12/12, 33/…
+  ↳ JOBID NAME PARTITION STATE REASON START_TIME (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && rm REQUEST BLOCKED.md && ls; sinfo -n homer-006,homer-007,homer-012 -h -o "%n %C %e %G" ; squeue -w homer-006,homer-007,homer-012 -h -o "%N %u %b %m %C" | sort | uniq -c | head -20
+  ↳ campaign.conf (+25 lines)
+→ Bash: cat >> known_issues.md <<'EOF' ⏎ | `gpucap land a100 1` says "yes — N free node(s)" but the finetune pends `Resources` with a start estimate hours away | the nodes with free GPUs have no free CPUs (2026-11-12 23:50: homer-006/007 27 of 28 C…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Updating STATE.md with the test result and the pending reason, then writing the wake decision.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && sed -i 's|The same two files are now installed in `pisco/` (byte-identical to the staged ones; one space fixed in a new test after the run). The installed-tree test run is job 189063 …
+  ↳ 17:- **The split-freeze setting passes its unit tests on a staged copy** (owner REQUEST 2026-11-12 23:14): `PISCOConfig.freeze_part = compressor | connector` (d (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "decision: freeze wake 11 (2026-11-12 23:30, owner REQUEST: split test, option A). Wrote the one-time Patchable exception, then PISCOConfig.freeze_part (compressor|connector, default unse…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+19 lines)
+I did what you asked: freezing the compressor and the connector can now be switched on separately, the tests pass, and the first two short check runs (smokes) are queued. Both are waiting for free CPUs.
+
+**What changed in the code**
+- New setting in `pisco/model.py`: `freeze_part`. It takes `compressor` or `connector` and is unset by default.
+  - Split test 1 (compressor frozen) uses `compressor`: the compressor is frozen, while the connector and the decoder LoRA (low-rank adapter) train.
+  - Split test 2 (connector frozen) uses `connector`: the connector is frozen, while the compressor LoRA and the decoder LoRA train.
+- Your three conditions hold:
+  - `freeze_compressor=True` still freezes both parts and prints the same log line.
+  - With the setting unset, training and inference do nothing new, so the evals queued by the long-chunk campaign are not affected.
+  - The 5 existing tests are unchanged.
+- I added 5 new tests to `test_freeze.py`. One of them checks that the compressor still learns when the connector is frozen.
+- Before patching, I wrote your one-time exception into the campaign rules, dated. I also wrote the gates for both split tests there before launching anything. They use the same rules as the gate that failed, compared with the reference run of the same seed.
+
+**Tests**
+- I first ran the tests on a copy of the code, so a mistake could not break the queued evals: 12/12, 33/33 and 10/10 passed.
+- I then installed the two files and ran the tests again in place: same result, exit 0.
+
+**Queued now**
+
+| Job | What | State |
+|---|---|---|
+| 189064 | 20-step smoke, compressor frozen, on `gpu` | waiting for CPUs; scheduler estimate ~07:00 |
+| 189065 | 20-step smoke, connector frozen, on `gpu-be` (preemptible) | waiting, behind other jobs in the queue |
+| 189066 / 189067 | Check of which weights moved, one per smoke | runs after its smoke |
+
+- The nodes with a free A100 have only 1–2 free CPUs, and the training script asks for 8. I left that number as written.
+- The connector-frozen smoke went to `gpu-be` because putting it on `gpu` would take your last free GPU slot there.
+- The next run wakes when the compressor-frozen check ends (at most 12 h). If that smoke passes, it launches the two full compressor-frozen runs (seeds 42 and 43), each with its evals.
+- My prediction, not a result: the compressor-frozen runs lose accuracy like the first frozen runs, and the connector-frozen runs match the reference. In the reference run, 74% of the compressor adapter's entries moved, against 21% of the connector's.
+
+**Other notes**
+- I deleted your request file and the open question file, since you answered it.
+- I logged three tooling gaps:
+  - `gpucap` counts free GPUs but not free CPUs.
+  - `expmon launch` cannot run a one-off command, so I had to add a small test launcher.
+  - The `expmon launch --dry-run` preview does not show the run's settings.
+- One slip: an empty `python3` command ran on the login node while I was backing up a file. It did nothing.
+
+**Your decision:** commit `pisco/model.py` and `test_freeze.py` from one of your pisco chats; this loop is not allowed to commit them. The change is saved in `campaign_freeze/patches/split_freeze.diff` (md5 `d4412015df7ecd2cfd8408693ec3d5ef`). Nothing else is needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Owner REQUEST (split test) executed: Patchable exception written, PISCOConfig.freeze_part (compressor|connector, default unset) + frozen_parts() added to pisco/model.py (+33/-7) with 5 new test_freeze.py ca…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.5684 turns=58 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Owner REQUEST (split test) executed: Patchable exception written, PISCOConfig.freeze_part (compressor|connector, default unset) + frozen_parts() added to pisco/model.py (+33/-7) with 5 new test_freeze.py cases (+65); tested on a staged copy (189060) then installed and re-tested in place (189063): 12/12, 33/33, 10/10, exit 0. freeze_compressor and unset paths unchanged. Diff saved at campaign_freeze/patches/split_freeze.diff (md5 d4412015df7ecd2cfd8408693ec3d5ef), uncommitted. Split-test gates for A1 (compressor frozen, first) and A2 (connector frozen) written in CAMPAIGN.md; two ARM cases added to ft_freeze.sh. 20-step feasibility smokes A1 189064 (gpu) and A2 189065 (gpu-be) plus module-move checks 189066/189067 queued; smokes pend for CPUs. REQUEST and BLOCKED.md deleted.", "launched": ["189060", "189063", "189064", "189065", "189066", "189067"], "verdicts": [{"jobid": "189060", "verdict": "closed", "note": "split-freeze patch passes on the staged copy: 12/12, 33/33, 10/10, exit 0"}, {"jobid": "189063", "verdict": "closed", "note": "split-freeze patch passes on the installed tree: 12/12, 33/33, 10/10, exit 0, 4:46"}], "gripes": ["gap: gpucap land/free count free GPUs only; nodes with free A100s had 1-2 free CPUs so an 8-CPU finetune pends Resources ~7 h; suggest --cpus/--mem filtering", "gap: expmon launch has no one-off command form (--wrap); had to add expQ/freeze/run_tests_freeze.sh to run tests on a staged tree", "wish: expmon launch --
+== final:
+{"next":"wake-when","summary":"Owner REQUEST (split test) executed: Patchable exception written, PISCOConfig.freeze_part (compressor|connector, default unset) + frozen_parts() added to pisco/model.py (+33/-7) with 5 new test_freeze.py cases (+65); tested on a staged copy (189060) then installed and re-tested in place (189063): 12/12, 33/33, 10/10, exit 0. freeze_compressor and unset paths unchanged. Diff saved at campaign_freeze/patches/split_freeze.diff (md5 d4412015df7ecd2cfd8408693ec3d5ef), uncommitted. Split-test gates for A1 (compressor frozen, first) and A2 (connector frozen) written in CAMPAIGN.md; two ARM cases added to ft_freeze.sh. 20-step feasibility smokes A1 189064 (gpu) and A2 189065 (gpu-be) plus module-move checks 189066/189067 queued; smokes pend for CPUs. REQUEST and BLOCKED.md deleted.","launched":["189060","189063","189064","189065","189066","189067"],"verdicts":[{"jobid":"189060","verdict":"closed","note":"split-freeze patch passes on the staged copy: 12/12, 33/33, 10/10, exit 0"},{"jobid":"189063","verdict":"closed","note":"split-freeze patch passes on the installed tree: 12/12, 33/33, 10/10, exit 0, 4:46"}],"gripes":["gap: gpucap land/free count free GPUs only; nodes with free A100s had 1-2 free CPUs so an 8-CPU finetune pends Resources ~7 h; suggest --cpus/--mem filtering","gap: expmon launch has no one-off command form (--wrap); had to add expQ/freeze/run_tests_freeze.sh to run tests on a staged tree","wish: expmon launch --dry-run prints empty factors for launchers that echo FACTORS at runtime"],"wake_when":"job:189066 max 12h"}
+== rc=0 secs=978
+== verify: 9/13

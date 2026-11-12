@@ -35,6 +35,8 @@ MRQA .807.
 | R (reference, exists) | `ft_mm_4b.sh <stage-2 model> 28000 1 64 hf_training.learning_rate=2e-5 +model_config_overrides.image_max_pixels=1003520` (+ `+hf_training.seed=43`), env `FT_DATA` as in the recipe file | — | — | the comparison point | 0 (done: 184778 11.0 h, 184780 13.8 h) |
 | F (frozen) | `expQ/freeze/ft_freeze.sh frozen 42` and `… frozen 43` | `freeze_compressor=true` (compressor + connector frozen and in eval mode; decoder LoRA trains) | stage-2 model, 28k rows (docpages 20k + natural 8k, teacher labels), bs 1 × accum 64, lr 2e-5, bf16, 1,003,520 px, rate 8, spread layout stride 8, seed | see Decision gates | ≤ 14 each (expected less: no compressor backward) + evals |
 | R3 (only on a tie) | `expQ/freeze/ft_freeze.sh unfrozen 44` with `… frozen 44` | seed 44, both sides | same | third seed | ~14 + ~14 |
+| A1 split: compressor frozen (owner 2026-11-12, FIRST) | `expQ/freeze/ft_freeze.sh compfrozen 42` and `… compfrozen 43` | `freeze_part=compressor`: compressor adapter + `<MEM>` row + merger frozen and in eval mode; connector (MLP + gain) and decoder LoRA train | as F | see "Split test gates" | ≤ 12 each + evals |
+| A2 split: connector frozen (owner 2026-11-12, after A1) | `expQ/freeze/ft_freeze.sh connfrozen 42` and `… connfrozen 43` | `freeze_part=connector`: connector MLP + gain frozen and in eval mode; compressor LoRA + merger + decoder LoRA train | as F | see "Split test gates" | ≤ 14 each + evals |
 
 Evals of each finetuned model, judge chained (`eval_mm_4b.sh <model> pisco "" <set>`, on `gpu-be`,
 `--exclude=homer-[005-009]`: homer-008 changes image answers, see campaign_probes/CAMPAIGN.md "Same node rule"):
@@ -86,7 +88,36 @@ Metric unit: judge accuracy in [0, 1]; "pt" = .01. Every difference is PAIRED pe
   over the 28k rows. Each compares with arm F of the same seed, gate ≥ +2 pt with the CI above 0 on documents, no set
   ≤ −2 pt. Each needs its own line in `expQ/freeze/ft_freeze.sh` (a new ARM value; patch rule below).
 - if failed: do NOT retry variants of freezing. Write BLOCKED.md proposing the split test (freeze the connector only /
-  the compressor only), which needs a new flag in `pisco/`: the owner's chats write it.
+  the compressor only), which needs a new flag in `pisco/`: the owner's chats write it. (Done: gate 0 failed wake 10;
+  the owner chose the split test on 2026-11-12 and had this campaign write the flag, see "## Patchable".)
+
+**Split test gates (written 2026-11-12 23:40, before any A1 / A2 cell; owner: "same gates as gate 0").**
+Arms A1 (`freeze_part=compressor`) and A2 (`freeze_part=connector`), seeds 42 and 43, each compared with the
+reference R of the SAME seed (184778 / 184780, the judged files already used at gate 0 while the eval-code md5 is
+unchanged: `eval_mm_docqa.py` dfe32aa0, `eval_mm_4b.sh` 50abc167, `judge_mm_docqa.py` 02bc8748; if any changed, re-run
+the reference cells first). Same four eval sets, same eval command and node rule as arm F. Order: A1 first; A2 full
+cells only after A1's full cells are submitted (CAMP_MAX_TRAIN = 2, never the last free `gpu` slot).
+- **Feasibility (20-step smoke per arm, seed 42, then `check_module_move.sh <stage-2 model> <smoke>/model`).**
+  A1 PASS = the log says `freeze_part=compressor: froze N compressor tensors` and `Compressor trainable parameters: 0`;
+  every `compressor.*` row changed 0.0%; `connector.linear` changed > 0%; `decoder.lora_B` > 0%.
+  A2 PASS = the log says `freeze_part=connector: froze N connector tensors` and `Compressor trainable parameters` > 0;
+  `connector.linear` and `connector.norm_gain` changed 0.0%; `compressor.lora_B` > 0%; `decoder.lora_B` > 0%.
+  Both: train loss at steps 10 AND 20 within .05 of the unfrozen 20-step smoke (job 188534: .639 / .580);
+  `training_config.yaml` differs from the frozen smoke's (`expQ/freeze/ft_frozen_s42_smoke`) ONLY in
+  `freeze_compressor` → `freeze_part` and the output paths. FAIL = BLOCKED.md with the output (no retry of the arm).
+  Record s/step and peak GPU memory; `--time` of the full cells = smoke s/step × 438 × 1.25.
+- **Mid-run health and the after-run module check:** as arm F (frozen rows still 0.0% after the full run).
+- **Per arm, the same three rules as gate 0** (paired judge, n = 1,500 per set, arm − R of the same seed; gating
+  sets documents, photos, MRQA text; HotpotQA reported): **Validated** = every gating set ≥ −2 pt and its CI not
+  wholly below 0 at both seeds; **Failed** = any gating set ≤ −3 pt with the CI wholly below 0 at both seeds;
+  **Tie** = anything else → a third seed (`… <arm> 44` vs the seed-44 reference 188652, whose judged files exist),
+  then 2 of 3; still a tie → BLOCKED.md, no fourth seed.
+- **Reported, not gating:** each arm − arm F of the same seed (same paired test): where the gate-0 loss sits.
+- **What each outcome means (prediction, written before the result):** A1 validated → stage B stays open with the
+  compressor output cached once BEFORE the connector, and only connector + decoder train; A1 failed and A2 validated →
+  the compressor's own finetune carries the 3 pt and decoder-only stage B costs them; both failed → both parts matter.
+  Prior from wake 10: the reference finetune moved compressor lora_B 74% of entries vs the connector 20.7% (.0073 of
+  its norm), so A1 is predicted to FAIL like F and A2 to tie R. A prediction, not a result.
 - Caching the `<MEM>` vectors on disk (the speed-up of stage B proper) is engineering in `pisco/`: hand it off
   (`expmon handoff add --to pisco "…"`) once the gate validates; it is not an arm.
 
@@ -138,6 +169,16 @@ CAMP_PATCH_LINES=20 (campaign.conf; the conf wins).
 - **never**: `pisco/`, `test_*.py`, `scripts/eval_mm_docqa.py`, `scripts/judge_*.py`, `scripts/paired_judge.py`,
   `eval_mm_4b.sh`, `ft_mm_4b.sh`, data under `data/`, eval sets under `eval_data/`, anything of the sibling campaigns.
   A crash there is BLOCKED.md with the traceback; the owner's chats fix it.
+- **one-time owner exception, 2026-11-12 23:14 (REQUEST, answer to "Gate 0 failed")**: this campaign writes the split-freeze
+  setting itself, limited to (1) `pisco/model.py`: a `PISCOConfig` setting plus `freeze_compressor_side` that freeze
+  the compressor side and the connector separately; (2) NEW test cases in `test_freeze.py`, one per part. Properties
+  the patch may not weaken: `freeze_compressor=True` freezes both parts exactly as before (same log line); with the new
+  setting unset, training and inference are byte-for-byte unchanged (the sibling `longchunk` has evals queued on this
+  code); the 5 existing `test_freeze.py` tests stay as they are and pass. The patch is tested on a staged copy
+  (`expQ/freeze/split_stage/`, CPU job) BEFORE it is installed in `pisco/`, then the full test suite runs again on the
+  installed tree. The wake cannot commit: the change is saved as `campaign_freeze/patches/split_freeze.diff`, its md5
+  in STATE.md. The exception covers this one patch and its test-driven fixes; it closes when the diff is saved.
+  The staged and installed test runs use `expQ/freeze/run_tests_freeze.sh <dir>` (campaign tooling, freely patchable).
 The WRITE BOUNDARY is not prose: `CAMP_WRITE_ROOTS` in campaign.conf is enforced by the wake hook.
 
 ## The wake owns the science

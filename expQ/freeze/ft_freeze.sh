@@ -13,7 +13,9 @@
 #   ARM=frozen    -> +model_config_overrides.freeze_compressor=true  (compressor + connector frozen, eval mode;
 #                    only the decoder LoRA trains)
 #   ARM=unfrozen  -> the reference command, unchanged (used for a 20-step plumbing check or a third seed)
-# Usage: expmon launch --exp freeze --stage ft --parent 184777 expQ/freeze/ft_freeze.sh <frozen|unfrozen> <seed> [SMOKE_STEPS]
+#   ARM=compfrozen / connfrozen -> +model_config_overrides.freeze_part=compressor / connector (split test A1 / A2:
+#                    one part frozen and in eval mode, the other part and the decoder LoRA train)
+# Usage: expmon launch --exp freeze --stage ft --parent 184777 expQ/freeze/ft_freeze.sh <arm> <seed> [SMOKE_STEPS]
 #   seed 42 = no seed override (as 184778); any other seed adds +hf_training.seed=<seed> (as 184780 for 43).
 #   SMOKE_STEPS (optional) = hf_training.max_steps for a plumbing run; its output goes to ..._smoke.
 ARM=${1:?frozen|unfrozen}; SEED=${2:?seed}; SMOKE=${3:-}
@@ -29,6 +31,8 @@ DATA="$ROOT/data/mm_ft_docpages_20k_1m_teacher:20000,$ROOT/data/mm_ft_natural_8k
 case "$ARM" in
   frozen)   ARMOV="+model_config_overrides.freeze_compressor=true" ;;
   unfrozen) ARMOV="" ;;
+  compfrozen) ARMOV="+model_config_overrides.freeze_part=compressor" ;;   # split test A1 (gate in CAMPAIGN.md)
+  connfrozen) ARMOV="+model_config_overrides.freeze_part=connector" ;;    # split test A2 (gate in CAMPAIGN.md)
   *) echo "unknown arm $ARM"; exit 2 ;;
 esac
 SEEDOV=""; [ "$SEED" != 42 ] && SEEDOV="+hf_training.seed=$SEED"
