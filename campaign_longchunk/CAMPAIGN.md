@@ -81,6 +81,7 @@ arm − the SmolLM2 reference: the corpus differs).
   slack before the raise (a tie's third seed ≈ 3 more). Rule: launch L2048 stage 1 only if GPU-h spent + projected left ≤ 38
   GPU-days at that moment; otherwise BLOCKED.md for the owner (raise the budget, or close L2048 as over budget).
 - at most CAMP_MAX_TRAIN trainings in flight; at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf)
+  (tightened 2026-11-13: "in flight" = RUNNING at the same moment, a chained cell waiting on a dependency does not count; while one arm's stage 1 runs, another arm's two finetunes run one after the other — seed 43 `--dependency afterok:<stage 2>,afterany:<seed 42>`. The control chain broke this once: 188466 + 188468 + 188469 ran together on 2026-11-12)
 - every launch: `--time` from measured s/step × steps × 1.25; `--mem`/`--cpus` as the recipe files state (profiled on the control)
 - stage 1 takes 4 GPUs: run ONE stage 1 at a time (the user cap is 8 GPUs on `gpu`); stage 2 / finetune / evals are 1 GPU each
 - chain inside one wake with `--dependency afterok` (stage 2 after stage 1, finetunes after stage 2, evals after each finetune)

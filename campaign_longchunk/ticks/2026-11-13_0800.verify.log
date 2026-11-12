@@ -1,0 +1,80 @@
+== verifier 2026-11-13_0800  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+== session 419c1e7f-27b3-4a32-8a45-519f8eaeedec  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longchunk (+234 lines)
+→ Glob: {"pattern": "expQ/longchunk/*"}
+→ Glob: {"pattern": "campaign_longchunk/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_msmarco_188358.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/data_check_188339.json
+  ↳ 1	{ (+214 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42"}
+  ↳ expQ/longchunk/ft_cml256_s42/training_config.yaml (+48 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466"}
+  ↳ expQ/longchunk/pt_text_1M_cml1024_188466/training_config.yaml (+24 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/checkpoint-437/trainer_state.json", "output_mode": "content", "-A": 5}
+  ↳ 88:      "eval_loss": 0.4644652009010315, (+33 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s43/checkpoint-437/trainer_state.json", "output_mode": "content", "-A": 5}
+  ↳ 88:      "eval_loss": 0.4675478935241699, (+33 lines)
+Checking claims against the files: data checks and finetune losses match. Now the stage-1 logs and the reference loss curve.
+→ Glob: {"pattern": "runs/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s43"}
+  ↳ No files found
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "eval", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread/train.log", "output_mode": "content", "head_limit": 30}
+  ↳ No matches found
+→ Glob: {"pattern": "**/trainer_state.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread"}
+  ↳ expQ/archq3/pt_text_1M_spread/checkpoint-4000/trainer_state.json (+1 lines)
+→ Grep: {"pattern": "\"eval_loss\"|\"step\": (2000|4000|5208),", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_1M_spread/checkpoint-5208/trainer_state.json", "output_mode": "content"}
+  ↳ 298:      "eval_loss": 0.9236328601837158, (+2 lines)
+→ Grep: {"pattern": "\"eval_loss\"|\"step\": (2000|4000|5208),", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422", "output_mode": "content"}
+  ↳ expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-5208/trainer_state.json:298:      "eval_loss": 0.8006604909896851, (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/checkpoint-5208/trainer_state.json
+  ↳ 700	      "grad_norm": 0.2294921875, (+105 lines)
+→ Grep: {"pattern": "307[0-9]/5208", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log", "output_mode": "content", "head_limit": 5}
+  ↳ No matches found
+→ Grep: {"pattern": "'loss': 0\\.\\d+.*'epoch': 0\\.(5[89]|6)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+→ Grep: {"pattern": "loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log", "output_mode": "content", "offset": 50, "head_limit": 30}
+  ↳ No matches found (+2 lines)
+→ Grep: {"pattern": "loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/train.log
+  ↳ 1	[2026-11-11 20:32:46,649][httpx][INFO] - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect" (+39 lines)
+The run's train.log only holds HTTP lines. Looking for the SLURM stdout of the 1,024-token stage 1 (job 188466).
+→ Glob: {"pattern": "*188466*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk"}
+  ↳ No files found
+→ Glob: {"pattern": "*188466*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Grep: {"pattern": "--output|-o |#SBATCH -o|#SBATCH --output", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/pt_text_long_%j.out
+→ Grep: {"pattern": "\\b30[6-7]\\d/5208\\b", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188466.out", "output_mode": "count"}
+  ↳ pt_text_long_188466.out:1 (+2 lines)
+→ Grep: {"pattern": "'loss': '?0\\.\\d+", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188466.out", "output_mode": "count"}
+  ↳ pt_text_long_188466.out:45 (+2 lines)
+→ Grep: {"pattern": "'loss': '?0\\.\\d+", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188466.out", "output_mode": "content", "offset": 38, "-o": true}
+  ↳ 18785:'loss': '0.8044 (+8 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-2000/trainer_state.json", "output_mode": "content"}
+  ↳ 298:      "eval_loss": 0.6110684871673584,
+→ Grep: {"pattern": "\\b3[01]\\d\\d/5208 \\[[^\\]]*\\]", "path": "/beegfs/scratch/user/hdejean/pisco/pt_text_long_188466.out", "output_mode": "content", "-o": true, "head_limit": 0, "offset": 0}
+  ↳ 18790:3000/5208 [34:39:33<26:23:37, 43.03s/it] (+80 lines)
+→ Grep: {"pattern": "#SBATCH --output", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_%j.out
+The 1,024-token stage-1 log confirms step 3,071 and losses of .78–.80. Now checking the preemptions of the control's evals.
+→ Grep: {"pattern": "PREEMPT|DUE TO|CANCELLED|requeue", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_1887{07,08,09,10,11,12}.out", "output_mode": "content"}
+  ↳ eval_mm_4b_188710.out:79:slurmstepd: error: *** JOB 188710 ON homer-016 CANCELLED AT 2026-11-13T06:30:37 DUE TO PREEMPTION *** (+3 lines)
+→ Grep: {"pattern": "10[23]\\d/1500|judg.*816|816/1500", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_18871{1,2}.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ eval_mm_4b_188711.out:1143:1020/1500 (+4 lines)
+→ Glob: {"pattern": "runs/**/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s43"}
+  ↳ expQ/longchunk/ft_cml256_s43/runs/Nov12_16-58-26_homer-012.kr.europe.naverlabs.com/events.out.tfevents.1794470306.homer-012.kr.europe.naverlabs.com.3589784.0
+→ Grep: {"pattern": "\"eval_loss\"|\"step\": 1562", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256", "glob": "checkpoint-1562/trainer_state.json", "output_mode": "content"}
+  ↳ expQ/longchunk/pt_mm_cml256/checkpoint-1562/trainer_state.json:243:      "eval_loss": 0.9948618412017822, (+7 lines)
+→ StructuredOutput: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed."…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0731 turns=36 is_error=False denials=0
+== declared: {"claims": [{"claim": "Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.", "status": "supported", "reason": "data_check_msmarco_188358.json: n=107120 of 3,213,596, frac_docs_ge_1024=.4339, ge_2048=.2039; data_check_188339.json: n=100000, .23841 / .08314. Both above/below the law's 30% / 15% gate as stated; verdicts 188358/188339 closed."}, {"claim": "The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, ~72 GB per GPU, 58.6 s per step → full stage 1 = 84.8 h — job 188420, closed.", "status": "supported", "reason": "Verdict 188420 (2026-11-11 04:04): 50/50 steps, exit 0, 288 GB over 4 GPUs, 58.6 s/step, 84.8 h, --time 106 h; grid row 188420 smoke, CML 2048 / DML 4096 / BS 3 / accum 16, closed."}, {"claim": "The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, ~71 GB per GPU, 42.1 s per step → full stage 1 = 60.9 h — job 188421, closed.", "status": "supported", "reason": "Verdict 188421: 50/50 steps, exit 0, 285 GB over 4 GPUs, 42.1 s/step, 60.9 h; grid row 188421 CML 1024 / DML 2048 / BS 6 / accum 8, closed."}, {"claim": "Control stage 1 (256-token chunks) FINISHED: 1M documents (5,208 steps, 1.0 epoch) in 16:43 h, exit 0 — job 188422, closed. Held-out loss .801 / .877 / 1.007 at steps 2,000 / 4,000 / 5,208 (64 held-out rows); train loss .91–.96 at the end, no NaN.", "status"
+== final:
+{"claims":[{"claim":"Stage-1 corpus = MS MARCO documents: 43.4% of documents ≥ 1,024 tokens, 20.4% ≥ 2,048 (107,120 of 3.2M sampled) — data job 188358, closed. SmolLM2 rejected (23.8% / 8.3% of 100,000 sampled) — data job 188339, closed.","status":"supported","reason":"data_check_msmarco_188358.json: n=107120 of 3,213,596, frac_docs_ge_1024=.4339, ge_2048=.2039; data_check_188339.json: n=100000, .23841 / .08314. Both above/below the law's 30% / 15% gate as stated; verdicts 188358/188339 closed."},{"claim":"The 2,048-token chunk arm FITS on 4 × A100-80GB at batch 3 per GPU: 50/50 steps, ~72 GB per GPU, 58.6 s per step → full stage 1 = 84.8 h — job 188420, closed.","status":"supported","reason":"Verdict 188420 (2026-11-11 04:04): 50/50 steps, exit 0, 288 GB over 4 GPUs, 58.6 s/step, 84.8 h, --time 106 h; grid row 188420 smoke, CML 2048 / DML 4096 / BS 3 / accum 16, closed."},{"claim":"The 1,024-token chunk arm FITS at batch 6 per GPU: 50/50 steps, ~71 GB per GPU, 42.1 s per step → full stage 1 = 60.9 h — job 188421, closed.","status":"supported","reason":"Verdict 188421: 50/50 steps, exit 0, 285 GB over 4 GPUs, 42.1 s/step, 60.9 h; grid row 188421 CML 1024 / DML 2048 / BS 6 / accum 8, closed."},{"claim":"Control stage 1 (256-token chunks) FINISHED: 1M documents (5,208 steps, 1.0 epoch) in 16:43 h, exit 0 — job 188422, closed. Held-out loss .801 / .877 / 1.007 at steps 2,000 / 4,000 / 5,208 (64 held-out rows); train loss .91–.96 at the end, no NaN.","status":"supported","reason":"pt_text_1M_cml256_188422/checkpoint-5208/trainer_state.json: eval_loss .8007/.8772/1.0074, max_steps 5208, epoch 1.0, eval 6.042 s × 10.593 rows/s = 64 rows; last logged train losses .925–.950 (inside the stated range); verdict 188422 gives 16:43 h; grid docs_seen=1000000."},{"claim":"Control stage-1 slot ownership = .972 on text (3,053 test slots; gate ≥ .95; SmolLM2 reference .977) — job 188470, closed.","status":"supported","reason":"Grid row 188470 probe ownership=0.972, parent 188422; verdict 188470 states 3,053 test slots, gate ≥.95 passed, reference .977 — matches the law's threshold."},{"claim":"Control stage 2 (images) FINISHED: 100k rows (1,562 steps, 1.0 epoch) in 19:12 h, exit 0; held-out loss .785 at the end, no NaN — job 188467, closed.","status":"supported","reason":"pt_mm_cml256/checkpoint-1562/trainer_state.json: last eval_loss .7850 at step 1562 (earlier .858/.832); verdict 188467 gives 19:12 h, exit 0, 1,562/1,562 steps."},{"claim":"Control finetune seed 42 FINISHED: 28k rows (437 steps, 1.0 epoch) on homer-020, exit 0; held-out loss .464 / .457 / .385 / .360 / .367 at steps 100 / 200 / 300 / 400 / 437, no NaN — job 188468, closed.","status":"supported","reason":"ft_cml256_s42/checkpoint-437/trainer_state.json eval_loss .4645/.4573/.3851/.3602/.3666; runs dir names homer-020; verdict 188468 closed, .367 at 437."},{"claim":"Control finetune seed 43 FINISHED: 28k rows (437 steps, 1.0 epoch) on homer-012, exit 0; held-out loss .468 / .397 / .351 / .386 / .37
+== rc=0

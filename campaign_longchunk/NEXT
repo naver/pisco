@@ -1,1 +1,1 @@
-wake-when job:188707,188708,188709,188710,188711,188712 max 18h
+wake-when file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h

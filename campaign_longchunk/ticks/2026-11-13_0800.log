@@ -1,0 +1,77 @@
+== campaign longchunk wake 2026-11-13_0800  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794524402 live=188466:RUNNING,188708:PENDING,188707:PENDING,188710:PENDING,188709:PENDING,188711:PENDING,188712:PENDING running=1 pending=6 problems=4 problems_other=0 new=0 gpuh24=128.7 idle_h=0.0 min_util=100 alert=0 unpushed=61 cron=3 daemon=1 disk_gb=11298 sig=6e61628e same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:188707,188708,188709,188710,188711,188712_max_18h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 4f890a8e-1e89-436a-a6b3-93425c7f35ed  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/4f890a8e-1e89-436a-a6b3-93425c7f35ed/tool-results/brwbl5ben.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_0800   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+248 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat STATE.md && echo ---- && cat known_issues.md && echo ---- && ls -la
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+114 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon check 2>&1 | grep -v "OK" | head -30; echo; cat campaign_longchunk/VERIFY.md | head -60
+  ↳ 189057     PENDING    ✗ slurm-cancelled  (+27 lines)
+→ Bash: for j in 188707 188708 188709 188710 188711 188712; do scontrol show job $j 2>/dev/null | grep -oE "JobId=[0-9]+|JobState=[A-Z]+|Reason=[^ ]+|Restarts=[0-9]+|StartTime=[^ ]+|NodeList=[^ ]+" | tr '\n' ' '; echo; done; sacct -j 188709,188710,…
+  ↳ JobId=188707 JobState=PENDING Reason=Priority Restarts=0 StartTime=2026-11-16T16:30:00 NodeList=(null) NodeList=homer-[005-009] NodeList=homer-011  (+13 lines)
+Checking why the control evals keep getting preempted and whether their queue estimates moved; reading the campaign law next.
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ # CAMPAIGN longchunk — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+161 lines)
+→ Bash: grep -E "^CAMP_" campaign_longchunk/campaign.conf; echo ---; expmon help 2>&1 | grep -iE "wake-when|show|manifest|argv" | head; ls .expmon/ 2>/dev/null | head
+  ↳ CAMP_LABEL='longchunk'            # the expmon --exp label every campaign run carries (grid/sweep/verdict key) (+60 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     if str(r.get('jobid')) in ('188466','188467','188468','188469','188707','188470'): ⏎         print(json.dumps(r)[:1500…
+  ↳ {"ts": "2026-11-11 04:06", "jobid": "188466", "launcher": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "argv": ["1000000", "1024", "2048", "6", "8"], "git": "c308c41+dirty", (+10 lines)
+→ Bash: expmon ledger -j 188467 10 2>&1 | head -30; expmon ledger -j 188468 6 2>&1 | head -12; expmon ledger -j 188470 4 | head
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+11 lines)
+→ Bash: cat expQ/longchunk/pt_text_4b_long.sh | head -60; md5sum expQ/longchunk/pt_text_4b_long.sh eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py pt_mm_4b.sh ft_mm_4b.sh; sinfo -h -o "%P %l" | sort -u
+  ↳ #!/bin/bash (+82 lines)
+→ Bash: EXPMON=$(readlink -f $(which expmon)); echo $EXPMON; D=$(dirname $EXPMON); grep -rn "wake-when" $D --include=* -l 2>/dev/null | head; grep -rn "def .*wake_when\|wake.when.*split\|'|'" $D/*.py 2>/dev/null | grep -i wake | head
+  ↳ /home/hdejean/.claude/expmon/expmon.sh (+1 lines)
+→ Bash: D=/home/hdejean/.claude/expmon; grep -rln "wake-when" $D 2>/dev/null | head -5; grep -rn "wake-when" $D/campaign*.sh $D/tick*.sh 2>/dev/null | grep -iE "first|any|cond|split" | head -8
+→ Bash: D=expQ/longchunk/pt_text_1M_cml1024_188466; ls $D | head; tail -c 1500 pt_text_long_188466.out | tr '\r' '\n' | tail -8
+  ↳ /home/hdejean/.claude/expmon/loops.py (+5 lines)
+  ↳ checkpoint-2000 (+11 lines)
+→ Bash: grep -oE "'loss': '?[0-9.na]+'?" expQ/longchunk/pt_text_1M_cml1024_188466/train.log 2>/dev/null | tail -6; grep -c nan expQ/longchunk/pt_text_1M_cml1024_188466/train.log; grep -n "wake-when" /home/hdejean/.claude/expmon/campaign.lib.sh | he…
+  ↳ 0 (+12 lines)
+→ Bash: sed -n 660,700p /home/hdejean/.claude/expmon/campaign.lib.sh; cd /beegfs/scratch/user/hdejean/pisco && tail -3 expQ/longchunk/pt_text_1M_cml1024_188466/train.log | cut -c1-400
+  ↳ [ "$(camp_field "$prev" sig)" = "$sig" ] && same=$(( $(camp_field "$prev" same | grep -E '^[0-9]+$' || echo 0) + 1 )) (+43 lines)
+→ Bash: tr '\r' '\n' < pt_text_long_188466.out | grep -E "^\{'loss'|'eval_loss'" | tail -5 | cut -c1-200
+  ↳ {'loss': '0.7817', 'grad_norm': '0.03662', 'learning_rate': '2.384e-05', 'epoch': '0.5472'} (+4 lines)
+Stage 1 of the 1,024-token arm is healthy (loss ≈ .79, no NaN, 59% done). Now pre-chaining its downstream stages so they start the moment it ends.
+→ Bash: expmon launch --help 2>&1 | head -40
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+8 lines)
+→ Bash: grep -rn "MAX_TRAIN" /home/hdejean/.claude/expmon/*.sh /home/hdejean/.claude/expmon/*.py 2>/dev/null | head -8; sinfo -p gpu -h -o "%N %G %f" | head; head -15 pt_mm_4b.sh | grep -E "SBATCH|PT_OUT"; grep -n "PT_OUT\|FT_OUT" pt_mm_4b.sh ft_mm…
+  ↳ /home/hdejean/.claude/expmon/campaign.lib.sh:154:  CAMP_MAX_TRAIN=${CAMP_MAX_TRAIN:-2};     CAMP_GPU_TYPE=${CAMP_GPU_TYPE:-a100};      CAMP_PARTITIONS=${CAMP_PARTITIONS:-gpu} (+23 lines)
+Running dry-runs for the five chained cells (ownership probe, stage 2, two finetunes, and the 2,048-token arm's stage 1).
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco ⏎ echo "=== probe"; SETS=text expmon launch --dry-run --exp longchunk --stage probe --parent 188466 --dependency afterok:188466 --partition gpu-be --constraint gpu_a100 --time 0:10:00 expQ/archq2/probe_m…
+  ↳ === probe (+14 lines)
+→ Bash: ls -d expQ/longchunk/*/ ; expmon runs longchunk 2>&1 | grep -E "PENDING|RUNNING" | head
+  ↳ expQ/longchunk/ft_cml256_s42/ (+15 lines)
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco ⏎ echo "=== probe"; SETS=text expmon launch --exp longchunk --stage probe --parent 188466 --dependency afterok:188466 --partition gpu-be --constraint gpu_a100 --time 0:10:00 expQ/archq2/probe_mixer.sh ex…
+  ↳ === probe (+11 lines)
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco; FD=$R/data/mm_ft_docpages_20k_1m_teacher:20000,$R/data/mm_ft_natural_8k_teacher:8000 ⏎ FT_DATA=$FD FT_OUT=$R/expQ/longchunk/ft_cml1024_s42 expmon launch --dry-run --exp longchunk --stage ft --parent 189…
+  ↳ would submit: sbatch --dependency afterok:189692 --partition gpu --time 16:06:00 ft_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml1024/model 28000 1 64 hf_training.learning_rate= (+5 lines)
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco; FD=$R/data/mm_ft_docpages_20k_1m_teacher:20000,$R/data/mm_ft_natural_8k_teacher:8000 ⏎ FT_DATA=$FD FT_OUT=$R/expQ/longchunk/ft_cml1024_s43 expmon launch --dry-run --exp longchunk --stage ft --parent 189…
+  ↳ would submit: sbatch --dependency afterok:189692,afterany:189694 --partition gpu --time 16:06:00 ft_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml1024/model 28000 1 64 hf_trainin (+8 lines)
+All five cells are queued behind stage 1. Recording intents in the ledger.
+→ Bash:  ⏎ expmon note -j 189691 "intent: L1024 stage-1 slot-ownership health probe = the control's 188470 command (probe_mixer, SETS=text, 40 rows) on expQ/longchunk/pt_text_1M_cml1024_188466/model; afterok:188466; gpu-be a100; --time 0:10:00 as t…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: ls -t eval_mm_4b_188709*.out 2>/dev/null | head -2; f=$(ls -t eval_mm_4b_188709*.out 2>/dev/null | head -1); [ -n "$f" ] && tr '\r' '\n' < $f | grep -E "CANCELLED|\[[0-9]+/1500\]" | tail -2 ⏎ expmon note -j 188709 "result: preempted on gpu-…
+  ↳ eval_mm_4b_188709.out (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && python3 - <<'EOF' ⏎ p='known_issues.md'; s=open(p).read() ⏎ old="(previews 188980 / 188981, 2026-11-12 22:11 — griped; gating evals 188710 / 188711 / 188712, 2026-11-13 06:30 / 07:…
+  ↳ ok
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe -c gap "CAMP_MAX_TRAIN is only prose: expmon launch never counts trainings, so the longchunk control chain ran 3 trainings at once (188466 + 188468 + 188469, 2026-11-12) unnoticed by the…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log
+Now rewriting STATE.md with the new chain.
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "decision: longchunk wake 2026-11-13 08:00 — woken by the preemption of control eval photos s42 (188709, 2 min in, gpu-be homer-016, requeued, benign). All 6 control gating evals PENDING, start estimates now 11-16 16:30 - 11-17 …
+  ↳ expmon note: 123 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h", "summary": "I was woken because one of the control model's evals wa…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3136 turns=32 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h", "summary": "I was woken because one of the control model's evals was preempted. It is harmless: control eval photos seed 42 (job 188709) was cut off on gpu-be after 2 minutes and SLURM put it back in the queue by itself. Four of the six control evals have now been preempted once, and each restarts from scratch. The scheduler now expects them to start on 11-16 or 11-17 (it said today 15:15–17:00 before). That delay does not slow the campaign: the 1,024-token arm's own evals cannot start before about 11-15 evening.\n\nStage 1 of the 1,024-token arm (job 188466) is healthy. It has seen 589,632 of 1M documents, train loss is .78–.80, there are no NaN values, and it should end around 11-14 09:00.\n\nI queued everything that follows it, so each step starts on its own when the step before succeeds:\n- slot-ownership probe on the stage-1 model (189691)\n- stage 2 (189692)\n- finetune seed 42 (189694)\n- finetune seed 43 (189695), set to wait for seed 42 so no more than 2 trainings run at once\n- stage 1 of the 2,048-token arm (189693), which will run after the 1,024-token stage 1. The law's budget rule passes: about 843 GPU-hours (35.1 GPU-days) projected, against 38 allowed.\n\nThe dry-runs passed and the commands match the control's exactly. I also clarified the law: the 2-training cap counts jobs running at the
+== final:
+{"next":"wake-when","wake_when":"file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h","summary":"I was woken because one of the control model's evals was preempted. It is harmless: control eval photos seed 42 (job 188709) was cut off on gpu-be after 2 minutes and SLURM put it back in the queue by itself. Four of the six control evals have now been preempted once, and each restarts from scratch. The scheduler now expects them to start on 11-16 or 11-17 (it said today 15:15–17:00 before). That delay does not slow the campaign: the 1,024-token arm's own evals cannot start before about 11-15 evening.\n\nStage 1 of the 1,024-token arm (job 188466) is healthy. It has seen 589,632 of 1M documents, train loss is .78–.80, there are no NaN values, and it should end around 11-14 09:00.\n\nI queued everything that follows it, so each step starts on its own when the step before succeeds:\n- slot-ownership probe on the stage-1 model (189691)\n- stage 2 (189692)\n- finetune seed 42 (189694)\n- finetune seed 43 (189695), set to wait for seed 42 so no more than 2 trainings run at once\n- stage 1 of the 2,048-token arm (189693), which will run after the 1,024-token stage 1. The law's budget rule passes: about 843 GPU-hours (35.1 GPU-days) projected, against 38 allowed.\n\nThe dry-runs passed and the commands match the control's exactly. I also clarified the law: the 2-training cap counts jobs running at the same time. The control chain broke that cap once, on 11-12. I logged an expmon gripe and rewrote STATE.md.\n\nNothing is needed from you.","launched":["189691 L1024 ownership probe (afterok:188466)","189692 L1024 stage 2 (afterok:188466)","189693 L2048 stage 1 (afterok:188466)","189694 L1024 finetune s42 (afterok:189692)","189695 L1024 finetune s43 (afterok:189692,afterany:189694)"],"verdicts":[],"gripes":["CAMP_MAX_TRAIN is prose only: expmon launch never counts running or chained trainings, so the control chain ran 3 trainings at once unnoticed; suggest launch --exp warn or refuse above the cap, given afterok/afterany edges"]}
+== rc=0 secs=413
+== verify: 12/14
