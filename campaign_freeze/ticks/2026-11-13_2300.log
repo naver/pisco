@@ -1,0 +1,83 @@
+== campaign freeze wake 2026-11-13_2300  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794578401 live=189899:RUNNING,189842:RUNNING,189903:PENDING,189902:PENDING,189901:PENDING,189900:PENDING,189847:PENDING,189846:PENDING,189845:PENDING,189844:PENDING,189904:PENDING,189843:PENDING running=2 pending=10 problems=0 problems_other=0 new=0 gpuh24=37.5 idle_h=0.0 min_util=100 alert=0 unpushed=77 cron=3 daemon=1 disk_gb=10461 sig=ee3d2969 same=3 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/freeze/ft_connfrozen_s43/checkpoint-200_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: file:expQ/freeze/ft_connfrozen_s43/checkpoint-200 (exists)   (NEXT was: wake-when file:expQ/freeze/ft_connfrozen_s43/checkpoint-200 max 3h)
+== session d91d2032-8748-4ba1-8ad2-3cae8033954b  model claude-opus-5-5  tools 28
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+20 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/d91d2032-8748-4ba1-8ad2-3cae8033954b/tool-results/bjxfcxa80.txt | cut -c1-600
+  ↳ <persisted-output> (+20 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/d91d2032-8748-4ba1-8ad2-3cae8033954b/tool-results/bjxfcxa80.txt
+  ↳ 14	- NEXT: absent (+119 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/d91d2032-8748-4ba1-8ad2-3cae8033954b/tool-results/bjxfcxa80.txt
+  ↳ 134	189847     eval 189842   PENDING   -          -        -        -        -        -        -        -        -        -        -        -          -        -        -        -        -        -    (+149 lines)
+→ Bash: cat campaign_freeze/CAMPAIGN.md; echo ======; cat campaign_freeze/STATE.md
+  ↳ Exit code 1 (+102 lines)
+Reading the campaign law and state; A2 seed-43 step-200 checkpoint woke me, and the A1 paired test has ended.
+→ Bash: sed -n '/## Decision gates/,/## Patchable/p' campaign_freeze/CAMPAIGN.md
+→ Bash: cat campaign_freeze/STATE.md
+  ↳ ## Decision gates (+37 lines)
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+138 lines)
+→ Bash: cat campaign_freeze/known_issues.md | cut -c1-400; echo ====; sacct -j 189919,189095,189973,189899,189842 -X --format=JobID,State,ExitCode,Start,End,NodeList,Restarts -P 2>&1 | head -20
+  ↳ Exit code 1 (+31 lines)
+→ Bash: sacct -j 189919,189095,189973,189899,189842 -X --format=JobID,State,ExitCode,Start,End,NodeList,Restarts -P 2>&1 | head -20; date
+  ↳ sacct: error: Invalid field requested: "Restarts" (+1 lines)
+→ Bash: sacct -j 189919,189095,189973,189899,189842 -X --format=JobID,State,ExitCode,Start,End,NodeList -P 2>&1 | head -20; for j in 189919 189095 189973; do scontrol show job $j 2>/dev/null | grep -oE 'JobState=\S+|Restarts=\S+|Reason=\S+|StartTim…
+  ↳ JobID|State|ExitCode|Start|End|NodeList (+5 lines)
+→ Bash: ls -la expQ/freeze/ft_connfrozen_s43/ ; expmon logs 189899 400 2>&1 | grep -E "eval_loss|'loss'" | tail -8 | cut -c1-300
+  ↳ total 11 (+60 lines)
+→ Bash: expmon logs 189919 200 2>&1 | grep -vE '^\s*$' | cut -c1-220 | head -120
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_189919.out (last 200) <== (+119 lines)
+Reading the A1 paired-test result (documents −2.9 / −3.9 pt); now checking the split-test gate rules in the law.
+→ Bash: sed -n '/Split test gates/,/## Decision gates/p' campaign_freeze/CAMPAIGN.md | head -80; echo '-----'; sed -n '/## Budget and caps/,/## Patchable/p' campaign_freeze/CAMPAIGN.md
+  ↳ | A1 split: compressor frozen (owner 2026-11-12, FIRST) | `expQ/freeze/ft_freeze.sh compfrozen 42` and `… compfrozen 43` | `freeze_part=compressor`: compressor adapter + `<MEM>` row + merger frozen an (+115 lines)
+→ Bash: expmon logs 189919 200 2>&1 | grep -E '^=== PAIR|^ALL|EXIT' | tail -10; echo '-----'; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py pisco/model.py expQ/freeze/ft_freeze.sh | cut -c1-8,33-; echo '-----'; expmon logs…
+  ↳ ALL             1500   0.583   0.575   +0.009   0.005 [-0.001, +0.019]      40      27    0.142 (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze && ls ft_connfrozen_s43_step100/ ft_connfrozen_s43_step100/*/ 2>&1 | head; f=$(ls ft_connfrozen_s43_step100/*/*lim300*.json ft_connfrozen_s43_step100/eval/*lim300*.json 2>/dev/null | head -1…
+  ↳ ft_connfrozen_s43_step100/: (+11 lines)
+→ Bash: P=ft_connfrozen_s43_step100/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json; jq -c '.records[0] | keys' $P | cut -c1-300; for f in ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json ft_compfrozen_s43/eval/…
+  ↳ ["anls","answers","decoder_prompt_tokens","em","f1","judge","judge_raw","match","mems_used","n_images","prediction","query","query_id","source"] (+10 lines)
+→ Bash: P=ft_connfrozen_s43_step100/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json; R=ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; jq -n --slurpfile a $P --slurpfile b $R '[$a[0].records, $b[0].records[:30…
+  ↳ { (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon logs 189842 400 2>&1 | grep -oE "\{'eval_loss': '[0-9.]+'|[0-9]+/437 \[[0-9:]+<[0-9:]+, [0-9.]+s/it\]" | tail -4; ls -d expQ/freeze/ft_connfrozen_s42/checkpoint-*; gpucap land a100 1 2>&1 | ta…
+  ↳ 304/437 [7:51:07<3:31:16, 95.31s/it] (+10 lines)
+→ Bash: grep -n "189919" EXPERIMENTS.md | cut -c1-900 | head -5; ls expQ/freeze/*.sh; expmon logs 189842 3000 2>&1 | grep -oE "\{'eval_loss': '[0-9.]+'" | tail -4
+  ↳ 960:- 2026-11-13 18:05 [job 189097] result: A1 compressor-frozen s42 MRQA text judge .695 (n=1,500, CML=4096, PX=1003520), COMPLETED 18:10 homer-016, exit 0, 16 min. Unpaired: F s42 .695, ref 184778 . (+11 lines)
+→ Bash: head -40 expQ/freeze/paired_judge_cpu.sh; scontrol show job 189919 2>/dev/null | grep -E 'Command|Partition|TimeLimit|Gres|TRES' | head; sacct -j 189919 -X --format=JobID,Partition,Timelimit,ReqTRES%60,SubmitLine%300 -P 2>/dev/null | tail -…
+  ↳ #!/bin/bash (+29 lines)
+→ Bash: for j in 189844 189847 189900 189903; do sacct -j $j -X --format=JobID,SubmitLine%400 -P 2>/dev/null | tail -1 | cut -c1-400; done; grep -nE 'OUT|eval/' /beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh | head -8
+  ↳ 189844|sbatch --partition gpu-be --exclude homer-[005-009] --dependency afterok:189842 --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_connfrozen_s42/model pisco  eval_data/mm_docqa_1500_1m (+8 lines)
+→ Bash: expmon launch --exp freeze --stage judge --dry-run --time 0:05:00 --dependency afterok:189844:189845:189846:189847:189900:189901:189902:189903 expQ/freeze/paired_judge_cpu.sh ft_connfrozen_s42:ref_s42 ft_connfrozen_s43:ref_s43 ft_connfrozen…
+  ↳ would submit: sbatch --time 0:05:00 --dependency afterok:189844:189845:189846:189847:189900:189901:189902:189903 expQ/freeze/paired_judge_cpu.sh ft_connfrozen_s42:ref_s42 ft_connfrozen_s43:ref_s43 ft_ (+3 lines)
+→ Bash: expmon note "A2 gate test (intent): paired_judge_cpu.sh A2 connector-frozen s42/s43 vs ref_s42/ref_s43 (gate) and vs F and A1 of the same seed (reported), 4 sets each, n=1,500, bootstrap CI + McNemar; chained afterok on the 8 A2 evals (1898…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: expmon probe 189899 --step 0.458 eval_loss=0.4053 2>&1 | tail -1; expmon probe 189842 --step 0.686 eval_loss=0.3968 2>&1 | tail -1; expmon probe 189973 --step 0.23 judge=0.6233 n=300 2>&1 | tail -1
+  ↳ probe recorded: 189899 @0.458 (eval_loss=0.4053)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+Recording the A1 tie result and the A2 health readings in the ledger.
+→ Bash: expmon note -j 189919 "result: A1 compressor-frozen gate test COMPLETED exit 0 (21:12, 36 s). Paired judge, n=1,500 per set, ALL rows, A1 - ref s42 / s43: documents -.029 [-.050,-.009] p=.008 / -.039 [-.061,-.017] p=.001; photos .000 [-.017…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: for j in 189445 189446 189447 189448 189449 189450; do sacct -j $j -X --format=JobID,Timelimit,Elapsed,SubmitLine%400 -P 2>/dev/null | tail -1 | cut -c1-330; done
+  ↳ 189445|12:21:00|11:10:36|sbatch --partition gpu --constraint gpu_a100 --time 12:21:00 expQ/freeze/ft_freeze.sh compfrozen 43 (+5 lines)
+→ Bash: grep -nE "189448|189449|189445\] intent" EXPERIMENTS.md | cut -c1-600 | head -4; grep -nE "CML=4096|TOPK=10" campaign_freeze/STATE.md campaign_freeze/CAMPAIGN.md | cut -c1-300 | head -5
+  ↳ 884:- 2026-11-13 05:03 [job 189445] intent: split test A1 (compressor frozen; connector + decoder LoRA train) seed 43 full, ft_freeze.sh compfrozen 43 (+hf_training.seed=43, as 184780), 28,032 rows =  (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze && ls ft_unfrozen_s44/eval/ ft_frozen_s44/eval/; ls -la --time-style=+%m-%d_%H:%M ../../scripts/eval_mm_docqa.py | awk '{print $6, $7}'
+  ↳ ft_frozen_s44/eval/: (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && timeout 60 expmon display --exp freeze 2>&1 | tail -3; timeout 60 expmon campaign report --section leaves 2>&1 | head -40 | cut -c1-300
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_freeze.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+Writing the new STATE.md (A1 tie with numbers, A2 health, the queued paired test, and the exact seed-44 chain for the next wake).
+→ Bash: sed -n '/^## Owned jobs/,$p' campaign_freeze/STATE.md | grep -n '^## ' 
+  ↳ 1:## Owned jobs (jobid | arm | state | rows seen | eta | note) (+10 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: md5sum campaign_freeze/patches/split_freeze.diff | cut -c1-32; expmon gripe -c gap "grid: a paired_judge cell (freeze 189919) ended with RESULT '-'; the gate numbers (ALL-row diff, CI, McNemar p per pair x set) live only in its .out, so eve…
+  ↳ d4412015df7ecd2cfd8408693ec3d5ef (+2 lines)
+→ Bash: expmon note "decision: freeze wake 2026-11-13 23:00 — A1 compressor-frozen gate test (189919) = TIE at 2 seeds (documents -.029/-.039, MRQA -.023/-.031, photos .000/-.013; A1 = F within .012 everywhere) -> seed 44 next wake (no training slo…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ StructuredOutput: {"next": "wake-when", "summary": "Freezing only the compressor (connector and decoder still train) comes out a TIE after two seeds, so the law calls for a third seed. Paired judge test 189919, n=1,500 per set, compressor-frozen minus refere…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.2334 turns=35 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Freezing only the compressor (connector and decoder still train) comes out a TIE after two seeds, so the law calls for a third seed. Paired judge test 189919, n=1,500 per set, compressor-frozen minus reference at seed 42 / 43: documents −.029 [−.050,−.009] / −.039 [−.061,−.017]; MRQA text −.023 / −.031; photos .000 / −.013. It is not Validated, because documents and MRQA are below −2 pt at both seeds. It is not Failed, because −3 pt is reached only at seed 43 (seed-42 documents misses the line by .001). Its scores equal those of the fully frozen arm within .012 on every set. The seed-44 run cannot start now: both training slots are held by the connector-frozen runs. Connector-frozen seed 43: held-out loss .405 at .46 epoch, back below the .471 kill line, so it is kept. Its step-100 preview scores .623 on 300 documents (reference .610 on the same questions). Connector-frozen seed 42: .397 at .69 epoch, close to the reference's loss at the same point; it ends ~02:25. I launched the connector-frozen paired test 190020, chained to start after its 8 evals. STATE.md is rewritten and holds the exact seed-44 chain to launch next wake. Eval code md5s are unchanged.", "launched": ["190020"], "verdicts": [{"jobid": "189919", "verdict": "tie", "note": "A1 compressor-frozen vs reference: documents -.029/-.039, MRQA -.023/-.031, photos .000/-.013 (n=1,500, paired); neither Validated nor Failed at both seeds -> third seed 44 (law)"}, {"jobid": "189899", "ve
+== final:
+{"next":"wake-when","summary":"Freezing only the compressor (connector and decoder still train) comes out a TIE after two seeds, so the law calls for a third seed. Paired judge test 189919, n=1,500 per set, compressor-frozen minus reference at seed 42 / 43: documents −.029 [−.050,−.009] / −.039 [−.061,−.017]; MRQA text −.023 / −.031; photos .000 / −.013. It is not Validated, because documents and MRQA are below −2 pt at both seeds. It is not Failed, because −3 pt is reached only at seed 43 (seed-42 documents misses the line by .001). Its scores equal those of the fully frozen arm within .012 on every set. The seed-44 run cannot start now: both training slots are held by the connector-frozen runs. Connector-frozen seed 43: held-out loss .405 at .46 epoch, back below the .471 kill line, so it is kept. Its step-100 preview scores .623 on 300 documents (reference .610 on the same questions). Connector-frozen seed 42: .397 at .69 epoch, close to the reference's loss at the same point; it ends ~02:25. I launched the connector-frozen paired test 190020, chained to start after its 8 evals. STATE.md is rewritten and holds the exact seed-44 chain to launch next wake. Eval code md5s are unchanged.","launched":["190020"],"verdicts":[{"jobid":"189919","verdict":"tie","note":"A1 compressor-frozen vs reference: documents -.029/-.039, MRQA -.023/-.031, photos .000/-.013 (n=1,500, paired); neither Validated nor Failed at both seeds -> third seed 44 (law)"},{"jobid":"189899","verdict":"keep","note":"A2 s43 held-out .405 at .46 epoch < .471 kill line; only 1 of 2 strikes"}],"gripes":["gap: grid shows RESULT '-' for a finished paired_judge cell; suggest parsing paired_judge.py ALL rows into probes"],"wake_when":"job:189842 max 4h"}
+== rc=0 secs=290
+== verify: 20/31
