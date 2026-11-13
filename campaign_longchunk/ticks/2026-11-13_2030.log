@@ -1,0 +1,89 @@
+== campaign longchunk wake 2026-11-13_2030  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794569402 live=189693:PENDING,189695:PENDING,189694:PENDING,189692:PENDING,188466:RUNNING,188707:PENDING,189691:PENDING running=1 pending=6 problems=2 problems_other=0 new=0 gpuh24=114.7 idle_h=0.0 min_util=100 alert=0 unpushed=75 cron=3 daemon=1 disk_gb=10601 sig=7c15d44c same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/longchunk/pt_mm_cml1024/training_config.yaml_file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml_max_16h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 46ebf2af-9ceb-459d-989f-3178c0b16314  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/46ebf2af-9ceb-459d-989f-3178c0b16314/tool-results/blxuf50i3.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_2030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+255 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ===== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && sed -n 30,80p CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat STATE.md; echo; echo =====KI; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+86 lines)
+  ↳ | arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+50 lines)
+→ Bash: cat known_issues.md; echo "-- ls"; ls -la; echo "-- ledger"; expmon ledger 15 2>&1 | tail -20
+  ↳ # Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+55 lines)
+Checking why the tick woke me: the brief says "problems" — likely the control's photos eval (seed 43) requeued again. Checking its SLURM history and the eval code fingerprints.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 188712,188707 -D -o JobID%14,State%12,ExitCode,NodeList%12,Start,End,Elapsed -X 2>&1 | tail -30; echo "-- md5"; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/…
+  ↳ JobID        State ExitCode     NodeList               Start                 End    Elapsed  (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s43/eval && ls -la --time-style=full-iso | grep -i natural; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in sorted(glob.glob('mm_docqa_pisco_px1003520_mm_naturalqa_1500.json*'))…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 916057 2026-11-13 20:19:24.000000000 +0900 mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('mm_docqa_pisco_px1003520_mm_naturalqa_1500.json')) ⏎ b=json.load(open('mm_docqa_pisco_px1003520_mm_naturalqa_1500.json.kept_188712_homer013_1622')) ⏎ ra,rb=a['records'],b['records'] ⏎ prin…
+  ↳ summary new {'em': 0.518, 'em/vizwiz': 0.21, 'f1': 0.6313981115462662, 'f1/vizwiz': 0.4779454991037739, 'anls': 0.5976043462244232, 'anls/vizwiz': 0.3405982973738862, 'match': 0.7326666666666667, 'mat (+2 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ ra=json.load(open('mm_docqa_pisco_px1003520_mm_naturalqa_1500.json'))['records'] ⏎ rb=json.load(open('mm_docqa_pisco_px1003520_mm_naturalqa_1500.json.kept_188712_homer013_1622'))['records'] ⏎ print('identical pr…
+  ↳ identical predictions 1500 / 1500 ; judge differs 0 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/eval && ls -la --time-style=full-iso; python3 -c " ⏎ import json ⏎ d=json.load(open('mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json')) ⏎ r=d['records']; print('n',le…
+  ↳ total 2485 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && sed -n 80,125p CAMPAIGN.md; sacct -j 188709,188708 -D -X -o JobID%10,State%11,NodeList%10,Start,End | tail -12
+  ↳ finetunes 22 + evals 20); smokes 7 → the full plan projects to ≈ 841 GPU-h = 35.0 GPU-days, the WHOLE budget with no (+51 lines)
+Photos seed-43 control eval finished cleanly (.670, same 1,500 answers as the earlier attempt). Now saving a copy of the g10 seed-42 result, which also landed complete just before a preemption.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/eval && f=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json && cp -p $f $f.kept_188707_homer014_2010 && cmp $f $f.kept_188707_homer014_2010 && echo identical && python3…
+  ↳ identical (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml1024_188466 && ls; tail -c 1500 train.log 2>/dev/null | tr '\r' '\n' | tail -5
+  ↳ checkpoint-2000 (+9 lines)
+→ Bash: expmon logs 188466 3 2>&1 | tr '\r' '\n' | grep -E '[0-9]+/5208' | tail -2
+  ↳ 80%|███████▉  | 4151/5208 [47:56:17<12:18:18, 41.91s/it] (+1 lines)
+L1024 stage 1 is healthy at step 4,152 of 5,208 (≈ 12 h left). Recording the two control results in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note -j 188712 "result: C256 photos s43 COMPLETED exit 0 on homer-014 (20:01-20:19, attempt 7 after 6 preemptions): judge .670, n=1,500 (mm_naturalqa_1500, PX=1003520, rate 8 tokens per slot),…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: expmon probe 188707 judge=0.6107 n_q=1500 em=0.345 match=0.458 node=homer-014 attempt=19:52-20:10 2>&1 | tail -2; expmon probe 188466 --step 4152 docs_seen=797184 2>&1 | tail -1
+  ↳ probe recorded: 188707 (judge=0.6107 n_q=1500 em=0.345 match=0.458 node=homer-014 attempt=19:52-20:10)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && python3 - <<'EOF' ⏎ p='known_issues.md' ⏎ s=open(p).read() ⏎ old_start=s.index('| gpu-be job shows CANCELLED / PREEMPTED') ⏎ old_end=s.index('\n',old_start) ⏎ new=("| gpu-be job sh…
+  ↳ 23
+→ Bash: grep -n '' STATE.md | sed -n 30,45p; cat VERIFY.md | head -30
+  ↳ 30:- Chained behind it, PENDING on Dependency, they start by themselves when it exits 0: L1024 ownership probe 189691 → L1024 stage 2 189692 → finetune s42 189694 → finetune s43 189695; and the 2,048- (+38 lines)
+Writing the new STATE.md (control table now 5 of 6 cells from finished jobs; g10 seed 42 provisional until its job ends cleanly).
+→ Bash: sed -n 45,200p STATE.md | head -5 >/dev/null; python3 - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ i=s.index('## Adopted jobs') ⏎ open('/tmp/state_tail_longchunk.md','w').write(s[i:]) ⏎ print(len(s[i:])) ⏎ EOF
+  ↳ 3350
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe -c gap "longchunk wake 2026-11-13 20:30 was spent on 'problems' = gpu-be PREEMPTED->requeued evals (188707/188712) that the campaign's known_issues row 1 already marks benign; and an eva…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Nothing went wrong. The tick woke me because control evals were preempted and requeued on the preemptible `gpu-be` partition, which is a known, harmless issue. I launched and cancelled nothing.
+
+**Done**
+- **Photos, seed 43, control (256-token chunks):** the eval job finished cleanly (exit 0, homer-014). Judge accuracy is .670 on 1,500 questions at 8 tokens per slot. All 1,500 answers match the earlier homer-013 run, so those two nodes agree on this set. This seed-43 score now comes from a finished job instead of a preempted run.
+- **Grouped HotpotQA (each question's 10 passages in one long chunk), seed 42, control:** a run wrote a complete, fully judged result (.611 on 1,500 questions, 0 unreadable judge verdicts). It was preempted 2 seconds later. I saved an identical copy because the requeued job will overwrite the file. The job is left queued so the result comes from a finished job; until then the .611 is provisional.
+- **Code fingerprints:** the eval, judge and model code are unchanged since the control evals ran, so later arm scores can be paired with these.
+- **Notes:** I updated the known-issues table: a result written just before a preemption counts only if all 1,500 rows are judged, and then a copy is kept. I logged an expmon complaint that benign preemptions should not trigger a wake.
+
+**Running now**
+- **1,024-token-chunk arm, stage 1 (text pretraining):** step 4,152 of 5,208, about 797k of 1M documents. It is healthy: last held-out loss .612, no errors. It ends around 2026-11-14 08:50.
+- **Queued behind it, starting automatically:**
+  - the slot-ownership check (do the compressed slots still each cover their own text segment?)
+  - this arm's image stage (stage 2)
+  - its two finetunes, one per seed
+  - stage 1 of the 2,048-token-chunk arm
+
+**Control scores so far** (judge accuracy, 1,500 questions per set)
+
+| set | seed 42 | seed 43 |
+|---|---|---|
+| grouped HotpotQA | .611 (provisional) | .607 |
+| documents | .615 | .603 |
+| photos | .667 | .670 |
+
+**Budget:** about 13.1 of 38 GPU-days spent; the full plan projects to about 34.4.
+
+**Next:** I wake when the 1,024-token arm's stage 2 or the 2,048-token arm's stage 1 starts, at most 16 h from now.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Woken by benign gpu-be preemptions. Control photos seed-43 eval (188712) COMPLETED: .670, n=1,500, homer-014, answers identical to the homer-013 attempt. Control g10 seed-42 .611 (n=1,500, 0 unparseable) on…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5416 turns=24 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Woken by benign gpu-be preemptions. Control photos seed-43 eval (188712) COMPLETED: .670, n=1,500, homer-014, answers identical to the homer-013 attempt. Control g10 seed-42 .611 (n=1,500, 0 unparseable) on disk from a preempted attempt of 188707: copy kept, job left queued (provisional until it ends COMPLETED). L1024 stage 1 (188466) healthy at step 4,152/5,208 (797k of 1M documents), ends ~11-14 08:50; downstream chain and L2048 stage 1 queued on it. Code md5s unchanged. Known-issues row 1 rewritten, STATE.md rewritten, ledger notes + probes recorded. No launch, no kill.", "launched": [], "verdicts": [], "gripes": ["gap: tick woke a full wake for gpu-be PREEMPTED->requeued evals already marked benign in known_issues; and a complete judged eval json written seconds before preemption is invisible to the grid until the requeue finishes — suggest not counting Restarts>0 PENDING/RUNNING as a problem and surfacing/auto-keeping complete on-disk results"], "wake_when": "file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h"}
+== final:
+{"next":"wake-when","summary":"Woken by benign gpu-be preemptions. Control photos seed-43 eval (188712) COMPLETED: .670, n=1,500, homer-014, answers identical to the homer-013 attempt. Control g10 seed-42 .611 (n=1,500, 0 unparseable) on disk from a preempted attempt of 188707: copy kept, job left queued (provisional until it ends COMPLETED). L1024 stage 1 (188466) healthy at step 4,152/5,208 (797k of 1M documents), ends ~11-14 08:50; downstream chain and L2048 stage 1 queued on it. Code md5s unchanged. Known-issues row 1 rewritten, STATE.md rewritten, ledger notes + probes recorded. No launch, no kill.","launched":[],"verdicts":[],"gripes":["gap: tick woke a full wake for gpu-be PREEMPTED->requeued evals already marked benign in known_issues; and a complete judged eval json written seconds before preemption is invisible to the grid until the requeue finishes — suggest not counting Restarts>0 PENDING/RUNNING as a problem and surfacing/auto-keeping complete on-disk results"],"wake_when":"file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h"}
+== rc=0 secs=210
+== verify: 13/17
