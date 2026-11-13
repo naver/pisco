@@ -1,0 +1,96 @@
+== campaign probes wake 2026-11-13_1700  reasons=gate,request  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794556802 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.6 idle_h=7.9 min_util=- alert=0 unpushed=70 cron=3 daemon=1 disk_gb=10849 sig=ba6a75f0 same=15 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session 2e40f2e3-f426-47d3-bcb9-339034769335  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+27 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/2e40f2e3-f426-47d3-bcb9-339034769335/tool-results/b1kcowxoc.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-13_1700   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+335 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && ls -la && cat CAMPAIGN.md
+  ↳ total 85 (+206 lines)
+→ Bash: cat STATE.md && echo ---- && cat known_issues.md && echo ---- && cat REQUEST && echo ---- && cat GATE; echo; cat VERIFY.md | head -30
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/2e40f2e3-f426-47d3-bcb9-339034769335/tool-results/bodjwl0q9.txt
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+243 lines)
+I'm executing the owner's answer: launching the two slot-pruning cells (keep an eighth at seed 43, keep a sixteenth at seed 42). First I'm checking how the last such cell was launched.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 | grep -E "189057|189056|keep0125|keep025" | head -20; echo ----; expmon runs 2>/dev/null | grep -E "189057|189056" ; ls -la expQ/probes/ | grep -E "keep" 
+  ↳ - 2026-11-13 08:32 [job 189057] intent: widen to gpu,gpu-be (law: PENDING > 6 h on gpu-be, at most 2 campaign cells widened; 0 are now). Pending since 01:34 requeue, SLURM estimate 11-16 08:15. gpucap (+18 lines)
+→ Bash: ls -la expQ/probes/e_keep0125_attng expQ/probes/e_keep025_attng_s43 expQ/probes/e_keep0125_attng/eval expQ/probes/e_keep025_attng_s43/eval; grep -n "189057\|189056" .expmon/manifest* 2>/dev/null | head; ls .expmon/ | head -30
+  ↳ expQ/probes/e_keep0125_attng: (+48 lines)
+→ Bash: grep '"189057"\|"189056"' .expmon/runs.jsonl | head -3; grep -n "KEEPF\|KEEPM" eval_mm_4b.sh | head
+  ↳ {"ts": "2026-11-12 23:33", "jobid": "189056", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/e_keep025_attng_s43/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "c36daf1+dirty", "outdir (+3 lines)
+→ Bash: grep -n "189057\] intent\|189056\] intent" EXPERIMENTS.md | head; echo ----; git diff --stat; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py
+  ↳ 859:- 2026-11-13 00:02 [job 189056] intent (cell 61, recorded late: the guard refused -j notes at launch): arm E keep a quarter, s43, KEEPF=0.25 KEEPM=attn_global, docs 1,500 Q on 184780; baseline pla (+15 lines)
+→ Bash: ls -la --time-style=full-iso eval_mm_4b.sh scripts/eval_mm_docqa.py pisco/model.py scripts/judge_mm_docqa.py; git log -3 --format='%h %ci %s' -- scripts/eval_mm_docqa.py eval_mm_4b.sh pisco/model.py; git diff eval_mm_4b.sh
+  ↳ -rw-rw-r-- 1 hdejean hdejean  7018 2026-11-11 06:06:48.000000000 +0900 eval_mm_4b.sh (+31 lines)
+→ Bash: gpucap land a100 1 2>&1 | tail -25; echo ----; squeue -u hdejean -p gpu -o "%.10i %.20j %.8T %.6D %.12b %R" 2>&1 | head
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+13 lines)
+Owner uses 5 of 8 GPUs on the main partition and the best-effort queue is jammed, so both cells will go to `gpu,gpu-be`. Checking how `expmon launch` passes the probe environment.
+→ Bash: expmon help launch 2>&1 | head -60
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+59 lines)
+→ Bash: grep -n "mem_keep" scripts/eval_mm_docqa.py | head -40
+  ↳ 242:    """Arm E probe (--mem_keep_mode attn*): one eager forward of the full prompt; the attention of the last prompt (+15 lines)
+→ Bash: sed -n 288,320p scripts/eval_mm_docqa.py
+  ↳ emb = compress_sliced(model, comp, batch.is_image) (+32 lines)
+→ Bash: ls -d expQ/probes/e_keep0125_attng_s43 expQ/probes/e_keep00625_attng 2>&1; ls expQ/ft_mm_4b_184780/model expQ/ft_mm_4b_184778/model | head -4; ls expQ/ft_mm_4b_184780/eval/ | grep 1500_1m
+  ↳ ls: cannot access 'expQ/probes/e_keep0125_attng_s43': No such file or directory (+6 lines)
+→ Bash: ls expQ/ft_mm_4b_184780/model | head; mkdir -p expQ/probes/e_keep0125_attng_s43 expQ/probes/e_keep00625_attng && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model expQ/probes/e_keep0125_attng_s43/model && ln -s /beegfs/scr…
+  ↳ chat_template.jinja (+17 lines)
+→ Bash: KEEPF=0.125 KEEPM=attn_global PX=1003520 expmon launch --dry-run --exp probes --stage E --parent 184784 --time 4:54:00 --partition gpu,gpu-be --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/e_keep0125_attng_s43/model pisco "" eval_data/…
+  ↳ (eval):1: no matches found: --exclude=homer-[005-009]
+Dry-running the first launch (zsh globbing tripped on the node list; quoting it).
+→ Bash: KEEPF=0.125 KEEPM=attn_global PX=1003520 expmon launch --dry-run --exp probes --stage E --parent 184784 --time 4:54:00 --partition gpu,gpu-be '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/e_keep0125_attng_s43/model pisco "" eval_dat…
+  ↳ launch: REFUSED — this cell (exp='probes', same factors) was closed as a dead arm by run 188444. (+1 lines)
+Known false refusal (expmon matches an empty factor key; known_issues row). The cell dir is new and empty, so `--force` applies.
+→ Bash: KEEPF=0.125 KEEPM=attn_global PX=1003520 expmon launch --dry-run --force --exp probes --stage E --parent 184784 --time 4:54:00 --partition gpu,gpu-be '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/e_keep0125_attng_s43/model pisco "" …
+  ↳ would submit: sbatch --time 4:54:00 --partition gpu,gpu-be --exclude=homer-[005-009] eval_mm_4b.sh expQ/probes/e_keep0125_attng_s43/model pisco  eval_data/mm_docqa_1500_1m (+3 lines)
+→ Bash: grep -n "^#SBATCH" eval_mm_4b.sh
+  ↳ 2:#SBATCH -n 1 (+7 lines)
+→ Bash: sinfo -p gpu,gpu-be -o "%P %N %G %f" 2>&1 | head
+  ↳ PARTITION NODELIST GRES AVAIL_FEATURES (+4 lines)
+All nodes are A100. Submitting both cells.
+→ Bash: KEEPF=0.125 KEEPM=attn_global PX=1003520 expmon launch --force --exp probes --stage E --parent 184784 --time 4:54:00 --partition gpu,gpu-be '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/e_keep0125_attng_s43/model pisco "" eval_data/…
+→ Bash: KEEPF=0.0625 KEEPM=attn_global PX=1003520 expmon launch --force --exp probes --stage E --parent 184781 --time 4:54:00 --partition gpu,gpu-be '--exclude=homer-[005-009]' eval_mm_4b.sh expQ/probes/e_keep00625_attng/model pisco "" eval_data/mm…
+  ↳ Submitted batch job 189905 (+6 lines)
+  ↳ Submitted batch job 189906 (+6 lines)
+Both submitted. Recording intents and checking they start.
+→ Bash: expmon note -j 189905 "intent (cell 65, owner REQUEST 2026-11-13 16:49, option B): arm E keep an eighth, s43, KEEPF=0.125 KEEPM=attn_global PX=1003520, docs mm_docqa_1500_1m 1,500 Q on 184780 (symlink expQ/probes/e_keep0125_attng_s43); base…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+Both pending on Priority. Now recording the owner's cap raise and the new gate in the law.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && grep -n "cells for the whole campaign\|The five cells of option A\|65 = ONE health\|Still dropped" CAMPAIGN.md
+  ↳ 103:- cells for the whole campaign: 65 (raised from 60 by the owner, REQUEST of 2026-11-12 23:14, answer to the BLOCKED.md (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 102	## Budget and caps (+11 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+Now the arm E row: adding the sixteenth-level gate (written before the cell runs).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully.
+→ Bash: rm REQUEST BLOCKED.md && ls; squeue -j 189905,189906 -o "%.10i %.10P %.8T %R %S"
+  ↳ campaign.conf (+11 lines)
+Scheduler estimates a start around 04:46 tomorrow. Updating the results page's status line.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -n "BLOCKED\|owner\|seed 43\|eighth\|sixteenth\|Status\|status" docs/probe_campaign_2026-11.md | head -30; wc -l docs/probe_campaign_2026-11.md
+  ↳ 9:## Status (2026-11-13 09:50 KST) (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 180	recorded (job 188481). All cells on el9_8 nodes, as the baselines (184781 homer-011, 184784 homer-016, 184783 homer-011). (+29 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ old1="""## Status (2026-11-13 09:50 KST) ⏎ - **64 of 65 cells used; nothing runs; every arm is decided or closed.** The owner raised the cap to 65 on 2026-11-12 ⏎  …
+  ↳ 12:  (job 189905, repeats the seed-42 tie .613 vs .610 of job 189057) and keep a sixteenth at seed 42 (job 189906, about (+1 lines)
+Writing STATE.md.
+→ Bash: squeue -j 189905,189906 -o "%.10i %.10P %.8T %R %S"; python3 - <<'EOF' ⏎ p='campaign_probes/STATE.md' ⏎ s=open(p).read() ⏎ i=s.index('**Open, and running**') ⏎ j=s.index('## What happened this wake') ⏎ print(i,j) ⏎ EOF
+  ↳ JOBID  PARTITION    STATE NODELIST(REASON) START_TIME (+3 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/STATE.md' ⏎ s=open(p).read() ⏎ head_old=s[:s.index('## TL;DR')] ⏎ head_new="""# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) ⏎ last wake: 2026-11-13 17:00-17:15 KST (…
+  ↳ 5:## TL;DR — where this leaves the question (readable as an email) (+11 lines)
+→ Bash: grep -n "seed-43 repeat needs a cell beyond the cap" campaign_probes/STATE.md && sed -i 's/provisional (seed 42 only, the seed-43 repeat needs a cell beyond the cap)/provisional (seed 42 only; the seed-43 repeat is queued, job 189905)/' cam…
+  ↳ 93:- provisional (seed 42 only, the seed-43 repeat needs a cell beyond the cap): even the most-attended EIGHTH of the (+4 lines)
+→ Bash: expmon note "decision: probes wake 2026-11-13 17:00 — owner REQUEST executed (option B, cap 65 -> 66): launched arm E keep-1/8 s43 (189905, 184780, cell 65) and keep-1/16 s42 (189906, 184778, cell 66), gpu,gpu-be, excl homer-[005-009], 4:54…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Executed owner REQUEST (option B, cap 65->66): launched arm E keep-1/8 at seed 43 (189905, model 184780, cell 65) and keep-1/16 at seed 42 (189906, model 184778, cell 66) on gpu,gpu-be, exclude homer-[005-0…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.1251 turns=39 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Executed owner REQUEST (option B, cap 65->66): launched arm E keep-1/8 at seed 43 (189905, model 184780, cell 65) and keep-1/16 at seed 42 (189906, model 184778, cell 66) on gpu,gpu-be, exclude homer-[005-009], --time 4:54:00; both PENDING Priority, estimate 11-14 04:46. CAMPAIGN.md budget/arm E row, docs/probe_campaign_2026-11.md, STATE.md, ledger updated; REQUEST and BLOCKED.md deleted. Cap now fully used.", "launched": ["189905", "189906"], "wake_when": "job:189905,189906 max 18h", "verdicts": [], "gripes": []}
+== final:
+{"next":"wake-when","summary":"Executed owner REQUEST (option B, cap 65->66): launched arm E keep-1/8 at seed 43 (189905, model 184780, cell 65) and keep-1/16 at seed 42 (189906, model 184778, cell 66) on gpu,gpu-be, exclude homer-[005-009], --time 4:54:00; both PENDING Priority, estimate 11-14 04:46. CAMPAIGN.md budget/arm E row, docs/probe_campaign_2026-11.md, STATE.md, ledger updated; REQUEST and BLOCKED.md deleted. Cap now fully used.","launched":["189905","189906"],"wake_when":"job:189905,189906 max 18h","verdicts":[],"gripes":[]}
+== rc=0 secs=260
+== verify: 18/25

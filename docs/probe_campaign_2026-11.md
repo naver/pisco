@@ -6,11 +6,11 @@ cell on the same questions (95% bootstrap CI, exact McNemar p). Compression: 1 s
 (`compr_rate: 8` in every model here). Document set (`mm_docqa_1500_1m`, PX=1003520, 4 pages per question): the plain
 cell uses 430.7 slots per question (646,042 / 1,500). HotpotQA (10 passages per question): about 177 slots per question.
 
-## Status (2026-11-13 09:50 KST)
-- **64 of 65 cells used; nothing runs; every arm is decided or closed.** The owner raised the cap to 65 on 2026-11-12
-  for four cells plus one health relaunch in reserve. All four passed their health check, so the reserve is unused.
-  The last cell, keep an eighth of the slots at seed 42 (job 189057), ties plain (.613 vs .610). Its seed-43 repeat
-  needs a cell the law does not give: the owner decides (`campaign_probes/BLOCKED.md`).
+## Status (2026-11-13 17:10 KST)
+- **66 of 66 cells used; two are queued, every other arm is decided or closed.** On 2026-11-13 the owner gave the
+  spare 65th cell and one more (cap 66) to finish the slot-pruning question: keep an eighth of the slots at seed 43
+  (job 189905, repeats the seed-42 tie .613 vs .610 of job 189057) and keep a sixteenth at seed 42 (job 189906, about
+  27 slots per question instead of 431). Both wait in the queue (scheduler estimate 11-14 04:46).
 - **Arm A decided at both seeds, every probe.** Showing the one page the model picks as raw pixels, the other three as
   slots, recovers the whole document gap: .820 / .822 vs .610 / .615 compressed, above the all-raw reader (.809).
   Removing the three distractor pages gains only about 2 pt; asking the decoder to copy the evidence before answering
@@ -201,7 +201,9 @@ Gate (attention-picked minus the better blind half ≥ +4 pt, CI above 0, both s
 adopted.** Quarter (gate written before the cell: within .02 of plain → three quarters unused per question): met at
 both seeds (+.001, +.005). **Adopted.** Eighth (gate written before any cell: within .02 → seven eighths unused; a
 loss ≥ .05 → the free share lies between 3/4 and 7/8): met at seed 42 (+.003), **provisional** until seed 43 runs
-(needs a cell beyond the cap). The s43 quarter cell and the s42 eighth cell ran on homer-019, their baselines on
+(job 189905, queued). Sixteenth at seed 42 (job 189906, queued; gate written before the cell: within .02 of plain →
+fifteen sixteenths unused; a loss ≥ .05 → the free share lies between 7/8 and 15/16; a loss between .02 and .05 decides
+nothing and is reported with its CI). The s43 quarter cell and the s42 eighth cell ran on homer-019, their baselines on
 homer-016 / homer-011, all el9_8 (that image agrees with itself, job 188476).
 
 ## Arm G — route then densify (accepted by the owner 2026-11-11)
