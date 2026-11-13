@@ -1,0 +1,118 @@
+== campaign probes wake 2026-11-13_0930  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794529801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.6 idle_h=0.4 min_util=- alert=0 unpushed=64 cron=3 daemon=1 disk_gb=11192 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189057_max_12h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:189057 (ended)   (NEXT was: wake-when job:189057 max 12h)
+== session a7ef0ae1-eb65-49e9-a055-68a420327353  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a7ef0ae1-eb65-49e9-a055-68a420327353/tool-results/b0xk05spo.txt
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a7ef0ae1-eb65-49e9-a055-68a420327353/tool-results/b0xk05spo.txt
+  ↳ 1	# Wake brief — campaign probes — 2026-11-13_0930   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+119 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a7ef0ae1-eb65-49e9-a055-68a420327353/tool-results/b0xk05spo.txt
+  ↳ 120	188536     A    184784   ended     best       -        eval_mm  a_mq8_s43 mm_docqa_1500_1m 4        -        -        -        -        -        pisco    all      ckpt       1003520    0        0  (+176 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && ls -la && wc -l CAMPAIGN.md STATE.md known_issues.md
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+168 lines)
+  ↳ total 81 (+13 lines)
+Woken because the last open probe (keep an eighth of the slots, seed 42) left the queue. Now checking whether it finished cleanly.
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ # CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+192 lines)
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 189057 -D -o JobID%20,State,ExitCode,Partition,NodeList,Start,End,Elapsed && ls -la expQ/probes/e_keep0125_attng/ expQ/probes/e_keep0125_attng/eval/ 2>&1
+  ↳ JobID      State ExitCode  Partition        NodeList               Start                 End    Elapsed  (+17 lines)
+→ Bash: ls -la logs/*189057* 2>/dev/null; ls expQ/probes/e_keep0125_attng/../ | head -0; find . -maxdepth 2 -name "*189057*" 2>/dev/null | head
+  ↳ (eval):1: no matches found: logs/*189057* (+1 lines)
+→ Bash: grep -nE "unparseable|judge|rows|mems_used|Error|Traceback|em=|EM|match|keep" eval_mm_4b_189057.out | tail -40; tail -5 eval_mm_4b_189057.out
+  ↳ 1506:[1350/1500] em=0.507 f1=0.596 anls=0.601 match=0.557  1395s (+44 lines)
+→ Bash: head -40 scripts/paired_judge.py && grep -n "import\|argparse\|add_argument" scripts/paired_judge.py | head -30
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+50 lines)
+Stdlib only, small JSON — safe on the login node. Pairing the keep-an-eighth result with the plain baseline.
+→ Bash: python3 scripts/paired_judge.py expQ/probes/e_keep0125_attng/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json --names keep0125 plain && python3…
+  ↳ judge: keep0125 = expQ/probes/e_keep0125_attng/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json (+13 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/probes/e_keep0125_attng/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json")) ⏎ b=json.load(open("expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_150…
+  ↳ rows 1500 1500 (+4 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/probes/e_keep0125_attng/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json"))["records"] ⏎ b=json.load(open("expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_m…
+  ↳ identical vs plain 1107 (+4 lines)
+→ Bash: scontrol show node homer-019 | grep -iE "OS=|kernel" | head -3
+  ↳ OS=Linux 5.14.0-687.26.1.el9_8.x86_64 #1 SMP PREEMPT_DYNAMIC Tue Jul 14 23:40:02 UTC 2026
+The keep-an-eighth cell finished cleanly (1,500 rows, 0 unparseable, same OS image as the baseline). Result: .613 vs plain .610, a tie. Recording it now.
+→ Bash: expmon probe 189057 judge=0.6127 em=0.516 2>&1 | tail -3; expmon verdict 189057 closed "provisional (one seed): arm E keep-12.5% attn_global s42: .613 vs plain .610 (184781) = +.003 [-.011,+.017], 59/55, p=.78, n=1,500, slots .121x (52 per …
+  ↳ probe recorded: 189057 (judge=0.6127 em=0.516)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+1 lines)
+→ Bash: expmon note -j 189057 "result: COMPLETED on its last attempt (partition gpu, homer-019, 08:36-09:06, file 09:06; job label PREEMPTED from the 01:34 gpu-be preemption on homer-013). Health: unparseable 0, 1,500 rows, mems_used 78,269 vs 646,…
+  ↳ expmon note: 91 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: wc -l docs/probe_campaign_2026-11.md && cat docs/probe_campaign_2026-11.md
+  ↳ <persisted-output> (+26 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a7ef0ae1-eb65-49e9-a055-68a420327353/tool-results/bmmr1xmdi.txt
+  ↳ 1	279 docs/probe_campaign_2026-11.md (+280 lines)
+Updating the results page: status, finding 3, and the arm E table.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md has been updated successfully.
+→ Bash: expmon display --exp probes 2>&1 | tail -4
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs)
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/known_issues.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n "KEEPF\|keep" eval_mm_4b.sh | head; grep -n "mem_keep_frac\|keep_frac" scripts/eval_mm_docqa.py | head -20
+  ↳ 42:KEEPARG=""; [[ -n "${KEEPK:-}" ]] && { KEEPARG="--keep_ranked $KEEPK"; SUF="${SUF}_keep${KEEPK}"; }   # env KEEPK=K (base mode): only the K pages RANK ranks first (+12 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_probes/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && python3 - <<'EOF' ⏎ s=open("STATE.md").read() ⏎ start=s.index("**Provisional (one seed, or no control)**") ⏎ end=s.index("## What happened this wake") ⏎ settled=s[s.index("**Settled**…
+  ↳ 6683 2378
+Rewriting the campaign state file with the new result and the owner question.
+→ Bash: python3 - <<'EOF' ⏎ settled=open("/tmp/probes_settled.txt").read().rstrip()+"\n" ⏎ prov=open("/tmp/probes_prov.txt").read().rstrip()+"\n" ⏎ eighth="""- provisional (seed 42 only, the seed-43 repeat needs a cell beyond the cap): even the mos…
+  ↳ 70:**Provisional (one seed, or no control)** (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "decision: probes wake 2026-11-13 09:30 — keep-12.5% s42 (189057) completed on gpu homer-019 (el9_8): .613 vs plain .610 = +.003 [-.011,+.017], p=.78, n=1,500, slots .121x -> ties plain, …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+The last probe ended in a tie with plain, and the campaign now needs your decision. Every arm is decided or closed, nothing is running, and I launched nothing this wake.
+
+## The result
+The test kept only the eighth of the compressed slots (the slots are the compressed vectors the decoder reads) that the decoder pays most attention to once it has seen the question. That is 52 slots per question instead of 431.
+
+| set | slots per question | slots vs plain | judge accuracy ↑ (keep an eighth) | judge accuracy ↑ (plain) | difference (95% CI) | McNemar p | n |
+|---|---|---|---|---|---|---|---|
+| document questions, seed 42 | 52 vs 431 | .121× | .613 | .610 | +.003 [−.011, +.017] | .78 | 1,500 |
+
+- The cell is clean: 0 unreadable judge verdicts, 1,500 rows. It ran on a node with the same system image as the plain run, so the pairing is valid.
+- Keeping a quarter of the slots is already settled at both seeds: no loss.
+- At seed 42, even an eighth loses nothing. This counts only as provisional until seed 43 is run.
+- We still don't know at what point dropping slots starts to cost accuracy.
+- The selection step still reads every slot once, so this saves decoder context, not storage.
+
+## Why I'm blocked
+The campaign rules say a tie must be repeated on the second seed. 64 of the 65 allowed runs are used. The 65th was reserved for re-running a failed run, "and nothing else". All four candidates passed, so it is free, but spending it on something else changes your rule.
+
+## Done this wake
+- Recorded the metric, the verdict and a ledger note.
+- Updated the results page `docs/probe_campaign_2026-11.md`, the campaign rules file and the state file.
+- Wrote the question to `campaign_probes/BLOCKED.md`.
+- Set NEXT to `waiting-owner`, so the campaign stays idle until you answer.
+
+**Your decision:** answer the question in `BLOCKED.md`:
+- **A:** use the spare run for keep-an-eighth at seed 43 (about 30 minutes on one A100).
+- **B (my recommendation):** A, plus one more run keeping a sixteenth of the slots at seed 42 (about 27 per question), to find where accuracy starts to drop. This raises the limit to 66 runs and costs about 1 GPU-hour in total.
+- **C:** stop here, and the eighth stays provisional.
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Keep-an-eighth cell (189057, seed 42) completed on gpu homer-019 (el9_8, same image as baseline): health OK (unparseable 0, 1,500 rows, slots .121x). Judge .613 vs plain .610 = +.003 [-.011,+.017], 59/5…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8548 turns=38 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Keep-an-eighth cell (189057, seed 42) completed on gpu homer-019 (el9_8, same image as baseline): health OK (unparseable 0, 1,500 rows, slots .121x). Judge .613 vs plain .610 = +.003 [-.011,+.017], 59/55, p=.78 → ties plain; provisional (one seed). Every arm now decided or closed; 64/65 cells used, the 65th (health-relaunch reserve) unused. The seed-43 repeat the noise-band rule requires needs a cell the law does not give → BLOCKED.md asks the owner: A spare cell for s43, B (recommended) A + keep-1/16 s42, C stop. Recorded probe, verdict, ledger notes; updated CAMPAIGN.md arm E, docs/probe_campaign_2026-11.md, known_issues, STATE.md; display refreshed. NEXT=waiting-owner.", "launched": [], "verdicts": [{"jobid": "189057", "verdict": "closed", "note": "provisional (one seed): keep-12.5% attn_global s42 .613 vs plain .610 = +.003 [-.011,+.017], p=.78, n=1,500, slots .121x; within .02 → seven eighths unused at seed 42; seed 43 needs a cell beyond the cap"}], "blocked": "Owner decision in campaign_probes/BLOCKED.md: spend the spare 65th cell (reserved for a health relaunch only) on keep-an-eighth seed 43 (A), plus one more cell keep-a-sixteenth seed 42 (B, recommended), or stop (C).", "gripes": []}
+== final:
+{"next":"waiting-owner","summary":"Keep-an-eighth cell (189057, seed 42) completed on gpu homer-019 (el9_8, same image as baseline): health OK (unparseable 0, 1,500 rows, slots .121x). Judge .613 vs plain .610 = +.003 [-.011,+.017], 59/55, p=.78 → ties plain; provisional (one seed). Every arm now decided or closed; 64/65 cells used, the 65th (health-relaunch reserve) unused. The seed-43 repeat the noise-band rule requires needs a cell the law does not give → BLOCKED.md asks the owner: A spare cell for s43, B (recommended) A + keep-1/16 s42, C stop. Recorded probe, verdict, ledger notes; updated CAMPAIGN.md arm E, docs/probe_campaign_2026-11.md, known_issues, STATE.md; display refreshed. NEXT=waiting-owner.","launched":[],"verdicts":[{"jobid":"189057","verdict":"closed","note":"provisional (one seed): keep-12.5% attn_global s42 .613 vs plain .610 = +.003 [-.011,+.017], p=.78, n=1,500, slots .121x; within .02 → seven eighths unused at seed 42; seed 43 needs a cell beyond the cap"}],"blocked":"Owner decision in campaign_probes/BLOCKED.md: spend the spare 65th cell (reserved for a health relaunch only) on keep-an-eighth seed 43 (A), plus one more cell keep-a-sixteenth seed 42 (B, recommended), or stop (C).","gripes":[]}
+== rc=0 secs=257
+== verify: 17/24
