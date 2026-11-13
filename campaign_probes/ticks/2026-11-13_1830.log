@@ -1,0 +1,104 @@
+== campaign probes wake 2026-11-13_1830  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794562202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=3.7 idle_h=0.4 min_util=- alert=0 unpushed=73 cron=3 daemon=1 disk_gb=10788 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189905,189906_max_18h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== wait condition met: job:189905,189906 (ended)   (NEXT was: wake-when job:189905,189906 max 18h)
+== session cced91b4-28e8-490c-8f15-d3a193c96fa3  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: cat /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/cced91b4-28e8-490c-8f15-d3a193c96fa3/tool-results/by1m1xqw3.txt | head -c 25000
+  ↳ # Wake brief — campaign probes — 2026-11-13_1830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+148 lines)
+→ Bash: cat /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/cced91b4-28e8-490c-8f15-d3a193c96fa3/tool-results/by1m1xqw3.txt | tail -c +25000
+  ↳ lqa_1500 4        -        -        -        -        -        pisco    all      ckpt       1003520    0        0             none       brief        0         none      0                 none     0   (+147 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_probes && cat STATE.md
+  ↳ # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+178 lines)
+  ↳ 195 CAMPAIGN.md (+198 lines)
+→ Bash: cat known_issues.md; ls -la; expmon ledger 40 2>&1 | tail -45
+  ↳ # Known issues — campaign probes   (symptom → verdict → action; check here BEFORE diagnosing) (+86 lines)
+Woken because the last two slot-pruning cells (keep an eighth at seed 43, keep a sixteenth at seed 42) left the queue. Checking whether they finished and wrote results.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 189905,189906 -D -o JobID,State,ExitCode,NodeList,Start,End,Elapsed -P 2>&1; ls -la expQ/probes/e_keep0125_attng_s43/eval/ expQ/probes/e_keep00625_attng/eval/ 2>&1; date
+  ↳ JobID|State|ExitCode|NodeList|Start|End|Elapsed (+16 lines)
+Both cells completed in 31 min, one attempt each, on el9_8 nodes (homer-020, homer-013). Now the health checks and the paired test.
+→ Bash: expmon logs 189905 40 2>&1 | grep -iE "unparse|judge|mems|rows|error|Traceback|keep" | head -30; echo ----; expmon logs 189906 40 2>&1 | grep -iE "unparse|judge|mems|rows|error|Traceback|keep" | head -30
+  ↳ mem_keep_frac                0.1250 (+38 lines)
+Both cells are healthy (unparseable 0). Judge: eighth at seed 43 .605 (plain .615), sixteenth at seed 42 .596 (plain .610). Now the paired comparison — checking how earlier wakes ran it.
+→ Bash: ls campaign_probes/ticks/ | tail -5; grep -l "paired_judge" campaign_probes/ticks/*.log 2>/dev/null | tail -3; head -40 scripts/paired_judge.py; grep -n "^import\|^from" scripts/paired_judge.py
+  ↳ 2026-11-13_1000.escalate.log (+52 lines)
+→ Bash: grep -o "paired_judge[^\"]\{0,250\}" campaign_probes/ticks/2026-11-13_0930.log | head -5
+  ↳ paired_judge.py && grep -n  (+2 lines)
+Earlier wakes ran this stdlib script directly (a few seconds on small JSON). Running the four pairings.
+→ Bash: E43=expQ/probes/e_keep0125_attng_s43/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json; S42=expQ/probes/e_keep00625_attng/eval/mm_docqa_pisco_px1003520_keep00625_attn_global_mm_docqa_1500_1m.json; P43=expQ/ft_mm_4b_18…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 811538 Nov  9 06:01 expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+36 lines)
+Paired results are in. Now health: row counts, slots used per question, identical answers.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ F={'e43':'expQ/probes/e_keep0125_attng_s43/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json', ⏎ 'p43':'expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json', ⏎ 's…
+  ↳ ['anls', 'answers', 'decoder_prompt_tokens', 'em', 'f1', 'judge', 'judge_raw', 'match', 'mems_used', 'n_images', 'prediction', 'query', 'query_id', 'source'] (+9 lines)
+→ Bash: grep -ciE "unsupported" campaign_probes/VERIFY.md; grep -iE "\| *unsupported *\|" campaign_probes/VERIFY.md | head; wc -l docs/probe_campaign_2026-11.md; grep -n "^#" docs/probe_campaign_2026-11.md; python3 -c " ⏎ import json;d=json.load(op…
+  ↳ 2 (+15 lines)
+→ Bash: grep -n -i "unsupported" campaign_probes/VERIFY.md | head -5; sed -n 1,92p docs/probe_campaign_2026-11.md
+  ↳ 3:All 25 claims check out against the grid, verdicts.jsonl, probes.jsonl, EXPERIMENTS.md and the campaign doc: 18 are supported, the 7 already marked provisional stay provisional, and none is unsuppor (+92 lines)
+→ Bash: sed -n 175,208p docs/probe_campaign_2026-11.md; sed -n 249,286p docs/probe_campaign_2026-11.md
+  ↳ ## Arm E — attention-guided slot pruning (documents; photos for one cell) (+71 lines)
+Computing decoder prompt length per question for the doc's compression column.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for k,f in [('e43','expQ/probes/e_keep0125_attng_s43/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json'),('s42','expQ/probes/e_keep00625_attng/eval/mm_docqa_pisco_px1003520_keep00625_…
+  ↳ e43 dec_tokens mean 132.6 mems/q 52.2 min mems 34 (+3 lines)
+Recording results, probe metrics and verdicts in expmon.
+→ Bash: expmon probe 189905 judge=0.6047 em=0.5047 2>&1 | tail -2; expmon probe 189906 judge=0.5960 em=0.4973 2>&1 | tail -2; expmon note -j 189905 "result (cell 65): keep an eighth (KEEPF=0.125 attn_global) s43 on 184780, docs mm_docqa_1500_1m n=1…
+  ↳ probe recorded: 189905 (judge=0.6047 em=0.5047)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+3 lines)
+→ Bash: expmon verdict 189905 closed "arm E keep an eighth, seed 43: .605 vs plain .615 = -.010 [-.025,+.005], 54/69, p=.21, n=1,500, slots .121x, homer-020 vs homer-016 (both el9_8). Within .02 at both seeds (s42 +.003, 189057) -> ADOPTED: seven e…
+  ↳ verdict recorded: 189905 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+Now updating the law's arm E row with the decision (recording, not relaxing anything).
+→ Bash: grep -o "DECIDED AT SEED 42 ONLY 2026-11-13.*The point where dropping starts to cost is still not found" campaign_probes/CAMPAIGN.md | head -c 3000
+  ↳ DECIDED AT SEED 42 ONLY 2026-11-13 (189057, homer-019): .613 vs .610 = +.003 [−.011, +.017], 59 / 55, p=.78, n=1,500, slots .121× (52 per question) → within .02 = provisional "seven eighths unused"; s
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old=s[s.index('DECIDED AT SEED 42 ONLY 2026-11-13 (189057'):s.index('The point where dropping starts to cost is still not found')+len('The point where dropping starts …
+  ↳ ok (+1 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_probes/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old='The cap is then used up: a health failure of 65 or 66 goes to the owner (BLOCKED.md),\n  a preemption requeue is free.' ⏎ assert s.count(old)==1, s.count(old) ⏎ s…
+  ↳ ok
+Now the deliverable doc: status, finding 3 and the arm E table.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/probe_campaign_2026-11.md' ⏎ s=open(p).read() ⏎ def rep(old,new): ⏎     global s ⏎     assert s.count(old)==1,(s.count(old),old[:80]) ⏎     s=s.replace(old,new) ⏎ # status header + first bullet ⏎ a=s.index('## St…
+  ↳ ok
+Refreshing the display page.
+→ Bash: timeout 60 expmon display --exp probes 2>&1 | tail -5; ls -la display_probes.html
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_probes.html   (0 table rows, 0 media files from 0 runs) (+1 lines)
+The display page still shows 0 rows (a known expmon defect, already reported); the doc and grid remain the deliverable. Getting the Settled/Open block for STATE.md.
+→ Bash: timeout 60 expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+10 lines)
+Rewriting STATE.md wholesale.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+One gripe check before filing (avoid duplicates).
+→ Bash: grep -rhi "paired" ~/.claude/expmon/journal* .expmon/gripes* 2>/dev/null | grep -i "gripe\|wish\|gap" | head -5; ls .expmon/ | head -30
+  ↳ (eval):1: no matches found: /home/hdejean/.claude/expmon/journal* (+23 lines)
+→ Bash: grep -h "gripe" EXPERIMENTS.md 2>/dev/null | grep -i "pair" | head -3; grep -rl "paired" campaign_probes/ticks/*.log 2>/dev/null | xargs grep -ho "expmon gripe -c [a-z]* \"[^\"]\{0,160\}pair[^\"]\{0,80\}" 2>/dev/null | head -3
+  ↳ (Bash completed with no output)
+→ Bash: expmon gripe -c gap "probe campaigns decide on paired judge differences, but expmon has no paired-compare step: the wake runs scripts/paired_judge.py by hand and copies diff/CI/McNemar/identical-answer counts into note, verdict, the campaig…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log
+Writing NEXT as the last act.
+→ Bash: echo "done" > campaign_probes/NEXT && cat campaign_probes/NEXT && git status --short campaign_probes docs/probe_campaign_2026-11.md
+  ↳ done (+5 lines)
+The probe campaign is finished. All 66 cells are used, every arm is decided or closed, and nothing is queued.
+
+**What the last two cells showed (slot pruning on document questions).** Slot pruning means keeping only the compressed slots the decoder attends to most once it has seen the question. Each cell was compared with the same model's plain cell on the same 1,500 questions. Judge accuracy is the share of answers the Qwen3-8B judge accepts.
+
+| cell | seed | slots kept per question (of 431) | judge accuracy ↑ | plain ↑ | difference (95% CI) | McNemar p |
+|---|---|---|---|---|---|---|
+| keep an eighth | 43 | 52 (.121×) | .605 | .615 | −.010 [−.025, +.005] | .21 |
+| keep a sixteenth | 42 | 25 (.059×) | .596 | .610 | −.014 [−.030, +.002] | .115 |
+
+- **Keeping an eighth is now settled at both seeds.** With the earlier seed-42 cell (+.003), both seeds stay within the .02 noise band. Given the question, about seven eighths of the slots go unused.
+- **Keeping a sixteenth is provisional (one seed only).** It also stays inside the band, and no cell is left to repeat it at seed 43.
+- **Each halving below a quarter costs a little more.** Eighth vs quarter at seed 43 is −.015 (p=.03); sixteenth vs eighth at seed 42 is −.017 (p=.03). Both steps are under the band, so neither counts as a result. No level tested loses .05 or more, so the share where pruning really starts to hurt is still unknown.
+- **Both cells are healthy.** Each ran once with no preemption, has 0 unparseable judge answers and 1,500 rows, and ran on the same node image as its baseline.
+
+**What I updated.** I recorded the results, metrics and verdicts in expmon and wrote the decision into the campaign law (arm E is now closed). I also updated the deliverable `docs/probe_campaign_2026-11.md` and rewrote `campaign_probes/STATE.md`. `expmon display` still shows 0 table rows, a known expmon defect. I filed one complaint: expmon has no step for paired comparisons, so I copy the numbers by hand. NEXT is `done`.
+
+**Your decision (optional):** to find where pruning starts to hurt, raise the cell cap by 2 for two more cells: a sixteenth at seed 43, and a thirty-second (about 13 slots per question) at seed 42. Otherwise, nothing needed from you. The closing report and retrospective come after the window ends on 2027-02-09.
+→ StructuredOutput: {"next": "done", "summary": "Cells 65-66 (arm E slot pruning) completed healthy on el9_8 nodes. Keep-an-eighth seed 43: .605 vs plain .615 = -.010 [-.025,+.005], p=.21, n=1,500, slots .121x -> with seed 42 (+.003) the eighth is adopted at b…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.2489 turns=32 is_error=False denials=0
+== declared: {"next": "done", "summary": "Cells 65-66 (arm E slot pruning) completed healthy on el9_8 nodes. Keep-an-eighth seed 43: .605 vs plain .615 = -.010 [-.025,+.005], p=.21, n=1,500, slots .121x -> with seed 42 (+.003) the eighth is adopted at both seeds (seven eighths unused per question). Keep-a-sixteenth seed 42: .596 vs .610 = -.014 [-.030,+.002], p=.115, slots .059x -> within the .02 band, provisional (one seed). Losses grow per halving (-.015 / -.017, p=.03, below band) but the ≥.05 point is not found. Verdicts, probes, notes recorded; law arm E closed; doc, STATE rewritten; display refreshed. 66/66 cells used, all arms decided or closed, NEXT done.", "launched": [], "verdicts": [{"jobid": "189905", "verdict": "closed", "note": "keep an eighth s43: -.010 [-.025,+.005] vs plain, within .02 at both seeds -> adopted: seven eighths unused"}, {"jobid": "189906", "verdict": "closed", "note": "keep a sixteenth s42: -.014 [-.030,+.002] vs plain, within .02 at one seed -> provisional"}], "gripes": ["gap: no expmon paired-compare step; paired_judge.py output copied by hand into note/verdict/doc/STATE — suggest 'expmon pair <jobA> <jobB|file> --metric judge' writing the paired row to probes.jsonl"]}
+== final:
+{"next":"done","summary":"Cells 65-66 (arm E slot pruning) completed healthy on el9_8 nodes. Keep-an-eighth seed 43: .605 vs plain .615 = -.010 [-.025,+.005], p=.21, n=1,500, slots .121x -> with seed 42 (+.003) the eighth is adopted at both seeds (seven eighths unused per question). Keep-a-sixteenth seed 42: .596 vs .610 = -.014 [-.030,+.002], p=.115, slots .059x -> within the .02 band, provisional (one seed). Losses grow per halving (-.015 / -.017, p=.03, below band) but the ≥.05 point is not found. Verdicts, probes, notes recorded; law arm E closed; doc, STATE rewritten; display refreshed. 66/66 cells used, all arms decided or closed, NEXT done.","launched":[],"verdicts":[{"jobid":"189905","verdict":"closed","note":"keep an eighth s43: -.010 [-.025,+.005] vs plain, within .02 at both seeds -> adopted: seven eighths unused"},{"jobid":"189906","verdict":"closed","note":"keep a sixteenth s42: -.014 [-.030,+.002] vs plain, within .02 at one seed -> provisional"}],"gripes":["gap: no expmon paired-compare step; paired_judge.py output copied by hand into note/verdict/doc/STATE — suggest 'expmon pair <jobA> <jobB|file> --metric judge' writing the paired row to probes.jsonl"]}
+== rc=0 secs=322
+== verify: 18/25

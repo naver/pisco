@@ -1,6 +1,6 @@
 # STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append)
-last wake: 2026-11-13 17:00-17:15 KST (woken by the owner's REQUEST: option B, cap raised to 66; launched the last two
-slot-pruning cells; both queued)
+last wake: 2026-11-13 18:30-18:45 KST (woken because the last two slot-pruning cells ended; both healthy, decided;
+the campaign is finished: 66 of 66 cells used, every arm decided or closed, NEXT `done`)
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -37,6 +37,13 @@ slot-pruning cells; both queued)
   of 431): seed 42 .611 vs .610 = +.001 [−.009, +.012], 37 / 35, p=.91, 1,197/1,500 identical (job 188538, homer-013,
   verdict best); seed 43 .619 vs .615 = +.005 [−.007, +.017], 45 / 38, p=.51, 1,200/1,500 identical (job 189056,
   homer-019 vs baseline 184784 on homer-016, both el9_8, verdict best).
+- Even the most-attended EIGHTH of the slots carries what the decoder uses, at both seeds (gate: within .02 of plain
+  → seven eighths unused per question; met at both seeds). Documents, n=1,500 each, slots .121× (52.2 per question
+  instead of 430.7; mems_used 78,269 vs 646,042), decoder prompt 132.6 vs 511.1 tokens: seed 42 .613 vs .610 = +.003
+  [−.011, +.017], 59 / 55, p=.78, 1,107/1,500 identical (job 189057, homer-019 vs baseline 184781 on homer-011, both
+  el9_8, verdict closed); seed 43 .605 vs .615 = −.010 [−.025, +.005], 54 / 69, p=.21, 1,076/1,500 identical (job
+  189905, homer-020 vs baseline 184784 on homer-016, both el9_8, one attempt, verdict closed). The seed-43 CI reaches
+  −.025. Eighth vs quarter at seed 43: −.015 [−.027, −.003], 36 / 58, p=.030 (below the .02 band, not a result).
 - The long-chunk gain is context between the two answer passages, at both seeds. HotpotQA, 1,500 Q each, golds
   joined in one chunk (others alone) vs ten separate chunks on today's code: seed 42 (183814) .655 vs .582 = +.073
   [+.051, +.095], p=1.5e-10 (jobs 188471 vs 188486); seed 43 (183816) .669 vs .601 = +.067 [+.046, +.088], 186 / 85,
@@ -68,6 +75,12 @@ slot-pruning cells; both queued)
   `eval_data/probes_textvqa_ocr` (job 188545): 500 TextVQA rows, 500/500 questions matched.
 
 **Provisional (one seed, or no control)**
+- provisional (seed 42 only, no cell left to repeat it): even the most-attended SIXTEENTH of the slots stays inside
+  the .02 band. 184778, documents, n=1,500, slots .059× (25.4 per question; mems_used 38,141 vs 646,042), decoder
+  prompt 105.8 tokens: .596 vs plain .610 = −.014 [−.030, +.002], 70 / 91, p=.115, 1,001/1,500 identical; multi-page
+  −.026 [−.058, +.006]; vs the eighth (189057) −.017 [−.031, −.003], 48 / 73, p=.029 (below the band) (job 189906,
+  homer-013 vs baseline homer-011, both el9_8, one attempt, verdict closed). Gate (within .02 → fifteen sixteenths
+  unused) met at one seed. The share where dropping costs ≥ .05 is not found (below 1/16).
 - provisional (one seed, no blind control on photos): the attention half ties plain on photos. 184778,
   `mm_naturalqa_1500`, n=1,500, slots .492×: .677 vs .677, +.000 [−.013, +.013], 49 / 49 (job 188539, verdict closed).
 - provisional: the instrument gives the same answers on re-run on every node tested except homer-008: plain document
@@ -75,7 +88,7 @@ slot-pruning cells; both queued)
   (188477) and homer-013 (188580); compressed text 1,500/1,500 between homer-016 and homer-007 (188471 rerun) and
   between 11-07 and 11-11 code (188518 vs 185601); homer-008 changed 57/300 image answers (188458). homer-006 is
   suspected (by elimination) of the 55/1,500 compressed-text drift of 185505 vs 188486; homer-005 and 009 are untested;
-  homer-012 and homer-019 (el9_8) carry cells without a check of their own. All el9_7 nodes are excluded.
+  homer-012 and homer-019 (el9_8) carry cells without a check of their own (homer-020 is on the law's tested list). All el9_7 nodes are excluded.
 - provisional: page picking (arm D, model 183814, n=1,500 per set, job 188515): 10-page documents digit .861,
   attention .885 (+.025 [+.010, +.039]); HotpotQA digit .922, attention .873. The per-source switch that passes the
   gate was chosen on the same questions. Expected judge gain ≈ +.006 to +.008 (under the .02 band), no judge cell.
@@ -90,50 +103,36 @@ slot-pruning cells; both queued)
   rate 4 on the picked page recovers more than the raw page does: seed 42 +.063 / 107.5 tokens ≈ .059 per 100 tokens
   vs raw +.210 / 753 ≈ .028 (about 2×, jobs 188590 / 188441); seed 43 .049 / 107.5 ≈ .046 vs .207 / 753 ≈ .027
   (about 1.7×, jobs 188591 / 188460).
-- provisional (seed 42 only; the seed-43 repeat is queued, job 189905): even the most-attended EIGHTH of the
-  slots carries what the decoder uses. 184778, documents (`mm_docqa_1500_1m`, PX=1003520), n=1,500, slots .121× (52.2
-  per question instead of 430.7; mems_used 78,269 vs 646,042): .613 vs plain .610 = +.003 [−.011, +.017], 59 / 55,
-  p=.78, 1,107/1,500 identical; vs keep-25% (188538) +.001 [−.011, +.014], 48 / 46 (job 189057, homer-019 vs
-  baseline 184781 on homer-011, both el9_8, verdict closed). Gate (within .02 → seven eighths unused) met at one seed.
 
 **Open, and running**
-- Arm E, keep an eighth at seed 43 (cell 65, job 189905): `e_keep0125_attng_s43` on 184780, `KEEPF=0.125
-  KEEPM=attn_global PX=1003520`, documents 1,500 Q; baseline plain 184784 .615 (homer-016, el9_8). Gate: within .02 of
-  plain → seven eighths unused at both seeds. PENDING (Priority), scheduler estimate 11-14 04:46.
-- Arm E, keep a sixteenth at seed 42 (cell 66, job 189906): `e_keep00625_attng` on 184778, `KEEPF=0.0625`, about 27
-  slots per question; baseline plain 184781 .610 (homer-011, el9_8). Gate (written 2026-11-13 09:33, before the cell):
-  within .02 → fifteen sixteenths unused; a loss ≥ .05 → the free share lies between 7/8 and 15/16; .02-.05 decides
-  nothing, reported with its CI. PENDING (Priority), estimate 11-14 04:46.
+- (none) — every arm is decided or closed, the cap of 66 cells is used up, no campaign job is queued.
 
 ## What happened this wake
-- Owner REQUEST of 2026-11-13 16:49 executed, then deleted: "pisco : yes" = option B of BLOCKED.md (spare 65th cell →
-  keep an eighth at seed 43; cap raised 65 → 66 for keep a sixteenth at seed 42). BLOCKED.md deleted (answered).
-- Code check before launch: `eval_mm_4b.sh` md5 50abc167, `scripts/eval_mm_docqa.py` dfe32aa0, `pisco/model.py`
-  994cff3d, judge 02bc8748; the first two unchanged since 11-11 06:45, model.py since 11-12 23:39, so the new cells run
-  the same code as 189057 (ran 11-13 08:36). `KEEPF=0.0625` path read: per chunk `max(1, int(n × frac))`, global top-k.
-- Symlinked model dirs `expQ/probes/e_keep0125_attng_s43/model → ft_mm_4b_184780/model` and
-  `expQ/probes/e_keep00625_attng/model → ft_mm_4b_184778/model` (both new, empty `eval/`).
-- Launched 189905 and 189906: `--partition gpu,gpu-be` (gpu-be jammed: 15 sibling eval cells pending, estimates up to
-  11-16; law allows `gpu,gpu-be` when jammed, ≤ 2 cells on gpu), `--exclude=homer-[005-009]`, `--time 4:54:00`
-  (measured rule). gpucap before: owner 5 of 8 on gpu, 2 free A100 nodes. `--force` for the known false dead-arm match.
-  Ledger intent notes recorded for both.
-- CAMPAIGN.md: budget now 66 (owner, two REQUESTs quoted), cells 61-66 listed with jobs; arm E row carries the
-  sixteenth gate and the seed-43 cell. `docs/probe_campaign_2026-11.md`: status and arm E gate text updated.
-- Verifier (09:36): 17 supported, 7 provisional (all labelled), 0 unsupported; nothing to fix.
+- Woken by the end of cells 65 and 66. sacct: 189905 COMPLETED exit 0 on homer-020 (17:34-18:05), 189906 COMPLETED
+  exit 0 on homer-013 (17:35-18:06), one attempt each, no preemption; result files dated 18:05 / 18:06 = job end.
+- Health of both: `unparseable: 0`, 1,500 rows, el9_8 nodes; slots by design (pruning cell): .121× and .059×.
+- Paired tests (`scripts/paired_judge.py`, stdlib, 7 s): eighth s43 vs plain 184780 file, sixteenth s42 vs plain
+  184778 file, sixteenth vs eighth s42 (189057), eighth s43 vs quarter s43 (189056). Numbers in the TL;DR.
+- Recorded: `expmon probe` (judge, EM) and `expmon note` result rows for both jobs, `expmon verdict` closed for both,
+  one ledger decision. CAMPAIGN.md arm E row: decision written, arm marked closed; budget line: both cells passed
+  health, cap used up. `docs/probe_campaign_2026-11.md`: status, finding 3 and the arm E table rewritten.
+  `expmon display --exp probes` refreshed (still 0 table rows: known expmon defect).
+- Verifier (17:07): 18 supported, 7 provisional (all labelled), 0 unsupported; nothing to fix. The eighth moved from
+  provisional to settled with its seed-43 repeat.
 
-## Owned jobs (jobid | cell | arm | state at 11-13 17:10 | intent — also in the ledger)
+## Owned jobs (jobid | cell | arm | state at 11-13 18:40 | intent — also in the ledger)
 | job | cell dir (`expQ/probes/…`) → model | arm | state | intent |
 |---|---|---|---|---|
-| 189905 | `e_keep0125_attng_s43` → 184780 | E | PENDING (Priority) gpu,gpu-be | seed-43 repeat of the eighth; pair with 184784 |
-| 189906 | `e_keep00625_attng` → 184778 | E | PENDING (Priority) gpu,gpu-be | sixteenth at seed 42; pair with 184781 |
-| 189057 | `e_keep0125_attng` → 184778 | E | done 09:06, decided (seed 42, provisional) | see Provisional |
+| 189905 | `e_keep0125_attng_s43` → 184780 | E | done 18:05, decided | see Settled (eighth) |
+| 189906 | `e_keep00625_attng` → 184778 | E | done 18:06, decided | see Provisional (sixteenth) |
+| 189057 | `e_keep0125_attng` → 184778 | E | done 09:06, decided | see Settled (eighth) |
 | 189058 | `a_expand_s43` → 184780 | A | done 08:03, decided | see Settled |
 | 189056 | `e_keep025_attng_s43` → 184780 | E | done 07:32, decided | see Settled |
 | 189059 | `f_text_s42` → 184778 | F | done 02:47, decided | see Settled |
 
 ## Adopted jobs
 (none. 188466, 188707-188712, 189691-189695 belong to the sibling `longchunk` campaign; 189094-189099, 189434,
-189445-189450, 189842-189847 to the sibling `freeze` campaign.)
+189445-189450, 189842-189847, 189899-189904, 189918, 189919 to the sibling `freeze` campaign.)
 
 ## Open arms and the next decision for each
 | arm | status | next action |
@@ -142,36 +141,33 @@ slot-pruning cells; both queued)
 | B. long-chunk mechanism | closed | none |
 | C. reasoning vs reading | closed for budget | none |
 | D. page picking | decided, caveat: rule chosen in-sample | none |
-| E. attention-guided pruning | half adopted, quarter adopted (both seeds); eighth ties plain at seed 42 (provisional); s43 eighth + s42 sixteenth queued | when 189905 / 189906 end: health, pair, verdict, rewrite arm E in the doc and law |
+| E. attention-guided pruning | closed: half, quarter, eighth adopted at both seeds; sixteenth within the band at seed 42 (provisional) | none (cap used up) |
 | F. photo text vs pixels | decided 11-13 (−.434), closed | none |
 | G. route then densify | closed (both seeds below the gate) | none |
 
 ## Health and budget
-- cells: 66 of 66 used (65 = 189905, 66 = 189906). No reserve left: a health failure of either goes to the owner; a
-  preemption requeue is free.
-- GPU-hours of 40: tick sensor 2.6 GPU-h in the last 24 h; the two cells add about 1 GPU-h.
-- Widened cells: 189905 and 189906 were launched on `gpu,gpu-be` (2 of the law's 2 on gpu at once).
-- Pairing nodes: every image cell needs its node from the attempt that wrote its file (same node rule; compare the
-  `eval/` file mtime with `sacct -j <id> -D -o NodeList,End`; a job-level PREEMPTED label can hide a completed attempt).
+- cells: 66 of 66 used. Nothing queued. Any further cell needs the owner (a REQUEST that raises the cap).
+- GPU-hours of 40: tick sensor 3.5 GPU-h in the last 24 h; cells 65 and 66 took 31 min each on one A100.
+- Window until 2027-02-09; close-out (report, retro, standby) is due after that date, not before.
 
 ## Next wake
-- NEXT = `wake-when job:189905,189906 max 18h`.
-- Then for each: `unparseable: 0`, 1,500 rows, node (el9_8 required), mems_used ratio (eighth ≈ .121×, sixteenth ≈ .06×);
-  `scripts/paired_judge.py` vs `expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json` (s43) and
-  `expQ/ft_mm_4b_184778/eval/…` (s42); also sixteenth vs eighth (189057). Result files:
-  `expQ/probes/e_keep0125_attng_s43/eval/mm_docqa_pisco_px1003520_keep0125_attn_global_mm_docqa_1500_1m.json`,
-  `expQ/probes/e_keep00625_attng/eval/mm_docqa_pisco_px1003520_keep00625_attn_global_mm_docqa_1500_1m.json`.
-- `expmon probe` + `verdict`, ledger result notes, arm E in CAMPAIGN.md and the doc, `expmon display`; then NEXT `done`.
+- NEXT = `done`. Only the owner (REQUEST, GATE, an edit to the law) or a new alert wakes the loop.
+- If the owner raises the cap: the two cells that would finish the pruning curve are (1) keep a sixteenth at seed 43
+  (`e_keep00625_attng_s43` on 184780, `KEEPF=0.0625 KEEPM=attn_global`, baseline 184784) and (2) keep a thirty-second
+  at seed 42 (`KEEPF=0.03125`, about 13 slots per question, gate to be written before the cell). Each: gpu,gpu-be,
+  `--exclude=homer-[005-009]`, `--time 4:54:00`, symlinked model dir.
 
 ## Blockers / needs the owner
-- none.
+- none. The campaign's plan is complete. Optional for the owner: raise the cap by 2 for the two cells above, only if
+  the exact share at which pruning starts to cost matters for the nested-budget training design.
 
 ## Proposals for the sibling `longchunk` campaign (training is not this campaign's job)
 - Stage-1/2 data that packs related passages in one chunk (both gold passages of a multi-hop question) rather than
   random long chunks: +.067-.073 with the golds together (both seeds), +.058 on the tail layout. Joining all ten:
   +.035 (seed 42) / +.014 n.s. (seed 43). A ranker's top 3 joined does no better than all ten.
-- A query-aware slot budget (nested-budget training): a quarter of the slots, picked by the decoder's attention with
-  the question, lose nothing at both seeds (+.001 / +.005); an eighth loses nothing at seed 42 (+.003, provisional).
+- A query-aware slot budget (nested-budget training): an eighth of the slots, picked by the decoder's attention with
+  the question, stays within .02 of plain at both seeds (+.003 / −.010); a sixteenth −.014 at seed 42 (provisional).
+  A trained budget would need to find that eighth without the full attention pass over every slot.
 - A mixed-rate stage 2 (the picked page at rate 4, others at rate 8): untrained, rate 4 on the picked page gains
   +.063 / +.049 at 1/7 of the raw page's extra decoder tokens; whether training at rate 4 closes more of the raw
   page's +.21 is open.
