@@ -1,0 +1,105 @@
+== campaign freeze wake 2026-11-13_1530  reasons=alert  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794551401 live=189445:RUNNING,189842:RUNNING,189434:PENDING,189098:PENDING,189097:PENDING,189096:PENDING,189095:PENDING,189847:PENDING,189846:PENDING,189845:PENDING,189844:PENDING,189449:PENDING,189448:PENDING,189447:PENDING,189446:PENDING,189843:PENDING,189450:PENDING running=2 pending=15 problems=1 problems_other=0 new=0 gpuh24=20.3 idle_h=0.0 min_util=0 alert=1 unpushed=68 cron=3 daemon=1 disk_gb=10899 sig=9f39b89f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189445_file:expQ/freeze/ft_connfrozen_s42/checkpoint-100_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session dc38d291-3bdd-43a5-bc57-ac4286012849  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/dc38d291-3bdd-43a5-bc57-ac4286012849/tool-results/bl6717kkx.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-13_1530   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+249 lines)
+→ Bash: F=/home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/dc38d291-3bdd-43a5-bc57-ac4286012849/tool-results/bl6717kkx.txt; grep -n '^## ' $F; awk 'NR>250' $F | grep -v '^/beegfs.*results_lb' | head -150
+  ↳ 4:## Sensors (newest first, 3 ticks) (+31 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; wc -l CAMPAIGN.md STATE.md known_issues.md; cat CAMPAIGN.md
+  ↳ 224 CAMPAIGN.md (+227 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat STATE.md; echo ======; cat known_issues.md
+  ↳ Exit code 1 (+62 lines)
+I'm fixing the one claim the verifier flagged in the campaign state file, then checking the two running finetunes.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 20	- **Split arm A2 (connector frozen) feasibility PASS** (20-step smoke, seed 42, 1,280 rows = .046 epoch, homer-019; jobs 189739 + 189740, both exit 0): log `freeze_part=connector: froze 5 connector (+74 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat known_issues.md; echo; cat NEXT; ls
+  ↳ # Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; date; expmon logs 189445 30 2>&1 | grep -E "eval_loss|it\]|Error|nan" | tail -8; echo; expmon logs 189842 40 2>&1 | tail -12
+  ↳ Fri Nov 13 03:31:31 PM KST 2026 (+136 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat VERIFY.md | cut -c1-1500
+  ↳ # VERIFY — campaign freeze — 2026-11-13_1500   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+33 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -m3 -o "num_rows: [0-9]*" expQ/189094/*.out expQ/freeze/*189094*.out 2>/dev/null | head; ls expQ/189094 2>/dev/null | head
+  ↳ (eval):1: no matches found: expQ/189094/*.out
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(find . -maxdepth 3 -name 'ft_freeze_189094.out' 2>/dev/null | head -1); echo $f; grep -o "num_rows: [0-9]*" $f | head -4
+  ↳ ./ft_freeze_189094.out (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/freeze/ft_connfrozen_s42/ 2>&1; ls -d expQ/freeze/ft_compfrozen_s43/checkpoint-* 2>/dev/null; grep -n "save_steps\|save_total\|eval_steps" expQ/freeze/ft_freeze.sh | head
+  ↳ runs (+4 lines)
+Fixing the three claims the verifier flagged (one row count, one mis-cited job, one wrong comparison), then rewriting the state file.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; grep -n "28,032\|of 28" STATE.md | cut -c1-200; sed -n 95,130p STATE.md
+  ↳ 14:- **The freeze held over all three full F runs** (1.0 epoch, 28,032 rows each): every compressor and connector row, norm gain included, changed 0.0%; decoder lora_B 66.7% / 66.3% / 66.7% of entries (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188582 188651 189445 189842; do f=$(find . -maxdepth 3 -name "*_$j.out" 2>/dev/null | head -1); echo "$j $f $(grep -m1 -o 'num_rows: [0-9]*' $f)"; done; md5sum scripts/eval_mm_docqa.py eval_mm…
+  ↳ 188582 ./ft_freeze_188582.out num_rows: 27936 (+8 lines)
+All four runs read 27,936 training rows, and every code checksum is unchanged. Applying the edits now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -i 's/(1\.0 epoch, 28,032 rows each)/(1.0 epoch, 27,936 rows each: log `num_rows: 27936`, 437 steps)/; s/437 of 437 steps = 1\.0 epoch, 28,032 rows/437 of 437 steps = 1.0 epoch, 27,…
+  ↳ 0
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (note: the file had been modified on disk since you last read it — the edit applied cleanly, but the
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; python3 - <<'EOF' 2>&1 || true ⏎ EOF ⏎ echo skip
+  ↳ skip
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; grep -n "\.86 epoch\|full queued\|queued (189842\|s42 full + chain queued\|~16:30" STATE.md | cut -c1-220
+  ↳ 58:| A1 compressor frozen | s42 trained + freeze checked, evals + preview queued (est. 11-16); s43 at .86 epoch + chain queued | (1) s43 last held-out probes at .92 / 1.0 epoch vs 184780 .441 / .375,  (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -i '58s/s43 at \.86 epoch + chain queued/s43 at .90 epoch + chain queued/; 59s/s42 full + chain queued (189842-189847)/s42 full RUNNING (189842, .03 epoch) + chain queued (189843-18…
+  ↳ | A1 compressor frozen | s42 trained + freeze checked, evals + preview queued (est. 11-16); s43 at .90 epoch + chain queued | (1) s43 last held-out probes at .9 (+8 lines)
+Updating the state file's notes section, then the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat > /tmp/freeze_notes.md <<'EOF' ⏎ ## Notes this wake ⏎ - Woken by the verifier ALERT only (VERIFY.md of the 15:00 wake: 18 supported, 5 provisional, 1 unsupported). No ✗ of this camp…
+  ↳ 5:## TL;DR — where this leaves the question (readable as an email) (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -i 's/the running A1 seed-43 job and the queued A2 seed-42 job use them from the working tree/the running A1 seed-43 and A2 seed-42 jobs use them from the working tree/; s/^GPU budg…
+  ↳ 49:GPU budget: ~79 GPU-h used of 192 (gate 0 ~52 + A1 smoke .5 + A1 s42 8.7 + A1 s43 10.1 so far + A2 smoke .6 + A2 s42 .4 so far + checks); left in the plan: A1 s43 ~1.1 h, A2 2 × ~11-13 h, 16 evals  (+2 lines)
+Now recording the corrections and the A2 start in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 189842 "result: started ~15:05 on homer-019 (gpu A100); step 14 of 437 at 15:29, ~91 s/step, train loss .681 at step 10 (184778: .680). Correction to the intent note: one epoch = 27,936 …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+The verifier's findings are fixed, so I'm clearing its alert and setting the next wake condition.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; rm ALERT && echo "wake-when job:189445 file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h" > NEXT; cat NEXT; ls
+  ↳ wake-when job:189445 file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h (+9 lines)
+I fixed every claim the verifier flagged in the campaign state file. I launched nothing new: both training slots are in use. Nothing needed from you.
+
+**What the verifier caught, now corrected**
+- **Wrong comparison:** the compressor-frozen run at seed 43 was described as sitting between the fully frozen run and the reference on held-out loss (loss on 64 held-out rows). It does only at 0.23 epoch. At 0.46 and 0.69 epoch it is above both (0.449 against 0.439 for the reference and 0.431 for frozen, at 0.46).
+- **Row count, flagged twice:** one epoch is 27,936 training rows over 437 steps, not 28,032. I checked it in five training logs and fixed it everywhere. The ledger got a correcting note, because old entries can't be edited.
+- **Wrong citation:** one connector-frozen check was listed as proof that a trainable connector gain never moves in this recipe. In that run the gain is frozen, so the check proves nothing about that. I removed it from the list.
+- I also noted a second difference besides the weights: the frozen side runs in eval mode, with no LoRA dropout (LoRA = the small trainable adapters).
+
+**Running now**
+| Run | Progress | Expected end |
+|---|---|---|
+| Compressor frozen, seed 43 | 90% of one epoch | about 16:40 today (time limit 17:49) |
+| Connector frozen, seed 42 | 3% of one epoch, training loss in line with the reference at the same point | about 02:10 tomorrow |
+
+- The seed-43 run has slowed in the last few steps, from about 87 to about 100 seconds per step. Nothing points to a fault, and it still ends well before its time limit.
+- The eval and model code checksums are unchanged, so the earlier reference scores still pair with the new runs.
+
+**Next**
+The campaign wakes when one of these happens first (or after 4 hours at most):
+- The seed-43 run finishes. It then launches the connector-frozen seed-43 run, chained to its evals and its check that the frozen parts did not move.
+- The connector-frozen seed-42 run writes its step-100 checkpoint (about 17:40). It then starts an early scored check on 300 document questions.
+
+The compressor-frozen seed-42 evals are still queued on the shared preemptible partition. The scheduler estimates 16 November.
+→ StructuredOutput: {"next": "wake-when", "summary": "Verifier-ALERT wake. Fixed STATE.md: A1 s43 held-out loss is between F and ref only at .23 epoch, above both at .46/.69 (was unsupported); one epoch = 27,936 rows (log num_rows, 5 runs), not 28,032; 189740 …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5702 turns=34 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Verifier-ALERT wake. Fixed STATE.md: A1 s43 held-out loss is between F and ref only at .23 epoch, above both at .46/.69 (was unsupported); one epoch = 27,936 rows (log num_rows, 5 runs), not 28,032; 189740 removed from trainable-gain list (gain frozen in A2); eval-mode difference added to the provisional 'what differs' bullet. A1 s43 (189445) at step 395/437, ends ~16:40; A2 s42 (189842) running since 15:05, step 14, ~91 s/step. Nothing launched (training cap 2 full). Code md5s unchanged. ALERT cleared, ledger notes written.", "launched": [], "verdicts": [], "gripes": [], "wake_when": "job:189445 file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h"}
+== final:
+{"next":"wake-when","summary":"Verifier-ALERT wake. Fixed STATE.md: A1 s43 held-out loss is between F and ref only at .23 epoch, above both at .46/.69 (was unsupported); one epoch = 27,936 rows (log num_rows, 5 runs), not 28,032; 189740 removed from trainable-gain list (gain frozen in A2); eval-mode difference added to the provisional 'what differs' bullet. A1 s43 (189445) at step 395/437, ends ~16:40; A2 s42 (189842) running since 15:05, step 14, ~91 s/step. Nothing launched (training cap 2 full). Code md5s unchanged. ALERT cleared, ledger notes written.","launched":[],"verdicts":[],"gripes":[],"wake_when":"job:189445 file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h"}
+== rc=0 secs=209
+== verify: 18/24
