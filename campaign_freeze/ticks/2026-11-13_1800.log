@@ -1,0 +1,101 @@
+== campaign freeze wake 2026-11-13_1800  reasons=problems,problems-standing,condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794560401 live=189899:RUNNING,189842:RUNNING,189434:PENDING,189449:PENDING,189448:PENDING,189447:PENDING,189446:PENDING,189095:PENDING,189096:PENDING,189903:PENDING,189902:PENDING,189901:PENDING,189900:PENDING,189847:PENDING,189846:PENDING,189845:PENDING,189844:PENDING,189904:PENDING,189843:PENDING,189098:RUNNING running=3 pending=17 problems=2 problems_other=0 new=0 gpuh24=24.8 idle_h=0.0 min_util=48 alert=0 unpushed=72 cron=3 daemon=1 disk_gb=10812 sig=d3beceb0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/freeze/ft_connfrozen_s42/checkpoint-100_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== wait condition met: file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 (exists)   (NEXT was: wake-when file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h)
+== session 17c90817-56ef-4b3c-ae7b-9b99c002d2b8  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/17c90817-56ef-4b3c-ae7b-9b99c002d2b8/tool-results/b12zty5ho.txt | cut -c1-600
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/17c90817-56ef-4b3c-ae7b-9b99c002d2b8/tool-results/b12zty5ho.txt
+  ↳ 8	 (+119 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/17c90817-56ef-4b3c-ae7b-9b99c002d2b8/tool-results/b12zty5ho.txt
+  ↳ 128	189901     PENDING   0:00        freeze         eb20546+dirty  eval_mm_4b.sh    - | p=gpu-be,x=homer-[005-009],t=0:25:00 | /beegfs/scratch/user/hdejean/pisco/expQ/189901 (+199 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 224 CAMPAIGN.md (+227 lines)
+Woken because the connector-frozen seed-42 run wrote its quarter-way checkpoint; reading state before launching its preview.
+→ Bash: cat STATE.md && echo ---- && cat known_issues.md
+  ↳ # STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+167 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -n "189434\|step100\|checkpoint-100" EXPERIMENTS.md | tail -20; ls -la expQ/freeze/ | head -50; ls -la expQ/freeze/ft_connfrozen_s42/ expQ/freeze/ft_connfrozen_s42/checkpoint-100/
+  ↳ 746:- 2026-11-11 10:32 [job 188595] result: provisional preview, frozen s43 checkpoint-100 (.23 epoch) on the same 300 docs, homer-012, exit 0: judge .593 vs reference 184780 FINAL .610 = -.017, disco (+69 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze && ls -la ft_compfrozen_s42_step100/ ft_compfrozen_s42_step100/checkpoint-100 ft_compfrozen_s42_step100/checkpoint-100/compressor ft_connfrozen_s42/checkpoint-100/compressor; cat ft_connfroz…
+  ↳ ft_compfrozen_s42_step100/: (+40 lines)
+→ Bash: S=ft_connfrozen_s42/checkpoint-100 && D=ft_connfrozen_s42_step100/checkpoint-100 && mkdir -p $D/compressor && for f in chat_template.jinja config.json connector.pt decoder_state.pt tokenizer_config.json tokenizer.json trainer_state.json; do…
+  ↳ same chat_template.jinja (+22 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon lineage 189434 2>&1 | head -30; scontrol show job 189434 2>/dev/null | grep -E "Command|WorkDir|TimeLimit|ExcNodeList|Partition" 
+  ↳ lineage of 189434: (+9 lines)
+→ Bash: ls .expmon/ | head; grep -rl "189434" .expmon/ 2>/dev/null | grep -v campaign | head -5
+  ↳ adopted_ack (+9 lines)
+Checkpoint copied byte-identical; now finding the exact launch command of the earlier preview to repeat it for the connector-frozen run.
+→ Bash: ls expQ/189434 2>/dev/null | head; cat expQ/189434/cmd* expQ/189434/*.json 2>/dev/null | head -40; grep -h "189434" logs/runs.tsv .expmon/*.tsv 2>/dev/null | head
+→ Bash: expmon help 2>&1 | grep -iE "show|info|cmd|runs" | head -20
+  ↳ (eval):1: no matches found: expQ/189434/cmd*
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+19 lines)
+→ Bash: grep '"189434"' .expmon/runs.jsonl | tail -1 | python3 -m json.tool | head -60
+  ↳ { (+20 lines)
+→ Bash: grep -n "PX\|SBATCH" eval_mm_4b.sh | head -20; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py expQ/freeze/ft_freeze.sh | cut -c1-8,33-; grep -c . expQ/189434/*.log 2>/dev/null; ls expQ/189434/ 2>/dev/…
+  ↳ Exit code 1 (+20 lines)
+→ Bash: PX=1003520 expmon launch --exp freeze --stage preview --parent 189842 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_connfrozen_s42_step100/checkpoint-100 pisco 300 eval_data/mm_docqa_15…
+  ↳ launch: REFUSED — this cell (exp='freeze', same factors) was closed as a dead arm by run 189067. (+1 lines)
+→ Bash: expmon lineage 189067 2>&1 | head; grep '"189067"' .expmon/runs.jsonl | tail -1 | cut -c1-400; echo; PX=1003520 expmon launch --exp freeze --stage preview --parent 189842 --dry-run --force --partition gpu-be --exclude 'homer-[005-009]' --ti…
+  ↳ lineage of 189067: (+10 lines)
+→ Bash: PX=1003520 expmon launch --exp freeze --stage preview --parent 189842 --force --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 eval_mm_4b.sh expQ/freeze/ft_connfrozen_s42_step100/checkpoint-100 pisco 300 eval_data/mm_docqa_1500…
+  ↳ Submitted batch job 189918 (+6 lines)
+Preview submitted. Now recording notes, the held-out loss probe, and checking the A2 seed-43 run that just started.
+→ Bash: expmon note -j 189918 "intent: A2 connector-frozen s42 PREVIEW (law: one per finetune cell): checkpoint-100 (.229 epoch, 6,400 rows) of 189842, copied byte-identical (cmp, 12 files) without optimizer/rng/scheduler/args to expQ/freeze/ft_con…
+  ↳ expmon note: 88 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+17 lines)
+→ Bash: expmon logs 189899 15 2>&1 | grep -v httpx | tail -8 | cut -c1-300; echo; expmon logs 189842 15 2>&1 | grep -v httpx | tail -5 | cut -c1-300; grep -E "froze|trainable parameters" expQ/freeze/ft_connfrozen_s43/train.log ft_freeze_189899.out …
+  ↳ ['Campaign Composite\n', 'Dr. Paul Wahl\n'] (+45 lines)
+→ Bash: expmon gripe -c wish "launch: no way to replay a recorded run with a new argv (A2 preview = A1 preview 189434 on another checkpoint); I read argv+slurm from .expmon/runs.jsonl by hand and re-typed them. Suggest \`expmon launch --like <jid> …
+  ↳ logged (wish) -> /home/hdejean/.claude/feedback/ncp.log (+17 lines)
+→ Bash: squeue -u hdejean -j 189095,189096,189097,189098,189434,189446,189447,189448,189449,189918 -o "%.8i %.9T %.10M %.10l %.10R %S" 2>&1; sacct -j 189097,189098 -X -o JobID,State,ExitCode,Elapsed,NodeList,End 2>&1 | tail -3
+  ↳ JOBID     STATE       TIME TIME_LIMIT NODELIST(REASON) START_TIME (+11 lines)
+→ Bash: ls -la expQ/freeze/ft_compfrozen_s42/model/eval/ 2>/dev/null || find expQ/freeze/ft_compfrozen_s42 -name "*.json" -newer expQ/freeze/ft_compfrozen_s42/train.log -path "*eval*" | head; grep -hE "EXIT CODE|judge|accuracy" eval_mm_4b_189097.ou…
+  ↳ expQ/freeze/ft_compfrozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+13 lines)
+→ Bash: for j in 189097 189098; do echo "$j: $(grep -E '^  judge  ' eval_mm_4b_$j.out | head -1) $(grep -c 'EXIT CODE 0' eval_mm_4b_$j.out)"; done; cat expQ/freeze/paired_judge_cpu.sh; grep '"188650"\|"188701"' .expmon/runs.jsonl | tail -2 | cut -c…
+  ↳ 189097:   judge                        0.6947 1 (+32 lines)
+→ Bash: sacct -j 188650,188701 -X -o JobID,State,Elapsed 2>&1 | tail -2; ls expQ/freeze/ft_compfrozen_s43/eval/ expQ/freeze/ref_s42/eval/ expQ/freeze/ref_s43/eval/ expQ/freeze/ft_frozen_s42/eval/ 2>&1 | head -30; expmon launch --help 2>&1 | grep -i…
+  ↳ 188650        COMPLETED   00:00:19  (+22 lines)
+→ Bash: expmon launch --exp freeze --stage judge --dry-run --partition gpu-be --time 0:05:00 --dependency afterok:189095:189096:189446:189447:189448:189449 expQ/freeze/paired_judge_cpu.sh ft_compfrozen_s42:ref_s42 ft_compfrozen_s43:ref_s43 ft_compf…
+  ↳ launch: REFUSED — this cell (exp='freeze', same factors) was closed as a dead arm by run 189067. (+1 lines)
+→ Bash: expmon launch --exp freeze --stage judge --dry-run --force --partition gpu-be --time 0:05:00 --dependency afterok:189095:189096:189446:189447:189448:189449 expQ/freeze/paired_judge_cpu.sh ft_compfrozen_s42:ref_s42 ft_compfrozen_s43:ref_s43 …
+  ↳ would submit: sbatch --partition gpu-be --time 0:05:00 --dependency afterok:189095:189096:189446:189447:189448:189449 expQ/freeze/paired_judge_cpu.sh ft_compfrozen_s42:ref_s42 ft_compfrozen_s43:ref_s4 (+6 lines)
+→ Bash: expmon probe 189097 --step 1.0 judge=0.6947 n=1500 2>&1 | tail -1; expmon probe 189098 --step 1.0 judge=0.5833 n=1500 2>&1 | tail -1; expmon note -j 189097 "result: A1 compressor-frozen s42 MRQA text judge .695 (n=1,500, CML=4096, PX=100352…
+  ↳ probe recorded: 189097 @1.0 (judge=0.6947 n=1500)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+→ Bash: expmon note -j 189097 "correction: 189097 ended 17:54 (sacct End), 189098 ended 18:02, not 18:10 / 18:24 as noted above" 2>&1 | tail -1
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze && python3 - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ start=s.index('## Module movement') ⏎ end=s.index('## Proposed text') ⏎ open('/tmp/freeze_keep.md','w').write(s[start:end]) ⏎ print(len…
+  ↳ 2243
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && md5sum campaign_freeze/patches/split_freeze.diff | cut -c1-32 && expmon note "decision: freeze wake 2026-11-13 18:00 — A2 connector-frozen s42 (189842) held-out .438 at .23 epoch (ref .513, F .455, A…
+  ↳ d4412015df7ecd2cfd8408693ec3d5ef (+2 lines)
+Nothing needed from you. The frozen-compressor campaign is on track, and the first split-test verdict should come in tonight.
+
+**Done this wake**
+- **Connector frozen, seed 42** (only the connector is frozen; the compressor and decoder still train): a quarter of the way through training (0.23 epoch), its held-out loss is 0.438. That is lower than the reference finetune at the same point (0.513), the fully frozen run (0.455) and the compressor-frozen run (0.459). It is healthy. This is a 64-row loss, so it decides nothing.
+- I copied that quarter-way checkpoint (checked byte-identical) before training deletes it at step 300. I launched the allowed quick check: an eval with the judge on the first 300 document questions.
+- The shared eval queue cleared about a day early. First unpaired numbers for **compressor frozen, seed 42** (1,500 questions each, judge accuracy ↑):
+
+| set | compressor frozen | fully frozen | reference |
+|---|---|---|---|
+| MRQA text (gating) | .695 | .695 | .718 |
+| HotpotQA (not gating) | .583 | .575 | .603 |
+
+These fit the earlier prediction that freezing only the compressor fails like freezing everything. They decide nothing until the paired test runs.
+- I queued that paired test: it compares the same questions answered by each model, both seeds, all four sets, against both the reference and the fully frozen runs. It starts automatically when the 6 remaining compressor-frozen evals finish, around 19:30.
+- **Connector frozen, seed 43** started at 17:42, 11 hours before the scheduler's estimate. Its log confirms the connector is frozen.
+
+**Next**
+- I wake when the connector-frozen seed-43 quarter-way checkpoint appears (about 20:20), or in 4 hours at most.
+- At that wake: read the compressor-frozen verdict, read the seed-42 quick check, and copy the seed-43 checkpoint for its own quick check.
+
+**Small open item:** the new freeze setting in `pisco/model.py` and `test_freeze.py` is still uncommitted. This campaign cannot commit `pisco/`. One of your chats should commit it when convenient; nothing is blocked meanwhile.
+→ StructuredOutput: {"next": "wake-when", "summary": "Woken by A2 connector-frozen s42 checkpoint-100: held-out .438 at .23 epoch (ref .513, F .455, A1 .459), healthy; checkpoint copied byte-identical and the pre-authorised 300-doc preview launched (189918). g…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.1374 turns=34 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Woken by A2 connector-frozen s42 checkpoint-100: held-out .438 at .23 epoch (ref .513, F .455, A1 .459), healthy; checkpoint copied byte-identical and the pre-authorised 300-doc preview launched (189918). gpu-be cleared: A1 s42 MRQA .695 / HotpotQA .583 (unpaired; F .695/.575, ref .718/.603); remaining 6 A1 evals running/starting; A1 paired gate test 189919 chained afterok on them. A2 s43 (189899) started 17:42, freeze log correct. STATE.md rewritten; next wake at A2 s43 checkpoint-100 (~20:20), when the A1 verdict and A2 s42 preview should also be in.", "launched": ["189918", "189919"], "verdicts": [], "gripes": ["wish: expmon launch --like <jid> to replay a recorded run (launcher, slurm flags, stage, env) on a new argv"], "wake_when": "file:expQ/freeze/ft_connfrozen_s43/checkpoint-100 max 4h"}
+== final:
+{"next":"wake-when","summary":"Woken by A2 connector-frozen s42 checkpoint-100: held-out .438 at .23 epoch (ref .513, F .455, A1 .459), healthy; checkpoint copied byte-identical and the pre-authorised 300-doc preview launched (189918). gpu-be cleared: A1 s42 MRQA .695 / HotpotQA .583 (unpaired; F .695/.575, ref .718/.603); remaining 6 A1 evals running/starting; A1 paired gate test 189919 chained afterok on them. A2 s43 (189899) started 17:42, freeze log correct. STATE.md rewritten; next wake at A2 s43 checkpoint-100 (~20:20), when the A1 verdict and A2 s42 preview should also be in.","launched":["189918","189919"],"verdicts":[],"gripes":["wish: expmon launch --like <jid> to replay a recorded run (launcher, slurm flags, stage, env) on a new argv"],"wake_when":"file:expQ/freeze/ft_connfrozen_s43/checkpoint-100 max 4h"}
+== rc=0 secs=415
+== verify: 14/23

@@ -1,0 +1,119 @@
+== verifier 2026-11-13_1800  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session 57887558-b485-40f7-aa0b-4d9c3061c404  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+279 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 281	189447     eval 189445   RUNNING   -          -        -        -        -        -        -        -        -        -        -        -          -        -        -        -        -        -    (+170 lines)
+→ Glob: {"pattern": "expQ/freeze/**/*.{out,log,err}", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "**/*1886{50,701}*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_frozen_s42_smoke/training_config.yaml (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon.conf
+  ↳ 1	# .expmon.conf — pisco (Qwen3.5-4B PISCO campaign). Field docs: ~/.claude/expmon/expmon.conf.template (+20 lines)
+I'm checking the claims against the job logs. Next: the two paired-test outputs and the training logs.
+→ Glob: {"pattern": "paired_judge_cpu_18*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "ft_freeze_18*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+Glob times out on the repo root, so I'm reading the files by their expected names.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_cpu_188701.out
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_cpu_188650.out
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Grep: {"pattern": "188701|188650", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "head_limit": 10}
+  ↳ 917:{"ts": "2026-11-11 18:33", "jobid": "188650", "launcher": "expQ/freeze/paired_judge_cpu.sh", "argv": ["ft_frozen_s42:ref_s42", "ft_frozen_s43:ref_s43"], "git": "be0d842+dirty", "outdir": "/beegfs/ (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/188701"}
+  ↳ Directory does not exist: /beegfs/scratch/user/hdejean/pisco/expQ/188701. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/188650"}
+  ↳ Directory does not exist: /beegfs/scratch/user/hdejean/pisco/expQ/188650. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_cpu.sh_188701.out
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/paired_judge_cpu.sh
+  ↳ 1	#!/bin/bash (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188701.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_frozen_s44:ft_unfrozen_s44 (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188650.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_frozen_s42:ref_s42,ft_frozen_s43:ref_s43 (+72 lines)
+The paired-test logs match the gate-0 numbers and the 39-of-42 sign count. Now checking row counts, the A2 seed-43 log lines, and memory figures.
+→ Grep: {"pattern": "num_rows|max_steps|Total optimization steps|Num examples", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/train.log", "output_mode": "content", "head_limit": 10}
+  ↳ No matches found
+→ Glob: {"pattern": "*/train.log", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_frozen_s42_smoke/train.log (+12 lines)
+→ Grep: {"pattern": "freeze_part|Compressor trainable|froze", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_connfrozen_s43/train.log", "output_mode": "content", "head_limit": 10}
+  ↳ No matches found
+→ Grep: {"pattern": "num_rows", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze.sh_188582.out", "output_mode": "content", "head_limit": 5}
+  ↳ Path does not exist: /beegfs/scratch/user/hdejean/pisco/ft_freeze.sh_188582.out. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Grep: {"pattern": "SBATCH --output|SBATCH -o", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh", "output_mode": "content"}
+  ↳ 9:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/ft_freeze_%j.out
+→ Grep: {"pattern": "freeze_part|Compressor trainable|froze|num_rows", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189899.out", "output_mode": "content", "head_limit": 10}
+  ↳ 2:FACTORS kind=ft_mm arm=connfrozen seed=43 smoke=0 init=pt_mm_5M_spread samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+8 lines)
+→ Grep: {"pattern": "num_rows|Compressor trainable|froze", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out", "output_mode": "content", "head_limit": 10}
+  ↳ 2:FACTORS kind=ft_mm arm=frozen seed=42 smoke=0 init=pt_mm_5M_spread samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+6 lines)
+→ Grep: {"pattern": "eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189842.out", "output_mode": "content", "head_limit": 10}
+  ↳ 4445: (+2 lines)
+→ Grep: {"pattern": "'eval_loss'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 4445:'eval_loss' (+4 lines)
+→ Grep: {"pattern": "'eval_loss'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188583.out", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 4446:'eval_loss' (+4 lines)
+→ Grep: {"pattern": "'train_loss'|exit|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189445.out", "output_mode": "content", "head_limit": 10}
+  ↳ 4695: (+4 lines)
+→ Grep: {"pattern": "'eval_loss': '[0-9.]+'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188582.out", "output_mode": "content", "-o": true}
+  ↳ 4445:'eval_loss': '0.4552' (+4 lines)
+→ Grep: {"pattern": "'eval_loss': '[0-9.]+'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188583.out", "output_mode": "content", "-o": true}
+  ↳ 4446:'eval_loss': '0.4419' (+4 lines)
+→ Grep: {"pattern": "'eval_loss': '[0-9.]+'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189445.out", "output_mode": "content", "-o": true}
+  ↳ 4444:'eval_loss': '0.4641' (+4 lines)
+Held-out loss figures match the logs. Now checking that the two finished A1 evals really scored the sets the summary names, since the grid leaves their factor columns blank.
+→ Grep: {"pattern": "SBATCH --output", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_%j.out
+→ Grep: {"pattern": "189097|189098|189434", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 955:{"ts": "2026-11-13 01:33", "jobid": "189097", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ft_compfrozen_s42/model", "pisco", "", "eval_data/text_mrqa_ood_1500"], "git": "7e35b70+dirty", "ou (+2 lines)
+→ Grep: {"pattern": "cml4096|k10|md5|judge.*=|EXIT|Judge|accuracy|homer", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189097.out", "output_mode": "content", "head_limit": 25}
+  ↳ 1706:wrote expQ/freeze/ft_compfrozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+12 lines)
+→ Grep: {"pattern": "cml4096|k10|md5|EXIT|homer", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189098.out", "output_mode": "content", "head_limit": 25}
+  ↳ 1690:wrote expQ/freeze/ft_compfrozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189097.out
+  ↳ 1720	=== expQ/freeze/ft_compfrozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_189097.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-999fcaa5-2b56-e397-204e-38c60f874b20) (+20 lines)
+→ Grep: {"pattern": "md5|git", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "md5|dfe32aa0|50abc167", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_1800.log", "output_mode": "content", "head_limit": 20}
+  ↳ 36:→ Bash: grep -n "PX\|SBATCH" eval_mm_4b.sh | head -20; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py expQ/freeze/ft_freeze.sh | cut -c1-8,33-; grep -c . exp (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_connfrozen_s42_step100/checkpoint-100"}
+  ↳ expQ/freeze/ft_connfrozen_s42_step100/checkpoint-100/decoder_state.pt (+11 lines)
+→ Grep: {"pattern": "189918|189919", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 986:{"ts": "2026-11-13 18:04", "jobid": "189918", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ft_connfrozen_s42_step100/checkpoint-100", "pisco", "300", "eval_data/mm_docqa_1500_1m"], "git": "8 (+1 lines)
+→ Grep: {"pattern": "EXIT CODE|'train_loss'|froze .* compressor|Compressor trainable|num_rows: 27936", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189094.out", "output_mode": "content"}
+  ↳ 104:[pisco] freeze_part=compressor: froze 501 compressor tensors (eval mode kept) (+7 lines)
+→ Glob: {"pattern": "check_module_move_1890*.out", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ No files found
+Run times match (A1 seed 42: 31,260 s over 437 steps = 71.5 s/step). Now the after-run module checks.
+→ Grep: {"pattern": "SBATCH --output", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh", "output_mode": "content"}
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/check_move_freeze_%j.out
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_189450.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_compfrozen_s43 (+10 lines)
+→ Grep: {"pattern": "norm|connector|lora_B|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/check_move_freeze_189099.out", "output_mode": "content"}
+  ↳ 2:decoder.lora_A                  68.94M entries  changed  14.6%  moved 0.0066 of its norm  RMS 0.01052  trained dtype torch.bfloat16 (+8 lines)
+→ Grep: {"pattern": "norm_gain", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "check_move_freeze_18{8579,8700}.out", "output_mode": "content"}
+  ↳ check_move_freeze_188700.out:9:connector.connector.norm_gain     0.00M entries  changed   0.0%  moved 0.0000 of its norm  RMS 0.46094  trained dtype torch.bfloat16 (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_189066.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_compfrozen_s42_smoke (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_189740.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=ft_connfrozen_s42_smoke (+10 lines)
+Module checks all match. Last: the A2 smoke config diff and the loss figures behind the A2 feasibility pass.
+→ Grep: {"pattern": "freeze|output_dir|max_steps|seed|learning_rate", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_connfrozen_s42_smoke/training_config.yaml", "output_mode": "content"}
+  ↳ 1:output_dir: ./outputs/run (+3 lines)
+→ Grep: {"pattern": "freeze|output_dir|max_steps|seed|learning_rate", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/training_config.yaml", "output_mode": "content"}
+  ↳ 1:output_dir: ./outputs/run (+3 lines)
+→ Grep: {"pattern": "'loss': '[0-9.]+'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189739.out", "output_mode": "content", "-o": true}
+  ↳ 4385:'loss': '0.6165' (+1 lines)
+→ StructuredOutput: {"claims": [{"claim": "Gate 0 FAILED on three seeds: documents −.028 / −.035 / −.041 (CI wholly below 0 each); Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) met by seeds 43 and 44; MRQA −.023/−.027/−.025; photos −.009/−.013/+.005; HotpotQ…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7089 turns=54 is_error=False denials=0
+== declared: {"claims": [{"claim": "Gate 0 FAILED on three seeds: documents −.028 / −.035 / −.041 (CI wholly below 0 each); Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) met by seeds 43 and 44; MRQA −.023/−.027/−.025; photos −.009/−.013/+.005; HotpotQA −.028/−.023/−.026 (jobs 188650, 188701, n = 1,500)", "status": "supported", "reason": "paired_judge_freeze_188650.out / _188701.out ALL rows: docs −0.028 [−0.049,−0.007], −0.035 [−0.057,−0.014], −0.041 [−0.062,−0.021]; McNemar 111/153, 109/161, 103/164; n=1500. Two seeds are ≤ −.030 with CI <0, which meets the 2-of-3 Failed rule (clarified wake 6, before the seed-44 result). Every other set's Δ, CI and discordant count matches the logs and verdicts."}, {"claim": "The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44), all 8 evals on the gate-0 eval-code md5, paired test exit 0 (188701)", "status": "supported", "reason": "Grid: 188651/188652 both parent 184777, init pt_mm_5M_spread, same factors, arm frozen/unfrozen. Verdict 188701 records md5 dfe32aa0/50abc167/02bc8748 and homer-016. paired_judge_freeze_188701.out ends '=== EXIT CODE 0 ==='. R3 is a listed arm."}, {"claim": "The freeze held over all three full F runs (27,936 rows, 437 steps): compressor/connector 0.0%, decoder lora_B 66.7/66.3/66.7% (188584/188585/188699); reference s44 moved compressor lora_B 74.1%, connector MLP 20.7% (188700); check cannot see the <MEM> row or the merger", "status": "supported", "reason": "ft_freeze_188582.out
+== final:
+{"claims":[{"claim":"Gate 0 FAILED on three seeds: documents −.028 / −.035 / −.041 (CI wholly below 0 each); Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) met by seeds 43 and 44; MRQA −.023/−.027/−.025; photos −.009/−.013/+.005; HotpotQA −.028/−.023/−.026 (jobs 188650, 188701, n = 1,500)","status":"supported","reason":"paired_judge_freeze_188650.out / _188701.out ALL rows: docs −0.028 [−0.049,−0.007], −0.035 [−0.057,−0.014], −0.041 [−0.062,−0.021]; McNemar 111/153, 109/161, 103/164; n=1500. Two seeds are ≤ −.030 with CI <0, which meets the 2-of-3 Failed rule (clarified wake 6, before the seed-44 result). Every other set's Δ, CI and discordant count matches the logs and verdicts."},{"claim":"The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44), all 8 evals on the gate-0 eval-code md5, paired test exit 0 (188701)","status":"supported","reason":"Grid: 188651/188652 both parent 184777, init pt_mm_5M_spread, same factors, arm frozen/unfrozen. Verdict 188701 records md5 dfe32aa0/50abc167/02bc8748 and homer-016. paired_judge_freeze_188701.out ends '=== EXIT CODE 0 ==='. R3 is a listed arm."},{"claim":"The freeze held over all three full F runs (27,936 rows, 437 steps): compressor/connector 0.0%, decoder lora_B 66.7/66.3/66.7% (188584/188585/188699); reference s44 moved compressor lora_B 74.1%, connector MLP 20.7% (188700); check cannot see the <MEM> row or the merger","status":"supported","reason":"ft_freeze_188582.out line 4364 'num_rows: 27936' and line 104 'froze 506 compressor + connector tensors'. Verdicts 188584/188585/188699/188700 match the percentages. The check output has no merger row and a 1,270M-entry token-adapter group. Note: verdicts 188584/188699 say 28,032 rows; the log value of 27,936 is the right one."},{"claim":"In this bf16 recipe the connector norm gain never moves even when trainable: 0.0% after 20 steps (188579, 189066) and a whole epoch (188700, 189099, 189450), value .46094 each time","status":"supported","reason":"check_move_freeze_188579/188700/189066/189099/189450.out all read 'norm_gain … changed 0.0% … RMS 0.46094'. In the same files other trainable rows move (connector.linear 19.1–28.7%), so the check does see movement. Verdict 188579 gives the bf16 step-size explanation."},{"claim":"provisional: the frozen-vs-reference difference is compressor LoRA + connector MLP, plus possibly merger and <MEM> row (unmeasured); frozen side also in eval mode (no LoRA dropout, possibly no gradient checkpointing, not checked)","status":"provisional","reason":"Already provisional. The check really has no merger row, and one 2,560-entry row inside 1,270M entries is invisible. There is no positive control for either, so it stays an inference."},{"claim":"Split-freeze setting installed and tested: PISCOConfig.freeze_part in pisco/model.py md5 994cff3d; staged (189060) and installed (189063) trees pass 12/12, 33/33, 10/10","status":"supported","reason":"Verdicts 189060 and 189063 record 12/12, 33
+== rc=0
