@@ -1,0 +1,64 @@
+== campaign longchunk wake 2026-11-13_1900  reasons=problems,problems-standing,condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794564002 live=189693:PENDING,189695:PENDING,189694:PENDING,189692:PENDING,188466:RUNNING,188707:PENDING,188712:PENDING,189691:PENDING running=1 pending=7 problems=2 problems_other=0 new=0 gpuh24=117.2 idle_h=0.0 min_util=80 alert=0 unpushed=74 cron=3 daemon=1 disk_gb=10744 sig=a252d4d5 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json_job:188707,188708,188709,188710,188711,188712_max_14h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json (exists)   (NEXT was: wake-when file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h)
+== session 7d41d06f-bf76-479c-82a0-839bfc176e02  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/7d41d06f-bf76-479c-82a0-839bfc176e02/tool-results/bpdu14bbp.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_1900   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+257 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+97 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+74 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat STATE.md; echo =====; cat known_issues.md; echo ====; ls -la
+  ↳ Exit code 1 (+80 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 28	- The control's 6 gating evals (1,500 Q each, judge chained) — all 6 PENDING on gpu-be. Five have been preempted once and restart from scratch: g10 s43 (188710, 06:30), documents s43 (188711, 07:20 (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk; cat known_issues.md; ls -la; ls ticks | tail -3
+  ↳ # Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+39 lines)
+Checking the 1,024-token run's step-4,000 health and which of the control's 6 evals have finished.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; d=expQ/longchunk/pt_text_1M_cml1024_188466; ls $d; python3 -c " ⏎ import json ⏎ s=json.load(open('$d/checkpoint-4000/trainer_state.json')) ⏎ for e in s['log_history']: ⏎     if 'eval_loss' in e: print(…
+→ Bash: sacct -j 188707,188708,188709,188710,188711,188712 -D -X -o JobID,State,ExitCode,NodeList,Start,End,Elapsed --parsable2 2>&1 | tail -30; ls -la /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s4*/eval/
+  ↳ checkpoint-2000 (+12 lines)
+  ↳ JobID|State|ExitCode|NodeList|Start|End|Elapsed (+47 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in sorted(glob.glob('ft_cml256_s4?/eval/*.json')): ⏎     d=json.load(open(f)) ⏎     if isinstance(d,dict): ⏎         keys=list(d.keys()) ⏎   …
+  ↳ ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json ['summary', 'records'] 1500 (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 104	| `starved util=NN%` on a run older than 1 h | `expmon occupancy`; if the recipe is the cause: kill, re-profile, relaunch the best-fit | 1 per arm | (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py pt_mm_4b.sh ft_mm_4b.sh expQ/longchunk/pt_text_4b_long.sh | cut -c1-8,33-; ls -la --time-style=full-iso eval_mm_4b…
+  ↳ 50abc167  eval_mm_4b.sh (+37 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E 'WRITE_ROOTS|MAX_TRAIN|MAX_SUBMIT|COMMIT_PATHS' campaign_longchunk/campaign.conf; stat -c '%y %n' expQ/longchunk/ft_cml256_s4?/eval/*.json; sacct -j 188466 -X -o JobID,State,Restart,Start,Alloc…
+  ↳ CAMP_MAX_TRAIN=2                  # trainings in flight at once (CAMPAIGN.md "Budget and caps" refers to it) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cp -p expQ/longchunk/ft_cml256_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json expQ/longchunk/ft_cml256_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json.kept_188712_homer013_1622 && cm…
+  ↳ copied-identical (+20 lines)
+→ Bash: expmon help 2>&1 | grep -A4 -E '^\s+probe ' | head -12
+  ↳ probe  [<jobid> [--step S] k=v…] | [--scan]  record/list partial-epoch metric snapshots of (+8 lines)
+The 1,024-token run is healthy at step 4,000; 4 of the control's 6 full evals finished. Recording those numbers now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longchunk ⏎ expmon probe 188466 --step 4000 eval_loss=0.6118 eval_rougeL=0.7671 docs_seen=768000 train_loss=0.792 2>&1 | tail -2 ⏎ for p in "188708 $E/ft_cml256_s42/eval/mm_docqa_pisco_px1003520…
+  ↳ probe recorded: 188466 @4000 (eval_loss=0.6118 eval_rougeL=0.7671 docs_seen=768000 train_loss=0.792)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=$PWD/expQ/longchunk ⏎ for p in "188708 $E/ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json" "188709 $E/ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json" "188710 $E/…
+  ↳ expmon probe --from-json: no result file for 188708 /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (looked under /beegfs/scratch/us (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco ⏎ expmon probe 188708 judge=0.6147 n_q=1500 em=0.502 match=0.567 node=homer-013 2>&1|tail -1 ⏎ expmon probe 188709 judge=0.6667 n_q=1500 em=0.513 match=0.729 node=homer-014 2>&1|tail -1 ⏎ expmon probe 1…
+  ↳ probe recorded: 188708 (judge=0.6147 n_q=1500 em=0.502 match=0.567 node=homer-013)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longchunk/; ls expQ/longchunk/pt_mm_cml256 2>/dev/null | head; ls expQ/longchunk/pt_text_1M_cml256_188422 | head; expmon probe 188712 judge=0.67 n_q=1500 em=0.518 match=0.733 node=homer-013 att…
+  ↳ build_msmarco_docs.sbatch (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json ⏎ s=json.load(open('expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json')) ⏎ h=[e for e in s['log_history'] if 'loss' in e] ⏎ for e in h[:2]+h[len(h)/…
+  ↳ 50 2.174 0.53515625 (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco ⏎ expmon note -j 188466 "result: L1024 stage 1 step 4,000 of 5,208 (768,000 of 1M documents, .77 epoch; ≈ 0.80 B text tokens, estimate): held-out loss .611 -> .612 (steps 2,000 -> 4,000, 64 rows), Rouge…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Notes recorded. Now refreshing the results page and rewriting the campaign state file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp longchunk 2>&1 | tail -2; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longchunk.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "display --exp longchunk prints '0 table rows, 0 media files from 0 runs' although grid longchunk has ~40 cells (5 control evals with judge probes this wake) — the page shows not…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h", "summary": "The 1,024-token arm's first training stage is healthy at ste…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5927 turns=26 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h", "summary": "The 1,024-token arm's first training stage is healthy at step 4,000 of 5,208 (768,000 of 1M documents). Held-out loss is flat (.611 at step 2,000, .612 at step 4,000). Train loss fell from 2.17 to .79, with no NaN. It should finish about 2026-11-14 08:50, and its downstream jobs are already chained. The control (256-token chunks) now has 5 of its 6 full evals judged (Qwen3-8B judge, 1,500 questions each, 8 tokens per slot): documents .615 (seed 42) / .603 (seed 43); photos .667 / .670; one-long-chunk HotpotQA .607 (seed 43). Its seed-42 HotpotQA eval is still queued after 4 preemptions. The photos seed-43 result was written 2 seconds before a preemption; the job requeued and will overwrite it, so a byte-identical copy is kept. All 6 numbers are recorded as probes and in the ledger. STATE.md is rewritten. No launch, no kill. Nothing needed from the owner.", "launched": [], "verdicts": [], "gripes": ["defect: probe --from-json with an explicit absolute result path still reports 'no result file' for evals that write outside expQ/<jid>; I typed 4 numbers by hand", "defect: display --exp longchunk renders 0 table rows although the grid has ~40 cells and fresh judge probes"]}
+== final:
+{"next":"wake-when","wake_when":"file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h","summary":"The 1,024-token arm's first training stage is healthy at step 4,000 of 5,208 (768,000 of 1M documents). Held-out loss is flat (.611 at step 2,000, .612 at step 4,000). Train loss fell from 2.17 to .79, with no NaN. It should finish about 2026-11-14 08:50, and its downstream jobs are already chained. The control (256-token chunks) now has 5 of its 6 full evals judged (Qwen3-8B judge, 1,500 questions each, 8 tokens per slot): documents .615 (seed 42) / .603 (seed 43); photos .667 / .670; one-long-chunk HotpotQA .607 (seed 43). Its seed-42 HotpotQA eval is still queued after 4 preemptions. The photos seed-43 result was written 2 seconds before a preemption; the job requeued and will overwrite it, so a byte-identical copy is kept. All 6 numbers are recorded as probes and in the ledger. STATE.md is rewritten. No launch, no kill. Nothing needed from the owner.","launched":[],"verdicts":[],"gripes":["defect: probe --from-json with an explicit absolute result path still reports 'no result file' for evals that write outside expQ/<jid>; I typed 4 numbers by hand","defect: display --exp longchunk renders 0 table rows although the grid has ~40 cells and fresh judge probes"]}
+== rc=0 secs=221
+== verify: 11/15
