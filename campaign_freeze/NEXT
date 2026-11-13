@@ -1,1 +1,1 @@
-wake-when job:189739,189740 max 8h
+wake-when job:189445 file:expQ/freeze/ft_connfrozen_s42/checkpoint-100 max 4h

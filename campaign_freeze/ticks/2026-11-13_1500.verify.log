@@ -1,0 +1,53 @@
+== verifier 2026-11-13_1500  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session f892571a-193b-427a-a203-64e549b1619f  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+281 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 283	188617     eval-ref 184780   ended     closed     -        eval_mm  -        -        -        -        -        -        -        -        1003520    -        pisco    ref_s43  text_hotpotqa_1500 (+142 lines)
+→ Glob: {"pattern": "expQ/freeze/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Grep: {"pattern": "Mission|refuted", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 9:## Mission
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN freeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+39 lines)
+→ Glob: {"pattern": "*189*", "path": "/beegfs/scratch/user/hdejean/pisco/logs"}
+  ↳ No files found
+→ Grep: {"pattern": "--output|-o |SBATCH --output|log", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh", "output_mode": "content"}
+  ↳ 9:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/ft_freeze_%j.out
+Checking the cited job logs now (A2 smoke, A1 full run, paired-judge output) before writing the verdicts.
+→ Grep: {"pattern": "freeze_part=|Compressor trainable parameters|max_steps|Total optimization steps|'train_runtime'|train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189739.out", "output_mode": "content"}
+  ↳ 36:  max_steps: 20 (+6 lines)
+→ Grep: {"pattern": "freeze_part=|Compressor trainable parameters|Total optimization steps|train_runtime|437/437|438/438", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189094.out", "output_mode": "content", "head_limit": 20}
+  ↳ 104:[pisco] freeze_part=compressor: froze 501 compressor tensors (eval mode kept) (+19 lines)
+→ Glob: {"pattern": "*188701*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "188701|188650", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze", "glob": "*.md", "output_mode": "content", "head_limit": 15}
+  ↳ campaign_freeze/VERIFY.md:9:[Omitted long matching line] (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign freeze — 2026-11-13_1030   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+30 lines)
+→ Grep: {"pattern": "changed|EXIT CODE", "path": "/beegfs/scratch/user/hdejean/pisco/check_move_freeze_189740.out", "output_mode": "content"}
+  ↳ 2:decoder.lora_A                  68.94M entries  changed  26.9%  moved 0.0027 of its norm  RMS 0.01052  trained dtype torch.bfloat16 (+8 lines)
+→ Grep: {"pattern": "\"loss\"|\"step\"|\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_connfrozen_s42_smoke/checkpoint-20/trainer_state.json", "output_mode": "content"}
+  ↳ 16:      "loss": 0.616456127166748, (+5 lines)
+→ Grep: {"pattern": "freeze|seed|learning_rate|max_steps|image_max_pixels|samples|output_dir|dir:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_connfrozen_s42_smoke/training_config.yaml", "output_mode": "content"}
+  ↳ 1:output_dir: ./outputs/run (+5 lines)
+→ Grep: {"pattern": "freeze|seed|learning_rate|max_steps|image_max_pixels|samples|output_dir|dir:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42_smoke/training_config.yaml", "output_mode": "content"}
+  ↳ 1:output_dir: ./outputs/run (+5 lines)
+Still verifying: now checking the seed-43 run's progress and its loss curve against arm F and the reference.
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.4419252574443817, (+4 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.47135603427886963, (+4 lines)
+→ Grep: {"pattern": "\\| 37[5-9]/437|eval_loss|NaN|nan", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_189445.out", "output_mode": "content", "head_limit": 10, "-o": true}
+  ↳ 4444:eval_loss (+7 lines)
+→ Grep: {"pattern": "34044|50020|31\\.4|gpumem", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_1500.log", "output_mode": "content", "head_limit": 10}
+  ↳ 86:→ Bash: sacct -j 188652,188651,189094 --format=JobID,TRESUsageInMax%250 -P -n | grep -oE "^[0-9]+[^|]*|gres/gpumem=[^,]*" | paste - - | head; squeue -j 189842 --start -h -o "%i %S %R" (+4 lines)
+→ Grep: {"pattern": "--time|sbatch|189842|connfrozen 42", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-13_1500.log", "output_mode": "content", "head_limit": 20}
+  ↳ 17:  ↳ | a campaign job FAILED / NODE_FAIL / TIMEOUT for a transient cause (preemption without resume, node failure, a wall-time misestimate) | relaunch the same recipe, `--time` re-derived | max 2 re (+16 lines)
+→ StructuredOutput: {"claims": [{"claim": "Gate 0 FAILED on three seeds: documents −2.8 / −3.5 / −4.1 pt, each 95% CI wholly below 0; the Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) is met at seeds 43 and 44 (jobs 188650, 188701, n = 1,500 per set, same ev…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2038 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "Gate 0 FAILED on three seeds: documents −2.8 / −3.5 / −4.1 pt, each 95% CI wholly below 0; the Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) is met at seeds 43 and 44 (jobs 188650, 188701, n = 1,500 per set, same eval-code md5)", "status": "supported", "reason": "Grid judge values: .582−.610 = −.028, .580−.615 = −.035, .579−.620 = −.041. The CIs [−.049,−.007], [−.057,−.014], [−.062,−.021] are in verdicts 188650 and 188701 and were checked in the .out files at the last verify. Seeds 43 and 44 are ≤ −3 pt with the CI below 0, and the 2-of-3 wording was written at wake 6, before the seed-44 result."}, {"claim": "MRQA text: −.023 [−.040, −.008], −.027 [−.043, −.009], −.025 [−.041, −.009]; below −2 pt, CI below 0, not ≤ −3 pt", "status": "supported", "reason": "Matches verdicts 188605/188612 (188650) and 188701. The grid gives .695−.718, .697−.724 and .697−.721; the third is −.024 at three decimals, so −.025 is rounding of the paired output."}, {"claim": "photos: −.009 [−.026, +.008], −.013 [−.030, +.004], +.005 [−.013, +.021]; no difference shown at any seed", "status": "supported", "reason": "Matches verdicts 188601, 188603 and 188701. Every CI spans 0, and McNemar p is .32 / .17 / .65."}, {"claim": "HotpotQA (reported, not gating): −.028 [−.045, −.013], −.023 [−.041, −.006], −.026 [−.043, −.010]", "status": "supported", "reason": "Matches verdicts 188614, 188616 and 188701. The grid gives .575/.603, .571/.593 and .577/.603, n = 1500 each."}, {"claim": "
+== final:
+{"claims":[{"claim":"Gate 0 FAILED on three seeds: documents −2.8 / −3.5 / −4.1 pt, each 95% CI wholly below 0; the Failed rule (≤ −3 pt, CI below 0, 2 of 3 seeds) is met at seeds 43 and 44 (jobs 188650, 188701, n = 1,500 per set, same eval-code md5)","status":"supported","reason":"Grid judge values: .582−.610 = −.028, .580−.615 = −.035, .579−.620 = −.041. The CIs [−.049,−.007], [−.057,−.014], [−.062,−.021] are in verdicts 188650 and 188701 and were checked in the .out files at the last verify. Seeds 43 and 44 are ≤ −3 pt with the CI below 0, and the 2-of-3 wording was written at wake 6, before the seed-44 result."},{"claim":"MRQA text: −.023 [−.040, −.008], −.027 [−.043, −.009], −.025 [−.041, −.009]; below −2 pt, CI below 0, not ≤ −3 pt","status":"supported","reason":"Matches verdicts 188605/188612 (188650) and 188701. The grid gives .695−.718, .697−.724 and .697−.721; the third is −.024 at three decimals, so −.025 is rounding of the paired output."},{"claim":"photos: −.009 [−.026, +.008], −.013 [−.030, +.004], +.005 [−.013, +.021]; no difference shown at any seed","status":"supported","reason":"Matches verdicts 188601, 188603 and 188701. Every CI spans 0, and McNemar p is .32 / .17 / .65."},{"claim":"HotpotQA (reported, not gating): −.028 [−.045, −.013], −.023 [−.041, −.006], −.026 [−.043, −.010]","status":"supported","reason":"Matches verdicts 188614, 188616 and 188701. The grid gives .575/.603, .571/.593 and .577/.603, n = 1500 each."},{"claim":"The prediction in CAMPAIGN.md 'Mission' (freezing may tie) is refuted and marked there","status":"supported","reason":"CAMPAIGN.md lines 21-23 read 'Refuted wake 10, 2026-11-12, kept', with the same three-seed numbers."},{"claim":"The seed-44 pair is clean: same stage-2 model, same recipe file (ft_freeze.sh frozen|unfrozen 44), all 8 evals on the same eval-code md5, paired test exited 0 (job 188701)","status":"supported","reason":"In the grid, 188651 and 188652 both have parent 184777, init pt_mm_5M_spread and identical factors apart from the arm. Verdict 188701 records the md5s and that all 8 evals ran on homer-016. R3 is in the Arms table."},{"claim":"The freeze held over all three full F runs (1.0 epoch, 28,032 rows each): every compressor/connector row incl. norm gain 0.0%; decoder lora_B 66.7 / 66.3 / 66.7% (188584 / 188585 / 188699); reference s44 moved compressor lora_B 74.1%, connector MLP 20.7% (188700)","status":"supported","reason":"Every percentage matches verdicts 188584, 188585, 188699 and 188700, and 188700 is the positive control. Uncorrected error, flagged a second time: the train split is 27,936 rows over 437 steps (log 'num_rows: 27936'), not 28,032 = 438 × 64."},{"claim":"In this bf16 recipe the connector norm gain never moves, even when trainable: 0.0% after 20 steps (188579, 189066, 189740) and after a whole epoch (188700, 189099), value .46094","status":"supported","reason":"It holds on 4 checks of a trainable gain (188579, 189066, 188700, 189099). But 189740 is mis-cited: in A2
+== rc=0
