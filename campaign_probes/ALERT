@@ -1,0 +1,2 @@
+ALERT 2026-11-14 00:04 — campaign probes (the next LLM wake must handle this, then delete the file)
+- crontab has no 'campaign tick' line — the loop is not armed (expmon campaign arm)
