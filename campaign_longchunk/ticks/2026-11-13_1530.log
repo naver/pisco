@@ -1,0 +1,43 @@
+== campaign longchunk wake 2026-11-13_1530  reasons=problems  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794551401 live=189693:PENDING,189695:PENDING,189694:PENDING,189692:PENDING,188466:RUNNING,188708:PENDING,188710:PENDING,188712:PENDING,188711:PENDING,188709:PENDING,188707:PENDING,189691:PENDING running=1 pending=11 problems=5 problems_other=0 new=0 gpuh24=121.2 idle_h=0.0 min_util=100 alert=0 unpushed=68 cron=3 daemon=1 disk_gb=10899 sig=ba39ed57 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json_job:188707,188708,188709,188710,188711,188712_max_14h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== session 37ece817-1da8-405c-b89a-8e925130ad2d  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+11 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/37ece817-1da8-405c-b89a-8e925130ad2d/tool-results/bf3xgaj92.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-13_1530   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+272 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md && echo ======== && cat STATE.md
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && sed -n 30,90p CAMPAIGN.md
+  ↳ | arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+60 lines)
+→ Bash: sed -n 90,120p CAMPAIGN.md; echo =========; cat STATE.md; echo ======; cat known_issues.md | head -80
+  ↳ Exit code 1 (+32 lines)
+Reading the campaign state now; the brief shows the long-chunk training still running and one control eval started.
+→ Bash: cat STATE.md; echo '-----'; cat known_issues.md
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+111 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && squeue -u hdejean -o "%.8i %.10T %.12M %.10P %R %S" -j 188466,188707,188708,188709,188710,188711,188712,189691,189692,189693,189694,189695 2>&1; echo '---'; tail -c 1500 expQ/longchunk/pt_text_1M_cml…
+  ↳ JOBID      STATE         TIME  PARTITION NODELIST(REASON) START_TIME (+29 lines)
+→ Bash: expmon logs 188466 8 2>&1 | tail -c 1500; echo '---'; ls -la expQ/longchunk/pt_text_1M_cml1024_188466/ | head; scontrol show job 188707 | grep -E 'Restarts|Requeue|LastSchedEval'; sacct -j 188707 -D -o JobID,State,Start,End,NodeList -X 2>&1…
+  ↳ 700/5208 [42:44:34<17:15:23, 41.20s/it] (+35 lines)
+Stage 1 is healthy (71%, loss .79). Seed-42 g10 control eval was preempted again (benign, known). Checking whether eval code changed under the queued evals:
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py pt_mm_4b.sh ft_mm_4b.sh expQ/longchunk/pt_text_4b_long.sh | cut -c1-8,33-; echo '---'; ls -la --time-style=+%m-%d_%H:%M eval_mm_4b.sh scripts/eval_mm_doc…
+  ↳ 50abc167  eval_mm_4b.sh (+14 lines)
+Code is unchanged since the control evals were submitted (all md5s match). Recording the in-flight probe and the decision:
+→ Bash: expmon probe 188466 --step 3717 docs_seen=713664 train_loss=0.793 2>&1 | tail -3; expmon note -j 188707 "result: preempted again on gpu-be at 15:04 after 9 min on homer-019 (Restarts 1 -> requeued, PENDING, est. start 11-14 10:15); benign, …
+  ↳ probe recorded: 188466 @3717 (docs_seen=713664 train_loss=0.793)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: expmon gripe -c defect "a benign gpu-be preemption+requeue (PREEMPTED, Restarts>0, job PENDING again) counts as a new problem and wakes a campaign during its wake-when wait: longchunk wake 2026-11-13 15:30 was spent only on eval 188707 bein…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && python3 - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ old_head=s.split('## TL;DR')[0] ⏎ new_head='''# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never app…
+  ↳ 2 (+4 lines)
+→ Bash: grep -c 'Five have been preempted' STATE.md; grep -c '12.1 GPU-days' STATE.md; grep -c '0.74 B' STATE.md; grep -c '15:35 (unchanged' STATE.md; cat NEXT
+  ↳ 1 (+4 lines)
+→ Bash: echo 'wake-when file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h' > NEXT && cat NEXT
+  ↳ wake-when file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h
+→ StructuredOutput: {"next": "wake-when", "summary": "No-op wake: nothing was broken. I was woken only because the control model's seed-42 HotpotQA eval (on grouped long passages) was preempted on the gpu-be queue. It ran 9 minutes, was requeued, and is waitin…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0716 turns=16 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "No-op wake: nothing was broken. I was woken only because the control model's seed-42 HotpotQA eval (on grouped long passages) was preempted on the gpu-be queue. It ran 9 minutes, was requeued, and is waiting again. This is a known, harmless event; nothing was launched or killed.\n\nThe stage-1 training with 1,024-token chunks is healthy: step 3,717 of 5,208, which is 713,664 of 1M documents (0.71 epoch). Train loss is .79 with no NaN, at 41.7 s per step. The step-4,000 held-out loss check is due around 18:50 today, and training should end around 2026-11-14 08:45. I recorded this as a probe.\n\nThe control's 6 scored evals (1,500 questions each, judge chained) are still queued on gpu-be. Five of them have been preempted once. Their estimated start times moved earlier, to between today 16:25 and 2026-11-14 10:15.\n\nThe eval and model code has not changed since those evals were submitted (md5s match). Budget: about 291 GPU-hours spent (12.1 GPU-days); about 35.0 GPU-days projected for the whole plan, under the 38-day cap. Everything after stage 1 is already chained (ownership probe, stage 2, two finetunes, and the 2,048-token arm's stage 1).\n\nI rewrote STATE.md with these numbers. I also filed one gripe: a harmless preemption-and-requeue should not count as a problem that wakes the campaign.\n\nNothing needed from you.", "launched": [], "verdicts": [], "gripes": ["defect: a benign gpu-be preemption plus requeue counts as a new problem and wak
+== final:
+{"next":"wake-when","summary":"No-op wake: nothing was broken. I was woken only because the control model's seed-42 HotpotQA eval (on grouped long passages) was preempted on the gpu-be queue. It ran 9 minutes, was requeued, and is waiting again. This is a known, harmless event; nothing was launched or killed.\n\nThe stage-1 training with 1,024-token chunks is healthy: step 3,717 of 5,208, which is 713,664 of 1M documents (0.71 epoch). Train loss is .79 with no NaN, at 41.7 s per step. The step-4,000 held-out loss check is due around 18:50 today, and training should end around 2026-11-14 08:45. I recorded this as a probe.\n\nThe control's 6 scored evals (1,500 questions each, judge chained) are still queued on gpu-be. Five of them have been preempted once. Their estimated start times moved earlier, to between today 16:25 and 2026-11-14 10:15.\n\nThe eval and model code has not changed since those evals were submitted (md5s match). Budget: about 291 GPU-hours spent (12.1 GPU-days); about 35.0 GPU-days projected for the whole plan, under the 38-day cap. Everything after stage 1 is already chained (ownership probe, stage 2, two finetunes, and the 2,048-token arm's stage 1).\n\nI rewrote STATE.md with these numbers. I also filed one gripe: a harmless preemption-and-requeue should not count as a problem that wakes the campaign.\n\nNothing needed from you.","launched":[],"verdicts":[],"gripes":["defect: a benign gpu-be preemption plus requeue counts as a new problem and wakes the campaign during a wake-when wait. Suggest classifying it as 'requeued' (not ✗) and waking only past a restart cap."],"wake_when":"file:expQ/longchunk/pt_text_1M_cml1024_188466/checkpoint-4000/trainer_state.json job:188707,188708,188709,188710,188711,188712 max 14h"}
+== rc=0 secs=128
+== verify: 14/16
