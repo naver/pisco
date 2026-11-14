@@ -1,0 +1,13 @@
+== campaign probes wake 2026-11-14_1830  reasons=heartbeat  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794648602 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=24.4 min_util=- alert=1 unpushed=84 cron=3 daemon=1 disk_gb=9759 sig=db96a1cc same=36 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=done
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/hook.log
+== session f940763e-38cc-49fc-85bf-9c117964e5e4  model claude-sonnet-5-5  tools 47
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/probes/BRIEF.md
+  ↳ 1	# Wake brief — campaign probes — 2026-11-14_1830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+175 lines)
+→ StructuredOutput: {"next": "done", "summary": "No-op wake. The probes campaign has no running or pending jobs, no failures and no new results. The only alert is that the campaign is not in the crontab, which only the owner can clear. The verifier's flagged b…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.2358 turns=3 is_error=False denials=0
+== declared: {"next": "done", "summary": "No-op wake. The probes campaign has no running or pending jobs, no failures and no new results. The only alert is that the campaign is not in the crontab, which only the owner can clear. The verifier's flagged bullets already match the grid and are labelled provisional. NEXT already holds `done`; no files were changed."}
+== final:
+{"next":"done","summary":"No-op wake. The probes campaign has no running or pending jobs, no failures and no new results. The only alert is that the campaign is not in the crontab, which only the owner can clear. The verifier's flagged bullets already match the grid and are labelled provisional. NEXT already holds `done`; no files were changed."}
+== rc=0 secs=18
