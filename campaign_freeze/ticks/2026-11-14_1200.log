@@ -1,0 +1,85 @@
+== campaign freeze wake 2026-11-14_1200  reasons=scheduled  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794625201 live=190128:PENDING,190127:PENDING,190126:PENDING,190125:PENDING,189901:PENDING,189900:PENDING,189844:PENDING,189847:PENDING,190218:PENDING,190020:PENDING,189846:RUNNING running=1 pending=10 problems=0 problems_other=0 new=0 gpuh24=41.3 idle_h=0.0 min_util=- alert=0 unpushed=82 cron=3 daemon=1 disk_gb=9982 sig=9e75a7c2 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:190020_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/hook.log
+== session c2586f90-2df9-494c-bea8-677e2c326364  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/BRIEF.md
+  ↳ <persisted-output> (+20 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/c2586f90-2df9-494c-bea8-677e2c326364/tool-results/bissssziv.txt
+  ↳ 1	# Wake brief — campaign freeze — 2026-11-14_1200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+224 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+  ↳ 224 CAMPAIGN.md (+151 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; cat CAMPAIGN.md; echo ======; cat known_issues.md
+  ↳ Exit code 1 (+102 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -n 60,160p CAMPAIGN.md
+  ↳ the log says `freeze_compressor=True: froze N` and `Compressor trainable parameters: 0`; every `compressor.*` and (+100 lines)
+Reading the campaign state; next I check which of the freeze jobs ended since the last wake.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_freeze/known_issues.md | head -40; sacct -X -j 190124,190129,190217,189902,189903,189846,189844,189847,189900,189901,190125,190126,190127,190128,190020,190218 --format=JobID,State,ExitCode…
+  ↳ # Known issues — campaign freeze   (symptom → verdict → action; check here BEFORE diagnosing) (+45 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -D -j 189844,189846,189847,189900,189901 --format=JobID%20,State,ExitCode,Start,End,Elapsed,NodeList -n | grep -v extern; echo; for j in 189902 189903 190217; do echo "== $j"; tail -25 expQ/$j/*.…
+  ↳ 189844  PREEMPTED      0:0 2026-11-14T02:19:57 2026-11-14T02:32:30   00:12:33       homer-019  (+38 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 189902 189903 190217 190129; do echo "== $j"; expmon logs $j 30 2>&1 | tail -30; done
+  ↳ == 189902 (+110 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; ls ft_compfrozen_s44/; ls ft_compfrozen_s44/model 2>/dev/null | head; f=$(find ft_compfrozen_s44 -maxdepth 3 -name trainer_state.json | sort | tail -1); echo $f; jq -c '[.log_history[] | se…
+  ↳ checkpoint-400 (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; ls -la --time-style=+%m-%d_%H:%M ft_connfrozen_s42/eval/ ft_connfrozen_s43/eval/ ft_compfrozen_s44/eval/ 2>&1; for f in ft_connfrozen_s42/eval/*.json; do echo "$f $(jq -c '[.metrics.judge /…
+  ↳ ls: cannot access 'ft_compfrozen_s44/eval/': No such file or directory (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; jq -c 'keys' ft_connfrozen_s43/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json; jq -c '.metrics | {judge, em}' ft_connfrozen_s43/eval/*.json ft_connfrozen_s42/eval/*.json 2>&1…
+  ↳ ["records","summary"] (+25 lines)
+Recording the new results now: A1 seed-44 training finished, its freeze check passed, and three evals landed.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; ls ft_unfrozen_s44/eval/ ft_frozen_s44/eval/; f=ft_unfrozen_s44/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; jq -c '.records[0] | keys' $f; jq '[.records[:300][] | .judge] | add/len…
+  ↳ ft_frozen_s44/eval/: (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/freeze; diff <(jq -r '.records[].query_id' ft_compfrozen_s44_step100/eval/*lim300.json) <(jq -r '.records[:300][].query_id' ft_unfrozen_s44/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json) && e…
+  ↳ SAME300 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 190124 --step 1.0 eval_loss=0.4229 s_per_step=71.5 gpumem_gb=50.1 2>&1 | tail -2; expmon probe 190217 --step 0.23 judge=0.5967 n=300 2>&1 | tail -2; expmon probe 189902 --step 1.0 judge=0.…
+  ↳ probe recorded: 190124 @1.0 (eval_loss=0.4229 s_per_step=71.5 gpumem_gb=50.1)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue --start -j 189844,189847,189900,189901,190125,190126,190127,190128 -o "%.8i %.10T %.20S %.12r" 2>&1; gpucap free a100 2>&1 | tail -4
+  ↳ JOBID      STATE           START_TIME       REASON (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 190124 "result: A1 compressor-frozen s44 full COMPLETED exit 0 (homer-019, 02:32-11:15, 8.7 h, 71.5 s/step, 437 steps = 1.0 epoch, 27,936 rows; peak GPU memory 50.1 GB). Held-out loss (6…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp freeze 2>&1 | tail -3; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_freeze.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+Rewriting the campaign state file with the new numbers, then writing the wait condition.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_freeze; sed -n '/^## Deliverable/,/^## Module movement/p' STATE.md | head -5 >/dev/null; grep -n "^## " STATE.md
+  ↳ 5:## TL;DR — where this leaves the question (readable as an email) (+11 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum campaign_freeze/patches/split_freeze.diff | cut -c1-32; expmon note "decision: freeze wake 2026-11-14 12:00 — A1 compressor-frozen s44 (190124) COMPLETED 1.0 epoch (27,936 rows), held-out .423 (…
+  ↳ d4412015df7ecd2cfd8408693ec3d5ef (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "judge grid" 2>&1 | head -8; expmon gripe --open --search "probe by hand" 2>&1 | head -5
+  ↳ == 13 open report(s) matching 'judge grid', every machine, newest first == (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 6aee9cc4 "again 2026-11-14 12:00: 189902 / 189903 / 190217 COMPLETED with the judge summary in the log, RESULT '-' until copied by hand with expmon probe" 2>&1 | tail -1
+  ↳ logged as a +1 of 6aee9cc4 (entry 113597d0) -> /home/hdejean/.claude/feedback/ncp.log
+Nothing was launched or decided this wake. Both remaining tests are waiting on evals that keep getting interrupted on the shared preemptible partition (`gpu-be`). I set the next wake for when both tests finish.
+
+**Finished since the last wake**
+- **Compressor frozen, seed 44 (third seed):** the training finished a full epoch (27,936 rows) in 8.7 h at 71.5 s/step, with 50.1 GB peak GPU memory.
+  - Its held-out loss ended at .423. The normal finetune with every part training (the reference) ended at .401; the fully frozen run at .427. This loss is a health check on 64 rows, not a gate.
+  - The freeze check passed: every compressor weight is unchanged, and the connector (the small network feeding the decoder) moved 19.5%.
+  - The quarter-epoch preview scored .597 judge accuracy on 300 documents (higher is better). The reference's final model scores .597 on the same 300 questions. Previews never decide anything.
+- **Connector frozen, seed 43:** two text evals landed, 1,500 questions each.
+
+  | Text set (judge accuracy ↑) | Connector frozen | Reference | Both frozen | Compressor frozen |
+  |---|---|---|---|---|
+  | MRQA | .727 | .724 | .697 | .693 |
+  | HotpotQA | .600 | .593 | .571 | .583 |
+
+  Connector frozen matches the reference on text, which fits the earlier prediction that it would tie. These numbers are unpaired; the paired test decides.
+
+**Still waiting**
+- **Compressor-frozen paired test, seed 44:** its 4 evals should start 16:15–17:15, so the test should land around 18:00. Seeds 42 and 43 were a tie, and this seed breaks it on a 2-of-3 rule.
+- **Connector-frozen paired test:** it needs 8 evals. Two finished earlier (photos seed 42 and MRQA seed 43) and one more (HotpotQA seed 43) finished this wake. One is re-running. Four have been preempted 3–4 times each and are queued for 17:30–18:45, so the test should land around 19:30. On a tie, the next wake launches a third seed.
+- About 120 of the 192 budgeted GPU-hours are used. I logged one complaint (the third of its kind) that the results table doesn't pick up finished eval scores on its own, so I copied them in by hand.
+
+**Already settled:** freezing both the compressor and the connector fails. Documents lose 2.8–4.1 points across 3 seeds, MRQA text loses about 2.5, and photos tie.
+
+Next wake: when both paired tests have left the queue, or 12 hours at most.
+
+Nothing needed from you for the campaign. One small cleanup: the new freeze setting in `pisco/model.py` and `test_freeze.py` is still uncommitted, and this loop can't commit inside `pisco/`. A chat on this project should commit it, because the queued evals load models trained with it.
+→ StructuredOutput: {"next": "wake-when", "summary": "No launch (0 of 6). Compressor-frozen seed-44 finetune 190124 COMPLETED 1.0 epoch (27,936 rows), held-out .423 (ref .401), 8.7 h, 50.1 GB; freeze held (190129 closed); step-100 preview .597 on 300 documents…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8517 turns=24 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "No launch (0 of 6). Compressor-frozen seed-44 finetune 190124 COMPLETED 1.0 epoch (27,936 rows), held-out .423 (ref .401), 8.7 h, 50.1 GB; freeze held (190129 closed); step-100 preview .597 on 300 documents (ref final same 300 .597). Connector-frozen seed 43 MRQA .727 / HotpotQA .600 (ref .724 / .593, unpaired). Four connector-frozen evals requeued after repeated gpu-be preemptions. Both paired tests (190218 A1 seed 44, 190020 A2) wait on evals expected 16:15-18:45. STATE.md rewritten; probes, verdict and ledger notes recorded.", "launched": [], "verdicts": [{"jobid": "190129", "verdict": "closed", "note": "A1 s44 freeze held after 1.0 epoch: every compressor row 0.0%, connector MLP 19.5%, decoder lora_B 66.7%"}], "gripes": ["+1 on 6aee9cc4: grid RESULT stays '-' for COMPLETED eval cells 189902/189903/190217 whose log ends with the judge summary; copied by hand with expmon probe"], "wake_when": "job:190218,190020 max 12h"}
+== final:
+{"next":"wake-when","summary":"No launch (0 of 6). Compressor-frozen seed-44 finetune 190124 COMPLETED 1.0 epoch (27,936 rows), held-out .423 (ref .401), 8.7 h, 50.1 GB; freeze held (190129 closed); step-100 preview .597 on 300 documents (ref final same 300 .597). Connector-frozen seed 43 MRQA .727 / HotpotQA .600 (ref .724 / .593, unpaired). Four connector-frozen evals requeued after repeated gpu-be preemptions. Both paired tests (190218 A1 seed 44, 190020 A2) wait on evals expected 16:15-18:45. STATE.md rewritten; probes, verdict and ledger notes recorded.","launched":[],"verdicts":[{"jobid":"190129","verdict":"closed","note":"A1 s44 freeze held after 1.0 epoch: every compressor row 0.0%, connector MLP 19.5%, decoder lora_B 66.7%"}],"gripes":["+1 on 6aee9cc4: grid RESULT stays '-' for COMPLETED eval cells 189902/189903/190217 whose log ends with the judge summary; copied by hand with expmon probe"],"wake_when":"job:190218,190020 max 12h"}
+== rc=0 secs=251
+== verify: 12/20

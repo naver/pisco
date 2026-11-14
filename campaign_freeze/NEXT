@@ -1,1 +1,1 @@
-wake-when job:190020 max 6h
+wake-when job:190218,190020 max 12h
