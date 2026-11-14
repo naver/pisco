@@ -1016,3 +1016,43 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-11-14 12:02 [job 189903] result: A2 connector-frozen s43 HotpotQA judge .600 (n=1,500, TOPK=10 CML=4096, exit 0); unpaired: ref s43 .593, F s43 .571, A1 s43 .583 (reported, not gating)
 - 2026-11-14 12:02 [job 189846] A2 s42 MRQA: the 05:22 attempt's batch step COMPLETED at 05:39 but the job was preempted+requeued; the 11:48 re-run overwrote the eval json at 12:00 (judge phase now). Known issue, no action
 - 2026-11-14 12:04 decision: freeze wake 2026-11-14 12:00 — A1 compressor-frozen s44 (190124) COMPLETED 1.0 epoch (27,936 rows), held-out .423 (ref 188652 .401, F .427; 64 rows), 8.7 h, 50.1 GB; freeze held (190129). A1 s44 preview .597 on 300 documents (ref s44 final same 300 .597). A2 s43 MRQA .727 / HotpotQA .600 (ref .724 / .593, unpaired). 4 A2 evals requeued after repeated gpu-be preemptions. Launched nothing. Next: wake when both paired tests 190218 (A1 s44) and 190020 (A2) leave the queue, max 12h
+- 2026-11-14 16:02 [job 190218] verdict: closed — A1 s44 gate read: documents -.035 [-.055,-.014] p .002 (<= -3 pt, CI below 0); photos +.007, MRQA -.007, HotpotQA -.025; n=1500 per set, exit 0
+- 2026-11-14 16:02 [job 190020] verdict: closed — A2 gate read: A2-R s42/s43 documents +.023/-.006, photos -.006/-.013, MRQA +.001/+.003 (all >= -2 pt, no CI wholly below 0) -> VALIDATED at both seeds; n=1500 per set, exit 0
+- 2026-11-14 16:02 [job 189094] verdict: closed — A1 compressor frozen FAILED (2 of 3 seeds): documents A1-R -.029/-.039/-.035, CI below 0 at all three, <= -3 pt at s43 (189919) and s44 (190218)
+- 2026-11-14 16:02 [job 189445] verdict: closed — A1 compressor frozen FAILED (2 of 3 seeds): documents A1-R -.029/-.039/-.035, CI below 0 at all three, <= -3 pt at s43 (189919) and s44 (190218)
+- 2026-11-14 16:02 [job 190124] verdict: closed — A1 compressor frozen FAILED (2 of 3 seeds): documents A1-R -.029/-.039/-.035, CI below 0 at all three, <= -3 pt at s43 (189919) and s44 (190218)
+- 2026-11-14 16:02 [job 189842] verdict: best — A2 connector frozen VALIDATED at seeds 42/43 (190020): every gating set >= -2 pt vs reference, no CI wholly below 0; ties the reference recipe
+- 2026-11-14 16:02 [job 189899] verdict: best — A2 connector frozen VALIDATED at seeds 42/43 (190020): every gating set >= -2 pt vs reference, no CI wholly below 0; ties the reference recipe
+- 2026-11-14 16:02 [job 190125] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 190126] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 190127] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 190128] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189095] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189096] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189097] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189098] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189446] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189447] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189448] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189449] verdict: closed — A1 eval read by paired tests 189919/190218
+- 2026-11-14 16:02 [job 189844] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189845] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189846] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189847] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189900] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189901] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189902] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:02 [job 189903] verdict: closed — A2 eval read by gate test 190020
+- 2026-11-14 16:03 [job 190218] result: A1 compressor-frozen s44 vs reference s44 (188652), paired judge n=1,500 per set, exit 0, eval-code md5 = gate 0: documents -.035 [-.055,-.014] p .002 (104/156); photos +.007 [-.009,+.023]; MRQA -.007 [-.023,+.009]; HotpotQA (reported) -.025 [-.041,-.009] p .005. Vs F s44 (reported): documents +.006 [-.005,+.017], photos +.003, MRQA +.017 [+.005,+.031] p .010, HotpotQA +.001. A1 s44 judge: documents .585, photos .678, MRQA .714, HotpotQA .578
+- 2026-11-14 16:03 [job 190020] result: A2 connector-frozen vs reference same seed, paired judge n=1,500 per set, exit 0, eval-code md5 = gate 0. s42: documents +.023 [+.003,+.041] p .030, photos -.006 [-.021,+.010], MRQA +.001 [-.015,+.016], HotpotQA -.004 [-.020,+.013]. s43: documents -.006 [-.026,+.014], photos -.013 [-.030,+.003], MRQA +.003 [-.013,+.018], HotpotQA +.007 [-.009,+.023]. A2 - F (reported): documents +.051/+.029, MRQA +.024/+.029, HotpotQA +.024/+.029 (CI above 0 each), photos +.003/-.001. A2 - A1 (reported): documents +.052/+.033, MRQA +.024/+.033 (CI above 0), photos -.006/.000, HotpotQA +.015/+.017
+- 2026-11-14 16:03 decision: freeze wake 2026-11-14 16:00 — split test decided. A1 (compressor frozen; connector + decoder LoRA train) FAILED on 2 of 3 seeds: documents A1-R -.029/-.039/-.035, CI below 0 at all three, <= -3 pt at s43 and s44 (189919, 190218). A2 (connector frozen; compressor LoRA + merger + decoder LoRA train) VALIDATED at seeds 42/43: every gating set >= -2 pt with no CI wholly below 0 (190020). Prediction written 2026-11-12 before any A1/A2 number (A1 fails like F, A2 ties R) holds. Meaning: the compressor's own QA finetune carries the ~3 pt on documents/text; decoder-only stage B on cached <MEM>s costs them; the <MEM>-caching hand-off is NOT triggered. Plan complete: launched nothing; hand-off 43ec9b to the pisco chats (commit freeze_part code + write training_plan.md / HANDOFF.md thread 7). NEXT done
+- 2026-11-14 16:03 [job 189434] verdict: closed — step-100 preview, n=300, provisional by law; never gates; superseded by the final paired tests 189919/190218/190020
+- 2026-11-14 16:03 [job 189918] verdict: closed — step-100 preview, n=300, provisional by law; never gates; superseded by the final paired tests 189919/190218/190020
+- 2026-11-14 16:03 [job 189973] verdict: closed — step-100 preview, n=300, provisional by law; never gates; superseded by the final paired tests 189919/190218/190020
+- 2026-11-14 16:03 [job 190217] verdict: closed — step-100 preview, n=300, provisional by law; never gates; superseded by the final paired tests 189919/190218/190020
+- 2026-11-14 16:03 [job 189099] verdict: closed — A1 freeze held after 1.0 epoch: every compressor row 0.0%, connector MLP 19.1-19.5%
+- 2026-11-14 16:03 [job 189450] verdict: closed — A1 freeze held after 1.0 epoch: every compressor row 0.0%, connector MLP 19.1-19.5%
+- 2026-11-14 16:03 [job 190129] verdict: closed — A1 freeze held after 1.0 epoch: every compressor row 0.0%, connector MLP 19.1-19.5%
+- 2026-11-14 16:03 [job 189843] verdict: closed — A2 freeze held after 1.0 epoch: connector MLP + norm gain 0.0%, compressor lora_B 73.6-73.8%
+- 2026-11-14 16:03 [job 189904] verdict: closed — A2 freeze held after 1.0 epoch: connector MLP + norm gain 0.0%, compressor lora_B 73.6-73.8%
+- 2026-11-14 16:03 [job 189740] verdict: closed — A2 feasibility PASS: connector rows 0.0%, compressor lora_B 76.2%, decoder lora_B 75.8%

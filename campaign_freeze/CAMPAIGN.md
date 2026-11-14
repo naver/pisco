@@ -118,6 +118,11 @@ cells only after A1's full cells are submitted (CAMP_MAX_TRAIN = 2, never the la
   the compressor's own finetune carries the 3 pt and decoder-only stage B costs them; both failed → both parts matter.
   Prior from wake 10: the reference finetune moved compressor lora_B 74% of entries vs the connector 20.7% (.0073 of
   its norm), so A1 is predicted to FAIL like F and A2 to tie R. A prediction, not a result.
+  (Confirmed wake 27, 2026-11-14, kept: A1 FAILED on 2 of 3 seeds — documents −.029 / −.039 / −.035, CI below 0 at all
+  three, ≤ −3 pt at seeds 43 / 44, jobs 189919 / 190218; A2 VALIDATED at seeds 42 / 43 — documents +.023 / −.006,
+  photos −.006 / −.013, MRQA +.001 / +.003, no CI wholly below 0, job 190020; n = 1,500 per set. The split test is
+  closed; the `<MEM>`-caching hand-off below is NOT triggered. Any further arm needs a new gate written here first and
+  may not be a variant of freezing the compressor side.)
 - Caching the `<MEM>` vectors on disk (the speed-up of stage B proper) is engineering in `pisco/`: hand it off
   (`expmon handoff add --to pisco "…"`) once the gate validates; it is not an arm.
 

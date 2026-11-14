@@ -1,0 +1,58 @@
+== verifier 2026-11-14_1600  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+== session 8b2d5ea2-36cc-4012-8a6f-52beb0e18dcd  model claude-opus-5-5  tools 23
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign freeze (+281 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/freeze/VERIFY_INPUT.md
+  ↳ 283	189448     eval 189445   ended     closed     -        eval_mm  -        -        -        -        -        -        -        -        1003520    -        pisco    ft_compfrozen_s43 text_mrqa_ood (+260 lines)
+→ Grep: {"pattern": "190218|190020|189919", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*.{out,log,txt,json}", "output_mode": "files_with_matches"}
+  ↳ Found 15 files (+15 lines)
+→ Glob: {"pattern": "expQ/freeze/*paired*"}
+→ Glob: {"pattern": "expQ/freeze/**/*190218*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "paired|190218|190020", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-14_1600.log", "output_mode": "content", "head_limit": 80}
+  ↳ 2:== sensors: ts=1794639601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=38.6 idle_h=0.3 min_util=- alert=0 unpushed=83 cron=3 daemon=1 disk_gb=9862 sig=ba6a75f0 same=0 behind=0 (+18 lines)
+I'm checking STATE.md's numbers against the paired-judge outputs for jobs 190218 and 190020.
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_190218.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_compfrozen_s44:ft_unfrozen_s44,ft_compfrozen_s44:ft_frozen_s44 (+72 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_190020.out
+  ↳ 1	FACTORS kind=paired_judge pairs=ft_connfrozen_s42:ref_s42,ft_connfrozen_s43:ref_s43,ft_connfrozen_s42:ft_frozen_s42,ft_connfrozen_s43:ft_frozen_s43,ft_connfrozen_s42:ft_compfrozen_s42,ft_connfrozen_ (+208 lines)
+→ Grep: {"pattern": "^(===|ALL)", "path": "/beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_189919.out", "output_mode": "content"}
+  ↳ 4:=== PAIR ft_compfrozen_s42 vs ref_s42  set=mm_docqa_pisco_px1003520_mm_docqa_1500_1m (+32 lines)
+→ Glob: {"pattern": "paired_judge_freeze_18*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "^(=== PAIR|ALL)", "path": "/beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188650.out", "output_mode": "content"}
+  ↳ 4:=== PAIR ft_frozen_s42 vs ref_s42  set=mm_docqa_pisco_px1003520_mm_docqa_1500_1m (+15 lines)
+→ Grep: {"pattern": "^(=== PAIR|ALL)", "path": "/beegfs/scratch/user/hdejean/pisco/paired_judge_freeze_188701.out", "output_mode": "content"}
+  ↳ 4:=== PAIR ft_frozen_s44 vs ft_unfrozen_s44  set=mm_docqa_pisco_px1003520_mm_docqa_1500_1m (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-14_1600.log
+  ↳ 1	== campaign freeze wake 2026-11-14_1600  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code) (+69 lines)
+→ Grep: {"pattern": "unsupported|provisional|downgrad", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-14_1200.verify.log", "output_mode": "content", "head_limit": 40}
+  ↳ 83:[Omitted long matching line]
+→ Grep: {"pattern": "\"status\": \"(unsupported|provisional)\"", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign freeze — 2026-11-14_1200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+28 lines)
+Every paired-test number matches so far. Now checking the eval-code versions and the module-movement figures.
+→ Grep: {"pattern": "dfe32aa0|eval_mm_docqa.py", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks/2026-11-14_1600.log", "output_mode": "content"}
+  ↳ 18:→ Bash: cat campaign_freeze/known_issues.md | head -60; echo ====; md5sum scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py expQ/freeze/ft_free (+2 lines)
+→ Grep: {"pattern": "eval_mm_docqa|md5", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md", "output_mode": "content"}
+  ↳ 29:- **Same eval code on both sides of every pair:** md5 at 16:00 `eval_mm_docqa.py` dfe32aa0, `eval_mm_4b.sh` 50abc167, `judge_mm_docqa.py` 02bc8748, `paired_judge.py` a3cc13b2 = the gate-0 versions; (+1 lines)
+→ Glob: {"pattern": "*1901[23]*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "190125|189844|189900", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/scan.log", "output_mode": "content", "head_limit": 20}
+  ↳ 24676:  189844     PENDING    OK (+21 lines)
+→ Grep: {"pattern": "50abc167|02bc8748|homer-01[79]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/ticks", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_freeze/ticks/2026-11-12_1400.log:27:→ Bash:  ⏎ expmon verdict 188701 closed "seed-44 paired test (frozen 188651 vs reference 188652, same eval code md5 dfe32aa0/50abc167/02bc8748, all 8 evals (+31 lines)
+→ Grep: {"pattern": "homer-\\d+|md5|dfe32aa0", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "eval_mm_4b_{190125,190126,190127,190128,189844,189845,189846,189847,189900,189901,189902,189903}.out", "output_mode": "content", "head_limit": 40}
+  ↳ No matches found
+Paired-test numbers, deliverable cells and discordant counts all match. One last check on the code line cited for the memory claim.
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/model.py
+  ↳ 1285	            # off at max_new_tokens need the raw ids (look for eos), not the text. (+19 lines)
+→ StructuredOutput: {"claims": [{"claim": "TL;DR: The question-answering finetune cannot be decoder-only: the compressor's own finetune carries ~3 pt on documents and text. The connector, however, can stay frozen at no cost.", "status": "provisional", "reason"…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7110 turns=25 is_error=False denials=0
+== declared: {"claims": [{"claim": "TL;DR: The question-answering finetune cannot be decoder-only: the compressor's own finetune carries ~3 pt on documents and text. The connector, however, can stay frozen at no cost.", "status": "provisional", "reason": "The documents half checks out: F−R is −.028/−.035/−.041 in 188650/188701.out, a mean of 3.5 pt. 'Text ~3 pt' overstates: F−R on MRQA is −.023/−.027/−.025 (mean 2.5 pt, ≤ −3 pt at no seed), and A1−R on MRQA at seed 44 is −.007 [−.023, +.009]. 'At no cost' is really 'within the law's −2 pt margin at 2 seeds' (A2−R photos s43 −.013 [−.030, +.003]); it is not shown to be zero."}, {"claim": "Gate 0 FAILED on three seeds (compressor + connector frozen, only the decoder LoRA trains): documents −.028/−.035/−.041, MRQA −.023/−.027/−.025, photos −.009/−.013/+.005, HotpotQA −.028/−.023/−.026, n = 1,500 per set, jobs 188650 / 188701", "status": "supported", "reason": "Every ALL row and CI matches paired_judge_freeze_188650.out (lines 8-69) and 188701.out (lines 8-35), at n=1,500. Documents are ≤ −3 pt with the CI wholly below 0 at s43 (−.035 [−.057, −.014]) and s44 (−.041 [−.062, −.021]), which meets the 2-of-3 Failed rule written before the seed-44 result. Strictly, it fails at 2 of 3 seeds: s42 −.028 is not ≤ −3 pt. The bullet says this."}, {"claim": "Split arm A1 (compressor frozen; connector + decoder LoRA train) FAILED on 2 of 3 seeds — jobs 189919 / 190218: documents −.029 / −.039 / −.035 [−.055, −.014] p .002; MRQA −.023 / −.031 / −.007; phot
+== final:
+{"claims":[{"claim":"TL;DR: The question-answering finetune cannot be decoder-only: the compressor's own finetune carries ~3 pt on documents and text. The connector, however, can stay frozen at no cost.","status":"provisional","reason":"The documents half checks out: F−R is −.028/−.035/−.041 in 188650/188701.out, a mean of 3.5 pt. 'Text ~3 pt' overstates: F−R on MRQA is −.023/−.027/−.025 (mean 2.5 pt, ≤ −3 pt at no seed), and A1−R on MRQA at seed 44 is −.007 [−.023, +.009]. 'At no cost' is really 'within the law's −2 pt margin at 2 seeds' (A2−R photos s43 −.013 [−.030, +.003]); it is not shown to be zero."},{"claim":"Gate 0 FAILED on three seeds (compressor + connector frozen, only the decoder LoRA trains): documents −.028/−.035/−.041, MRQA −.023/−.027/−.025, photos −.009/−.013/+.005, HotpotQA −.028/−.023/−.026, n = 1,500 per set, jobs 188650 / 188701","status":"supported","reason":"Every ALL row and CI matches paired_judge_freeze_188650.out (lines 8-69) and 188701.out (lines 8-35), at n=1,500. Documents are ≤ −3 pt with the CI wholly below 0 at s43 (−.035 [−.057, −.014]) and s44 (−.041 [−.062, −.021]), which meets the 2-of-3 Failed rule written before the seed-44 result. Strictly, it fails at 2 of 3 seeds: s42 −.028 is not ≤ −3 pt. The bullet says this."},{"claim":"Split arm A1 (compressor frozen; connector + decoder LoRA train) FAILED on 2 of 3 seeds — jobs 189919 / 190218: documents −.029 / −.039 / −.035 [−.055, −.014] p .002; MRQA −.023 / −.031 / −.007; photos .000 / −.013 / +.007; HotpotQA −.019 / −.011 / −.025","status":"supported","reason":"189919.out lines 8-69 and 190218.out lines 8-35 match exactly, n=1,500, exit 0. Seed 44 is paired against 188652, as the law names. Seeds 42/43 were a tie: grid .5807−.6100 = −.0293 is not ≤ −.03. Then documents are ≤ −3 pt with the CI below 0 at s43 and s44, which is the split-gate Failed rule at 2 of 3. These numbers were read for the first time this wake and lack the law's 'provisional:' prefix; this check re-derives them."},{"claim":"Split arm A2 (connector frozen; compressor LoRA + merger + decoder LoRA train) VALIDATED at seeds 42 and 43 — job 190020: documents +.023 [+.003, +.041] / −.006 [−.026, +.014]; photos −.006 / −.013; MRQA +.001 / +.003; HotpotQA −.004 / +.007","status":"supported","reason":"190020.out lines 8-69 match, n=1,500, exit 0. Every gating set is ≥ −.02: the worst is photos s43 −.013 [−.030, +.003]. No CI lies wholly below 0. That is the split-gate Validated rule at both seeds. Trainable params 286,790,656 = R 307,771,392 − connector 20,980,736, so the only difference from R is the listed one."},{"claim":"The prediction written before any split number ('A1 fails like F, A2 ties R') holds; per the law, the compressor's own finetune carries the ~3 pt, a decoder-only stage B on cached <MEM>s costs them, and the <MEM>-caching hand-off is NOT triggered","status":"supported","reason":"The A1 FAILED and A2 VALIDATED reads above are exactly the law's pre-written case 'A1 failed and A2 v
+== rc=0
