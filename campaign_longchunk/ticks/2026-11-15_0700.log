@@ -1,0 +1,128 @@
+== campaign longchunk wake 2026-11-15_0700  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794693602 live=189695:PENDING,189693:RUNNING,189694:RUNNING,190275:PENDING,190274:PENDING,190273:PENDING,190272:PENDING,190271:PENDING,190270:PENDING running=2 pending=7 problems=0 problems_other=0 new=0 gpuh24=118.3 idle_h=0.0 min_util=96 alert=0 unpushed=85 cron=1 daemon=1 disk_gb=9381 sig=9d0988e5 same=6 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/longchunk/ft_cml1024_s42/checkpoint-100/trainer_state.json_max_30h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:expQ/longchunk/ft_cml1024_s42/checkpoint-100/trainer_state.json (exists)   (NEXT was: wake-when file:expQ/longchunk/ft_cml1024_s42/checkpoint-100/trainer_state.json max 30h)
+== session a050d79b-29b8-4237-8de2-edd075b81b70  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a050d79b-29b8-4237-8de2-edd075b81b70/tool-results/bi3167sg2.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-15_0700   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+144 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/CAMPAIGN.md; echo ======; cat campaign_longchunk/STATE.md
+  ↳ Exit code 1 (+97 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	| arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) | (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/STATE.md
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+85 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 89	 (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longchunk/known_issues.md; echo =====; expmon ledger 25 2>&1 | grep -i -E "longchunk|189691|189692|189693|189694|1024|2048" | tail -20
+  ↳ Exit code 1 (+28 lines)
+I'm working the wake: the 1,024-token arm's seed-42 finetune just wrote its quarter-way checkpoint, so I'm copying it and queuing the two preview evals.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 60 2>&1 | grep -E "step100|checkpoint-100|189691|189692|189693|189694" | tail -15; echo ---; ls -la expQ/longchunk/ft_cml1024_s42/ expQ/longchunk/ft_cml1024_s42/checkpoint-100/; date
+  ↳ - 2026-11-14 09:02 longchunk intent: chain the 6 gating evals of L1024 behind its finetunes (= the control's 188707-188712 commands, only the checkpoint changes): per seed g10 (CML=4096 TOPK=10, text_ (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "step100" EXPERIMENTS.md | grep -i -E "cop|cp " | head -5; ls -la expQ/longchunk/ft_cml256_s42_step100/checkpoint-100/ expQ/longchunk/ft_cml256_s42_step100/checkpoint-100/compressor; ls expQ/lo…
+  ↳ 836:- 2026-11-12 20:06 [job 188980] intent: C256 PREVIEW (law: one per finetune cell) = the pairing point for every later arm preview at the same step and seed: checkpoint-100 (.23 epoch, 6,400 of 28k (+37 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; S=ft_cml1024_s42/checkpoint-100; D=ft_cml1024_s42_step100/checkpoint-100; test -e $D && echo EXISTS || { mkdir -p $D/compressor && for f in chat_template.jinja config.json connector.pt d…
+  ↳ Only in ft_cml1024_s42/checkpoint-100: optimizer.pt (+7 lines)
+Copy is clean (only the optimizer, scheduler and training-args files differ). Now I'll look up the exact preview commands the control used.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -i -E "show|manifest|argv|runs" | head; ls expQ/188980/ 2>/dev/null | head; cat expQ/188980/manifest* 2>/dev/null | head -40
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     if str(r.get('jobid')) in ('188980','188981','190270','190271'): ⏎         prin…
+  ↳ {"jobid": "188980", "launcher": "eval_mm_4b.sh", "argv": ["/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42_step100/checkpoint-100", "pisco", "300", "/beegfs/scratch/user/hdejean/pisco/ (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py ft_mm_4b.sh pt_mm_4b.sh | cut -c1-8,33-; ls -la --time-style=+%m-%d_%H:%M eval_mm_4b.sh scripts/eval_mm_docqa.py p…
+  ↳ 50abc167  eval_mm_4b.sh (+15 lines)
+Code fingerprints match the control's. Checking the control previews' environment from their logs, then a dry-run.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 188980 400 2>&1 | grep -i -E "PX=|CML=|TOPK|max_pixels|compressor_max|image_max|topk" | head -6; echo ---; expmon logs 188981 400 2>&1 | grep -i -E "PX=|CML=|TOPK|max_pixels|compressor_max|…
+  ↳ FACTORS kind=eval_mm mode=pisco ckpt=ft_cml256_s42_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_on (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E "CML|TOPK|PX" eval_mm_4b.sh | head -12; expmon logs 188981 400 2>&1 | grep -E "4096|cml|max_length" | head -5
+  ↳ 25:PX=${PX:-451584}    # image pixel budget (env); eval sets built at another budget need the matching PX (+14 lines)
+Settings confirmed (g10: 4,096-token chunk limit, 10 pages; documents: 1M-pixel budget). Dry-run first.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; C=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml1024_s42_step100/checkpoint-100; PX=1003520 expmon launch --exp longchunk --stage eval --parent 189694 --dry-run --partition gpu-be --exclude '…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 eval_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml1024_s42_step100/checkpoint-100 pisco 300 /beegfs (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "longchunk intent: L1024 PREVIEW seed 42 (law: one per finetune cell; provisional, never gates): checkpoint-100 (.23 epoch, 6,400 of 28k rows) of finetune 189694 copied to expQ/longchunk/ft…
+  ↳ expmon note: 97 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+10 lines)
+Previews queued (documents and g10, 300 questions each). Now reading the finished ownership probe, the finished stage 2, and the running 2,048-token stage 1.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 189691,189692,189694 -X -o JobID,State,ExitCode,Start,End,Elapsed,NodeList -P; echo ---; expmon logs 189691 40 2>&1 | grep -v -i httpx | tail -25
+  ↳ JobID|State|ExitCode|Start|End|Elapsed|NodeList (+33 lines)
+Ownership on text for the 1,024-token arm is .969 (gate ≥ .95, control .972). Now the stage-2 loss and the 2,048-token run's progress.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; ls; for d in pt_mm_cml1024 pt_mm_cml256; do echo "== $d"; grep -o -E "'eval_loss': [0-9.]+|\"eval_loss\": [0-9.]+|eval_loss[^,]*" $d/train.log | tail -4; done
+  ↳ build_msmarco_docs.sbatch (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; ls pt_mm_cml1024 pt_mm_cml1024/model 2>/dev/null | head -30; for d in pt_mm_cml1024 pt_mm_cml256; do f=$(ls -d $d/checkpoint-*/trainer_state.json $d/model/trainer_state.json 2>/dev/null …
+  ↳ pt_mm_cml1024: (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; d=pt_text_1M_cml2048_189693; ls $d; grep -o -E "\{'eval_loss'[^}]*\}" $d/train.log | tail -3; grep -o -E "\{'loss'[^}]*\}" $d/train.log | tail -2; grep -o -E "[0-9]+/5208 \[[^]]*\]" $d/t…
+  ↳ runs (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 189693 400 2>&1 | grep -o -E "\{'(eval_)?loss'[^}]*\}" | tail -4; expmon logs 189693 5 2>&1 | grep -o -E "[0-9]+/5208 \[[^]]*\]" | tail -1
+  ↳ {'loss': '1.889', 'grad_norm': '0.02856', 'learning_rate': '4.052e-05', 'epoch': '0.2304'} (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls -t /beegfs/scratch/user/hdejean/pisco/*189693* 2>/dev/null | head -1); echo $f; grep -o -E "\{'loss': '[0-9.]+'" $f | awk -F"'" 'NR%20==1{printf "%s ", $4} END{print ""}'; grep -c "'loss'" $f; g…
+  ↳ /beegfs/scratch/user/hdejean/pisco/pt_text_long_189693.out (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -o -E "\{'loss': '[0-9.]+'" pt_text_long_189693.out | awk -F"'" '{printf "%s ", $4} END{print ""}'; grep -o -E "\{'loss': '[0-9.]+'" expQ/longchunk/../../pt_text_long_188466.out 2>/dev/null | head…
+  ↳ 2.183 2.104 2.062 2.045 2.01 1.996 1.992 1.985 1.969 1.97 1.955 1.952 1.936 1.926 1.937 1.929 1.925 1.919 1.926 1.914 1.899 1.91 1.882 1.889 1.861 1.598 1.013  (+2 lines)
+The 2,048-token run is healthy: its training loss just made the same sharp drop the 1,024-token run made earlier (1.89 → 1.01). Recording probes now, then the seed-42 finetune's progress.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls -t *189694*.out 2>/dev/null | head -1); echo $f; grep -o -E "[0-9]+/437 \[[^]]*\]" $f | tail -1; grep -o -E "\{'eval_loss'[^}]*\}" $f | tail -2; python3 -c " ⏎ import json ⏎ s=json.load(open('ex…
+  ↳ ft_mm_4b_189694.out (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk; diff ft_cml256_s42/training_config.yaml ft_cml1024_s42/training_config.yaml; echo ---; diff pt_mm_cml256/training_config.yaml pt_mm_cml1024/training_config.yaml; echo ---; diff <(python3…
+  ↳ 38c38 (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff pisco/model.py | head -120
+  ↳ diff --git a/pisco/model.py b/pisco/model.py (+78 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188468 189694; do f=$(ls ft_mm_4b_$j.out 2>/dev/null); echo "== $j $f"; grep -E "trainable parameters|freeze|loaded trainable state|max length in collator" $f | head -8; grep -o -E "\{'loss': …
+  ↳ == 188468 ft_mm_4b_188468.out (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -A3 -E "^\s+probe " | head -8
+  ↳ probe  [<jobid> [--step S] k=v…] | [--scan]  record/list partial-epoch metric snapshots of (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 189691 ownership=0.969 n_test_slots=3053 2>&1 | tail -1 ⏎ expmon probe 189692 --step 1562 eval_loss=0.818 docs_seen=100000 2>&1 | tail -1 ⏎ expmon probe 189693 --step 1376 train_loss=1.013…
+  ↳ probe recorded: 189691 (ownership=0.969 n_test_slots=3053)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 190574 "longchunk launched L1024 s42 previews: documents 190574, g10 190575 (checkpoint-100 copy, 300 Q each, judge chained); pairing points control 188980 / 188981 (.597 / .603)" 2>&1 |…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+Both previews are running (homer-017 and homer-020, outside the excluded nodes). Now adding the known-issues row and rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tail -c 200 campaign_longchunk/known_issues.md | od -c | tail -3; cat >> campaign_longchunk/known_issues.md <<'EOF' ⏎ | a new cell's resolved `config.json` / `training_config.yaml` carries a field its …
+  ↳ 0000260   C   2   5   6       2   0   2   6   -   1   1   -   1   2     (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon display --exp longchunk 2>&1 | tail -3
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longchunk.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "display 0 table" 2>&1 | head -8; expmon gripe --open --search "display rows" 2>&1 | head -8
+  ↳ == 10 open report(s) matching 'display 0 table', every machine, newest first == (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "env manifest" 2>&1 | head -5
+  ↳ == 3 open report(s) matching 'env manifest', every machine, newest first == (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 924bd795 "still on 2026-11-15: runs.jsonl rows of 188980/188981 have env=null, so repeating the control preview meant grepping its .out for FACTORS + 'Compressor max length 4096'; s…
+  ↳ logged as a +1 of 924bd795 (entry f4ce54f0) -> /home/hdejean/.claude/feedback/ncp.log
+Writing the new STATE.md now. First confirming the seed-43 finetune's output folder so the next wake trigger points at the right file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E "189695" EXPERIMENTS.md | grep -o -E "FT_OUT=[^ ,;)]*|ft_cml1024_s43[^ ,;)]*" | sort | uniq -c; scontrol show job 189695 2>/dev/null | grep -E "Dependency|TimeLimit|Command" | head -3
+  ↳ 1 ft_cml1024_s43 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E "189695" EXPERIMENTS.md | head -3 | cut -c1-700
+  ↳ 916:- 2026-11-13 08:05 [job 189695] intent: L1024 finetune s43 = 189694 + +hf_training.seed=43; out expQ/longchunk/ft_cml1024_s43; afterok:189692,afterany:189694 = runs AFTER s42 so at most 2 training (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note --did "longchunk wake 2026-11-15 07:00: copied L1024 s42 checkpoint-100 (diff clean), launched its 2 previews (documents 190574, g10 190575, 300 Q); verdicts closed on L1024 ownership 18969…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+The 1,024-token arm passed its slot-quality check, and its first finetune is far enough along to preview. Nothing is decided yet, and nothing is needed from you.
+
+## Done this wake
+- **Slot quality of the 1,024-token arm passes.** Ownership (how often each compressed slot best matches its own text segment) is .969 on 3,053 test slots. The gate is ≥ .95; the 256-token control scored .972.
+- **The 1,024-token arm's image stage finished cleanly.** It covered 100k rows in 19 h with exit code 0.
+- **I saved the seed-42 finetune's step-100 checkpoint** before the trainer deletes it at step 300. The copy matches the original except for the optimizer, scheduler and training-args files, which the copy leaves out on purpose.
+- **I launched two preview evals** on that checkpoint, 300 questions each, on documents and on grouped HotpotQA (one long chunk per question). Both are running. They will be paired against the control's previews at the same step and seed.
+- **The 2,048-token arm's first training stage looks healthy.** It is at 264k of 1M documents. Its training loss just dropped sharply (1.89 → 1.01), the same drop the 1,024-token arm made earlier. There are no NaNs, and it should end around 11-17 18:00.
+
+## Early warning (provisional, held-out loss on only 64 rows)
+- The 1,024-token model starts the later stages a little behind the control, on the same recipe and the same rows:
+  - Image stage: final held-out loss .818 vs .785.
+  - Seed-42 finetune at step 100: .647 vs .465.
+- I checked for a hidden setup difference and found none. The configs differ only in the start model, plus one unused option another campaign added to the code. Its value is empty, so it changes nothing, and the trainable parameter count is the same (307.8 M).
+- The previews will show whether this costs answer accuracy.
+
+## Running next
+- The seed-42 finetune ends around 15:30. Its 3 scoring evals (on HotpotQA, documents and photos) start by themselves after it.
+- The seed-43 finetune follows, and its 3 scoring evals run after it ends, around 11-16 03:00.
+- Budget: about 19.8 of 38 GPU-days spent, about 34.0 projected in total.
+
+Next wake: when the seed-43 finetune writes its step-100 checkpoint (around 18:10), at the latest 21:00. Then I copy it, preview it, and pair the seed-42 previews against the control's.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "L1024 seed-42 finetune wrote checkpoint-100: copied it (model files only, diff clean) and launched its 2 law previews (documents 190574, g10 190575, 300 Q, judge chained, same commands as control previews 1…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.1851 turns=43 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "L1024 seed-42 finetune wrote checkpoint-100: copied it (model files only, diff clean) and launched its 2 law previews (documents 190574, g10 190575, 300 Q, judge chained, same commands as control previews 188980/188981, code md5 unchanged). Closed L1024 ownership probe 189691 (.969 >= .95 gate, control .972) and L1024 stage 2 189692 (exit 0, held-out .818 vs control .785). Provisional warning: L1024 trails the control in stage-2 and finetune held-out loss (.647 vs .465 at step 100, 64 rows); configs differ only in init model plus a no-op freeze_part field (known_issues row added). L2048 stage 1 healthy at 264k of 1M docs (55.6 s/step, loss drop 1.89->1.01, ends ~11-17 18:00). Budget ~19.8 of 38 GPU-days spent, ~34.0 projected.", "launched": ["190574", "190575"], "verdicts": [{"jobid": "189691", "verdict": "closed", "note": "L1024 stage-1 ownership .969 (3,053 slots) >= .95 gate; control .972"}, {"jobid": "189692", "verdict": "closed", "note": "L1024 stage 2 finished 100k rows, exit 0, held-out .818 vs control .785"}], "gripes": ["+1 on 924bd795: launch-line env (PX/CML/TOPK) still not stored in runs.jsonl; had to grep the control preview's log to repeat it"], "wake_when": "file:expQ/longchunk/ft_cml1024_s43/checkpoint-100/trainer_state.json max 14h"}
+== final:
+{"next":"wake-when","summary":"L1024 seed-42 finetune wrote checkpoint-100: copied it (model files only, diff clean) and launched its 2 law previews (documents 190574, g10 190575, 300 Q, judge chained, same commands as control previews 188980/188981, code md5 unchanged). Closed L1024 ownership probe 189691 (.969 >= .95 gate, control .972) and L1024 stage 2 189692 (exit 0, held-out .818 vs control .785). Provisional warning: L1024 trails the control in stage-2 and finetune held-out loss (.647 vs .465 at step 100, 64 rows); configs differ only in init model plus a no-op freeze_part field (known_issues row added). L2048 stage 1 healthy at 264k of 1M docs (55.6 s/step, loss drop 1.89->1.01, ends ~11-17 18:00). Budget ~19.8 of 38 GPU-days spent, ~34.0 projected.","launched":["190574","190575"],"verdicts":[{"jobid":"189691","verdict":"closed","note":"L1024 stage-1 ownership .969 (3,053 slots) >= .95 gate; control .972"},{"jobid":"189692","verdict":"closed","note":"L1024 stage 2 finished 100k rows, exit 0, held-out .818 vs control .785"}],"gripes":["+1 on 924bd795: launch-line env (PX/CML/TOPK) still not stored in runs.jsonl; had to grep the control preview's log to repeat it"],"wake_when":"file:expQ/longchunk/ft_cml1024_s43/checkpoint-100/trainer_state.json max 14h"}
+== rc=0 secs=447
+== verify: 16/20
