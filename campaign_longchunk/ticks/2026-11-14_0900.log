@@ -1,0 +1,73 @@
+== campaign longchunk wake 2026-11-14_0900  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794614402 live=189695:PENDING,189694:PENDING,189693:RUNNING,189692:RUNNING,189691:PENDING running=2 pending=3 problems=0 problems_other=0 new=0 gpuh24=98.4 idle_h=0.0 min_util=- alert=0 unpushed=81 cron=3 daemon=1 disk_gb=10082 sig=25653b12 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_file:expQ/longchunk/pt_mm_cml1024/training_config.yaml_file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml_max_16h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: file:expQ/longchunk/pt_mm_cml1024/training_config.yaml (exists)   (NEXT was: wake-when file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h)
+== session 7393e838-87aa-4ae6-ac18-566df55e7cfb  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+20 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/7393e838-87aa-4ae6-ac18-566df55e7cfb/tool-results/b7q52tfzf.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-14_0900   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+174 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ 163 CAMPAIGN.md (+166 lines)
+→ Bash: cat STATE.md && echo ---- && cat known_issues.md
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+111 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | grep -iE "longchunk|188466|188707|18969|189693|cml" | tail -25; echo ----; sacct -j 188466,188707,189691,189692,189693 -X -o JobID,State,ExitCode,Start,End,Elapsed,NodeList,Al…
+  ↳ - 2026-11-13 19:03 [job 188466] result: L1024 stage 1 step 4,000 of 5,208 (768,000 of 1M documents, .77 epoch; ≈ 0.80 B text tokens, estimate): held-out loss .611 -> .612 (steps 2,000 -> 4,000, 64 row (+12 lines)
+Checking the finished 1,024-token stage 1, the final control eval, and the configs of the two jobs that just started.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk && ls; echo ---; d=ft_cml256_s42/eval; ls -la $d | grep g10; f=$d/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json; cmp $f $f.kept_188707_homer014_2010 && echo IDENTICAL; python3 -c…
+  ↳ build_msmarco_docs.sbatch (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/eval && python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json')) ⏎ b=json.load(open('mm_docqa_pisco_k10_cml4096_text_hot…
+  ↳ final summary {'em': 0.3453333333333333, 'em/hotpot_comparison': 0.3564356435643564, 'f1': 0.4995468546674521, 'f1/hotpot_comparison': 0.48689149112873237, 'anls': 0.44275024424937465, 'anls/hotpot_co (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk && ls pt_text_1M_cml1024_188466 pt_text_1M_cml1024_188466/model 2>&1 | head -30; grep -E "eval_loss|eval_rouge" pt_text_1M_cml1024_188466/train.log 2>/dev/null | tail -5; ls pt_text_1M_cm…
+  ↳ pt_text_1M_cml1024_188466: (+16 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ s=json.load(open('pt_text_1M_cml1024_188466/checkpoint-5208/trainer_state.json')) ⏎ h=s['log_history'] ⏎ ev=[x for x in h if 'eval_loss' in x] ⏎ for x in ev: print({k:x[k] for k in x if k in('step','epoch',…
+  ↳ {'epoch': 0.38402457757296465, 'eval_loss': 0.6110684871673584, 'step': 2000} (+13 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ s=json.load(open('pt_text_1M_cml1024_188466/checkpoint-5208/trainer_state.json')) ⏎ print([x for x in s['log_history'] if 'eval_loss' in x][-1]) ⏎ "; echo ---; ls -la pt_mm_cml1024 pt_text_1M_cml2048_189693; gre…
+  ↳ {'epoch': 1.0, 'eval_M': 0.0, 'eval_Rouge-1': 0.7439908429473354, 'eval_Rouge-2': 0.6140464299067132, 'eval_Rouge-L': 0.7357941437327926, 'eval_loss': 0.8497709035873413, 'eval_precision': 0.787373634 (+29 lines)
+Now diffing both new configs against the control's.
+→ Bash: echo "== stage2: L1024 vs C256 =="; diff pt_mm_cml256/training_config.yaml pt_mm_cml1024/training_config.yaml; echo "== stage1: C256 188422 vs L2048 189693 =="; diff pt_text_1M_cml256_188422/training_config.yaml pt_text_1M_cml2048_189693/tr…
+  ↳ == stage2: L1024 vs C256 == (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon logs 189693 8 2>&1 | tail -8; echo ----; expmon logs 189692 8 2>&1 | tail -8
+  ↳ ['RHOME, TX\nRHOME, TXDavid rights to a flour brand name that Renshaw had been using for years-Gold Medal.\nIn 1939 Highway 81 was built through Rhome, and by 1942 the town was incorporated.\nBetween  (+37 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py pt_mm_4b.sh ft_mm_4b.sh expQ/longchunk/pt_text_4b_long.sh | awk '{print substr($1,1,8), $2}'; ls expQ/188707 2>/dev/null | head; cat expQ/188707/manifest…
+  ↳ 50abc167 eval_mm_4b.sh (+7 lines)
+→ Bash: expmon help 2>&1 | grep -iE "show|manifest|argv|relaunch|clone|again|launch" | head -20; ls expQ/188707 expQ/188708 2>&1 | head
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+21 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     if str(r.get('jobid')) in ('188707','188708','188709','188468','188469','188980','188981'): ⏎         print(json.…
+  ↳ {"ts": "2026-11-11 04:06", "jobid": "188468", "launcher": "ft_mm_4b.sh", "argv": ["/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/model", "28000", "1", "64", "hf_training.learning_rate (+12 lines)
+→ Bash: grep -nE "1887(07|08|09)|188980|188981" EXPERIMENTS.md | grep -iE "intent|launch" | head -5 | cut -c1-1200
+  ↳ 804:- 2026-11-11 21:03 [job 188707] intent: C256 finetune g10 eval (deciding set, text_hotpotqa_1500_g10, CML=4096 TOPK=10 = 185601's env), afterok its finetune; --time 0:26:00 = 20:02 (slowest g3/g10 (+4 lines)
+→ Bash: for j in 189694 189695; do echo "== $j"; sacct -j $j --env-vars 2>/dev/null | grep -E "^(FT_OUT|FT_DATA)=" ; scontrol show job $j | grep -oE "(Dependency|Command|TimeLimit|Partition)=[^ ]*"; done
+  ↳ == 189694 (+9 lines)
+→ Bash: grep -nE "\[job 18969[45]\] intent" EXPERIMENTS.md | cut -c1-700; sacct -j 189694 --env-vars 2>&1 | head -3
+  ↳ 915:- 2026-11-13 08:05 [job 189694] intent: L1024 finetune s42 = the control's 188468 argv (28k rows, bs 1 x 64, lr 2e-5, bf16, 1M px) + env FT_DATA (docpages_20k_1m_teacher:20000, natural_8k_teacher: (+4 lines)
+→ Bash: CML=4096 TOPK=10 expmon launch --dry-run --exp longchunk --stage eval --parent 189694 --dependency afterok:189694 --partition gpu-be --exclude 'homer-[005-009]' --time 0:26:00 eval_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/…
+  ↳ would submit: sbatch --dependency afterok:189694 --partition gpu-be --exclude homer-[005-009] --time 0:26:00 eval_mm_4b.sh /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml1024_s42/model pisco  (+3 lines)
+→ Bash: expmon note "longchunk intent: chain the 6 gating evals of L1024 behind its finetunes (= the control's 188707-188712 commands, only the checkpoint changes): per seed g10 (CML=4096 TOPK=10, text_hotpotqa_1500_g10, --time 0:26:00), documents …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+6 lines)
+→ Bash: echo "SBATCH_EXPORT=[$SBATCH_EXPORT]"; for j in 190270 190271 190272 190273 190274 190275; do scontrol show job $j | grep -oE "(JobId|Dependency|TimeLimit|ExcNodeList)=[^ ]*" | tr '\n' ' '; scontrol show job $j | grep -oE "Command=.*" ; don…
+  ↳ SBATCH_EXPORT=[] (+14 lines)
+→ Bash: expmon note -j 190270 "longchunk launched L1024 gating evals: s42 g10 190270 / documents 190271 / photos 190272 (afterok:189694, ft_cml1024_s42/model); s43 g10 190273 / documents 190274 / photos 190275 (afterok:189695, ft_cml1024_s43/model)…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk && ls ft_cml256_s42/ ft_cml256_s42/checkpoint-*/ 2>&1 | head -30; ls ft_cml256_s42_step100/checkpoint-100
+  ↳ ft_cml256_s42/: (+38 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && python3 - <<'EOF' ⏎ p='known_issues.md' ⏎ s=open(p).read() ⏎ i=s.index('| stage-1 held-out `eval_loss` RISES') ⏎ j=s.index('\n',i) ⏎ new=("| stage-1 held-out `eval_loss` RISES at t…
+  ↳ 27 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && timeout 60 expmon campaign report longchunk --section leaves 2>&1 | head -40
+  ↳ **Settled** (+16 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon gripe --open --search "env manifest" 2>&1 | head -8; echo ---; expmon gripe --open --search "env vars" 2>&1 | head -8
+  ↳ == 10 open report(s) matching 'env manifest', every machine, newest first == (+16 lines)
+→ Bash: expmon gripe --same 254abbe4 "again 2026-11-14 longchunk: chaining 6 L1024 evals = control 188707-188712 needed the env (CML/TOPK/PX) from ledger intent notes; also no way to verify the env of a PENDING job (sacct --env-vars empty until it …
+  ↳ logged as a +1 of 254abbe4 (entry 5d921914) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: expmon note "decision: longchunk wake 2026-11-14 09:00 — L1024 stage 1 (188466) COMPLETED 1M docs, exit 0, held-out .850 at the end (closed). L1024 stage 2 (189692) and L2048 stage 1 (189693) started; configs differ from the control only in…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ StructuredOutput: {"next": "wake-when", "summary": "The 1,024-token arm finished training on text, and its next two stages are under way. Nothing is decided yet: no arm has a score to compare.\n\nDone this wake:\n- **1,024-token text training (job 188466) fi…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.9494 turns=31 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "The 1,024-token arm finished training on text, and its next two stages are under way. Nothing is decided yet: no arm has a score to compare.\n\nDone this wake:\n- **1,024-token text training (job 188466) finished.** It used 1M MS MARCO documents in 60.2 h on 4 GPUs (241 GPU-hours). No collapse. Held-out loss (on 64 held-out rows) was .611 / .612 / .850 at steps 2,000 / 4,000 / 5,208. Verdict: closed.\n- **The last control eval is final.** Control (256-token chunks), seed 42, on the long-passage set (g10, one long chunk per question): judge accuracy .611 on 1,500 questions. All 1,500 answers match the earlier attempt on another node. All 6 control scores now come from finished jobs.\n- **Two jobs started this morning:**\n  - Image training for the 1,024-token arm (job 189692). Its config differs from the control's only in the starting model, and it uses the same training data.\n  - Text training for the 2,048-token arm (job 189693). Its config differs from the control's only in the 4 documented fields (chunk length, text length, batch, accumulation). It runs at about 56 s per step and should end around 11-17 18:00–21:00.\n- **Launched 6 evals for the 1,024-token arm** (jobs 190270–190275): g10, documents and photos for each seed. They wait on the two finetunes and start on their own when each finetune finishes. The eval code is unchanged from the control's runs.\n- Updated the notes on the held-out loss jump: it shows up at the last step of al
+== final:
+{"next":"wake-when","summary":"The 1,024-token arm finished training on text, and its next two stages are under way. Nothing is decided yet: no arm has a score to compare.\n\nDone this wake:\n- **1,024-token text training (job 188466) finished.** It used 1M MS MARCO documents in 60.2 h on 4 GPUs (241 GPU-hours). No collapse. Held-out loss (on 64 held-out rows) was .611 / .612 / .850 at steps 2,000 / 4,000 / 5,208. Verdict: closed.\n- **The last control eval is final.** Control (256-token chunks), seed 42, on the long-passage set (g10, one long chunk per question): judge accuracy .611 on 1,500 questions. All 1,500 answers match the earlier attempt on another node. All 6 control scores now come from finished jobs.\n- **Two jobs started this morning:**\n  - Image training for the 1,024-token arm (job 189692). Its config differs from the control's only in the starting model, and it uses the same training data.\n  - Text training for the 2,048-token arm (job 189693). Its config differs from the control's only in the 4 documented fields (chunk length, text length, batch, accumulation). It runs at about 56 s per step and should end around 11-17 18:00–21:00.\n- **Launched 6 evals for the 1,024-token arm** (jobs 190270–190275): g10, documents and photos for each seed. They wait on the two finetunes and start on their own when each finetune finishes. The eval code is unchanged from the control's runs.\n- Updated the notes on the held-out loss jump: it shows up at the last step of all three finished text trainings. The cause is not tested.\n\nSpent about 15.3 of 38 GPU-days; the full plan projects to about 34.5.\n\nNext wake: when the seed-42 finetune saves its step-100 checkpoint (about 11-15 07:00), at most 30 h from now. At that wake: copy that checkpoint before it is deleted at step 300, and run 2 quick 300-question previews.\n\nNothing needed from the owner.","launched":["190270 L1024 s42 g10 eval (afterok 189694)","190271 L1024 s42 documents eval (afterok 189694)","190272 L1024 s42 photos eval (afterok 189694)","190273 L1024 s43 g10 eval (afterok 189695)","190274 L1024 s43 documents eval (afterok 189695)","190275 L1024 s43 photos eval (afterok 189695)"],"verdicts":[{"jobid":"188466","verdict":"closed","note":"L1024 stage 1 finished: 1M documents, 5,208 steps, exit 0, no collapse (held-out .611/.612/.850)"}],"gripes":["+1 on 254abbe4: runs.jsonl does not store launch env (CML/TOPK/PX), so the eval env had to be rebuilt from ledger intent notes; a PENDING job's env cannot be checked"],"wake_when":"file:expQ/longchunk/ft_cml1024_s42/checkpoint-100/trainer_state.json max 30h"}
+== rc=0 secs=265
+== verify: 14/17

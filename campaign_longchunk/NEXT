@@ -1,1 +1,1 @@
-wake-when file:expQ/longchunk/pt_mm_cml1024/training_config.yaml file:expQ/longchunk/pt_text_1M_cml2048_189693/training_config.yaml max 16h
+wake-when file:expQ/longchunk/ft_cml1024_s42/checkpoint-100/trainer_state.json max 30h
