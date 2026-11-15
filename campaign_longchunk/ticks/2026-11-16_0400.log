@@ -1,0 +1,84 @@
+== campaign longchunk wake 2026-11-16_0400  reasons=condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794769201 live=189693:RUNNING running=1 pending=0 problems=0 problems_other=0 new=0 gpuh24=121.8 idle_h=0.0 min_util=100 alert=0 unpushed=87 cron=1 daemon=1 disk_gb=8930 sig=0dd15f0c same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:190273,190274,190275_max_12h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: job:190273,190274,190275 (ended)   (NEXT was: wake-when job:190273,190274,190275 max 12h)
+== session d768f8d1-6617-437b-a5e3-279f3efed60d  model claude-opus-5-5  tools 47
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/d768f8d1-6617-437b-a5e3-279f3efed60d/tool-results/b76x7v72f.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-16_0400   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+133 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && cat CAMPAIGN.md; echo ======; cat STATE.md
+  ↳ Exit code 1 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && sed -n 25,80p CAMPAIGN.md
+  ↳ rows). The recipe's SmolLM2 corpus is too short for long chunks (see Decision gates), so the control is RETRAINED on (+55 lines)
+→ Bash: sed -n 80,115p CAMPAIGN.md; echo =====STATE; cat STATE.md
+  ↳ Exit code 1 (+37 lines)
+Reading the campaign state; the seed-43 evals for the long-chunk arm just finished, so this wake decides that arm.
+→ Bash: cat STATE.md; echo "-----KNOWN"; cat known_issues.md | head -60
+  ↳ # STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+113 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && for j in 190273 190274 190275 190768 190769 189695; do sacct -j $j -D -X -n -o JobID,State,ExitCode,NodeList,Start,End,Elapsed 2>/dev/null; done; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts…
+  ↳ 190273        COMPLETED      0:0       homer-012 2026-11-16T03:04:52 2026-11-16T03:24:35   00:19:43  (+9 lines)
+→ Bash: ls -la expQ/longchunk/ft_cml1024_s43/ expQ/longchunk/ft_cml1024_s43_step100/ 2>&1 | head -30; ls expQ/longchunk/ft_cml1024_s42/ | head; find expQ/longchunk -maxdepth 3 -name "*.json" -newer expQ/longchunk/ft_cml1024_s42_step100 -path "*eval…
+  ↳ expQ/longchunk/ft_cml1024_s43/: (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk && python3 -I -c ' ⏎ import json,sys ⏎ for f in sys.argv[1:]: ⏎     d=json.load(open(f)) ⏎     recs = d if isinstance(d,list) else d.get("records") or d.get("results") or d ⏎     if isins…
+  ↳ ft_cml1024_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json keys: ['summary', 'records'] (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && head -40 scripts/paired_judge.py | grep -nE "^import|^from|argparse|add_argument"; for f in expQ/longchunk/ft_cml1024_s43/eval/*.json expQ/longchunk/ft_cml1024_s43_step100/eval/*.json; do python3 -I …
+  ↳ 8:import argparse (+9 lines)
+Now the paired comparisons against the seed-43 control (stdlib bootstrap on small JSON).
+→ Bash: C=expQ/longchunk; ls $C/ft_cml256_s43/eval/ $C/ft_cml256_s43_step100/eval/; for s in "k10_cml4096_text_hotpotqa_1500_g10" "px1003520_mm_docqa_1500_1m" "px1003520_mm_naturalqa_1500"; do echo "=== $s"; timeout 60 python3 -I scripts/paired_jud…
+  ↳ expQ/longchunk/ft_cml256_s43/eval/: (+31 lines)
+→ Bash: C=expQ/longchunk; for s in "k10_cml4096_checkpoint-100_text_hotpotqa_1500_g10_lim300" "px1003520_checkpoint-100_mm_docqa_1500_1m_lim300"; do echo "=== $s"; timeout 60 python3 -I scripts/paired_judge.py $C/ft_cml1024_s43_step100/eval/mm_docq…
+  ↳ === k10_cml4096_checkpoint-100_text_hotpotqa_1500_g10_lim300 (+19 lines)
+→ Bash: D=expQ/longchunk/pt_text_1M_cml2048_189693; ls $D | head; grep -oE "'(eval_loss|eval_rougeL|loss|grad_norm|epoch)': [0-9.e-]+" $D/train.log 2>/dev/null | tail -12; tail -c 600 $(ls -t expQ/189693/*.log 2>/dev/null | head -1) 2>/dev/null | t…
+  ↳ checkpoint-2000 (+4 lines)
+→ Bash: D=expQ/longchunk/pt_text_1M_cml2048_189693; tail -5 $D/train.log | cut -c1-300; ls expQ/189693/ 2>&1 | head; expmon logs 189693 5 2>&1 | tr '\r' '\n' | grep -E "[0-9]+/5208" | tail -2 | cut -c1-200
+  ↳ [2026-11-14 08:45:16,752][httpx][INFO] - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/preprocessor_config.json "HTTP/1.1 307 Temporary Redirect" (+7 lines)
+→ Bash: E=$(readlink -f $(which expmon)); echo $E; grep -n "BLOCKED" $E $(dirname $E)/*tick* 2>/dev/null | head -30
+  ↳ /home/hdejean/.claude/expmon/expmon.sh (+1 lines)
+→ Bash: cd /home/hdejean/.claude/expmon && grep -rln "BLOCKED.md" . 2>/dev/null | head; grep -rn "BLOCKED" campaign*/tick* lib/*tick* 2>/dev/null | head -20
+  ↳ expmon.sh (+11 lines)
+→ Bash: cd /home/hdejean/.claude/expmon && grep -n "BLOCKED" campaign.lib.sh | head -25
+  ↳ 72:                          (launches past the per-wake cap, verdicts, a fix to pull), clears BLOCKED.md, wakes now (+25 lines)
+→ Bash: cd /home/hdejean/.claude/expmon && sed -n 712,745p campaign.lib.sh
+  ↳ # every tick. In the real logs 64 of 133 wakes in 14 days were the agent's own `wake-in` timer, most of them finding nothing (+34 lines)
+Seed 43 confirms seed 42: the 1,024-token arm meets the law's close condition. Now recording verdicts and probes.
+→ Bash: expmon help 2>&1 | grep -E "^\s*(probe|verdict|note|display|campaign report)" | head; expmon probe --help 2>&1 | head -15
+  ↳ verdict [<jobid> <v> [note]] | [<label>]  set/list STRUCTURED run disposition (open|closed|best| (+5 lines)
+→ Bash: \ ⏎ expmon probe 190273 judge=0.574 n_q=1500 node=homer-012 d_vs_188710=-0.033 ci=-0.054..-0.011 mcnemar_p=0.006 && \ ⏎ expmon probe 190274 judge=0.5607 n_q=1500 node=homer-020 d_vs_188711=-0.043 ci=-0.067..-0.018 mcnemar_p=0.000 && \ ⏎ exp…
+  ↳ probe recorded: 190273 (judge=0.574 n_q=1500 node=homer-012 d_vs_188710=-0.033 ci=-0.054..-0.011 mcnemar_p=0.006)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+7 lines)
+→ Bash: expmon grid longchunk 2>&1 | grep -E "^(19027[0-5]|19076[89]|18971)" | awk '{print $1, $NF}' ; expmon grid longchunk 2>&1 | grep -E "^190270" | grep -oE "probe .*"
+  ↳ 190270 mcnemar_p=0.38 (+8 lines)
+→ Bash: R="L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same …
+  ↳ ok 189694 (+11 lines)
+→ Bash: python3 -I -c ' ⏎ import json ⏎ for a,b in [("expQ/longchunk/ft_cml1024_s43/checkpoint-437/trainer_state.json","expQ/longchunk/ft_cml256_s43/checkpoint-437/trainer_state.json")]: ⏎   for f in (a,b): ⏎     try: ⏎       s=json.load(open(f)); …
+  ↳ ft_cml1024_s43 [(100, 0.547), (200, 0.508), (300, 0.498), (400, 0.476), (437, 0.47)] (+8 lines)
+→ Bash: expmon probe 189695 --step 437 eval_loss=0.470 rows_seen=28000 && \ ⏎ expmon note -j 189695 "longchunk did: paired L1024 seed-43 finals vs control seed 43 (scripts/paired_judge.py, 1,500 Q per set, rate 8, single attempts, code md5 unchange…
+  ↳ probe recorded: 189695 @437 (eval_loss=0.470 rows_seen=28000)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+Writing the law amendment (the long-chunk prediction was wrong at 1,024 tokens), then the owner question about the 2,048-token arm.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && grep -n "A model TRAINED on long chunks\|^| L1024 \|^| L2048 \|^## Arms\|compression possible" CAMPAIGN.md
+  ↳ 15:256-token chunks only (ledger 2026-11-06/10). A model TRAINED on long chunks should gain more and makes whole-document (+4 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p="CAMPAIGN.md"; s=open(p).read() ⏎ old="256-token chunks only (ledger 2026-11-06/10). A model TRAINED on long chunks should gain more and makes whole-document\ncompression possible." ⏎ new=("256-token chunks only (le…
+  ↳ pages and photos? Background: under the spread `<MEM>` layout, chunk length is already free at inference — one (+6 lines)
+→ Bash: sed -i 's/(spent ≈ 302)/(spent ≈ 286 GPU-h)/' CAMPAIGN.md && grep -c "spent ≈ 286" CAMPAIGN.md
+  ↳ 1
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon display --exp longchunk 2>&1 | tail -3; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longchunk.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+→ Bash: for j in 188707 188708 188709 188710 188711 188712; do expmon verdict $j closed "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file" >/dev/null && echo ok $j; done; expmon gripe --open --search …
+  ↳ ok 188707 (+13 lines)
+→ Bash: grep -o "<tr" display_longchunk.html | wc -l; grep -c "190273" display_longchunk.html; expmon gripe --same 43db294f "2026-11-16 again: message says 0 rows, but the HTML has the grid incl. new cell 190273 — the count in the message is what's…
+  ↳ 52 (+2 lines)
+Writing the new STATE.md.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note --did "longchunk wake 11-16 04:00: L1024 CLOSED at both seeds (verdicts 189694/189695 + evals); law marks the long-chunk prediction refuted" --saw "seed 43: g10 -3.3 [-5.4,-1.1], documents -4.3 [-6.7,-1.8], photos 0.0; seed 42 h…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:189693 max 44h", "summary": "The 1,024-token chunk arm is CLOSED: it lost to the 256-token control on both finetune seeds. Scores are judge accuracy, paired on the same 1,500 questions per set, at com…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.9936 turns=35 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:189693 max 44h", "summary": "The 1,024-token chunk arm is CLOSED: it lost to the 256-token control on both finetune seeds. Scores are judge accuracy, paired on the same 1,500 questions per set, at compression rate 8 tokens per slot. Long text (g10): −1.1 pt at seed 42, −3.3 pt [−5.4, −1.1] at seed 43. Document pages: −6.2 and −4.3 pt, with the CI below 0 both times. Photos: +0.3 and 0.0. Each seed meets both of the law's close conditions. All seed-43 cells were single complete attempts (1,500 rows judged, 0 unparseable) on unchanged code. Step-100 previews were also paired (n=300); the seed-43 long-text preview pointed the wrong way (+2.7 early, −3.3 at the end). Recorded: verdicts on the arm's finetunes, its evals and previews, and the six control evals; probes for the paired differences; ledger notes. The law now marks the prediction 'training on long chunks helps' as refuted at 1,024 tokens. STATE.md has been rewritten and the display page refreshed. The 2,048-token stage-1 run is healthy at step 2,678 of 5,208 (about 514k of 1M documents) and ends around 11-17 19:00. BLOCKED.md asks the owner to stop it now (recommended, saves about 224 GPU-h) or finish it. If there is no answer, the loop follows the law and continues the chain. Budget: about 24.3 of 38 GPU-days spent.", "launched": [], "verdicts": [{"jobid": "189694", "verdict": "closed", "note": "L1024 finetune s42: arm closed by gate at both seeds"}, {"jobid": "189695", "verdict"
+== final:
+{"next":"wake-when","wake_when":"job:189693 max 44h","summary":"The 1,024-token chunk arm is CLOSED: it lost to the 256-token control on both finetune seeds. Scores are judge accuracy, paired on the same 1,500 questions per set, at compression rate 8 tokens per slot. Long text (g10): −1.1 pt at seed 42, −3.3 pt [−5.4, −1.1] at seed 43. Document pages: −6.2 and −4.3 pt, with the CI below 0 both times. Photos: +0.3 and 0.0. Each seed meets both of the law's close conditions. All seed-43 cells were single complete attempts (1,500 rows judged, 0 unparseable) on unchanged code. Step-100 previews were also paired (n=300); the seed-43 long-text preview pointed the wrong way (+2.7 early, −3.3 at the end). Recorded: verdicts on the arm's finetunes, its evals and previews, and the six control evals; probes for the paired differences; ledger notes. The law now marks the prediction 'training on long chunks helps' as refuted at 1,024 tokens. STATE.md has been rewritten and the display page refreshed. The 2,048-token stage-1 run is healthy at step 2,678 of 5,208 (about 514k of 1M documents) and ends around 11-17 19:00. BLOCKED.md asks the owner to stop it now (recommended, saves about 224 GPU-h) or finish it. If there is no answer, the loop follows the law and continues the chain. Budget: about 24.3 of 38 GPU-days spent.","launched":[],"verdicts":[{"jobid":"189694","verdict":"closed","note":"L1024 finetune s42: arm closed by gate at both seeds"},{"jobid":"189695","verdict":"closed","note":"L1024 finetune s43: g10 -3.3 [-5.4,-1.1], documents -4.3 [-6.7,-1.8], photos 0.0 vs C256 s43, n=1500"},{"jobid":"190270","verdict":"closed","note":"L1024 s42 g10 eval"},{"jobid":"190271","verdict":"closed","note":"L1024 s42 documents eval"},{"jobid":"190272","verdict":"closed","note":"L1024 s42 photos eval"},{"jobid":"190273","verdict":"closed","note":"L1024 s43 g10 eval .574 vs .607"},{"jobid":"190274","verdict":"closed","note":"L1024 s43 documents eval .561 vs .603"},{"jobid":"190275","verdict":"closed","note":"L1024 s43 photos eval .670 vs .670"},{"jobid":"190574","verdict":"closed","note":"preview, n=300, provisional"},{"jobid":"190575","verdict":"closed","note":"preview, n=300, provisional"},{"jobid":"190768","verdict":"closed","note":"preview s43 documents -2.7 [-7.3,+2.0], n=300"},{"jobid":"190769","verdict":"closed","note":"preview s43 g10 +2.7 [-2.3,+7.7], n=300"},{"jobid":"188707","verdict":"closed","note":"C256 control comparison-point eval"},{"jobid":"188708","verdict":"closed","note":"C256 control comparison-point eval"},{"jobid":"188709","verdict":"closed","note":"C256 control comparison-point eval"},{"jobid":"188710","verdict":"closed","note":"C256 control comparison-point eval"},{"jobid":"188711","verdict":"closed","note":"C256 control comparison-point eval"},{"jobid":"188712","verdict":"closed","note":"C256 control comparison-point eval"}],"blocked":"BLOCKED.md: should the 2,048-token stage-1 run (healthy, 51% done) be stopped now (recommended, saves ~224 GP
+== rc=0 secs=338
+== verify: 11/17

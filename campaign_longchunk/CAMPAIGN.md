@@ -13,7 +13,8 @@ Does training stage 1 (text pretraining of the compressor + connector + decoder 
 pages and photos? Background: under the spread `<MEM>` layout, chunk length is already free at inference — one
 1,270-token chunk scored .617 against .579 for ten short chunks on the grouped HotpotQA set, with a model trained on
 256-token chunks only (ledger 2026-11-06/10). A model TRAINED on long chunks should gain more and makes whole-document
-compression possible. The deciding number is the paired judge accuracy (Qwen3-8B rubric judge, `scripts/paired_judge.py`)
+compression possible. **Prediction REFUTED at 1,024 tokens (2026-11-16, kept and marked):** L1024 lost on long text
+(g10 −1.1 / −3.3 pt, seeds 42 / 43) and on documents (−6.2 / −4.3 pt), photos flat — the arm is closed by the gate below. The deciding number is the paired judge accuracy (Qwen3-8B rubric judge, `scripts/paired_judge.py`)
 of the arm's finetuned model minus the control's, same seed, on `eval_data/text_hotpotqa_1500_g10` (one long chunk per
 question, 1,500 Q); the guard numbers are the same difference on documents (`mm_docqa_1500_1m`) and photos
 (`mm_naturalqa_1500`). Project invariants: CLAUDE.md "Multimodal PISCO"; regime and history: docs/training_plan.md.
@@ -30,7 +31,7 @@ g1 .579, documents .599 / .618, photos .671 / .671 — is a REFERENCE row only (
 | arm | recipe file (committed) | factors (what varies) | held constant | gate (metric vs whom) | budget (GPU-h) |
 |---|---|---|---|---|---|
 | C256 (control, to train) | `expQ/longchunk/pt_text_4b_long.sh 1000000 256 512 24 2` | CML 256, DML 512 (the recipe's lengths) | everything below | — (the comparison point) | ~64 stage 1 (4 GPUs × 16 h, as 180486) + 19 stage 2 + 22 finetunes + ~20 evals |
-| L1024 | `expQ/longchunk/pt_text_4b_long.sh 1000000 1024 2048 6 8` | CML 1024, DML 2048 (DML = 2 × CML as in the recipe; so each document contributes up to 4 × more tokens) | Qwen3.5-4B/4B, rate 8, spread layout, stride 8, lr 5e-5, MS MARCO 1M documents, effective batch 192 docs, LoRA r64, bf16 | see Decision gates | ~130 + 19 + 22 + 20 |
+| L1024 | `expQ/longchunk/pt_text_4b_long.sh 1000000 1024 2048 6 8` | CML 1024, DML 2048 (DML = 2 × CML as in the recipe; so each document contributes up to 4 × more tokens) | Qwen3.5-4B/4B, rate 8, spread layout, stride 8, lr 5e-5, MS MARCO 1M documents, effective batch 192 docs, LoRA r64, bf16 | **CLOSED 2026-11-16** at both seeds (g10 CI excludes +2; documents ≤ −3 with CI below 0) — verdicts 189694 / 189695 | ~130 + 19 + 22 + 20 (spent ≈ 286 GPU-h) |
 | L2048 | `expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16` | CML 2048, DML 4096 | same | see Decision gates | ~260 + 19 + 22 + 20 |
 | reference (exists) | `qwen35_4b_pt.sh 1000000 24 2 ++…mem_layout=spread ++…mem_position_stride=8` on SmolLM2 | corpus | — | not compared; reported as a row | 0 (done) |
 
