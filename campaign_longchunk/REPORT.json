@@ -1,0 +1,687 @@
+{
+ "label": "longchunk",
+ "dir": "/beegfs/scratch/user/hdejean/pisco/campaign_longchunk",
+ "generated": "2026-11-16 18:31",
+ "mission": "Does training stage 1 (text pretraining of the compressor + connector + decoder LoRA) with LONG compressor chunks (1,024 or 2,048 tokens instead of 256) make the compressed model better at reading long passages, without losing on pages and photos? Background: under the spread `<MEM>` layout, chunk length is already free at inference \u2014 one",
+ "window": [
+  "2026-11-11",
+  "2026-11-16"
+ ],
+ "until": "2027-02-08",
+ "over": false,
+ "ticks": 276,
+ "wakes": 23,
+ "wakes_bad": 4,
+ "gpu_h": 638.0,
+ "idle_max_h": 85.6,
+ "idle_flag": true,
+ "settled": [
+  {
+   "jobid": "185499",
+   "verdict": "closed",
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500 image_rate=ckpt",
+   "note": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign",
+   "text": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign \u2014 jobs 185499, 185500, 185501 \u2026 185603 (16 cells), closed",
+   "jobs": [
+    "185499",
+    "185500",
+    "185501",
+    "185502",
+    "185503",
+    "185504",
+    "185505",
+    "185506",
+    "185507",
+    "185509",
+    "185510",
+    "185511",
+    "185600",
+    "185601",
+    "185602",
+    "185603"
+   ]
+  },
+  {
+   "jobid": "188339",
+   "verdict": "closed",
+   "arm": "kind=data_check dataset=smollm2_10b rows=5000000 every=50 tokenizer=qwen3.5-4b",
+   "note": "data check, SmolLM2: 23.8% of docs >= 1,024 tokens, 8.3% >= 2,048 -> corpus rejected for long chunks (feasibility gate a)",
+   "text": "data check, SmolLM2: 23.8% of docs >= 1,024 tokens, 8.3% >= 2,048 -> corpus rejected for long chunks (feasibility gate a) \u2014 job 188339, closed",
+   "jobs": [
+    "188339"
+   ]
+  },
+  {
+   "jobid": "188358",
+   "verdict": "closed",
+   "arm": "kind=data_build dataset=msmarco_docs every=30 tokenizer=qwen3.5-4b",
+   "note": "data build + check, MS MARCO docs: 43.4% >= 1,024, 20.4% >= 2,048 -> corpus adopted; data/msmarco_docs built (feasibility gate a PASSED)",
+   "text": "data build + check, MS MARCO docs: 43.4% >= 1,024, 20.4% >= 2,048 -> corpus adopted; data/msmarco_docs built (feasibility gate a PASSED) \u2014 job 188358, closed",
+   "jobs": [
+    "188358"
+   ]
+  },
+  {
+   "jobid": "188420",
+   "verdict": "closed",
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=2048 dml=4096 bs=3 accum=16 rate=8 layout=spread extra=++hf_training.max_steps=50",
+   "note": "feasibility gate (b) PASS at L2048 (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 A100-80GB): 50/50 steps, exit 0, GPU memory peak 288 GB over 4 GPUs (~72 GB each, sacct gpumem), host RAM 108 of 160 GB, GPU util 99.5%; 58.6 s/step steady (steps 10-49, 39 steps in 2287 s); full cell 5,208 steps = 84.8 h -> --time 106 h, 339 GPU-h; eval_loss 2.026 at step 50 (9,600 docs)",
+   "text": "feasibility gate (b) PASS at L2048 (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 A100-80GB): 50/50 steps, exit 0, GPU memory peak 288 GB over 4 GPUs (~72 GB each, sacct gpumem), host RAM 108 of 160 GB, GPU util 99.5%; 58.6 s/step steady (steps 10-49, 39 steps in 2287 s); full cell 5,208 steps = 84.8 h -> --time 106 h, 339 GPU-h; eval_loss 2.026 at step 50 (9,600 docs) \u2014 job 188420, closed",
+   "jobs": [
+    "188420"
+   ]
+  },
+  {
+   "jobid": "188421",
+   "verdict": "closed",
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=1024 dml=2048 bs=6 accum=8 rate=8 layout=spread extra=++hf_training.max_steps=50",
+   "note": "fit + speed test PASS at L1024 (CML 1024, DML 2048, BS 6 x ACCUM 8): 50/50 steps, exit 0, GPU memory peak 285 GB over 4 GPUs (~71 GB each), host RAM 96 GB, util 99.7%; 42.1 s/step steady (steps 10-49, 1641 s); full cell 5,208 steps = 60.9 h -> --time 76 h, 244 GPU-h; eval_loss 2.096 at step 50 (9,600 docs)",
+   "text": "fit + speed test PASS at L1024 (CML 1024, DML 2048, BS 6 x ACCUM 8): 50/50 steps, exit 0, GPU memory peak 285 GB over 4 GPUs (~71 GB each), host RAM 96 GB, util 99.7%; 42.1 s/step steady (steps 10-49, 1641 s); full cell 5,208 steps = 60.9 h -> --time 76 h, 244 GPU-h; eval_loss 2.096 at step 50 (9,600 docs) \u2014 job 188421, closed",
+   "jobs": [
+    "188421"
+   ]
+  },
+  {
+   "jobid": "188422",
+   "verdict": "closed",
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=256 dml=512 bs=24 accum=2 rate=8 layout=spread extra=",
+   "note": "C256 stage 1 COMPLETED 16:43 h, 1M docs (5,208 steps); held-out loss .801/.877/1.007 at steps 2000/4000/5208 (64 rows); SmolLM2 reference 180486 had the same end rise .924/.920/1.023, so not a collapse; train loss ~.94",
+   "text": "C256 stage 1 COMPLETED 16:43 h, 1M docs (5,208 steps); held-out loss .801/.877/1.007 at steps 2000/4000/5208 (64 rows); SmolLM2 reference 180486 had the same end rise .924/.920/1.023, so not a collapse; train loss ~.94 \u2014 job 188422, closed",
+   "jobs": [
+    "188422"
+   ]
+  },
+  {
+   "jobid": "188466",
+   "verdict": "closed",
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=1024 dml=2048 bs=6 accum=8 rate=8 layout=spread extra=",
+   "note": "L1024 stage 1 finished: 1M documents, 5,208 steps, exit 0, no collapse (held-out .611/.612/.850); stage 2 189692 running from its model",
+   "text": "L1024 stage 1 finished: 1M documents, 5,208 steps, exit 0, no collapse (held-out .611/.612/.850); stage 2 189692 running from its model \u2014 job 188466, closed",
+   "jobs": [
+    "188466"
+   ]
+  },
+  {
+   "jobid": "188467",
+   "verdict": "closed",
+   "arm": "kind=pt_mm backbone=qwen3.5-4b init=pt_text_1M_cml256_188422 samples=100000 bs=8 accum=8 vision_lora=merger max_pixels=451584 rate=8",
+   "note": "C256 stage 2 COMPLETED 19:12 h on homer-020, exit 0, 1,562/1,562 steps (100k rows, 1.0 epoch); held-out loss .858/.832/.785 at steps 1250/1500/1562, train loss .82 (ce .73 kd .18) at 1560, no NaN. SmolLM2-chain reference 183537 ended .741 (corpus differs, not compared)",
+   "text": "C256 stage 2 COMPLETED 19:12 h on homer-020, exit 0, 1,562/1,562 steps (100k rows, 1.0 epoch); held-out loss .858/.832/.785 at steps 1250/1500/1562, train loss .82 (ce .73 kd .18) at 1560, no NaN. SmolLM2-chain reference 183537 ended .741 (corpus differs, not compared) \u2014 job 188467, closed",
+   "jobs": [
+    "188467"
+   ]
+  },
+  {
+   "jobid": "188468",
+   "verdict": "closed",
+   "arm": "kind=ft_mm init=pt_mm_cml256 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "note": "C256 finetune s42 done: 28k rows (1.0 epoch), exit 0, held-out .367 at step 437, no NaN; its scores come from evals 188707-188709",
+   "text": "C256 finetune s42 done: 28k rows (1.0 epoch), exit 0, held-out .367 at step 437, no NaN; its scores come from evals 188707-188709 \u2014 job 188468, closed",
+   "jobs": [
+    "188468"
+   ]
+  },
+  {
+   "jobid": "188469",
+   "verdict": "closed",
+   "arm": "kind=ft_mm init=pt_mm_cml256 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "note": "C256 finetune s43 done: 28k rows (1.0 epoch), exit 0, held-out .370 at step 437, no NaN; its scores come from evals 188710-188712",
+   "text": "C256 finetune s43 done: 28k rows (1.0 epoch), exit 0, held-out .370 at step 437, no NaN; its scores come from evals 188710-188712 \u2014 job 188469, closed",
+   "jobs": [
+    "188469"
+   ]
+  },
+  {
+   "jobid": "188470",
+   "verdict": "closed",
+   "arm": "kind=probe_mixer ckpt=pt_text_1M_cml256_188422_model n_rows=40 sets=text",
+   "note": "C256 stage-1 slot ownership .972 on text (3,053 test slots), gate >=.95 PASSED; reference .977",
+   "text": "C256 stage-1 slot ownership .972 on text (3,053 test slots), gate >=.95 PASSED; reference .977 \u2014 job 188470, closed",
+   "jobs": [
+    "188470"
+   ]
+  },
+  {
+   "jobid": "188707",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "note": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file",
+   "text": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file \u2014 jobs 188707-188712 (6 cells), closed",
+   "jobs": [
+    "188707",
+    "188708",
+    "188709",
+    "188710",
+    "188711",
+    "188712"
+   ]
+  },
+  {
+   "jobid": "188980",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "note": "C256 PREVIEW documents s42 at finetune step 100 (6,400 of 28k rows): judge .597 on the first 300 Q of mm_docqa_1500_1m (infovqa .470, slidevqa .660), em .467, anls .549, unparseable 0; exit 0 on homer-012 after 3 preemptions; eval md5 = submit. Pairing point only, provisional, n=300, closes nothing",
+   "text": "C256 PREVIEW documents s42 at finetune step 100 (6,400 of 28k rows): judge .597 on the first 300 Q of mm_docqa_1500_1m (infovqa .470, slidevqa .660), em .467, anls .549, unparseable 0; exit 0 on homer-012 after 3 preemptions; eval md5 = submit. Pairing point only, provisional, n=300, closes nothing \u2014 job 188980, closed",
+   "jobs": [
+    "188980"
+   ]
+  },
+  {
+   "jobid": "188981",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "note": "C256 control PREVIEW g10 s42 at finetune step 100 (copy expQ/longchunk/ft_cml256_s42_step100/checkpoint-100): judge .6033 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .560, comparison .789), em .390, match .463; exit 0, 5:21 on homer-016; eval md5 50abc167/dfe32aa0/02bc8748 = submit. Pairing point for each arm's s42 step-100 g10 preview; provisional, n=300, closes nothing",
+   "text": "C256 control PREVIEW g10 s42 at finetune step 100 (copy expQ/longchunk/ft_cml256_s42_step100/checkpoint-100): judge .6033 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .560, comparison .789), em .390, match .463; exit 0, 5:21 on homer-016; eval md5 50abc167/dfe32aa0/02bc8748 = submit. Pairing point for each arm's s42 step-100 g10 preview; provisional, n=300, closes nothing \u2014 job 188981, closed",
+   "jobs": [
+    "188981"
+   ]
+  },
+  {
+   "jobid": "188982",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "note": "C256 PREVIEW documents s43 at finetune step 100: judge .603 on the first 300 Q of mm_docqa_1500_1m (infovqa .490, slidevqa .660), em .470, anls .551, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300",
+   "text": "C256 PREVIEW documents s43 at finetune step 100: judge .603 on the first 300 Q of mm_docqa_1500_1m (infovqa .490, slidevqa .660), em .470, anls .551, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300 \u2014 job 188982, closed",
+   "jobs": [
+    "188982"
+   ]
+  },
+  {
+   "jobid": "188983",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "note": "C256 PREVIEW g10 s43 at finetune step 100: judge .570 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .535, comparison .719), em .367, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300",
+   "text": "C256 PREVIEW g10 s43 at finetune step 100: judge .570 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .535, comparison .719), em .367, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300 \u2014 job 188983, closed",
+   "jobs": [
+    "188983"
+   ]
+  },
+  {
+   "jobid": "189691",
+   "verdict": "closed",
+   "arm": "kind=probe_mixer ckpt=pt_text_1M_cml1024_188466_model n_rows=40 sets=text",
+   "note": "L1024 stage-1 slot ownership .969 on text (3,053 test slots) >= .95 gate (control .972, 188470): health PASS",
+   "text": "L1024 stage-1 slot ownership .969 on text (3,053 test slots) >= .95 gate (control .972, 188470): health PASS \u2014 job 189691, closed",
+   "jobs": [
+    "189691"
+   ]
+  },
+  {
+   "jobid": "189692",
+   "verdict": "closed",
+   "arm": "kind=pt_mm backbone=qwen3.5-4b init=pt_text_1M_cml1024_188466 samples=100000 bs=8 accum=8 vision_lora=merger max_pixels=451584 rate=8",
+   "note": "L1024 stage 2 finished: 100k rows (1,562 steps, 1.0 epoch) in 19:08 h, exit 0; held-out .818 at the end vs control 188467 .785 (same recipe, same rows; higher at every eval step, by .03-.06)",
+   "text": "L1024 stage 2 finished: 100k rows (1,562 steps, 1.0 epoch) in 19:08 h, exit 0; held-out .818 at the end vs control 188467 .785 (same recipe, same rows; higher at every eval step, by .03-.06) \u2014 job 189692, closed",
+   "jobs": [
+    "189692"
+   ]
+  },
+  {
+   "jobid": "189693",
+   "verdict": "closed",
+   "arm": "pt_text_4b_long.sh",
+   "note": "L2048 stage 1 STOPPED by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 = 683,712 of 1M docs (~0.89 B text tokens, estimate), 57.6 h on 4 A100 (~231 GPU-h); healthy (held-out .526 @2000, no collapse); never evaluated - no claim about 2,048-token chunks; campaign closes on L1024's paired result",
+   "text": "L2048 stage 1 STOPPED by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 = 683,712 of 1M docs (~0.89 B text tokens, estimate), 57.6 h on 4 A100 (~231 GPU-h); healthy (held-out .526 @2000, no collapse); never evaluated - no claim about 2,048-token chunks; campaign closes on L1024's paired result \u2014 job 189693, closed",
+   "jobs": [
+    "189693"
+   ]
+  },
+  {
+   "jobid": "189694",
+   "verdict": "closed",
+   "arm": "kind=ft_mm init=pt_mm_cml1024 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "note": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8",
+   "text": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8 \u2014 jobs 189694, 189695, 190270 \u2026 190275 (8 cells), closed",
+   "jobs": [
+    "189694",
+    "189695",
+    "190270",
+    "190271",
+    "190272",
+    "190273",
+    "190274",
+    "190275"
+   ]
+  },
+  {
+   "jobid": "190574",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695)",
+   "text": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695) \u2014 jobs 190574, 190575, 190768, 190769 (4 cells), closed",
+   "jobs": [
+    "190574",
+    "190575",
+    "190768",
+    "190769"
+   ]
+  }
+ ],
+ "open": [],
+ "findings": [
+  "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign (jobs 185499, 185500, 185501 \u2026 185603, closed)",
+  "data check, SmolLM2: 23.8% of docs >= 1,024 tokens, 8.3% >= 2,048 -> corpus rejected for long chunks (feasibility gate a) (job 188339, closed)",
+  "data build + check, MS MARCO docs: 43.4% >= 1,024, 20.4% >= 2,048 -> corpus adopted; data/msmarco_docs built (feasibility gate a PASSED) (job 188358, closed)",
+  "feasibility gate (b) PASS at L2048 (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 A100-80GB): 50/50 steps, exit 0, GPU memory peak 288 GB over 4 GPUs (~72 GB each, sacct gpumem), host RAM 108 of 160 GB, GPU util 99.5%; 58.6 s/step steady (steps 10-49, 39 steps in 2287 s); full cell 5,208 steps = 84.8 h -> --time 106 h, 339 GPU-h; eval_loss 2.026 at step 50 (9,600 docs) (job 188420, closed)",
+  "fit + speed test PASS at L1024 (CML 1024, DML 2048, BS 6 x ACCUM 8): 50/50 steps, exit 0, GPU memory peak 285 GB over 4 GPUs (~71 GB each), host RAM 96 GB, util 99.7%; 42.1 s/step steady (steps 10-49, 1641 s); full cell 5,208 steps = 60.9 h -> --time 76 h, 244 GPU-h; eval_loss 2.096 at step 50 (9,600 docs) (job 188421, closed)"
+ ],
+ "wrong": [
+  "The campaign idled 85.6 h of its 137.5 h window (62%) \u2014 with work outstanding, that is the main operational fact.",
+  "4 of 23 LLM wakes returned rc\u22600.",
+  "Alert raised: no campaign GPU-second for .h (cap h) \u2014 a gate failing CLOSE|2026-11-11.",
+  "4 run(s) ended FAILED/TIMEOUT/NODE_FAIL: 185506 185507 185510 185511.",
+  "BLOCKED.md is standing: BLOCKED \u2014 campaign longchunk (2026-11-16 04:00)."
+ ],
+ "arms": [
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500 image_rate=ckpt",
+   "jobid": "185499",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt",
+   "jobid": "185500",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt",
+   "jobid": "185501",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500 image_rate=ckpt",
+   "jobid": "185502",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt",
+   "jobid": "185503",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt",
+   "jobid": "185504",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185505",
+   "state": "PREEMPTED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185506",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185507",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185509",
+   "state": "PREEMPTED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185510",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185511",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185600",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183814 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185601",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g3 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185602",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=eval_mm topk=10 ckpt=ft_mm_4b_183538 mode=pisco data=text_hotpotqa_1500_g10 image_rate=ckpt limit=all max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "185603",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2026-11-10 campaign"
+  },
+  {
+   "arm": "kind=data_check dataset=smollm2_10b rows=5000000 every=50 tokenizer=qwen3.5-4b",
+   "jobid": "188339",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "data check, SmolLM2: 23.8% of docs >= 1,024 tokens, 8.3% >= 2,048 -> corpus rejected for long chunks (feasibility gate a)"
+  },
+  {
+   "arm": "kind=data_build dataset=msmarco_docs every=30 tokenizer=qwen3.5-4b",
+   "jobid": "188358",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "data build + check, MS MARCO docs: 43.4% >= 1,024, 20.4% >= 2,048 -> corpus adopted; data/msmarco_docs built (feasibility gate a PASSED)"
+  },
+  {
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=2048 dml=4096 bs=3 accum=16 rate=8 layout=spread extra=++hf_training.max_steps=50",
+   "jobid": "188420",
+   "state": "COMPLETED",
+   "gpu_h": 3.8,
+   "verdict": "closed",
+   "headline": "feasibility gate (b) PASS at L2048 (CML 2048, DML 4096, BS 3 x ACCUM 16 x 4 A100-80GB): 50/50 steps, exit 0, GPU memory peak 288 GB over 4 GPUs (~72 GB each, sacct gpumem), host RAM 108 of 160 GB, GPU util 99.5%; 58.6 s/step steady (steps 10-49, 39 steps in 2287 s); full cell 5,208 steps = 84.8 h -> --time 106 h, 339 GPU-h; eval_loss 2.026 at step 50 (9,600 docs)"
+  },
+  {
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=1024 dml=2048 bs=6 accum=8 rate=8 layout=spread extra=++hf_training.max_steps=50",
+   "jobid": "188421",
+   "state": "COMPLETED",
+   "gpu_h": 2.9,
+   "verdict": "closed",
+   "headline": "fit + speed test PASS at L1024 (CML 1024, DML 2048, BS 6 x ACCUM 8): 50/50 steps, exit 0, GPU memory peak 285 GB over 4 GPUs (~71 GB each), host RAM 96 GB, util 99.7%; 42.1 s/step steady (steps 10-49, 1641 s); full cell 5,208 steps = 60.9 h -> --time 76 h, 244 GPU-h; eval_loss 2.096 at step 50 (9,600 docs)"
+  },
+  {
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=256 dml=512 bs=24 accum=2 rate=8 layout=spread extra=",
+   "jobid": "188422",
+   "state": "COMPLETED",
+   "gpu_h": 66.9,
+   "verdict": "closed",
+   "headline": "C256 stage 1 COMPLETED 16:43 h, 1M docs (5,208 steps); held-out loss .801/.877/1.007 at steps 2000/4000/5208 (64 rows); SmolLM2 reference 180486 had the same end rise .924/.920/1.023, so not a collapse; train loss ~.94"
+  },
+  {
+   "arm": "kind=pt_text backbone=qwen3.5-4b data=msmarco_docs samples=1000000 cml=1024 dml=2048 bs=6 accum=8 rate=8 layout=spread extra=",
+   "jobid": "188466",
+   "state": "COMPLETED",
+   "gpu_h": 240.8,
+   "verdict": "closed",
+   "headline": "L1024 stage 1 finished: 1M documents, 5,208 steps, exit 0, no collapse (held-out .611/.612/.850); stage 2 189692 running from its model"
+  },
+  {
+   "arm": "kind=pt_mm backbone=qwen3.5-4b init=pt_text_1M_cml256_188422 samples=100000 bs=8 accum=8 vision_lora=merger max_pixels=451584 rate=8",
+   "jobid": "188467",
+   "state": "COMPLETED",
+   "gpu_h": 19.2,
+   "verdict": "closed",
+   "headline": "C256 stage 2 COMPLETED 19:12 h on homer-020, exit 0, 1,562/1,562 steps (100k rows, 1.0 epoch); held-out loss .858/.832/.785 at steps 1250/1500/1562, train loss .82 (ce .73 kd .18) at 1560, no NaN. SmolLM2-chain reference 183537 ended .741 (corpus differs, not compared)"
+  },
+  {
+   "arm": "kind=ft_mm init=pt_mm_cml256 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "jobid": "188468",
+   "state": "COMPLETED",
+   "gpu_h": 12.9,
+   "verdict": "closed",
+   "headline": "C256 finetune s42 done: 28k rows (1.0 epoch), exit 0, held-out .367 at step 437, no NaN; its scores come from evals 188707-188709"
+  },
+  {
+   "arm": "kind=ft_mm init=pt_mm_cml256 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "jobid": "188469",
+   "state": "COMPLETED",
+   "gpu_h": 11.0,
+   "verdict": "closed",
+   "headline": "C256 finetune s43 done: 28k rows (1.0 epoch), exit 0, held-out .370 at step 437, no NaN; its scores come from evals 188710-188712"
+  },
+  {
+   "arm": "kind=probe_mixer ckpt=pt_text_1M_cml256_188422_model n_rows=40 sets=text",
+   "jobid": "188470",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "C256 stage-1 slot ownership .972 on text (3,053 test slots), gate >=.95 PASSED; reference .977"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188707",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188708",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188709",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188710",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188711",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188712",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "C256 control gating eval (comparison point for L1024/L2048), n=1500, single complete judged file"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188980",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "C256 PREVIEW documents s42 at finetune step 100 (6,400 of 28k rows): judge .597 on the first 300 Q of mm_docqa_1500_1m (infovqa .470, slidevqa .660), em .467, anls .549, unparseable 0; exit 0 on homer-012 after 3 preemptions; eval md5 = submit. Pairing point only, provisional, n=300, closes nothing"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s42_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188981",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "C256 control PREVIEW g10 s42 at finetune step 100 (copy expQ/longchunk/ft_cml256_s42_step100/checkpoint-100): judge .6033 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .560, comparison .789), em .390, match .463; exit 0, 5:21 on homer-016; eval md5 50abc167/dfe32aa0/02bc8748 = submit. Pairing point for each arm's s42 step-100 g10 preview; provisional, n=300, closes nothing"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188982",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "C256 PREVIEW documents s43 at finetune step 100: judge .603 on the first 300 Q of mm_docqa_1500_1m (infovqa .490, slidevqa .660), em .470, anls .551, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml256_s43_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "188983",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "C256 PREVIEW g10 s43 at finetune step 100: judge .570 on the first 300 Q of text_hotpotqa_1500_g10 (bridge .535, comparison .719), em .367, unparseable 0; exit 0 on homer-012; eval md5 = submit. Pairing point only, provisional, n=300"
+  },
+  {
+   "arm": "kind=probe_mixer ckpt=pt_text_1M_cml1024_188466_model n_rows=40 sets=text",
+   "jobid": "189691",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "L1024 stage-1 slot ownership .969 on text (3,053 test slots) >= .95 gate (control .972, 188470): health PASS"
+  },
+  {
+   "arm": "kind=pt_mm backbone=qwen3.5-4b init=pt_text_1M_cml1024_188466 samples=100000 bs=8 accum=8 vision_lora=merger max_pixels=451584 rate=8",
+   "jobid": "189692",
+   "state": "COMPLETED",
+   "gpu_h": 19.1,
+   "verdict": "closed",
+   "headline": "L1024 stage 2 finished: 100k rows (1,562 steps, 1.0 epoch) in 19:08 h, exit 0; held-out .818 at the end vs control 188467 .785 (same recipe, same rows; higher at every eval step, by .03-.06)"
+  },
+  {
+   "arm": "pt_text_4b_long.sh",
+   "jobid": "189693",
+   "state": "CANCELLED",
+   "gpu_h": 230.6,
+   "verdict": "closed",
+   "headline": "L2048 stage 1 STOPPED by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 = 683,712 of 1M docs (~0.89 B text tokens, estimate), 57.6 h on 4 A100 (~231 GPU-h); healthy (held-out .526 @2000, no collapse); never evaluated - no claim about 2,048-token chunks; campaign closes on L1024's paired result"
+  },
+  {
+   "arm": "kind=ft_mm init=pt_mm_cml1024 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "jobid": "189694",
+   "state": "COMPLETED",
+   "gpu_h": 11.7,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=ft_mm init=pt_mm_cml1024 samples=28000 bs=1 accum=64 topk=4 max_pixels=451584 ft_data=mm_ft_natural_8k_teacher:8000",
+   "jobid": "189695",
+   "state": "COMPLETED",
+   "gpu_h": 11.5,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190270",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190271",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190272",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190273",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190274",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0",
+   "jobid": "190275",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "L1024 ARM CLOSED (law gate, both seeds): g10 s42 -1.1 [-3.2,+1.2] / s43 -3.3 [-5.4,-1.1] (CI excludes +2 at both); documents s42 -6.2 [-8.6,-3.9] / s43 -4.3 [-6.7,-1.8] (<= -3, CI below 0 at both); photos +0.3 / 0.0; paired vs C256 same seed, n=1500 Q per set, rate 8"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "190574",
+   "state": "COMPLETED",
+   "gpu_h": 0.2,
+   "verdict": "closed",
+   "headline": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s42_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "190575",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s43_step100 data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "190768",
+   "state": "COMPLETED",
+   "gpu_h": 0.2,
+   "verdict": "closed",
+   "headline": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_cml1024_s43_step100 data=text_hotpotqa_1500_g10 limit=300 image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "190769",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "L1024 step-100 preview, n=300, provisional, never gates; arm closed on the finals (see 189695)"
+  }
+ ],
+ "artifacts": [],
+ "ledger_entries": 109
+}

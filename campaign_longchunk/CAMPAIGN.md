@@ -32,7 +32,7 @@ g1 .579, documents .599 / .618, photos .671 / .671 — is a REFERENCE row only (
 |---|---|---|---|---|---|
 | C256 (control, to train) | `expQ/longchunk/pt_text_4b_long.sh 1000000 256 512 24 2` | CML 256, DML 512 (the recipe's lengths) | everything below | — (the comparison point) | ~64 stage 1 (4 GPUs × 16 h, as 180486) + 19 stage 2 + 22 finetunes + ~20 evals |
 | L1024 | `expQ/longchunk/pt_text_4b_long.sh 1000000 1024 2048 6 8` | CML 1024, DML 2048 (DML = 2 × CML as in the recipe; so each document contributes up to 4 × more tokens) | Qwen3.5-4B/4B, rate 8, spread layout, stride 8, lr 5e-5, MS MARCO 1M documents, effective batch 192 docs, LoRA r64, bf16 | **CLOSED 2026-11-16** at both seeds (g10 CI excludes +2; documents ≤ −3 with CI below 0) — verdicts 189694 / 189695 | ~130 + 19 + 22 + 20 (spent ≈ 286 GPU-h) |
-| L2048 | `expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16` | CML 2048, DML 4096 | same | see Decision gates | ~260 + 19 + 22 + 20 |
+| L2048 | `expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16` | CML 2048, DML 4096 | same | **STOPPED by the owner 2026-11-16 18:22** (answer A to BLOCKED.md) at stage-1 step 3,561 of 5,208 (683,712 documents), never evaluated — verdict 189693 closed; no claim about 2,048 | spent ≈ 231 stage 1, nothing downstream |
 | reference (exists) | `qwen35_4b_pt.sh 1000000 24 2 ++…mem_layout=spread ++…mem_position_stride=8` on SmolLM2 | corpus | — | not compared; reported as a row | 0 (done) |
 
 Downstream of stage 1, every arm uses EXACTLY the control's commands, only the init model changes:

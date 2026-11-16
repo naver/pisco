@@ -1097,3 +1097,10 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-11-16 04:05 did: longchunk wake 11-16 04:00: L1024 CLOSED at both seeds (verdicts 189694/189695 + evals); law marks the long-chunk prediction refuted
   - saw: seed 43: g10 -3.3 [-5.4,-1.1], documents -4.3 [-6.7,-1.8], photos 0.0; seed 42 had -1.1 / -6.2 / +0.3 (n=1500, rate 8). L2048 stage 1 healthy, step 2,678/5,208 (~514k docs)
   - next: owner decides in BLOCKED.md: stop L2048 (recommended, saves ~224 GPU-h) or finish; default = finish + chain when 189693 ends
+- 2026-11-16 18:23 [job 189693] longchunk: owner stopped the 2,048-token stage-1 run (step ~2,700/5,208); campaign closes on L1024's result
+  - did: expmon kill 189693; expmon answer 32429b 'A — stop the 2048.'
+  - saw: L1024 lost: docs -6.2/-4.3 pt, g10 -1.1/-3.3 pt, photos 0 (paired judge, 2 seeds)
+  - next: diagnosis campaign longdoc (drafting): which stage loses long inputs — data, training, eval, or decoder reading
+- 2026-11-16 18:31 [job 189693] longchunk wake 11-16 18:30: executing owner REQUEST (option A, stop L2048): job already cancelled 18:22 by the owner's chat; recording probe + verdict, then close-out (both arms decided)
+- 2026-11-16 18:31 [job 189693] verdict: closed — L2048 stage 1 STOPPED by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 = 683,712 of 1M docs (~0.89 B text tokens, estimate), 57.6 h on 4 A100 (~231 GPU-h); healthy (held-out .526 @2000, no collapse); never evaluated - no claim about 2,048-token chunks; campaign closes on L1024's paired result
+- 2026-11-16 18:33 [job 189693] longchunk wake 11-16 18:30 result: owner REQUEST (A, stop L2048) executed and recorded; L2048 verdict closed at step 3,561/5,208 (683,712 docs), never evaluated; REQUEST + BLOCKED.md removed; campaign closed: L1024 closed at both seeds, retro written, standby

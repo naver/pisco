@@ -1,0 +1,88 @@
+== campaign longchunk wake 2026-11-16_1830  reasons=gate,request,condition  tier=full  model=claude-opus-5-5  patch=20  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794821402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=105.5 idle_h=0.1 min_util=- alert=0 unpushed=89 cron=1 daemon=1 disk_gb=8624 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:189693_max_44h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/hook.log
+== wait condition met: job:189693 (ended)   (NEXT was: wake-when job:189693 max 44h)
+== session 542a1ccc-33a9-4847-9a84-18d38e7dc473  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longchunk/BRIEF.md
+  ↳ <persisted-output> (+30 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/542a1ccc-33a9-4847-9a84-18d38e7dc473/tool-results/bh9acwv0a.txt
+  ↳ 1	# Wake brief — campaign longchunk — 2026-11-16_1830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+168 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && ls -la && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ===== && cat GATE; echo ===; cat REQUEST
+  ↳ Exit code 1 (+111 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 30	 (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+80 lines)
+→ Bash: cat campaign_longchunk/known_issues.md | head -60; echo ----; ls -la expQ/longchunk/pt_text_1M_cml2048_189693/ | head -30; echo ----; tail -c 3000 expQ/longchunk/pt_text_1M_cml2048_189693/train.log 2>/dev/null | tr '\r' '\n' | tail -15
+  ↳ # Known issues — campaign longchunk   (symptom → verdict → action; check here BEFORE diagnosing) (+52 lines)
+Recording the owner's order to stop the 2,048-token run (it is already cancelled), then closing the campaign.
+→ Bash: expmon logs 189693 40 2>&1 | tr '\r' '\n' | grep -E "it\]|eval_loss|CANCEL|step" | tail -8; sacct -j 189693 -X -o JobID,State,Elapsed,Start,End,NodeList,AllocTRES%40 -n
+  ↳ 68%|██████▊   | 3554/5208 [57:28:08<28:14:52, 61.48s/it] (+8 lines)
+→ Bash: expmon help 2>&1 | grep -iE "GATE|standby|retro|campaign report|probe |verdict " | head -20
+  ↳ Companion to gpucap (capacity). Job plumbing is generic; results/monitoring are delegated to (+14 lines)
+→ Bash: expmon note -j 189693 "longchunk wake 11-16 18:30: executing owner REQUEST (option A, stop L2048): job already cancelled 18:22 by the owner's chat; recording probe + verdict, then close-out (both arms decided)" 2>&1 | tail -2; expmon probe …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Bash: expmon campaign report --section leaves longchunk 2>&1 | head -60
+  ↳ **Settled** (+10 lines)
+→ Bash: expmon campaign retro longchunk 2>&1 | tail -40; ls -la campaign_longchunk/
+  ↳ retro -> /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/RETRO.md   (report: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.md, machine-readable REPORT.json; cross-cluster note to  (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longchunk && grep -n "" RETRO.md | grep -n -iE "^[0-9]+:#|lesson|TODO|fill" | head -30; wc -l RETRO.md
+  ↳ 1:1:# Campaign retro — longchunk (2026-11-16) (+11 lines)
+Writing the campaign retro (lessons) now.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/RETRO.md
+  ↳ 1	# Campaign retro — longchunk (2026-11-16) (+93 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p='campaign_longchunk/RETRO.md' ⏎ s=open(p).read() ⏎ i=s.index('## Lessons (rewrite this section') ⏎ s=s[:i]+'''## Lessons (what I would tell the next campaign) ⏎ - **Retraining t…
+  ↳ == 1 open report(s) matching 'idled stretch', every machine, newest first == (+9 lines)
+→ Bash: sacct -j 188422,188466,189693 -X -o JobID,State,Start,End -n
+  ↳ 188422        COMPLETED 2026-11-11T03:47:43 2026-11-11T20:31:00  (+2 lines)
+→ Bash: expmon gripe --same 7ff4490e "ncp/pisco longchunk retro: 'idled 85.6 h of its 137.5 h window (62%)' and '85.6 h without a campaign job running', but sacct shows stage-1 jobs back to back with zero gap (188422 11-11 03:47→20:31, 188466 20:31…
+  ↳ logged as a +1 of 7ff4490e (entry ff65df46) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_longchunk/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old='| L2048 | `expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16` | CML 2048, DML 4096 | same | see Decision gates | ~260 + 19 + 22 + 20 |' ⏎ new='| L2048 |…
+  ↳ 35:| L2048 | `expQ/longchunk/pt_text_4b_long.sh 1000000 2048 4096 3 16` | CML 2048, DML 4096 | same | **STOPPED by the owner 2026-11-16 18:22** (answe (+1 lines)
+→ Bash: expmon help 2>&1 | grep -A3 -E "^\s+display" | head -8; expmon gripe --open --search display rows 2>&1 | head -6
+  ↳ display [--exp <label>] [--out page.html] [--no-media]  ONE self-contained HTML page to SEE results: the (+9 lines)
+Already reported issue; checking the page has the grid, then rewriting STATE.md.
+→ Bash: grep -c "<tr" display_longchunk.html; grep -c "189693" display_longchunk.html; rm campaign_longchunk/REQUEST campaign_longchunk/BLOCKED.md && ls campaign_longchunk
+  ↳ 52 (+13 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note -j 189693 "longchunk wake 11-16 18:30 result: owner REQUEST (A, stop L2048) executed and recorded; L2048 verdict closed at step 3,561/5,208 (683,712 docs), never evaluated; REQUEST + BLOCKED.md removed; campaign closed: L1024 cl…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+The long-chunk campaign is closed. Training the compressor on long text chunks (1,024 tokens instead of 256) did not help, and the 2,048-token run is stopped as you asked.
+
+**What I did this wake**
+- **Your request ("A — stop the 2048"):** your chat had already cancelled the run at 18:22. I recorded where it stopped and closed it:
+  - It reached step 3,561 of 5,208, about 684k of the 1M training documents.
+  - It was healthy when stopped.
+  - It was never evaluated, so there is no result for 2,048-token chunks.
+  - Stopping it saved about 224 GPU-hours.
+- **Owner files:** I deleted your request file and the answered question file.
+- **Rule file:** I marked the 2,048-token arm "stopped by the owner".
+- **Close-out:** I ran the report and the retro, wrote its Lessons, logged a one-line retro, and put the campaign on standby. Later cron wakes now do nothing.
+
+**Result** (judge accuracy, higher is better; 1,500 questions per set; 8 tokens per compressed slot; 1,024-token arm minus the 256-token control, paired on the same questions)
+
+| set | seed 42 | seed 43 |
+|---|---|---|
+| long text (HotpotQA, one long chunk per question) | −1.1 pt [−3.2, +1.2] | −3.3 pt [−5.4, −1.1] |
+| document pages | −6.2 pt [−8.6, −3.9] | −4.3 pt [−6.7, −1.8] |
+| photos | +0.3 pt | 0.0 pt |
+
+So keep training on 256-token chunks. Chunk length stays free to choose at inference. In total the campaign used about 26.6 of its 38 GPU-days.
+
+**Two expmon issues, both already reported by earlier wakes, so I only added detail:**
+- The retro says the campaign sat idle 85.6 h. In fact the three training runs ran back to back with no gap.
+- `expmon display` says the results page has 0 rows, but the page it writes has the full table.
+
+**Your decision:** three small steps, when convenient:
+1. Paste `campaign_longchunk/SYNC.md` into `~/.claude/SYNC.md`. Campaign wakes may not write there.
+2. Run `expmon campaign disarm` to remove the cron line. Standby already makes those wakes free.
+3. Optionally, add the proposed summary in `campaign_longchunk/STATE.md` to `docs/multimodal_results.md`.
+→ StructuredOutput: {"next": "done", "summary": "Owner REQUEST (A: stop the 2,048-token run) executed: job 189693 had already been cancelled by the owner's chat at 18:22; recorded its stop point (step 3,561/5,208, 683,712 docs, healthy, never evaluated) and ve…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4840 turns=23 is_error=False denials=0
+== declared: {"next": "done", "summary": "Owner REQUEST (A: stop the 2,048-token run) executed: job 189693 had already been cancelled by the owner's chat at 18:22; recorded its stop point (step 3,561/5,208, 683,712 docs, healthy, never evaluated) and verdict closed. Deleted REQUEST and the answered BLOCKED.md, marked L2048 stopped in CAMPAIGN.md, added a known_issues row. Both arms decided (L1024 closed by the gate at both seeds: documents −6.2/−4.3 pt, long text −1.1/−3.3 pt, photos flat, n=1500, rate 8), so ran close-out: report, retro with Lessons, retro gripe, display refresh, STATE.md rewritten, NEXT=done, campaign standby written. No submissions. Owner left with: paste SYNC.md, disarm.", "launched": [], "verdicts": [{"jobid": "189693", "verdict": "closed", "note": "L2048 stage 1 stopped by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 (683,712 docs); healthy; never evaluated — no claim about 2,048-token chunks"}], "gripes": ["+1 on 7ff4490e: retro 'idled 85.6 h' is wrong — stage-1 jobs 188422/188466/189693 ran back to back with zero gap (sacct)", "retro: RETRO longchunk WENT OK / WENT NOT OK / NET journalled"]}
+== final:
+{"next":"done","summary":"Owner REQUEST (A: stop the 2,048-token run) executed: job 189693 had already been cancelled by the owner's chat at 18:22; recorded its stop point (step 3,561/5,208, 683,712 docs, healthy, never evaluated) and verdict closed. Deleted REQUEST and the answered BLOCKED.md, marked L2048 stopped in CAMPAIGN.md, added a known_issues row. Both arms decided (L1024 closed by the gate at both seeds: documents −6.2/−4.3 pt, long text −1.1/−3.3 pt, photos flat, n=1500, rate 8), so ran close-out: report, retro with Lessons, retro gripe, display refresh, STATE.md rewritten, NEXT=done, campaign standby written. No submissions. Owner left with: paste SYNC.md, disarm.","launched":[],"verdicts":[{"jobid":"189693","verdict":"closed","note":"L2048 stage 1 stopped by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 (683,712 docs); healthy; never evaluated — no claim about 2,048-token chunks"}],"gripes":["+1 on 7ff4490e: retro 'idled 85.6 h' is wrong — stage-1 jobs 188422/188466/189693 ran back to back with zero gap (sacct)","retro: RETRO longchunk WENT OK / WENT NOT OK / NET journalled"]}
+== rc=0 secs=193
+== verify: 9/19
