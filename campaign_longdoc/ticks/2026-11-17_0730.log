@@ -1,0 +1,93 @@
+== campaign longdoc wake 2026-11-17_0730  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794868201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=12.6 idle_h=0.3 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8424 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191170,191218,191219,191220,191221_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191170,191218,191219,191220,191221 (ended)   (NEXT was: wake-when job:191170,191218,191219,191220,191221 max 6h)
+== session d26d6d1d-9447-40ed-a254-d9a80ed7ac51  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+91 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md
+  ↳ Exit code 1 (+105 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 40	- documents `eval_data/mm_docqa_1500_1m` (500 InfoVQA / MP-DocVQA val / SlideVQA, 4 pages, PX=1003520); (+139 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+104 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la; cat known_issues.md 2>&1 | head -60
+  ↳ total 85 (+45 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191170,191218,191219,191220,191221 -X -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End 2>&1; sacct -j 191170,191218,191219,191220,191221 -o JobID,MaxRSS -n | grep -v "^ *$" | awk '$2!…
+  ↳ JobID             State ExitCode    Elapsed        NodeList     MaxRSS               Start                 End  (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; python3 -I - <<'EOF' ⏎ import json ⏎ f='expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_t…
+  ↳ 50abc167  eval_mm_4b.sh (+14 lines)
+Checking the five finished probe jobs: the stage-1 rebuild probe is paired, now pairing the page-transcription probe and launching the three remaining text cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json ⏎ f='expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json' ⏎ r=json.load(open(f))['records'] ⏎ print(len(r), sum('judge' in x for x in r), …
+  ↳ 1500 1500 0 dict_keys(['query_id', 'source', 'query', 'answers', 'prediction', 'em', 'f1', 'anls', 'match', 'mems_used', 'n_images', 'decoder_prompt_tokens', 'judge', 'judge_raw']) (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"191221"' .expmon/runs.jsonl | head -2; ls -la expQ/longdoc/; for c in t_l1024_s42 t_c256_s43 t_l1024_s43; do readlink -f expQ/longdoc/$c/model; ls expQ/longdoc/$c/eval 2>/dev/null; done; cat scr…
+  ↳ {"ts": "2026-11-17 05:02", "jobid": "191221", "launcher": "eval_mm_4b.sh", "argv": ["expQ/longdoc/t_c256_s42/model", "pisco", "", "eval_data/text_hotpotqa_1500"], "git": "9f78e5f+dirty", "outdir": "/b (+60 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp longdoc --stage T --time 0:59:00 --partition gpu-be --exclude 'homer-[005-009]' --env TOPK=10 --env CML=4096 --dry-run eval_mm_4b.sh expQ/longdoc/t_l1024_s42/model pisco "" eval_dat…
+  ↳ would submit: sbatch --time 0:59:00 --partition gpu-be --exclude homer-[005-009] eval_mm_4b.sh expQ/longdoc/t_l1024_s42/model pisco  eval_data/text_hotpotqa_1500 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for c in t_l1024_s42 t_c256_s43 t_l1024_s43; do expmon launch --exp longdoc --stage T --time 0:59:00 --partition gpu-be --exclude 'homer-[005-009]' --env TOPK=10 --env CML=4096 eval_mm_4b.sh expQ/longd…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191305.out (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 191305:t_l1024_s42 191306:t_c256_s43 191307:t_l1024_s43; do id=${j%%:*}; c=${j#*:}; expmon note -j $id "longdoc arm T intent: plain ten-chunk HotpotQA (text_hotpotqa_1500, TOPK=10, CML=4096) o…
+  ↳ ok 191305 (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,33p scripts/longdoc/ae_nll.py; sed -n 51,118p scripts/longdoc/ae_nll.py; grep -n "rehears\|text_ae\|'ae'\|\"ae\"\|AE" pisco/mm_collator.py | head -30
+  ↳ """Stage-1 autoencoding probe (campaign longdoc, arm T): did long-chunk stage 1 learn a length the later stages never use? (+102 lines)
+Pairing done for the stage-1 and page-transcription probes; three text cells launched. Now adding one cheap follow-up probe (stage-2 models, text rebuild) to tell whether the page loss is image-only.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/longdoc/ae_nll.sbatch' ⏎ s=open(p).read() ⏎ old_hdr="#   expmon launch --exp longdoc --stage T --time … scripts/longdoc/ae_nll.sbatch [N_DOCS]\n" ⏎ new_hdr="#   expmon la…
+  ↳ syntax ok (+11 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp longdoc --stage T --time 0:47:00 --mem 10G --partition gpu-be --exclude 'homer-[005-009]' --dry-run scripts/longdoc/ae_nll.sbatch 500 s2 2>&1 | tail -6
+  ↳ would submit: sbatch --time 0:47:00 --mem 10G --partition gpu-be --exclude homer-[005-009] scripts/longdoc/ae_nll.sbatch 500 s2 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp longdoc --stage T --time 0:47:00 --mem 15G --partition gpu-be --exclude 'homer-[005-009]' scripts/longdoc/ae_nll.sbatch 500 s2 2>&1 | grep -E "log:|Submitted|REFUS|error" 
+  ↳ Submitted batch job 191308 (+1 lines)
+Now recording verdicts for the finished probes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon note -j 191308 "longdoc arm T intent: stage-1 AE probe on the two STAGE-2 models (ae_nll.sbatch 500 s2: pt_mm_cml256 vs pt_mm_cml1024, text in the stage-2 <AE> rehearsal format, same 500 held…
+  ↳ expmon note: 86 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I scripts/longdoc/ae_pair.py expQ/longdoc/ae/ae_nll_n500.json > expQ/longdoc/ae/ae_pair_n500.txt; python3 -I scripts/longdoc/recall_pair.py --ref expQ/longdoc/recall/ref_n167.json --a expQ/lon…
+  ↳ slidevqa     167    0.733    0.733  +0.000 [+0.000, +0.000]     0     0        1     83     83 (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+75 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ s=s.replace("Last rewrite 2026-11-17 03:45 (arm T: locate test decided — the long-chunk loss sits in the compressed page).", ⏎  "L…
+  ↳ done
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 191219 word_recall=0.647 >/dev/null && expmon probe 191220 word_recall=0.566 >/dev/null && expmon probe 191218 d_s256_nats=-0.0018 >/dev/null && echo probes ok; expmon display --exp longdo…
+  ↳ probes ok (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search display rows 2>&1 | head -10; echo ---; expmon gripe --open --search "0 table" 2>&1 | head -5; squeue -j 191305,191306,191307,191308 -o "%i %T %R" 2>&1
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+20 lines)
+Writing the campaign state file and the wait condition.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "wake-when job:191305,191306,191307,191308 max 3h" > campaign_longdoc/NEXT; expmon note "did: longdoc wake 07:30: arm T transcription gate MET (L1024 stage-2 page <MEM>s rebuild .566 vs .647 of wo…
+  ↳ ok (+1 lines)
+Arm T's two page-level probes are decided, and both point the same way: the long-chunk model's loss comes in at stage 2 (training on page images) or later, not at stage 1 (text-only pretraining). Four follow-up cells are queued, and the campaign wakes again when they finish (3 hours at most).
+
+## What decided this wake
+The question for this probe set is why the model pretrained on 1,024-token chunks (call it L1024) answers worse than the one pretrained on 256-token chunks (C256).
+
+| Probe | Data | Metric | C256 | L1024 | Gap (95% CI) | Gate |
+|---|---|---|---|---|---|---|
+| Page transcription: rebuild the answer page from its compressed slots. Stage-2 models. | 500 pages | share of the page's words rebuilt (higher is better) | .647 | .566 | −8.0 pt [−10.6, −5.5], p 4e-16 | met |
+| Text rebuild of one 256-token chunk. Stage-1 models. | 500 unseen documents | nats per token (lower is better) | .0144 | .0126 | −.0018 [−.0031, −.0006] | not met: L1024 is not worse |
+
+- **Transcription:** L1024's compressed page slots really hold fewer of the page's words. All three document sources go the same way. There is one stage-2 model per chain, so no second seed exists for this probe.
+- **Stage-1 rebuild:** both models rebuild short text chunks almost perfectly. The control (rebuilding from another document's slots) is far worse, and a model paired with itself gives 0, so the probe is working.
+- **Together:** long chunks in stage 1 did not cost short-chunk skill at stage 1. The loss shows up after stage 2. All of this is still marked provisional until the next verifier pass.
+
+## Running now
+- **Text, three cells:** ten short HotpotQA passages on the three remaining fine-tuned models (L1024 seed 42, C256 seed 43, L1024 seed 43), about 22 minutes each. The fourth (C256 seed 42) is done: judge accuracy .579 on 1,500 questions, healthy.
+- **Text rebuild on the stage-2 models:** a new cell. It tells whether stage 2 also lost text detail or only page-image detail. I wrote its pass/fail rule into the campaign rules before launching. To run it, I added a model-set option to the campaign's own rebuild launcher. The default behaviour is unchanged.
+
+## Bookkeeping
+- Updated `docs/longdoc_diagnosis.md` with a new table of these probe results.
+- Saved both comparison tables under `expQ/longdoc/`.
+- Recorded verdicts and rewrote the campaign state file.
+- Cells used: 27 of 70. GPU-hours: about 12.4 so far.
+- The campaign results page still shows 0 rows even though the results table has them. This is a known, already-reported expmon bug, so I filed nothing new.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm T: transcription gate MET (L1024 stage-2 page <MEM>s rebuild .566 vs C256 .647 of page words, -8.0 pt [-10.6,-5.5], 500 pages, sign p 4e-16); stage-1 autoencoding second half NOT MET (L1024 not worse at…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6998 turns=27 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm T: transcription gate MET (L1024 stage-2 page <MEM>s rebuild .566 vs C256 .647 of page words, -8.0 pt [-10.6,-5.5], 500 pages, sign p 4e-16); stage-1 autoencoding second half NOT MET (L1024 not worse at 256 tokens: d -.0018 nats [-.0031,-.0006], 500 docs) -> the page loss enters at stage 2 or later. Launched the 3 remaining ten-chunk HotpotQA cells and a stage-2 autoencoding cell (gate written before launch; launcher got a SET arg, default unchanged). Diagnosis doc, STATE, verdicts, probes updated. 27/70 cells, ~12.4 GPU-h.", "launched": ["191305", "191306", "191307", "191308"], "verdicts": [{"jobid": "191218", "verdict": "closed", "note": "stage-1 AE: L1024 better at 1024 (expected), NOT worse at 256 (d -.0018 nats, 500 docs); gate second half fails"}, {"jobid": "191219", "verdict": "closed", "note": "C256 stage-2 transcription word recall .647 (500 pages)"}, {"jobid": "191220", "verdict": "closed", "note": "L1024 stage-2 transcription .566, -8.0 pt [-10.6,-5.5] vs C256, sign 147/322 p 4e-16; gate met"}, {"jobid": "191170", "verdict": "closed", "note": "uncompressed transcription reference, 501 pages"}], "wake_when": "job:191305,191306,191307,191308 max 3h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"Arm T: transcription gate MET (L1024 stage-2 page <MEM>s rebuild .566 vs C256 .647 of page words, -8.0 pt [-10.6,-5.5], 500 pages, sign p 4e-16); stage-1 autoencoding second half NOT MET (L1024 not worse at 256 tokens: d -.0018 nats [-.0031,-.0006], 500 docs) -> the page loss enters at stage 2 or later. Launched the 3 remaining ten-chunk HotpotQA cells and a stage-2 autoencoding cell (gate written before launch; launcher got a SET arg, default unchanged). Diagnosis doc, STATE, verdicts, probes updated. 27/70 cells, ~12.4 GPU-h.","launched":["191305","191306","191307","191308"],"verdicts":[{"jobid":"191218","verdict":"closed","note":"stage-1 AE: L1024 better at 1024 (expected), NOT worse at 256 (d -.0018 nats, 500 docs); gate second half fails"},{"jobid":"191219","verdict":"closed","note":"C256 stage-2 transcription word recall .647 (500 pages)"},{"jobid":"191220","verdict":"closed","note":"L1024 stage-2 transcription .566, -8.0 pt [-10.6,-5.5] vs C256, sign 147/322 p 4e-16; gate met"},{"jobid":"191170","verdict":"closed","note":"uncompressed transcription reference, 501 pages"}],"wake_when":"job:191305,191306,191307,191308 max 3h","gripes":[]}
+== rc=0 secs=265
+== verify: 4/10

@@ -9,18 +9,24 @@
 #SBATCH --error=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/aenll_%j.out
 # Campaign longdoc, arm T: stage-1 autoencoding probe (scripts/longdoc/ae_nll.py) on the two longchunk stage-1 text
 # models, C256 (188422) and L1024 (188466), the same held-out MS MARCO documents (rows from 1,000,000 on, >= 1,024 tokens).
-#   expmon launch --exp longdoc --stage T --time … scripts/longdoc/ae_nll.sbatch [N_DOCS]
+#   expmon launch --exp longdoc --stage T --time … scripts/longdoc/ae_nll.sbatch [N_DOCS] [SET]
+# SET s1 (default) = the stage-1 text models above; s2 = their stage-2 models (pt_mm_cml256 / pt_mm_cml1024; the
+# stage-2 collator rehearses text in the same <AE> format), output ae_nll_s2_n<N>.json.
 # N_DOCS 500 = the law's cell; a smaller N is plumbing. Output expQ/longdoc/ae/ae_nll_n<N>.json; pair with
 # scripts/longdoc/ae_pair.py.
 source ~/.bashrc
 cd /beegfs/scratch/user/hdejean/pisco
 export HF_HOME=/beegfs/scratch/user/hdejean/Reranking/cache
 nvidia-smi -L
-R=/beegfs/scratch/user/hdejean/pisco; N=${1:-500}
-OUT=$R/expQ/longdoc/ae/ae_nll_n${N}.json
-echo "FACTORS kind=probe_ae models=c256,l1024 n_docs=$N data=msmarco_docs start_row=1000000"
+R=/beegfs/scratch/user/hdejean/pisco; N=${1:-500}; SET=${2:-s1}
+case $SET in
+  s1) OUT=$R/expQ/longdoc/ae/ae_nll_n${N}.json
+      MC=$R/expQ/longchunk/pt_text_1M_cml256_188422/model; ML=$R/expQ/longchunk/pt_text_1M_cml1024_188466/model ;;
+  s2) OUT=$R/expQ/longdoc/ae/ae_nll_s2_n${N}.json
+      MC=$R/expQ/longchunk/pt_mm_cml256/model; ML=$R/expQ/longchunk/pt_mm_cml1024/model ;;
+  *) echo "unknown SET $SET (s1|s2)"; exit 2 ;;
+esac
+echo "FACTORS kind=probe_ae set=$SET models=c256,l1024 n_docs=$N data=msmarco_docs start_row=1000000"
 [[ -e "$OUT" ]] && { echo "refusing to overwrite $OUT"; exit 3; }
-pixi run python -u scripts/longdoc/ae_nll.py --n_docs $N --out $OUT \
-  --model c256=$R/expQ/longchunk/pt_text_1M_cml256_188422/model \
-  --model l1024=$R/expQ/longchunk/pt_text_1M_cml1024_188466/model
+pixi run python -u scripts/longdoc/ae_nll.py --n_docs $N --out $OUT --model c256=$MC --model l1024=$ML
 RC=$?; echo "=== EXIT CODE $RC ==="; exit $RC

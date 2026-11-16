@@ -1,0 +1,61 @@
+== verifier 2026-11-17_0730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session ad9c90bb-ec30-4780-a193-b5e6aed67ce8  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+277 lines)
+→ Glob: {"pattern": "expQ/longdoc/**/*.json", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "expQ/longdoc/**/*.txt", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/ae/ae_pair_n500.txt
+  ↳ 1	500 documents; NLL in nats per token (lower = better); d = l1024 - c256 (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/pair_s2_c256_vs_l1024_n167.txt
+  ↳ 1	ref 501 / A 501 / B 501 pages; paired on 501 (+6 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/QUESTION.md (+24 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+36 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-17_0500   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+20 lines)
+→ Grep: {"pattern": "paired_judge|McNemar|191221|self-pair|98\\.5|646,042|646042", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0730.log", "output_mode": "content"}
+  ↳ 2:== sensors: ts=1794868201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=12.6 idle_h=0.3 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8424 sig=3f0317b9 same=0 behind=0  (+4 lines)
+Checking the 07:30 wake's log against STATE.md's claims now.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0730.log
+  ↳ 1	== campaign longdoc wake 2026-11-17_0730  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+92 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-17_0730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+29 lines)
+→ Grep: {"pattern": "Patchable|never|wake may|wake can|law", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md", "output_mode": "content", "-i": true}
+  ↳ 1:# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+40 lines)
+→ Grep: {"pattern": "1687|70\\.5|-1\\.1|−1\\.1|−3\\.3|-3\\.3|190270|190273", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 160	  cell took 28-98 min, photos 18 min, text 17 min (campaign_probes/CAMPAIGN.md:116-120). About 62 cells are planned (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json
+  ↳ 1	{ (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json
+  ↳ 40	  "judge/hotpot_bridge": 0.5522138680033417, (+29 lines)
+→ Grep: {"pattern": "^   \"judge\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json", "output_mode": "count"}
+  ↳ expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json:1500 (+2 lines)
+→ Grep: {"pattern": "homer-|EXIT|exit|Elapsed|wrote", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191221.out", "output_mode": "content", "head_limit": 15}
+  ↳ 1689:wrote expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+1 lines)
+Health of the C256 ten-chunk text file checks out (1,500 rows, judge on all). Now checking the node and the other jobs' files.
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191221.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-4bd62eee-a45a-0c46-e6c7-8f172259a34d) (+15 lines)
+→ Grep: {"pattern": "\"191305\"|\"191306\"|\"191307\"|\"191308\"|\"191221\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1030:[Omitted long matching line] (+4 lines)
+→ Grep: {"pattern": "^  \"judge\": |^  \"n\": |^  \"image_max_pixels\"|^  \"judge_unparseable\"|^  \"raw_policy\"|^  \"gold_only\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "t_*/eval/*px1003520*.json", "output_mode": "con…
+  ↳ expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json:19:  "n": 1500, (+47 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json
+  ↳ 1	{ (+13 lines)
+→ Grep: {"pattern": "s2|SET|cml256|cml1024|stage-2|STAGE", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/ae_nll.sbatch", "output_mode": "content"}
+  ↳ 12:#   expmon launch --exp longdoc --stage T --time … scripts/longdoc/ae_nll.sbatch [N_DOCS] [SET] (+9 lines)
+→ Grep: {"pattern": "191221|191308", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1168:[Omitted long matching line] (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py
+  ↳ 55	    def clean_text(self, text: str) -> str: (+19 lines)
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147, verifier: supported): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4696 turns=27 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "audit_191147/audit.json:7-11 has stage_rows 2000, finetune_m…"}, {"claim": "provisional: the evaluation feeds the long inputs it claims …", "status": "provisional", "reason": "Verdict 191147 has the same numbers: cut 0/1,500, parity 1,5…"}, {"claim": "provisional: the length-effect calculator recovers the tail …", "status": "provisional", "reason": "EXPERIMENTS.md:1116 has d −.1687 [−.1960, −.1407], sign +121…"}, {"claim": "provisional: arm T LOCATE DECIDED — the long-chunk documents…", "status": "provisional", "reason": "The result files match. The gold-only files have n 1500, px …"}, "… +6 more"], "summary": "Every cited number I checked matches its source file: the au…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147, verifier: supported): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documents 1,500/1,500, 40 text passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500; 4-page documents 0/1,500 (max 485 <MEM>s, span 3,962).","status":"supported","reason":"audit_191147/audit.json:7-11 has stage_rows 2000, finetune_max_mem 488, finetune_max_span 4017 and n_errors 0. Verdict 191147 gives the same out-of-range counts (1,500/1,500 at 10 and 20 pages, 1,498/1,500 at 40 passages, 35/1,500 at 20 passages, 198/500 for whole documents). It is correctly called a count, not a cause."},{"claim":"provisional: the evaluation feeds the long inputs it claims (arm A, gate passed; job 191147, verdict closed): truncation cut 0/1,500 and pisco/base parity 1,500/1,500 on every gating variant; health 646,042 = 646,042; the CML 256 controls do fail (924/1,500 and 275/1,500). Limits stated; re-check on recorded runs 1,500/1,500, 1,500/1,500, 500/500 — a count.","status":"provisional","reason":"Verdict 191147 has the same numbers: cut 0/1,500, parity 1,500/1,500, health 646,042 = expected, controls cut 924 and 275. The wake labelled it provisional and named its own limits. On documents the cut check can only fail on prompt length, and the audit's parity used one row builder for both modes, so provisional is the right level."},{"claim":"provisional: the length-effect calculator recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, 1,500 pairs): d = −.1687 [−.1960, −.1407], sign test +121/−374 (target −.169 ± .005), self-pair 0. Arm J control 1 of 2; control 2 (project prompt, EM) not run.","status":"provisional","reason":"EXPERIMENTS.md:1116 has d −.1687 [−.1960, −.1407], sign +121/−374 (p 4e-31) and self-pair 0. That is within ±.005 of −.169. The judge-sensitivity control (project prompt plus EM) has not run, so the instrument is not fully validated."},{"claim":"provisional: arm T LOCATE DECIDED — the long-chunk documents loss sits IN THE COMPRESSED PAGE (both halves of the gate, both seeds). Gold only −6.7 [−8.9,−4.5] McN 106/207 (s42; 191153 .568 vs 191152 .635), −4.9 [−7.1,−2.5] 113/186 (s43; 191155 .579 vs 191154 .628); picked page raw +0.1 [−0.8,+1.1] 29/27 (s42; .827 vs .825), −0.1 [−1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5%; 4-page reference −6.2 / −4.3.","status":"provisional","reason":"The result files match. The gold-only files have n 1500, px 1003520, gold_only true and unparseable 0, with judge .6353/.568 (s42) and .628/.5793 (s43). The picked-page-raw files have judge .8253/.8267 (s42) and .824/.8227 (s43). The CIs and McNemar splits appear only in the verdict notes; no paired_judge output file is saved. The 4-page reference −6.2/−4.3 is in EXPERIMENTS.md:1076. Both halves of the gate pass at both seeds. Two gaps: the gold-only verdicts do no
+== rc=0

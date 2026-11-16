@@ -96,7 +96,11 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   - IN MULTI-PAGE READING if it shrinks inside ±2 pt with `GOLD=1`.
   The transcription port then tells whether L1024's page `<MEM>`s hold fewer words (paired per page, ≥ 3 pt fewer, sign
   test p < .05). The AE probe tells whether stage 1 learned a length the later stages never use: L1024 better at 1,024
-  tokens AND worse at 256, both CIs excluding 0, paired per document. On text, L1024 − C256 on ten short chunks, set
+  tokens AND worse at 256, both CIs excluding 0, paired per document. [2026-11-17 07:30, written before the cell:
+  the same AE probe on the two STAGE-2 models (`ae_nll.sbatch 500 s2`, text in the stage-2 rehearsal format) splits
+  where the page loss enters: L1024 − C256 at `s256` > 0 with the CI above 0 and sign p < .05 → stage 2 erodes
+  L1024's detail on text too (a general capacity loss in stage 2); CI touching 0 or below → the loss is specific to
+  image pages. Controls: `wrong256` far worse than `s256` for both models, self-pair 0.] On text, L1024 − C256 on ten short chunks, set
   against the recorded g10 pairs, tells whether its text loss depends on the chunk length used at eval.
 - Health per cell (a 0.0 that is a bug looks like a result):
   - n rows = the set size, a `judge` on every row, `judge_unparseable` 0, no "exceeds --decoder_max_length" error;
