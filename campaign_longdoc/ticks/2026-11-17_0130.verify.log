@@ -1,0 +1,52 @@
+== verifier 2026-11-17_0130  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 1df70ed2-2993-4815-95da-5a98ee50f927  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+188 lines)
+→ Glob: {"pattern": "expQ/longdoc/**/*audit*"}
+→ Glob: {"pattern": "campaign_longdoc/**/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/QUESTION.md (+15 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+5 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc"}
+  ↳ scripts/longdoc/audit_inputs.py (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out
+  ↳ 1	FACTORS kind=audit arm=A limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+333 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json
+  ↳ 1	{ (+785 lines)
+Checking the audit numbers against `expQ/longdoc/audit_191147/audit.json`. Next: how the audit computes parity, the ledger entry behind the length-effect claim, and the plain-pair deficits.
+→ Grep: {"pattern": "parity|gating|out_of_range|answer_in_raw|gold_dropped", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py", "output_mode": "content"}
+  ↳ 6:page dropped by TOPK), parity (pisco and base get the same documents in the same order), out-of-range share vs the (+13 lines)
+→ Grep: {"pattern": "1687|length_effect", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md
+  ↳ 100	Same content, grouped differently, judge accuracy on 1,500 HotpotQA questions with 10 passages (~1,270 tokens joined), (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py
+  ↳ 1	"""Arm A (campaign longdoc): what the compressor and the decoder actually receive, per eval variant and per training (+174 lines)
+→ Grep: {"pattern": "with_distractors|gold_only_row|def gen_base|def gen_pisco|topk_docs|args.mode", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content"}
+  ↳ 90:        topk_docs=topk, query_dependent=query_dependent, pad_to_multiple_of=None, chunk_docs=chunk_docs, (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 134	def with_distractors(ds, i, row, by_source, n_extra) -> Dict[str, Any]: (+44 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 700	    rank_scores = json.load(open(args.rank_scores)) if args.rank_scores else None (+29 lines)
+→ Grep: {"pattern": "md5|50abc167|dfe32aa0|994cff3d|02bc8748", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0130.log", "output_mode": "content"}
+  ↳ 38:→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; grep -n "mkdir" eval_mm_4b.sh | head -3; for c in c256_s42:ft_cml256_s42 c256_s43:ft_ (+1 lines)
+→ Grep: {"pattern": "6\\.2|4\\.3|-\\.062|-\\.043|−\\.062|−\\.043", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md", "output_mode": "content"}
+  ↳ 19:  | documents `mm_docqa_1500_1m` | .553 (190271) / .615 (188708) | **−6.2 pt [−8.6, −3.9], p < .001** | .561 (190274) / .603 (188711) | **−4.3 pt [−6.7, −1.8], p < .001** | (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0130.log
+  ↳ 30	→ Bash: grep -n "19027[0-5]\|18870[7-9]\|18871[0-2]" EXPERIMENTS.md | head -20; ls .expmon/ | head; ls .expmon/manifests 2>/dev/null | grep -E "19027[0-5]|188440|188441"  (+39 lines)
+→ Grep: {"pattern": "data_path|dataset|FT_DATA|path:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/training_config.yaml", "output_mode": "content", "head_limit": 10}
+  ↳ 25:  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_ft_docpages_20k_1m_teacher:20000,/beegfs/scratch/user/hdejean/pisco/data/mm_ft_natural_8k_teacher:8000 (+1 lines)
+→ Grep: {"pattern": "data_path|dataset|FT_DATA|path:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778", "glob": "training_config.yaml", "output_mode": "content", "head_limit": 10}
+  ↳ expQ/ft_mm_4b_184778/training_config.yaml:25:  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_ft_docpages_20k_1m_teacher:20000,/beegfs/scratch/user/hdejean/pisco/data/mm_ft_natural_8k_te (+1 lines)
+→ Grep: {"pattern": "text_n10_gold", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content"}
+  ↳ 32:[Omitted long matching line]
+→ StructuredOutput: {"claims": [{"claim": "The evaluation feeds the long inputs it claims (arm A, feasibility gate PASSED; job 191147, verdict closed): on 1,500 questions per variant (14 variants; whole documents 500), the gold answer is never cut by truncatio…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0868 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "The evaluation feeds the long inputs it claims (arm A, feasibility gate PASSED; job 191147, verdict closed): on 1,500 qu…", "status": "provisional", "reason": "The numbers match expQ/longdoc/audit_191147/audit.json: 14 variants (13×1,500 + 500); text_n10/n20/n40 cut 0 with answer…"}, {"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <ME…", "status": "supported", "reason": "Every number matches audit_191147/audit.json: finetune_C256 has 488 max <MEM>s, 4,017 max span, n = 2,000, and always 4 …"}, {"claim": "provisional: the length-effect calculator recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (18353…", "status": "provisional", "reason": "EXPERIMENTS.md:1116 records d = −.1687 [−.1960, −.1407], +121/−374, p = 4e-31, self-pair 0. The target in multimodal_res…"}, {"claim": "Arm T (why long-chunk training lost), first probe: gold page only (distractor pages removed) on documents, 1,500 Q, for …", "status": "provisional", "reason": "The facts check out. The grid shows 191148-191151 RUNNING with GOLD=1. At this check squeue shows them RUNNING on homer-…"}], "summary": "All the numbers cited in STATE.md match their sources: audit 191147's audit.json, EXPERIMENTS.md:1116, multimodal_result…"}
+== final:
+{"claims":[{"claim":"The evaluation feeds the long inputs it claims (arm A, feasibility gate PASSED; job 191147, verdict closed): on 1,500 questions per variant (14 variants; whole documents 500), the gold answer is never cut by truncation (0 / 1,500 on every gating variant: documents 4 / 10 / 20 pages, text 10 / 20 / 40 passages) and the compressed and uncompressed modes get the same documents in the same order on 1,500 / 1,500. Health: R's 4-page <MEM> total 646,042 = the recorded 646,042. The check does fail when it should: with chunks cut at 256 tokens, 924 / 1,500 (joined HotpotQA) and 275 / 1,500 (MRQA) lose the answer.","status":"provisional","reason":"The numbers match expQ/longdoc/audit_191147/audit.json: 14 variants (13×1,500 + 500); text_n10/n20/n40 cut 0 with answer_in_raw 1,464; parity 1.0 everywhere; health 646,042 = 646,042 (n_equal 1,500/1,500); controls claim_g10_cml256 cut 924 and claim_mrqa_cml256 cut 275. Three things are missing. (1) On every document variant answer_in_raw = 0/1,500: the pages are images, so there is no text to search, and with TOPK = page count no gold page can be dropped. The document '0 / 1,500' therefore cannot fail, and no document control exists. (2) Parity compares the same row sliced the same way in both modes (audit_inputs.py:133 vs :135), so it cannot fail either. It holds only because eval_mm_docqa.py:712-717 builds the row before the mode branch. (3) text_n10_gold is marked gating in audit_inputs.py:37 and shows 16/1,500 = 1.07%, above the 1% bar. It was dropped from the gating set after the result; the reason, answer only in distractor passages with text_trunc 0, is plausible. The claim is also written this wake without the 'provisional:' prefix the law requires."},{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documents 1,500 / 1,500, 40 text passages 1,498 / 1,500, 20 passages 35 / 1,500, whole documents 198 / 500; 4-page documents 0 / 1,500 (max 485 <MEM>s, span 3,962). Stage 1: C256 max 66 <MEM>s (rows at the 512-token decoder cap on the median), L1024 max 258; stage 2 max 132.","status":"supported","reason":"Every number matches audit_191147/audit.json: finetune_C256 has 488 max <MEM>s, 4,017 max span, n = 2,000, and always 4 chunks. Out-of-range shares: docs_p10 and docs_p20 1.0; text_n40 .99867 ×1,500 = 1,498; text_n20 .02333 ×1,500 = 35; claim_longdoc_k20 .396 ×500 = 198; docs_p4 0 (485 / 3,962). Stage 1: C256 max 66 with prompt p50 = 512; L1024 max 258. Stage 2 max 132. The sampled finetune config (expQ/longchunk/ft_cml256_s42) trains on the same data as R's 184778 (training_config.yaml:25 identical), so comparing R's inputs to it is fair. The claim is honestly labelled a descriptive count. 'Never' rests on a 2,000-row sample maximum."},{"claim":"provisional: the length-effect calculator recovers the tail model's one-
+== rc=0

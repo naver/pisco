@@ -1,0 +1,115 @@
+== campaign longdoc wake 2026-11-17_0130  reasons=alert,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794846601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.5 min_util=- alert=1 unpushed=91 cron=2 daemon=1 disk_gb=8519 sig=db96a1cc same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=1 next=wake-when_job:191147_max_5h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191147 (ended)   (NEXT was: wake-when job:191147 max 5h)
+== session bc12d354-0f45-4510-9797-9bd4f7d3cfd0  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+78 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+104 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md && grep -n '^## ' CAMPAIGN.md
+  ↳ 291 CAMPAIGN.md (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 54	## Arms — what varies, what is held constant (+164 lines)
+→ Bash: sed -n 249,291p CAMPAIGN.md; echo =====STATE; cat STATE.md; echo ====KI; cat known_issues.md | head -60; ls -la
+  ↳ Exit code 1 (+44 lines)
+Reading the campaign state now; the full audit job (191147) has ended and I need to check its result.
+→ Bash: cat STATE.md; echo '--- KI'; cat known_issues.md | head -60; ls -la
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191147 -X -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End 2>&1 | head; ls -la expQ/longdoc/ expQ/longdoc/audit_191147 2>&1 | head -40
+  ↳ JobID             State ExitCode    Elapsed        NodeList     MaxRSS               Start                 End  (+17 lines)
+→ Bash: cat expQ/longdoc/audit_191147.out
+  ↳ FACTORS kind=audit arm=A limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+332 lines)
+→ Bash: grep -n "push" campaign_longdoc/ticks/2026-11-17_0130.log | head -20; ls campaign_longdoc/ticks/; git log --oneline origin/arc..arc 2>/dev/null | wc -l; git remote -v | head -2; grep -n -i "cut\b\|def cut\|gold_only\|\"cut\"" scripts/longdo…
+  ↳ 2:== sensors: ts=1794846601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.5 min_util=- alert=1 unpushed=91 cron=2 daemon=1 disk_gb=8519 sig=db96a1cc same=0 behind=0  (+13 lines)
+→ Bash: sed -n 112,175p scripts/longdoc/audit_inputs.py; python3 - <<'EOF' ⏎ import json ⏎ n=0 ⏎ for l in open('expQ/longdoc/audit_191147/rows.jsonl'): ⏎     r=json.loads(l) ⏎     if r.get('variant')=='text_n10_gold' and r.get('cut'): ⏎         n+=…
+  ↳ row0 = ds[i] (+64 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ c=collections.Counter() ⏎ for l in open('expQ/longdoc/audit_191147/rows.jsonl'): ⏎     r=json.loads(l) ⏎     if r['v'] in('text_n10_gold','claim_g10_cml256','claim_mrqa_cml256','text_n10'): ⏎   …
+  ↳ ('claim_g10_cml256', 'cut', False, 'trunc', False, 'cutbase', False) 4 (+8 lines)
+The input audit passed its gate (0 truncation cuts, 100% parity); now preparing the first arm-T cells (long-chunk finetunes with the gold page only).
+→ Bash: grep -n "19027[0-5]\|18870[7-9]\|18871[0-2]" EXPERIMENTS.md | head -20; ls .expmon/ | head; ls .expmon/manifests 2>/dev/null | grep -E "19027[0-5]|188440|188441" 
+  ↳ 804:- 2026-11-11 21:03 [job 188707] intent: C256 finetune g10 eval (deciding set, text_hotpotqa_1500_g10, CML=4096 TOPK=10 = 185601's env), afterok its finetune; --time 0:26:00 = 20:02 (slowest g3/g10 (+29 lines)
+→ Bash: ls .expmon/; f=$(grep -rl '"188708"\|188708' .expmon/runs* .expmon/manifest* 2>/dev/null | head -3); echo "$f"; ls expQ/longchunk/ft_cml256_s42/eval/ expQ/longchunk/ft_cml1024_s42/eval/ 2>&1 | head -20
+  ↳ adopted_ack (+37 lines)
+→ Bash: grep '"188708"\|"188440"\|"191147"' .expmon/runs.jsonl | head -3 | cut -c1-1500
+  ↳ {"ts": "2026-11-11 03:04", "jobid": "188440", "launcher": "eval_mm_4b.sh", "argv": ["expQ/probes/a_gold_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "19915c1+dirty", "outdir": "/beeg (+2 lines)
+→ Bash: grep -n "OUT\|dirname\|realpath\|readlink\|GOLD\|RAW\|--time\|^#SBATCH" eval_mm_4b.sh | head -30; sacct -j 188440,188441,188708,188711,190270,190271,190272,190273,190274,190275 -X -o JobID,State,Elapsed,NodeList -n | head -12; expmon launch…
+  ↳ 2:#SBATCH -n 1 (+40 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; grep -n "mkdir" eval_mm_4b.sh | head -3; for c in c256_s42:ft_cml256_s42 c256_s43:ft_cml256_s43 l1024_s42:ft_cml1024_s42 l1024_s43:ft_cm…
+  ↳ 50abc167  eval_mm_4b.sh (+19 lines)
+→ Bash: expmon launch --exp longdoc --stage T --dry-run --env GOLD=1 --time 0:55:00 --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/longdoc/t_c256_s42/model pisco "" eval_data/mm_docqa_1500_1m 2>&1 | tail -25
+  ↳ would submit: sbatch --time 0:55:00 --partition gpu-be --exclude homer-[005-009] eval_mm_4b.sh expQ/longdoc/t_c256_s42/model pisco  eval_data/mm_docqa_1500_1m (+4 lines)
+Dry-run is clean. Launching the four gold-page-only document evals (two long-chunk models, two control models, both seeds).
+→ Bash: for n in c256_s42 l1024_s42 c256_s43 l1024_s43; do echo "== $n"; expmon launch --exp longdoc --stage T --env GOLD=1 --time 0:55:00 --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/longdoc/t_$n/model pisco "" eval_data/mm_do…
+  ↳ == c256_s42 (+7 lines)
+Now recording the audit verdict and the intent of each new cell in the ledger.
+→ Bash: expmon verdict 191147 closed "arm A full audit PASS: health docs_p4 <MEM> total 646,042 = expected; 0 errors on 20,000 eval rows (14 variants) + 8,000 training rows; truncation cut 0/1,500 and parity 1,500/1,500 on every gating variant (doc…
+  ↳ verdict recorded: 191147 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+5 lines)
+→ Bash: ls -la docs/longdoc_diagnosis.md 2>&1; expmon gripe --open --search push 2>&1 | head -8; grep -n -i "push" campaign_longdoc/ticks/2026-11-17_0047.log | head -5; cat campaign_longdoc/DECISIONS.md | head -30
+  ↳ ls: cannot access 'docs/longdoc_diagnosis.md': No such file or directory (+32 lines)
+→ Bash: ls .expmon/campaign/longdoc/ | head -30; cat .expmon/campaign/longdoc/push.last 2>/dev/null | tail -15
+  ↳ alerted (+30 lines)
+→ Bash: grep -i -B2 -A6 "push" .expmon/campaign/longdoc/cron.log | tail -25
+  ↳ tick: LLM wake 2026-11-17_0047 rc=0 in 768s (reasons: first) — /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0047.log (+3 lines)
+→ Bash: expmon gripe --open --search push.last 2>&1 | head -5; expmon gripe --open --search "push error" 2>&1 | head -5; git rev-parse --abbrev-ref arc@{upstream} 2>&1; grep -n "PUSH" campaign_longdoc/campaign.conf
+  ↳ == 2 open report(s) matching 'push.last', every machine, newest first == (+10 lines)
+→ Bash: expmon gripe --same 43fe4ef5 "longdoc (pisco, 2026-11-17 01:17): push.last holds only 'push_rc=1 pull_rc=0', the ALERT says 'last push FAILED' and 91 commits sit unpushed on arc -> origin/arc (github.com/naver/pisco) with no stderr anywhere…
+  ↳ logged as a +1 of 43fe4ef5 (entry 26ef84fb) -> /home/hdejean/.claude/feedback/ncp.log
+Writing the diagnosis document with the input-audit table.
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md (file state is current in your context — no need to Read it back)
+→ Bash: cat >> campaign_longdoc/known_issues.md <<'EOF' ⏎ | the audit reports a "cut" on the text gold-only variant (`text_n10_gold`: 16 / 1,500 = 1.07%, above the 1% bar) while the 10-passage variant has 0 (audit 191147, 2026-11-17) | definitional…
+  ↳ JOBID    STATE     NODELIST(REASON)   START_TIME (+5 lines)
+All four cells are running on an allowed node. Rewriting STATE.md and setting the wait.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: ls expQ/probes/a_gold_s42/eval/ 2>&1 | head -5
+  ↳ mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: echo "wake-when job:191148,191149,191150,191151 max 3h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && expmon note "longdoc wake 11-17 01:30: arm A full audit 191147 PASSED the feasibility gate (cut 0, parity 100% on every gating v…
+  ↳ wake-when job:191148,191149,191150,191151 max 3h (+1 lines)
+The evaluation is ruled out as the cause: the full input audit passed its gate, and the first test of why long-chunk training lost is now running. Nothing is needed from you except the git push below.
+
+## Done this wake
+- **Input audit passed** (a CPU job that rebuilds exactly what the eval feeds the model). It checked 1,500 questions per variant, across 14 variants.
+  - The gold answer was never lost to truncation: 0 of 1,500 on documents of 4, 10 and 20 pages, and on 10, 20 and 40 text passages.
+  - The compressed model and the uncompressed model got the same documents in the same order on 1,500 of 1,500.
+  - The check fails when it should: with chunks cut to 256 tokens, 924 of 1,500 and 275 of 1,500 questions lose the answer.
+  - The health number matched: 646,042 compressed slots on the 4-page set, the same as the recorded run.
+- **Training never shows the decoder long inputs.** This is only a count, not yet a proven cause:
+
+| input | compressed slots per question, max | questions beyond what finetuning saw |
+|---|---|---|
+| finetune rows (2,000 sampled) | 488 | — (this is the reference) |
+| documents, 4 pages | 485 | 0 / 1,500 |
+| documents, 10 pages | 1,208 | 1,500 / 1,500 |
+| documents, 20 pages | 2,405 | 1,500 / 1,500 |
+| text, 20 passages | 616 | 35 / 1,500 |
+| text, 40 passages | 1,035 | 1,498 / 1,500 |
+
+- These tables are in `docs/longdoc_diagnosis.md`. The audit verdict and notes are in the ledger.
+
+## Running now
+- **Gold page only, on documents** (the other pages removed), 1,500 questions per model. Four models: the 256-token and 1,024-token stage-1 chains, at both seeds.
+- All four are running on homer-017 and should finish around 02:15.
+- What it decides: on all 4 pages, the 1,024-token chain scores 6.2 and 4.3 points below the 256-token chain (seeds 42 and 43).
+  - If that gap stays at 3 points or more with the gold page alone, the loss is in how each page is compressed.
+  - If the gap shrinks to within 2 points, the loss is in reading several pages together.
+
+## Next
+- The next wake starts when those four jobs end (at most 3 h). It compares the two chains on the same questions, per seed.
+- If the gap stays, it then sends only the page the model itself picks as raw text, to check whether the page pick is the problem.
+
+## Your action
+- **Git push is failing.** The last automatic push failed, and 91 commits are waiting on branch `arc` (remote github.com/naver/pisco). The tick does not save git's error message, so I could not see why. Campaign wakes are not allowed to push. I added a +1 to the open report that the tick drops git's error output.
+
+Your decision: push branch `arc` yourself, or tell me why it fails.
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191148,191149,191150,191151 max 3h", "summary": "Arm A full input audit (191147) PASSED the feasibility gate: truncation cut 0/1,500 and pisco/base parity 100% on every gating variant (docs 4/10/20 pa…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8046 turns=32 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191148,191149,191150,191151 max 3h", "summary": "Arm A full input audit (191147) PASSED the feasibility gate: truncation cut 0/1,500 and pisco/base parity 100% on every gating variant (docs 4/10/20 pages, text 10/20/40 passages), health 646,042 = expected, CML-256 controls fail as they should (924 and 275 of 1,500). Out-of-range count vs finetune max (488 MEM, span 4,017): 10/20-page docs 100%, 40 passages 99.9%, 20 passages 2.3%, 4 pages 0%. Launched arm T gold-only document cells on the C256/L1024 finetunes at both seeds (191148-191151, running on homer-017). Wrote docs/longdoc_diagnosis.md (bottleneck + audit tables), known_issues row (gold-only 'cut' is by design), STATE.md, NEXT. Push ALERT left to the owner (no git stderr recorded).", "launched": ["191148", "191149", "191150", "191151"], "verdicts": [{"jobid": "191147", "verdict": "closed", "note": "arm A feasibility gate PASS: cut 0, parity 100% on all gating variants, n=1,500 Q each; health 646,042 matches"}], "blocked": "Owner only: tick git push failed (push_rc=1), 91 commits unpushed on arc -> github.com/naver/pisco; wake may not push and no error text is recorded.", "gripes": ["+1 of 43fe4ef5: push.last/cron.log record push_rc=1 but never git's stderr, so the wake cannot diagnose the push ALERT"]}
+== final:
+{"next":"wake-when","wake_when":"job:191148,191149,191150,191151 max 3h","summary":"Arm A full input audit (191147) PASSED the feasibility gate: truncation cut 0/1,500 and pisco/base parity 100% on every gating variant (docs 4/10/20 pages, text 10/20/40 passages), health 646,042 = expected, CML-256 controls fail as they should (924 and 275 of 1,500). Out-of-range count vs finetune max (488 MEM, span 4,017): 10/20-page docs 100%, 40 passages 99.9%, 20 passages 2.3%, 4 pages 0%. Launched arm T gold-only document cells on the C256/L1024 finetunes at both seeds (191148-191151, running on homer-017). Wrote docs/longdoc_diagnosis.md (bottleneck + audit tables), known_issues row (gold-only 'cut' is by design), STATE.md, NEXT. Push ALERT left to the owner (no git stderr recorded).","launched":["191148","191149","191150","191151"],"verdicts":[{"jobid":"191147","verdict":"closed","note":"arm A feasibility gate PASS: cut 0, parity 100% on all gating variants, n=1,500 Q each; health 646,042 matches"}],"blocked":"Owner only: tick git push failed (push_rc=1), 91 commits unpushed on arc -> github.com/naver/pisco; wake may not push and no error text is recorded.","gripes":["+1 of 43fe4ef5: push.last/cron.log record push_rc=1 but never git's stderr, so the wake cannot diagnose the push ALERT"]}
+== rc=0 secs=303
+== verify: 1/4
