@@ -244,7 +244,8 @@ deliberately unfinished names the properties the wake may not weaken while fixin
 Prefer the probe that would change a training decision. Each verdict names the training arm it motivates, or the idea
 it closes. Training itself goes to the owner (hard rule 8). The prediction written before any cell, kept and marked
 if it turns out wrong: on a fixed model, the image gap is flat from 4 to 20 pages; the L1024 deficit sits in the
-compressed page.
+compressed page. [2026-11-17, provisional: the second half CONFIRMED by arm T at both seeds — gold page only −6.7 /
+−4.9 pt, picked page raw +0.1 / −0.1 pt, 1,500 pairs each; the first half not tested yet (arm L).]
 
 ## Hard rules
 1. Submissions only via `expmon launch --exp longdoc` / `expmon sweep --exp longdoc`; never raw sbatch (enforced).

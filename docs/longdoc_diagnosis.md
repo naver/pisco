@@ -1,6 +1,6 @@
 # Long inputs: where is the bottleneck? (campaign longdoc)
 
-Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 02:35 (arm T: gold-page-only half of the locate test decided).
+Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 03:45 (arm T: locate test decided — the long-chunk loss sits in the compressed page).
 Question (owner): every attempt at long inputs loses accuracy — is the cause the evaluation, the training data,
 training itself, or how the decoder reads many `<MEM>` slots (one `<MEM>` = one compressed slot, 8 tokens each)?
 
@@ -12,7 +12,7 @@ on the far side of 0 at both seeds; "not this cause" needs the CI inside ±3 pt.
 |---|---|---|---|---|---|---|
 | evaluation feeds less than it claims | input audit, CPU (job 191147) | 1,500 Q per variant × 14 variants (one set of 500) | truncation cut 0 / 1,500 and pisco-vs-uncompressed parity 1,500 / 1,500 on every gating variant; the cut check does fail when it should (CML 256 controls: 924 / 1,500 and 275 / 1,500). Limits: on documents the cut check can only fail on prompt length (pages are images, never cut); the audit's parity used one row builder for both modes, so it was re-checked on recorded runs: pages per question equal in both modes on 1,500 / 1,500 (4 pages), 1,500 / 1,500 (10 pages), 500 / 500 (whole documents) — count, not page identity | cut ≤ 1%, parity 100% | provisional: not this cause (gate passed; parity only partly independent) | 0 |
 | training never shows long inputs | input audit (count only) | as above | 10- and 20-page documents: 100% of questions beyond the finetune range; 40 text passages: 99.9%; 20 passages: 2.3% | names a cause only with a paired effect from the reading or position probes | open (count, not yet a cause) | — |
-| long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes | 1,500 Q × 2 seeds | gold page only (distractor pages removed, 1,003,520 px): L1024 − C256 −6.7 [−8.9, −4.5] McNemar 106 / 207 (s42), −4.9 [−7.1, −2.5] 113 / 186 (s43), every source negative; the all-4-pages deficit was −6.2 / −4.3, so removing distractors does not shrink it. Picked page raw: running (jobs 191165-191168) | deficit stays ≤ −3 pt with the gold page alone AND shrinks inside ±2 pt with the picked page raw → it sits in the compressed page; shrinks inside ±2 pt with the gold page alone → multi-page reading | NOT multi-page reading (gate half met at both seeds); compressed page: waits for the picked-page-raw cells | — |
+| long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes | 1,500 Q × 2 seeds | gold page only (distractor pages removed, 1,003,520 px): L1024 − C256 −6.7 [−8.9, −4.5] McNemar 106 / 207 (s42), −4.9 [−7.1, −2.5] 113 / 186 (s43), every source negative; the all-4-pages deficit was −6.2 / −4.3, so removing distractors does not shrink it. Picked page raw (the model picks the answer page from its `<MEM>`s, that page goes raw, the other 3 stay compressed): +0.1 [−0.8, +1.1] McNemar 29 / 27 (s42), −0.1 [−1.1, +0.9] 29 / 31 (s43), every source within ±0.6 pt; both models pick the answer page on 98.5% of questions | deficit stays ≤ −3 pt with the gold page alone AND shrinks inside ±2 pt with the picked page raw → it sits in the compressed page; shrinks inside ±2 pt with the gold page alone → multi-page reading | provisional: IN THE COMPRESSED PAGE (both halves met at both seeds). Not multi-page reading, not the page pick, not how the decoder reads a raw page | the whole 4-page deficit: ~93 (s42) / ~65 (s43) of 1,500 questions (−6.2 / −4.3 pt × 1,500) |
 | length on a fixed model | 4 / 10 / 20 pages, 10 / 20 / 40 passages | — | not started | Δ_len ≤ −3 pt | open | — |
 | reading many `<MEM>`s | keep the most-attended eighth at the long size | — | not started | dilution D ≥ +3 pt | open | — |
 | positions past the trained range | shift `<MEM>` position ids | — | not started | offset cost ≤ −3 pt | open | — |
@@ -24,11 +24,16 @@ Same questions in every row. Rate 8 tokens per slot. Uncompressed = Qwen3.5-4B r
 |---|---|---|---|---|---|---|---|---|
 | 4 pages (gold + 3 distractors) | 455 / 485 | .615 | .553 | −6.2 [−8.6, −3.9] | .603 | .561 | −4.3 [−6.7, −1.8] | .809 |
 | gold page only | 119 / 238 | .635 | .568 | −6.7 [−8.9, −4.5] | .628 | .579 | −4.9 [−7.1, −2.5] | .841 |
-| picked page raw, 3 others compressed | — | running | running | — | running | running | — | — |
+| picked page raw, 3 others compressed | 348 / 367 + 1 raw page | .825 | .827 | +0.1 [−0.8, +1.1] | .824 | .823 | −0.1 [−1.1, +0.9] | .809 (4 pages raw) |
 
-Reading: L1024 answers worse than C256 even when the decoder sees only the one page that holds the answer. Cutting
-the input from 455 to 119 slots per question raises both models by 1-2.5 pt but leaves the gap as it was. Consistent
-with the loss sitting in how L1024 compresses a page, not in reading many pages; the picked-page-raw cells test that.
+Reading: L1024 answers worse than C256 even when the decoder sees only the one page that holds the answer
+(gap unchanged from 455 to 119 slots per question). When the picked page goes in raw, the gap vanishes at both seeds,
+and both models pick the answer page equally often (98.5%). So L1024's page `<MEM>`s still say WHERE the answer is,
+but hold the answer itself worse: stage-1 training on 1,024-token chunks damaged what a compressed page carries, and
+the decoder is not the problem. Next, under the same arm: the transcription probe (fewer words of the page in L1024's
+stage-2 `<MEM>`s?) and the stage-1 autoencoding probe (is L1024 worse at rebuilding 256-token chunks, the length later
+stages use?). Training arm this motivates (owner's call): keep stage-1 chunks at the length later stages compress,
+or add short chunks back to a long-chunk stage 1.
 Off-regime check (451,584 px, not gating): gold page only −6.3 (s42) / −4.7 (s43), the same gap at a smaller page budget.
 
 ## 2. Length curves (accuracy against input size)

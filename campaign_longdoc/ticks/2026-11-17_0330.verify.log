@@ -1,0 +1,59 @@
+== verifier 2026-11-17_0330  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 8424f8ef-f7d9-4ae1-afde-887c675a0ff2  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+250 lines)
+→ Glob: {"pattern": "expQ/longdoc/**/*.json"}
+→ Glob: {"pattern": "campaign_longdoc/**/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/QUESTION.md (+20 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+23 lines)
+→ Grep: {"pattern": "McNemar|route hit|routed|\\[-?\\d\\.\\d|judge", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0330.log", "output_mode": "content", "head_limit": 80}
+  ↳ 15:  ↳ - **On acceptance:** a finding is delivered, nothing is switched on. Four of the five parts of a proper judge are missing: (+80 lines) (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0330.log
+  ↳ 20	  ↳ the effect it must show, every setting varies, each check both passes and fails, a fresh set is held back; (2) the (+103 lines) (+149 lines)
+Still checking the wake's claims against the result files. Next I'm reading the route1 and gold-only result summaries.
+→ Grep: {"pattern": "\"summary\": \\{[^}]{0,600}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "**/*rawroute1*.json", "output_mode": "content", "-o": true}
+  ↳ expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json:2:"summary": { (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_l1024_s42/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+52 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+52 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_l1024_s43/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json
+  ↳ 1	{ (+52 lines)
+→ Grep: {"pattern": "\"judge(/\\w+)?\": |\"image_max_pixels\"|\"gold_only\"|\"n\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "**/*px1003520_gold*.json", "output_mode": "content", "head_limit": 60}
+  ↳ expQ/longdoc/t_l1024_s42/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json:19:  "n": 1500, (+61 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json
+  ↳ 17	  "anls/mpdocvqa": 0.7463456305638254, (+32 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json
+  ↳ 17	  "anls/mpdocvqa": 0.7298430120919149, (+32 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_l1024_s43/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json
+  ↳ 17	  "anls/mpdocvqa": 0.6915192010269734, (+32 lines)
+Route1 and gold-only numbers match the result files. Now checking the audit output and the stage-1 autoencoding numbers.
+→ Grep: {"pattern": "485|3962|488|4017|out_of_range|646042|1498|\"cut", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "head_limit": 80}
+  ↳ 8:  "finetune_max_mem": 488, (+68 lines)
+→ Grep: {"pattern": "\\[ae\\]|d = |CI|sign|self", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/aenll_191172.out", "output_mode": "content"}
+  ↳ 19:[ae] 20 docs >= 1024 tokens from rows 1000000..1000043 (+5 lines)
+→ Grep: {"pattern": "\"parity|\"variant|\"name\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "head_limit": 60}
+  ↳ 14: "variants": { (+14 lines)
+→ Grep: {"pattern": "1687|121 / ?-?374|\\+121", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+1 lines)
+→ Grep: {"pattern": "\\[job 19116[5-9]\\]|\\[job 19117[0-2]\\]|\\[job 19115[2-5]\\]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1124:[Omitted long matching line] (+25 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1124	- 2026-11-17 02:02 [job 191152] [job c256_s42] [job 191148] longdoc arm T intent: relaunch of  with the pixel budget the law requires: GOLD=1 PX=1003520 (distractor pages removed) on documents mm (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1139	- 2026-11-17 02:32 [job 191165] longdoc arm T intent: RAW=route1 PX=1003520 (model picks the answer page from its <MEM>s, that page goes raw, other 3 pages stay compressed) on documents mm_docqa_
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1157	- 2026-11-17 03:36 [job 191172] longdoc arm T intent: plumbing of the new stage-1 autoencoding probe (scripts/longdoc/ae_nll.sbatch 20): C256 (188422) and L1024 (188466) stage-1 text models rebui
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows); out of range: 10- and 20-page documents 1,…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1922 turns=26 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "audit_191147/audit.json: finetune_max_mem 488, finetune_max_…"}, {"claim": "provisional: the evaluation feeds the long inputs it claims …", "status": "provisional", "reason": "audit.json shows cut_pisco/cut_base 0 and parity 1.0 on ever…"}, {"claim": "provisional: the length-effect calculator recovers the tail …", "status": "provisional", "reason": "Ledger EXPERIMENTS.md:1116 (2026-11-17 00:56) has the same n…"}, {"claim": "provisional: arm T LOCATE DECIDED — the long-chunk documents…", "status": "provisional", "reason": "Checked in the result summaries (n 1500, image_max_pixels 10…"}, "… +6 more"], "summary": "Every number I checked matches its source file. That covers …"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows); out of range: 10- and 20-page documents 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500; 4-page documents 0/1,500 (max 485, span 3,962).","status":"supported","reason":"audit_191147/audit.json: finetune_max_mem 488, finetune_max_span 4017; out_of_range_share 1.0 / 1.0 (10 and 20 pages), .99867 (=1,498/1,500), .02333 (=35/1,500), .396 (=198/500), 0.0 for 4 pages with max 485 and span 3962. Verdict 191147 matches. It is a count, correctly labelled as not a cause. 'Never' rests on the maximum of a 2,000-row sample, which the bullet states."},{"claim":"provisional: the evaluation feeds the long inputs it claims (arm A, gate passed; job 191147): truncation cut 0/1,500 and pisco/base parity 1,500/1,500 on every gating variant; health 646,042 = 646,042; the CML 256 controls fail (924/1,500 and 275/1,500); re-check on recorded runs gives equal pages per question in both modes.","status":"provisional","reason":"audit.json shows cut_pisco/cut_base 0 and parity 1.0 on every variant, docs_p4_mems_total 646042 = expected 646042, and the controls fail (cut_pisco 924, rate .616; cut_pisco 275, rate .183). The gate passes as the law states. It stays provisional, as written: parity came from one row builder used for both modes, the cut check on documents can only fail on prompt length, and the recorded-run re-check (184778/173550/174908 vs base) is a count I could not trace to a saved file."},{"claim":"provisional: the length-effect calculator recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, 1,500 pairs): d = −.1687 [−.1960, −.1407], sign test +121/−374 (target −.169 ± .005), self-pair 0. Arm J control 1 of 2; control 2 (project prompt, EM) not run.","status":"provisional","reason":"Ledger EXPERIMENTS.md:1116 (2026-11-17 00:56) has the same numbers: d −.1687 [−.1960,−.1407], +121/−374, p=4e-31, self-pair 0. That is inside the law's ±.005 of −.169. Arm J lists 3 cells and the judge-sensitivity control is not run, so the instrument is not fully validated."},{"claim":"provisional: arm T LOCATE DECIDED — the long-chunk documents loss sits IN THE COMPRESSED PAGE (both halves of the gate, both seeds). Gold page only: −6.7 [−8.9,−4.5] McN 106/207 (s42; 191153 .568 vs 191152 .635), −4.9 [−7.1,−2.5] 113/186 (s43; 191155 .579 vs 191154 .628), every source negative. Picked page raw: +0.1 [−0.8,+1.1] 29/27 (s42; 191166 .827 vs 191165 .825), −0.1 [−1.1,+0.9] 29/31 (s43; 191168 .823 vs 191167 .824), every source within ±0.6. Route hit 98.5% (1,477/1,478/1,476/1,477). All-4-pages deficit −6.2/−4.3.","status":"provisional","reason":"Checked in the result summaries (n 1500, image_max_pixels 1003520, judge_unparseable 0). Gold only: .6353/.568/.628/.5793, so −6.73 and −4.87 pt; McNemar balances −101/1500 and −73/1500 matc
+== rc=0

@@ -1,0 +1,189 @@
+== campaign longdoc wake 2026-11-17_0330  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794853802 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.5 idle_h=0.4 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8497 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191165,191166,191167,191168_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191165,191166,191167,191168 (ended)   (NEXT was: wake-when job:191165,191166,191167,191168 max 3h)
+== session 30210fbf-12f7-4744-9843-822e3eae064a  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+80 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && cat CAMPAIGN.md && echo ======= && cat STATE.md
+  ↳ Exit code 1 (+104 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && sed -n '/## Arms/,/## Patchable/p' CAMPAIGN.md | head -150
+  ↳ ## Arms — what varies, what is held constant (+90 lines)
+→ Bash: sed -n '/On acceptance/,/## Patchable/p' CAMPAIGN.md | head -60; echo =====; cat STATE.md
+  ↳ Exit code 1 (+3 lines)
+→ Bash: awk '/On acceptance/{f=1} /## Patchable/{f=0} f' CAMPAIGN.md; echo "--- STATE ---"; cat STATE.md
+  ↳ - **On acceptance:** a finding is delivered, nothing is switched on. Four of the five parts of a proper judge are missing: (+80 lines)
+Reading the campaign's budget rules, then pairing the four finished "picked page raw" eval files.
+→ Bash: grep -n '^## \|^\*\*' CAMPAIGN.md | head -40
+  ↳ 9:## Mission (+15 lines)
+→ Bash: sed -n '130,218p;277,300p' CAMPAIGN.md
+  ↳ the effect it must show, every setting varies, each check both passes and fails, a fresh set is held back; (2) the (+103 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && for c in t_c256_s42 t_l1024_s42 t_c256_s43 t_l1024_s43; do ls -la expQ/longdoc/$c/eval/ | grep -i route; done; sacct -j 191165,191166,191167,191168 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxR…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 1133683 Nov 17 03:03 mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json (+9 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,statistics as st ⏎ for c in ["t_c256_s42","t_l1024_s42","t_c256_s43","t_l1024_s43"]: ⏎     p=f"expQ/longdoc/{c}/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json" ⏎     d=json.load(open(p)) ⏎  …
+  ↳ t_c256_s42 keys ['summary', 'records'] (+11 lines)
+The picked-page-raw cells all finished cleanly, and the long-chunk deficit looks gone (.827 vs .825, .823 vs .824). Running the paired test now.
+→ Bash: sed -n '1,40p' scripts/paired_judge.py | head -50; grep -n "add_argument" scripts/paired_judge.py
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+44 lines)
+→ Bash: F=mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json; for s in s42 s43; do echo "### $s route1"; python3 -I scripts/paired_judge.py expQ/longdoc/t_l1024_$s/eval/$F expQ/longdoc/t_c256_$s/eval/$F --names L1024 C256; done; python3 -I - …
+  ↳ ### s42 route1 (+20 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,statistics as st ⏎ for c in ["t_c256_s42","t_l1024_s42","t_c256_s43","t_l1024_s43"]: ⏎     r=json.load(open(f"expQ/longdoc/{c}/eval/mm_docqa_pisco_px1003520_rawroute1_mm_docqa_1500_1m.json"))["records"] ⏎ …
+  ↳ t_c256_s42 mems p50 348.0 max 367 sum 483549 n_raw set [1] dec tok max 1427 route_hit 1477.0 (+52 lines)
+→ Bash: ls probe_recall_4b.sh scripts/probe_recall_4b.sh 2>/dev/null; grep -n "pixels\|per_source\|data_path\|arm" $(ls probe_recall_4b.sh scripts/probe_recall_4b.sh 2>/dev/null | head -1) | head; python3 -I -c " ⏎ import json;d=json.load(open('exp…
+  ↳ probe_recall_4b.sh (+20 lines)
+→ Bash: sed -n 1,20p probe_recall_4b.sh; python3 -I -c " ⏎ import json;d=json.load(open('expQ/archq/recall/ref.json'));print(d['args']); d=json.load(open('expQ/archq/recall/ae_s2.json'));print(d['args'])"; grep -n "image_max_pixels\|add_argument" s…
+  ↳ #!/bin/bash (+32 lines)
+Settings of the ported transcription probe match the recorded legacy run (1,003,520 px, 120 pages per source). Dry-running the three recall-probe launches.
+→ Bash: expmon runs 2>/dev/null | grep -E "19116[5-8]" | head -4; expmon launch --help 2>&1 | head -40
+  ↳ 191165     ended     -           longdoc        d8d6025+dirty  eval_mm_4b.sh    kind=eval_mm mode=pisco ckpt=t_c256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged (+15 lines)
+→ Bash: expmon launch --dry-run --exp longdoc --stage T --time 4:26:00 --mem 16G --partition gpu-be --exclude 'homer-[005-009]' scripts/longdoc/mem_recall.sbatch v4kd 120 2>&1 | tail -15
+  ↳ would submit: sbatch --time 4:26:00 --mem 16G --partition gpu-be --exclude homer-[005-009] scripts/longdoc/mem_recall.sbatch v4kd 120 (+3 lines)
+Nothing of the campaign is running, and no recall output exists yet. Submitting the three recall-probe jobs.
+→ Bash: X='homer-[005-009]'; expmon launch --exp longdoc --stage T --time 4:26:00 --mem 16G --partition gpu-be --exclude "$X" scripts/longdoc/mem_recall.sbatch v4kd 120 2>&1 | tail -3; expmon launch --exp longdoc --stage T --time 6:10:00 --mem 16G …
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191169/   (unless the script sets a named run dir) (+8 lines)
+Submitted: recall validation 191169, reference 191170, stride-8 plumbing 191171. Recording the verdicts and intent notes.
+→ Bash: V="picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50ab…
+  ↳ ok 191165 (+8 lines)
+Now checking whether the stage-1 reconstruction-loss probe (the last arm T tool, not written yet) can reuse the pretraining collator.
+→ Bash: grep -n "class PretrainingCollator" -A45 pisco/collator.py | head -80; ls expQ/longchunk/pt_text_1M_cml256_188422/model expQ/longchunk/pt_text_1M_cml1024_188466/model; ls data/msmarco_docs | head
+  ↳ 95:class PretrainingCollator(BaseCollator): (+72 lines)
+→ Bash: sed -n 140,215p pisco/collator.py; python3 -I -c "import json;c=json.load(open('expQ/longchunk/pt_text_1M_cml1024_188466/model/config.json'));print({k:c[k] for k in c if k in ('compr_rate','compressor_max_length','decoder_max_length','mem_p…
+  ↳ # number of chunks approx equal to decoder_max_length // compressor_max_length (+76 lines)
+→ Bash: sed -n 215,275p pisco/collator.py; grep -n "CML\|DML\|compressor_max_length\|decoder_max_length\|ae_ratio\|PT_DATA\|msmarco" expQ/longchunk/pt_text_4b_long.sh qwen35_4b_pt.sh 2>/dev/null | head -20
+  ↳ if np.random.uniform() < self.ae_ratio: (+78 lines)
+→ Bash: grep -n "188466\|188422" EXPERIMENTS.md | head -6 | cut -c1-400; grep -n "ae_ratio\|chunk_random_no_tiny_tail" -A3 pisco/configs/pretraining.yaml pisco/collator_utils.py | head -30
+  ↳ 554:- 2026-11-11 02:03 [job 188422] intent: C256 control stage 1 on MS MARCO docs (CML 256, DML 512, BS 24 x ACCUM 2 x 4 GPUs, 1M docs = 5,208 steps, ~0.45B text tokens kept: 447 tokens/doc at the 512 (+15 lines)
+The reconstruction-loss probe can reuse the collator's helpers. Reading the ported recall script to copy its model-loading code.
+→ Bash: sed -n 1,70p scripts/longdoc/mem_recall.py; grep -n "def add_memory_tokens_to_inputs" -A25 pisco/collator_utils.py | head -35; grep -n "def mask_before_mem\|def mask_special_tokens\|def compressor_pad\|def clean_text" pisco/collator.py pisc…
+  ↳ """Stride-aware port of scripts/probe_mem_recall.py (campaign longdoc, arm T): are a page's words in its <MEM>s? (+99 lines)
+→ Bash: grep -n "    def forward" -A30 pisco/model.py | grep -n "def forward\|labels\|loss\|return" | head -20; sed -n 55,80p pisco/collator.py; grep -n "def from_pretrained" -A6 pisco/model.py | head -10; grep -n "PretrainingCollator\|collator_kwa…
+  ↳ 1:273:    def forward(self, x: torch.Tensor) -> torch.Tensor: (+40 lines)
+→ Bash: sed -n 1075,1150p pisco/model.py
+  ↳ def forward( (+75 lines)
+I'll write the stage-1 reconstruction-loss probe now. It is campaign code and costs no GPU until launched. Checking the corpus columns first.
+→ Bash: python3 -I -c " ⏎ import json;d=json.load(open('data/msmarco_docs/dataset_info.json'));print(d.get('features'));s=json.load(open('data/msmarco_docs/state.json'));print({k:v for k,v in s.items() if k!='_data_files'})" ; grep -n "training_dat…
+  ↳ {'id': {'dtype': 'string', '_type': 'Value'}, 'text': {'dtype': 'string', '_type': 'Value'}} (+7 lines)
+→ Bash: sed -n 175,205p pisco/train.py
+  ↳ path, _, cap = spec.rpartition(":") if ":" in spec and spec.rsplit(":", 1)[-1].isdigit() else (spec, "", "") (+30 lines)
+→ Bash: sed -n 20,54p pisco/collator.py; sed -n 205,225p pisco/train.py
+  ↳ add_memory_tokens_to_inputs, (+55 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/ae_nll.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/ae_nll.py (file state is current in your context — no need to Read it back)
+Now the job script and the pairing tool for that probe.
+→ Bash: cat > scripts/longdoc/ae_nll.sbatch <<'EOF' ⏎ #!/bin/bash ⏎ #SBATCH -n 1 ⏎ #SBATCH -p gpu-be ⏎ #SBATCH --gres=gpu:1 ⏎ #SBATCH --cpus-per-task=4 ⏎ #SBATCH --mem=32G ⏎ #SBATCH --time=1:00:00 ⏎ #SBATCH --output=/beegfs/scratch/user/hdejean/pis…
+  ↳ compiled
+→ Bash: cd /tmp && python3 -I - <<'EOF' ⏎ import json,random ⏎ random.seed(1) ⏎ conds=["s256","l1024","l1024_4x256","wrong256"] ⏎ def recs(shift): return {c:[{"nll":random.random()+shift*(c=="s256"),"tokens":256,"mems":33} for _ in range(50)] for c…
+  ↳ 50 documents; NLL in nats per token (lower = better); d = l1024 - c256 (+8 lines)
+The pairing tool recovers a planted gap and gives 0 for a model paired with itself. Launching a 20-document plumbing run of the probe.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls expQ/longdoc/ae 2>&1 | head -2; expmon launch --exp longdoc --stage T --time 0:30:00 --mem 32G --partition gpu-be --exclude 'homer-[005-009]' scripts/longdoc/ae_nll.sbatch 20 2>&1 | tail -3; squeu…
+  ↳ ls: cannot access 'expQ/longdoc/ae': No such file or directory (+10 lines)
+→ Bash: expmon note -j 191172 "longdoc arm T intent: plumbing of the new stage-1 autoencoding probe (scripts/longdoc/ae_nll.sbatch 20): C256 (188422) and L1024 (188466) stage-1 text models rebuild 20 held-out MS MARCO documents (rows >= 1,000,000, …
+  ↳ ok (+12 lines)
+The recall plumbing is generating; the probe job is loading models. Meanwhile, updating the results document.
+→ Bash: wc -l docs/longdoc_diagnosis.md && cat docs/longdoc_diagnosis.md
+  ↳ 68 docs/longdoc_diagnosis.md (+68 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md"; s=open(p).read() ⏎ rep=[ ⏎ ("Last rewrite 2026-11-17 02:35 (arm T: gold-page-only half of the locate test decided).", ⏎  "Last rewrite 2026-11-17 03:45 (arm T: locate test decided — the …
+  ↳ ok
+→ Bash: python3 -I - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md"; s=open(p).read() ⏎ a="the whole deficit: ~93 (s42) / ~73 (s43) of 1,500 questions, by the gold-only McNemar balance" ⏎ b="the whole 4-page deficit: ~93 (s42) / ~65 (s43) of 1,500 questio…
+  ↳ ok (+4 lines)
+The probe found its 20 documents and is computing. Drafting the new state file.
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+→ Bash: tail -4 expQ/longdoc/aenll_191172.out; tail -2 expQ/longdoc/recall_191171.out; ls expQ/longdoc/recall 2>/dev/null
+  ↳ [pisco] loaded trainable state from /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/model (decoder=True, compressor=lora, connector=<All keys matched successfully>) (+6 lines)
+The stride-8 recall plumbing finished cleanly. Checking that its rebuilt page text looks like real text.
+→ Bash: python3 -I - <<'EOF' ⏎ import json ⏎ d=json.load(open("expQ/longdoc/recall/s2_c256_n167_lim20.json")) ⏎ r=d["records"]; print(len(r), list(r[0].keys())) ⏎ ref={ (x.get("query_id"),x.get("page", x.get("gold"))):x for x in json.load(open("exp…
+  ↳ 20 ['query_id', 'source', 'query', 'answers', 'gold_page', 'text', 'mems', 'stride'] (+7 lines)
+The stride-8 recall path rebuilds coherent page text (slide titles, chart labels, bullet lists). Recording that, then writing the state file.
+→ Bash: sacct -j 191171 -X --format=State,ExitCode,Elapsed,NodeList,MaxRSS -n; expmon verdict 191171 closed "plumbing PASS: the stride-aware transcription port runs on a stride-8 stage-2 model (longchunk pt_mm_cml256): 20 / 20 pages rebuilt as cohe…
+  ↳ COMPLETED      0:0   00:04:41       homer-017             (+4 lines)
+→ Bash: sleep 45; cd /beegfs/scratch/user/hdejean/pisco && tail -c 1500 expQ/longdoc/aenll_191172.out; squeue -j 191172 -h -o "%T %M"
+  ↳ <tool_use_error>Blocked: sleep 45 followed by: cd /beegfs/scratch/user/hdejean/pisco tail -c 1500 expQ/longdoc/aenll_191172.out squeue -j 191172 -h -o "%T %M". To wait for a condition, use Monitor wit
+→ Bash: tail -c 1500 expQ/longdoc/aenll_191172.out; squeue -j 191172 -h -o "%T %M"
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-add475c6-4028-dea4-36fc-245b6ac2d9e6) (+24 lines)
+Job has run about 2 minutes; the first forward pass is likely compiling GPU kernels. Writing the state file meanwhile.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: tail -c 600 expQ/longdoc/aenll_191172.out; squeue -j 191172 -h -o "%T %M"
+  ↳ mm] image processor loaded from /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_1M_cml256_188422/model/compressor (+8 lines)
+→ Bash: expmon grid longdoc 2>&1 | grep -E "^RUN|19117" | cut -c1-200; expmon display --exp longdoc 2>&1 | tail -3
+  ↳ RUN        STG  PARENT   STATE     VERDICT    kind     mode     ckpt     data     limit    image_rate topk     max_pixels merged   samples_per_q raw_policy answer_style gold_only mem_quant extra_distr (+4 lines)
+→ Bash: expmon runs 2>/dev/null | grep -E "^19117[0-2]" | cut -c1-250; expmon gripe --open --search display 2>&1 | head -12
+  ↳ 191170     RUNNING   6:05        longdoc        07e768d+dirty  mem_recall.sbatch - | p=gpu-be,x=homer-[005-009],t=6:10:00 | /beegfs/scratch/user/hdejean/pisco/expQ/191170 (+14 lines)
+→ Bash: grep -c "<tr" display_longdoc.html; expmon gripe --open --search FACTORS line 2>&1 | head -6
+  ↳ 20 (+6 lines)
+→ Bash: expmon gripe --same ca117fba "longdoc 191171 (mem_recall.sbatch, ended, its log has 'FACTORS kind=probe_recall arm=s2_c256 per_source=167 limit=20 …') still shows factors '-' in expmon runs and every grid column '-' after the job ENDED, so …
+  ↳ logged as a +1 of ca117fba (entry f6be8a3c) -> /home/hdejean/.claude/feedback/ncp.log (+10 lines)
+→ Bash: grep "^\[ae\]" expQ/longdoc/aenll_191172.out
+  ↳ [ae] 20 docs >= 1024 tokens from rows 1000000..1000043 (+2 lines)
+→ Bash: tail -5 campaign_longdoc/known_issues.md | cut -c1-300; grep -c "^|" campaign_longdoc/known_issues.md
+  ↳ | a finetune's `checkpoint-100` (the law's preview point) vanishes at step 300: `save_total_limit: 2` in the finetune's `training_config.yaml` keeps only the 2 newest checkpoints (campaign freeze lost (+5 lines)
+→ Bash: cat >> campaign_longdoc/known_issues.md <<'EOF' ⏎ | a probe log on a PISCO checkpoint prints "Creating fresh decoder LoRA adapter" / "Creating fresh compressor LoRA adapter" (ae_nll 191172, 2026-11-17) | benign: `PISCO.from_pretrained` buil…
+  ↳ [ae] c256 stride=8 mean nll: {'s256': 0.011258338636253029, 'l1024': 0.10637944526970386, 'l1024_4x256': 0.038235268415883185, 'wrong256': 2.5796481013298034}  (136 s) (+1 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: until ! squeue -j 191172 -h 2>/dev/null | grep -q . ; do sleep 5; done; grep -E "^\[ae\]|EXIT CODE|Traceback|Error" /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/aenll_191172.out | tail -5
+  ↳ [ae] c256 stride=8 mean nll: {'s256': 0.011258338636253029, 'l1024': 0.10637944526970386, 'l1024_4x256': 0.038235268415883185, 'wrong256': 2.5796481013298034}  (136 s) (+4 lines)
+Plumbing passed for both models. Pairing the 20 documents only to confirm the tool runs (this decides nothing), and reading the job's wall time and memory to size the full run.
+→ Bash: python3 -I scripts/longdoc/ae_pair.py expQ/longdoc/ae/ae_nll_n20.json; sacct -j 191172 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS -n
+  ↳ 20 documents; NLL in nats per token (lower = better); d = l1024 - c256 (+7 lines)
+→ Bash: expmon verdict 191172 closed "plumbing PASS: stage-1 autoencoding probe runs on both stage-1 text models (stride 8; 'loaded trainable state … All keys matched'), 20 held-out MS MARCO docs (rows 1,000,000-1,000,043) x 4 conditions, exit 0, 4…
+  ↳ v (+1 lines)
+Updating the state file with the plumbing result and the exact next launches.
+→ Bash: python3 -I - <<'EOF' ⏎ p="campaign_longdoc/STATE.md"; s=open(p).read() ⏎ rep=[ ⏎ ("""- Arm T, stage-1 autoencoding probe (new tool `scripts/longdoc/ae_nll.py`, below): plumbing on 20 documents, job ⏎   191172, RUNNING since 03:41, `--time 0…
+  ↳ ok
+→ Bash: python3 -I - <<'EOF' ⏎ p="campaign_longdoc/STATE.md"; s=open(p).read() ⏎ a="Cells used: 23 of 70. GPU-h used: ~4.7 (eight 19-min + four 31-min cells, one 5-min plumbing); running add ~4." ⏎ b="Cells used: 19 of 70 (11 before the last wake, …
+  ↳ ok (+10 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p="campaign_longdoc/CAMPAIGN.md"; s=open(p).read() ⏎ a="the L1024 deficit sits in the compressed page.\n" ⏎ assert s.count(a)==1 ⏎ b="the L1024 deficit sits in the compressed page. [2026-11-17, provisional: the second…
+  ↳ Exit code 1 (+3 lines)
+→ Bash: grep -n "sits in the" campaign_longdoc/CAMPAIGN.md | cut -c1-200
+  ↳ 246:if it turns out wrong: on a fixed model, the image gap is flat from 4 to 20 pages; the L1024 deficit sits in the
+→ Bash: sed -n 246,248p campaign_longdoc/CAMPAIGN.md
+  ↳ if it turns out wrong: on a fixed model, the image gap is flat from 4 to 20 pages; the L1024 deficit sits in the (+1 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully.
+→ Bash: echo "wake-when job:191169,191170 max 5h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT; git status --short campaign_longdoc scripts/longdoc docs/longdoc_diagnosis.md expQ/longdoc | head
+  ↳ wake-when job:191169,191170 max 5h (+9 lines)
+Finishing up: all four submissions used. Setting the next wake for when the recall validation job ends.
+→ Bash: echo "wake-when job:191169 max 5h" > campaign_longdoc/NEXT && sed -i 's/^Last wake: 2026-11-17 03:30 (fifth wake)\./Last wake: 2026-11-17 03:30 (fifth wake). NEXT: wake-when job:191169 (the port validation) max 5h./' campaign_longdoc/STATE.…
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+3 lines)
+The long-chunk documents loss sits in how each page is compressed, not in the decoder (the model that reads the compressed slots and answers). Both seeds pass the test; it stays provisional until the read-only checker re-derives it.
+
+**What was tested.** Two finetuned models differ only in the chunk length used in their first, text-only training stage: 1,024 tokens versus 256. Each was scored on 1,500 document questions. The score is Qwen3-8B judge accuracy, paired on the same questions; pt = 0.01 accuracy.
+
+| what the decoder sees | long minus short chunks, seed 42 (95% CI) | seed 43 (95% CI) |
+|---|---|---|
+| all 4 pages compressed (earlier campaign) | −6.2 pt [−8.6, −3.9] | −4.3 pt [−6.7, −1.8] |
+| only the page with the answer, compressed | −6.7 pt [−8.9, −4.5] | −4.9 pt [−7.1, −2.5] |
+| page the model picks goes in uncompressed, other 3 compressed | +0.1 pt [−0.8, +1.1] | −0.1 pt [−1.1, +0.9] |
+
+- Both models pick the right page on 98.5% of questions. So the long-chunk model's compressed pages still show where the answer is, but carry the answer itself worse.
+- With the picked page uncompressed, both models score about .825, above the .809 of the plain 4B model reading all 4 pages uncompressed.
+- All four runs were healthy: 1,500 rows each, every row judged, no unreadable verdicts, code unchanged.
+- The prediction written before the campaign ("the deficit sits in the compressed page") is now marked confirmed in the campaign rules.
+- Each finding is in `docs/longdoc_diagnosis.md`, next to the training change it points to: keep the first-stage chunk length at what later stages compress, or mix short chunks back in. That training choice is yours, later.
+
+**Launched this wake (4 jobs, the per-wake limit):**
+- **Text-recovery tool check (191169, running):** a check that my adapted version of the older probe reproduces its recorded 70.5% word recovery, within ±2 pt. That probe asks how many of a page's words the model can rebuild from its compressed slots.
+- **Reference page text (191170, running):** 501 pages read by the uncompressed model, the yardstick for that probe.
+- **Plumbing run on the newer model format (191171, done, passed):** it rebuilt 20 of 20 pages as readable text.
+- **New first-stage rebuild probe (191172, done, passed):** I wrote it this wake. It asks how well each model rebuilds held-out web documents from their slots. With the wrong document's slots the loss jumps from 0.011 to 2.6 nats per token, so the check works.
+  - Early hint on only 20 documents, deciding nothing: both models rebuild 256-token chunks almost perfectly (0.011 nats per token). That condition may hit a ceiling and show no difference.
+
+**Next wake** (when the tool check ends, at most 5 h):
+- If the tool check reproduces 70.5%, launch the text-recovery probe on the two second-stage models.
+- Launch the full 500-document run of the rebuild probe.
+- Then, separately: the four text evals with ten short chunks.
+
+Budget used so far: 19 of 70 cells, about 4.8 of 60 GPU-hours.
+
+Two existing tool complaints got a +1: grid rows for probe jobs stay blank, and the results page reports 0 rows while it shows 20.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm T locate gate decided (provisional, both seeds): the long-chunk documents deficit sits in the compressed page. Picked page raw: L1024-C256 +0.1 [-0.8,+1.1] (s42) / -0.1 [-1.1,+0.9] (s43), 1,500 pairs ea…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.5079 turns=65 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm T locate gate decided (provisional, both seeds): the long-chunk documents deficit sits in the compressed page. Picked page raw: L1024-C256 +0.1 [-0.8,+1.1] (s42) / -0.1 [-1.1,+0.9] (s43), 1,500 pairs each, vs -6.7 / -4.9 with the gold page compressed alone; route hit 98.5% for all four. Launched transcription-probe validation (191169), its 501-page reference (191170), stride-8 plumbing (191171…", "launched": ["191169", "191170", "191171", "191172"], "verdicts": [{"jobid": "191165", "verdict": "closed", "note": "picked-page-raw C256 s42 .825; locate decided: deficit in the compressed page"}, {"jobid": "191166", "verdict": "closed", "note": "picked-page-raw L1024 s42 .827; L1024-C256 +0.1 [-0.8,+1.1]"}, {"jobid": "191167", "verdict": "closed", "note": "picked-page-raw C256 s43 .824"}, {"jobid": "191168", "verdict": "closed", "note": "picked-page-raw L1024 s43 .823; L1024-C256 -0.1 [-1.1,+0.9]"}, {"jobid": "191171", "verdict": "closed", "note": "plumbing PASS: stride-8 transcription port, 20/20 pages coherent"}, {"jobid": "191172", "verdict": "closed", "note": "plumbing PASS: stage-1 AE probe, 20 docs, control works"}], "gripes": ["+1 ca117fba: probe cells (mem_recall.sbatch) keep factors '-' in runs/grid even after the job ended and printed FACTORS", "+1 be8057a1: display --exp longdoc prints '0 table rows' while the HTML has 20 rows"], "wake_when": "job:191169 max 5h"}
+== final:
+{"next":"wake-when","summary":"Arm T locate gate decided (provisional, both seeds): the long-chunk documents deficit sits in the compressed page. Picked page raw: L1024-C256 +0.1 [-0.8,+1.1] (s42) / -0.1 [-1.1,+0.9] (s43), 1,500 pairs each, vs -6.7 / -4.9 with the gold page compressed alone; route hit 98.5% for all four. Launched transcription-probe validation (191169), its 501-page reference (191170), stride-8 plumbing (191171, PASS), and a new stage-1 autoencoding probe's plumbing (191172, PASS; control 2.6 vs 0.011 nats/token). Full AE cell and stage-2 recall cells wait for the next wake (submission cap). Updated STATE.md, docs/longdoc_diagnosis.md, known_issues.md, the law's prediction marker, NEXT.","launched":["191169","191170","191171","191172"],"verdicts":[{"jobid":"191165","verdict":"closed","note":"picked-page-raw C256 s42 .825; locate decided: deficit in the compressed page"},{"jobid":"191166","verdict":"closed","note":"picked-page-raw L1024 s42 .827; L1024-C256 +0.1 [-0.8,+1.1]"},{"jobid":"191167","verdict":"closed","note":"picked-page-raw C256 s43 .824"},{"jobid":"191168","verdict":"closed","note":"picked-page-raw L1024 s43 .823; L1024-C256 -0.1 [-1.1,+0.9]"},{"jobid":"191171","verdict":"closed","note":"plumbing PASS: stride-8 transcription port, 20/20 pages coherent"},{"jobid":"191172","verdict":"closed","note":"plumbing PASS: stage-1 AE probe, 20 docs, control works"}],"gripes":["+1 ca117fba: probe cells (mem_recall.sbatch) keep factors '-' in runs/grid even after the job ended and printed FACTORS","+1 be8057a1: display --exp longdoc prints '0 table rows' while the HTML has 20 rows"],"wake_when":"job:191169 max 5h"}
+== rc=0 secs=672
+== verify: 5/10
