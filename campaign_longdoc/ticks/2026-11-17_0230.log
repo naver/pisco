@@ -1,0 +1,142 @@
+== campaign longdoc wake 2026-11-17_0230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794850202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.4 idle_h=0.1 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8498 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191152,191153,191154,191155_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191152,191153,191154,191155 (ended)   (NEXT was: wake-when job:191152,191153,191154,191155 max 3h)
+== session 0791cedd-e7e4-424f-a7ba-b9c2b18a78dd  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0230   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+76 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ <persisted-output> (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+291 lines)
+→ Bash: cat STATE.md && echo ==== && cat known_issues.md
+  ↳ Exit code 1 (+75 lines)
+→ Bash: cat known_issues.md; ls -la ../expQ/longdoc/t_*/eval/ 2>&1 | head -50
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+59 lines)
+Four gold-page cells at the 1,003,520-pixel budget finished. Checking their health, then pairing them.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191152,191153,191154,191155 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End 2>&1; for c in c256_s42 l1024_s42 c256_s43 l1024_s43; do f=expQ/longdoc/t_$c/eval/mm_docqa_pisco_px1003520_g…
+  ↳ Exit code 1 (+22 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && for c in c256_s42 l1024_s42 c256_s43 l1024_s43; do f=expQ/longdoc/t_$c/eval/mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json; python3 -I -c " ⏎ import json,sys ⏎ d=json.load(open(sys.argv[1])) ⏎ r…
+  ↳ t_c256_s42 n 1500 judged 1500 (+11 lines)
+Healthy: 1,500 rows each, judged, 0 unparseable, 1,003,520 px. Now pairing L1024 vs C256 per seed.
+→ Bash: head -40 scripts/paired_judge.py | grep -nE "argparse|add_argument|usage|def main" ; F=mm_docqa_pisco_px1003520_gold_mm_docqa_1500_1m.json; for s in 42 43; do echo "== s$s"; python3 -I scripts/paired_judge.py expQ/longdoc/t_c256_s$s/eval/$F…
+  ↳ 8:import argparse (+16 lines)
+→ Bash: grep '"191152"' .expmon/runs.jsonl | python3 -I -c "import json,sys; [print(json.dumps(json.loads(l),indent=1)) for l in sys.stdin]" | head -60; grep -c . .expmon/runs.jsonl; grep '"188441"' .expmon/runs.jsonl | python3 -I -c "import json,s…
+  ↳ { (+25 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; grep -nE 'RAW|GOLD|PX|TAG|OUT|json' eval_mm_4b.sh | head -40; sacct -j 188441 -X -o JobID,State,Elapsed,NodeList; squeue -u hdejean -h -…
+  ↳ 50abc167  eval_mm_4b.sh (+24 lines)
+Code md5s match the pairing key. Checking how the previous wake spelled the launch, then a dry-run.
+→ Bash: ls campaign_longdoc/ticks/ | tail -3; grep -nE "expmon launch" campaign_longdoc/ticks/2026-11-17_0200.log | head -8
+  ↳ 2026-11-17_0200.log (+7 lines)
+→ Bash: ls expQ/longdoc/t_*/eval/ | grep -i route; expmon launch --exp longdoc --stage T --dry-run --env RAW=route1 --env PX=1003520 --time 1:34:00 --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/longdoc/t_c256_s42/model pisco "" …
+  ↳ would submit: sbatch --time 1:34:00 --partition gpu-be --exclude homer-[005-009] eval_mm_4b.sh expQ/longdoc/t_c256_s42/model pisco  eval_data/mm_docqa_1500_1m (+4 lines)
+Dry-run is clean. Launching the four picked-page-raw cells.
+→ Bash: for n in c256_s42 l1024_s42 c256_s43 l1024_s43; do echo "== $n"; expmon launch --exp longdoc --stage T --env RAW=route1 --env PX=1003520 --time 1:34:00 --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/longdoc/t_$n/model pis…
+  ↳ == c256_s42 (+19 lines)
+Submitted as jobs 191165-191168. Recording verdicts, probes and notes.
+→ Bash: M="md5 eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, model.py 994cff3d" ⏎ declare -A SRC=([191165]=c256_s42 [191166]=l1024_s42 [191167]=c256_s43 [191168]=l1024_s43) ⏎ for j in 191165 191166 191167 191168; do…
+  ↳ expmon note: 106 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+Next: update the findings doc and state. Reading the current findings doc.
+→ Bash: wc -l docs/longdoc_diagnosis.md && cat docs/longdoc_diagnosis.md
+  ↳ 54 docs/longdoc_diagnosis.md (+54 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -E "1500_1m" ; ls expQ/longdoc/; for j in 188708 190271 188711 190274; do grep "\"$j\"" .expmon/runs.jsonl | python3 -I -c "import json,sys; [print(json.loads(l)['jobid'], json.loads(l)['argv'][0], json.l…
+  ↳ mm_docqa_base_k10_px1003520_xd6_mm_docqa_1500_1m.json (+17 lines)
+→ Bash: for f in expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_gold_mm_docqa_1500_1m.json expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json expQ/longchunk/ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json exp…
+  ↳ eval 1500 0.8407 0 mems p50 0.0 (+5 lines)
+→ Bash: for c in c256_s42 l1024_s43; do python3 -I -c " ⏎ import json,sys,statistics as st ⏎ r=json.load(open(sys.argv[1]))['records']; m=[x['mems_used'] for x in r] ⏎ print(sys.argv[1].split('/')[2], 'mems p50',st.median(m),'max',max(m),'total',su…
+  ↳ t_c256_s42 mems p50 119.0 max 238 total 174631 (+6 lines)
+Gold-page slot counts match the audit (median 119, max 238). Updating the findings doc.
+→ Bash: python3 -I - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ old_head="Last rewrite 2026-11-17 02:10 (arm A caveats; arm T first read, off-regime)." ⏎ new_head="Last rewrite 2026-11-17 02:35 (arm T: gold-page-only half of the l…
+  ↳ 20:### Arm T detail: long-chunk finetunes on documents (`mm_docqa_1500_1m`, 1,500 Q, 500 per source, 1,003,520 px)
+Now preparing the next step (text cells) so the next wake is cheap: finding how the recorded text pairs were launched.
+→ Bash: grep -E 'ft_cml(256|1024)_s4[23]' .expmon/runs.jsonl | grep -i hotpot | python3 -I -c " ⏎ import json,sys ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print(d['jobid'], d['argv'], d.get('env'), d.get('slurm',{}).get('time'))"; ls expQ/longchu…
+  ↳ 188707 ['/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/ft_cml256_s42/model', 'pisco', '', 'eval_data/text_hotpotqa_1500_g10'] None 0:26:00 (+12 lines)
+→ Bash: sacct -j 190270,190273 -X -o JobID,State,Elapsed,NodeList; ls eval_data/ | grep -E "hotpot|longdoc"; ls expQ/ft_mm_4b_184778/eval/ | grep -i text
+  ↳ JobID             State    Elapsed        NodeList  (+16 lines)
+→ Bash: wc -l scripts/probe_mem_recall.py scripts/analyze_mem_recall.py probe_recall_4b.sh 2>&1; sed -n 130,145p HANDOFF.md; ls scripts/longdoc/
+  ↳ 144 scripts/probe_mem_recall.py (+23 lines)
+The page-transcription probe is 144 lines; porting it now (stride-aware) lets the next wake chain it. Reading it.
+→ Bash: cat scripts/probe_mem_recall.py probe_recall_4b.sh
+  ↳ """Is the answer still in the <MEM>s? Transcription probe of the doc eval pages (compression capacity vs. its use). (+172 lines)
+→ Bash: grep -n "_pos_kwargs" scripts/eval_mm_docqa.py | head -5; n=$(grep -n "def _pos_kwargs" scripts/eval_mm_docqa.py | cut -d: -f1); sed -n "${n},$((n+30))p" scripts/eval_mm_docqa.py; grep -n "def decoder_position_ids\|def generate\|mem_positio…
+  ↳ 256:                      **_pos_kwargs(model, ids, attn)) (+45 lines)
+→ Bash: sed -n 240,262p scripts/eval_mm_docqa.py; echo ----; sed -n 1222,1275p pisco/model.py
+  ↳ def mem_attention(model: PISCO, emb, dec, device) -> torch.Tensor: (+76 lines)
+The port needs only positions passed to generate on stride-8 checkpoints. Checking the analysis script and the legacy outputs the port must reproduce.
+→ Bash: ls -la expQ/archq/recall/ 2>&1 | head; sed -n 1,40p scripts/analyze_mem_recall.py; sed -n 100,108p docs/architecture_review.md; python3 -I -c " ⏎ import json ⏎ for p in ['expQ/longchunk/pt_mm_cml256/model/config.json','expQ/longchunk/pt_mm_…
+  ↳ total 1693 (+57 lines)
+→ Bash: grep -n "def _reset_rope_deltas" -A8 scripts/eval_mm_docqa.py; sed -n 1015,1035p pisco/model.py; grep 'probe_recall_4b' .expmon/runs.jsonl | python3 -I -c " ⏎ import json,sys ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print(d['jobid'], d['a…
+  ↳ 350:def _reset_rope_deltas(module): (+32 lines)
+→ Bash: sacct -j 174859,174860,174861 -X -o JobID,State,Elapsed,NodeList,MaxRSS 2>&1; sacct -j 174860 -o JobID,MaxRSS,Elapsed | head; python3 -I scripts/analyze_mem_recall.py --help 2>&1 | head -20
+  ↳ JobID             State    Elapsed        NodeList     MaxRSS  (+19 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,sys ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import norm, recall ⏎ ref={r['query_id']:r for r in json.load(open('expQ/archq/recall/ref.json'))['records']} ⏎ ae={r['query_id']:r for r in jso…
+  ↳ slidevqa 120 0.7044 (+4 lines)
+Recomputed from the recorded files: the legacy probe rebuilt 70.5% of page words (360 pages), the target the port must match within ±2 pt. Writing the port.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mem_recall.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mem_recall.py (file state is current in your context — no need to Read it back)
+→ Bash: cat scripts/longdoc/audit.sbatch | head -30; grep -n "def make_collator" -A3 scripts/eval_mm_docqa.py
+  ↳ #!/bin/bash (+23 lines)
+→ Bash: sed -n 1,12p eval_mm_4b.sh; sed -n 14,24p eval_mm_4b.sh | grep -E "export|source|cd "
+  ↳ #!/bin/bash (+14 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mem_recall.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mem_recall.sbatch (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/recall_pair.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/recall_pair.py (file state is current in your context — no need to Read it back)
+Testing the pairing script on recorded files (stdlib, seconds): self-pair must give 0.
+→ Bash: chmod +x scripts/longdoc/mem_recall.sbatch && python3 -I scripts/longdoc/recall_pair.py --ref expQ/archq/recall/ref.json --a expQ/archq/recall/ae_s2.json --b expQ/archq/recall/ae_s2.json && echo ---- && python3 -I scripts/longdoc/recall_pai…
+  ↳ ref 360 / A 360 / B 360 pages; paired on 360 (+19 lines)
+Self-pair gives 0 and a real pair shows a difference, so the pairing tool works. Creating the model symlinks for the two stage-2 models.
+→ Bash: ln -s /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/model expQ/longdoc/s2_c256/model && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml1024/model expQ/longdoc/s2_l1024/model && ls -la expQ/longdoc/s2_*/ &&…
+  ↳ expQ/longdoc/s2_c256/: (+18 lines)
+Tooling is ready for the next wake. Recording it, then refreshing the display page.
+→ Bash: expmon note "longdoc arm T tooling: scripts/longdoc/mem_recall.py (stride-aware port of scripts/probe_mem_recall.py: imports its pick_rows/run_ref unchanged, AE arm passes PISCO.decoder_position_ids; legacy path unchanged) + mem_recall.sbat…
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs)
+The display page came out empty (0 rows from 0 runs) although the grid has 15 cells. Checking whether that is already reported.
+→ Bash: expmon gripe --open --search display rows 2>&1 | head -8; expmon gripe --open --search "display" 2>&1 | head -8
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+15 lines)
+→ Bash: grep -c "<tr" display_longdoc.html; expmon gripe --same 43db294f "longdoc too (2026-11-17): display --exp longdoc prints '0 table rows … from 0 runs' while grid longdoc has 15 cells; the HTML has $(grep -c '<tr' display_longdoc.html) <tr> r…
+  ↳ 16 (+1 lines)
+Now rewriting the state file. Getting the settled/open block first.
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+→ Bash: squeue -u hdejean -h -o "%i %T %M %N %l" | grep -E "19116[5-8]"
+  ↳ 191167 RUNNING 3:53 homer-017 1:34:00 (+3 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+State written. Last act: the wait contract.
+→ Bash: echo "wake-when job:191165,191166,191167,191168 max 3h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && git status --short | head -20
+  ↳ wake-when job:191165,191166,191167,191168 max 3h (+19 lines)
+**The long-chunk models lose about as much on a single page as on four, so the loss is not caused by reading many pages.** Removing the three distractor pages left the L1024 deficit unchanged. (L1024 and C256 are the finetunes whose first training stage used 1,024-token and 256-token chunks.)
+
+## Done this wake
+- Four document cells finished healthy. Each had 1,500 questions, all judged, none unparseable, at the 1,003,520-pixel budget. The `<MEM>` slot counts matched the input audit (median 119 per question).
+- Result: L1024 minus C256, judge accuracy (higher is better), same questions in every row:
+
+| input | `<MEM>` slots per question (8 tokens each) | seed 42 (95% CI) | seed 43 (95% CI) | uncompressed decoder, same questions |
+|---|---|---|---|---|
+| 4 pages | 455 | −6.2 pt [−8.6, −3.9] | −4.3 pt [−6.7, −1.8] | .809 |
+| answer page only | 119 | −6.7 pt [−8.9, −4.5] | −4.9 pt [−7.1, −2.5] | .841 |
+
+- The answer-page-only result is significant at both seeds (McNemar test p < .001) and negative on every source. That decides half of the campaign's test: the loss is not in multi-page reading.
+- I wrote the page-transcription probe for the new models. It measures how many of a page's words can be rebuilt from its `<MEM>`s. It extends the old probe to models that spread each `<MEM>` over 8 positions, and adds a scoring script with paired statistics. A file paired with itself gives 0, and the script does show a difference on two old recorded files. It has not run on a GPU yet.
+- I updated `docs/longdoc_diagnosis.md` (bottleneck table plus a new table for these models) and `STATE.md`. I added a +1 to an existing expmon bug report: the display page claims "0 rows" while it actually holds 16.
+
+## Running now
+- Four cells test the other half: the model picks the answer page and that page goes in uncompressed, while the other three stay compressed. They run on all four finetunes, about 30 min each plus judging.
+- If the gap closes to within ±2 pt at both seeds, the loss sits in how L1024 compresses a page.
+
+## Next wake (starts when these four cells finish, at most 3 h)
+1. Pair the four new cells.
+2. Check the new probe first: on the old model it must rebuild 70.5% of page words, ±2 pt.
+3. Then compare word recall between the two stage-2 models (the ones before finetuning), on 501 pages.
+4. Run plain ten-passage text on the four finetunes.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191165,191166,191167,191168 max 3h", "summary": "Arm T gold-only cells at 1,003,520 px (191152-191155) completed healthy (n=1,500 each, judge every row, unparseable 0, mems p50 119 = audit). Paired: L…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.4349 turns=45 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191165,191166,191167,191168 max 3h", "summary": "Arm T gold-only cells at 1,003,520 px (191152-191155) completed healthy (n=1,500 each, judge every row, unparseable 0, mems p50 119 = audit). Paired: L1024 - C256 = -6.7 [-8.9,-4.5] McNemar 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43), every source negative; plain 4-page deficit was -6.2/-4.3, so removing distractors does not shrink it -> NOT multi-page reading (first half of 'in the compresse…", "launched": ["191165", "191166", "191167", "191168"], "verdicts": [{"jobid": "191152", "verdict": "closed", "note": "gold-only C256 s42, judge .635; locate half decided"}, {"jobid": "191153", "verdict": "closed", "note": "gold-only L1024 s42, judge .568; L1024-C256 -6.7 [-8.9,-4.5]"}, {"jobid": "191154", "verdict": "closed", "note": "gold-only C256 s43, judge .628"}, {"jobid": "191155", "verdict": "closed", "note": "gold-only L1024 s43, judge .579; L1024-C256 -4.9 [-7.1,-2.5]"}], "gripes": ["+1 43db294f: display --exp longdoc prints '0 table rows from 0 runs' while grid has 15 cells and the HTML has 16 <tr> rows"]}
+== final:
+{"next":"wake-when","wake_when":"job:191165,191166,191167,191168 max 3h","summary":"Arm T gold-only cells at 1,003,520 px (191152-191155) completed healthy (n=1,500 each, judge every row, unparseable 0, mems p50 119 = audit). Paired: L1024 - C256 = -6.7 [-8.9,-4.5] McNemar 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43), every source negative; plain 4-page deficit was -6.2/-4.3, so removing distractors does not shrink it -> NOT multi-page reading (first half of 'in the compressed page' met). Launched the second half: RAW=route1 on the 4 finetunes (191165-191168, --time 1:34 = 31:09 of 188441 x 3, md5 unchanged). Wrote stride-aware transcription probe port scripts/longdoc/mem_recall.py + mem_recall.sbatch + recall_pair.py (self-pair 0 on 360 pages; legacy target 70.5% recomputed) and symlinks for the two stage-2 models; not run yet. Rewrote docs/longdoc_diagnosis.md (arm T row + detail table with uncompressed baseline and slot counts) and STATE.md; +1 on display gripe.","launched":["191165","191166","191167","191168"],"verdicts":[{"jobid":"191152","verdict":"closed","note":"gold-only C256 s42, judge .635; locate half decided"},{"jobid":"191153","verdict":"closed","note":"gold-only L1024 s42, judge .568; L1024-C256 -6.7 [-8.9,-4.5]"},{"jobid":"191154","verdict":"closed","note":"gold-only C256 s43, judge .628"},{"jobid":"191155","verdict":"closed","note":"gold-only L1024 s43, judge .579; L1024-C256 -4.9 [-7.1,-2.5]"}],"gripes":["+1 43db294f: display --exp longdoc prints '0 table rows from 0 runs' while grid has 15 cells and the HTML has 16 <tr> rows"]}
+== rc=0 secs=387
+== verify: 2/5
