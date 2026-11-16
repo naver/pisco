@@ -1,0 +1,153 @@
+== law drafter 2026-11-16_1823  model=claude-opus-5-5  question=/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/QUESTION.md
+== session d8cee382-d43d-4d1a-a629-33af61b8f06a  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/QUESTION.md
+  ↳ 1	# Owner's question (verbatim, 2026-11-16, pisco chat) (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+123 lines)
+→ Glob: {"pattern": "campaign_longdoc/**"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /home/hdejean/.claude/expmon/templates/campaign/GUIDE.md
+  ↳ 1	# Writing a campaign law — the owner's guide (read while filling CAMPAIGN.md; the wake never reads this) (+110 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/known_issues.md (+7 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longchunk"}
+  ↳ campaign_longchunk/ticks/.keep (+54 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-16. (+57 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ 1	# Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/prompt.md
+  ↳ 1	You are the autonomous operator of experiment campaign "longdoc" in /beegfs/scratch/user/hdejean/pisco (project pisco). (+92 lines)
+Now the longchunk sibling campaign.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longchunk — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+164 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-10. (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/STATE.md
+  ↳ 1	# STATE — campaign longchunk   (rewritten WHOLESALE by every LLM wake; never append) (+80 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REQUEST
+  ↳ 1	## REQUEST 2026-11-16 18:22 by hdejean — owner-authorised; execute, record in STATE.md, then delete this file (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/GATE
+  ↳ <system-reminder>Warning: the file exists but the contents are empty.</system-reminder>
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign longchunk (2026-11-16 04:00) (+31 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/NEXT
+  ↳ 1	wake-when job:189693 max 44h (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.json
+  ↳ 1	{ (+684 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/known_issues.md
+  ↳ 20	| `expmon logs <id> -e` says no .err file | the launcher uses `--output` only: stderr is merged into the .log | read the .log | (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/VERIFY.md
+  ↳ 1	# VERIFY — campaign longchunk — 2026-11-16_0400   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+25 lines)
+→ Glob: {"pattern": "campaign_*/*.md", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*.md", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes"}
+  ↳ campaign_probes/prompt.md (+4 lines)
+→ Glob: {"pattern": "*.md", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze"}
+  ↳ campaign_freeze/prompt.md (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/STATE.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+195 lines)
+  ↳ 1	# STATE — campaign probes   (rewritten WHOLESALE by every LLM wake; never append) (+175 lines)
+I've read the owner's question, the scaffold, the guide and the live sibling campaign (longchunk). Next: the project record (hand-off notes, reviews, eval sets and scripts), then I draft the law.
+→ Grep: {"pattern": "^## |1b|11-20|whole doc|route-then-expand|-\\.115|−\\.115", "path": "/beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md", "output_mode": "content"}
+  ↳ 12:## Short answers (+13 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/pisco-multimodal-campaign.md
+  ↳ <system-reminder>This memory is 5 days old. Memories are point-in-time observations, not live state — claims about code behavior or file:line citations may be outdated. Verify against current code bef (+143 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md
+  ↳ 12	## Short answers (+139 lines)
+→ Grep: {"pattern": "long|LongBench|g10|longdoc", "path": "/beegfs/scratch/user/hdejean/pisco/HANDOFF.md", "output_mode": "content", "-n": true}
+  ↳ 15:  `campaign_longchunk`, created 2026-11-10 by ANOTHER chat: long-chunk stage-1 training, data gate measured, not armed). (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/HANDOFF.md
+  ↳ 1	# HANDOFF — PISCO (multimodal) (+79 lines)
+→ Grep: {"pattern": "^## |^### ", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+59 lines)
+→ Grep: {"pattern": "2026-11-1[456]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 40}
+  ↳ 803:- 2026-11-11 21:03 [job 188466] result: L1024 stage 1 started 20:31 homer-019; training_config.yaml differs from 188422 only in compressor_max_length 256->1024, decoder_max_length 512->2048, per_d (+41 lines)
+→ Grep: {"pattern": "2026-11-1[56]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 60}
+  ↳ 835:- 2026-11-12 20:06 [job 188466] result: L1024 stage 1 health at step 2000 (384k of 1M docs, .38 epoch): train loss 2.17 (step 50) -> .81 (step 2000), held-out loss .611, Rouge-L .790 (64 rows), gr (+30 lines)
+Still gathering facts: reading the ledger's last entries, then the eval scripts and eval sets the probes would use.
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1088	- 2026-11-16 04:03 [job 189695] longchunk did: paired L1024 seed-43 finals vs control seed 43 (scripts/paired_judge.py, 1,500 Q per set, rate 8, single attempts, code md5 unchanged: eval_mm_4b.sh (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh
+  ↳ 1	#!/bin/bash (+71 lines)
+→ Grep: {"pattern": "add_argument\\(\"--", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 563:    ap.add_argument("--mode", choices=["pisco", "base", "pisco_text"], default="pisco") (+36 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/eval_data"}
+  ↳ eval_data/longbench_multifieldqa_en/multifieldqa_en_8000_12000.json (+100 lines)
+→ Grep: {"pattern": "decoder_max_length|compressor_max_length|max_doc|truncat", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 16:MultimodalFineTuningCollator.example_chunks, i.e. exactly as finetuning does (text docs truncated to (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/configs/finetune_mm.yaml
+  ↳ 1	# MULTIMODAL RAG finetuning: retrieved documents are page images (and/or text passages). (+58 lines)
+→ Glob: {"pattern": "*.sh", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "max_length|topk|TOPK|FT_DATA|samples", "path": "/beegfs/scratch/user/hdejean/pisco/ft_mm_4b.sh", "output_mode": "content", "-n": true}
+  ↳ 25:shift $(( $# < 4 ? $# : 4 )); EXTRA="$@"   # further args = Hydra overrides (e.g. collator_kwargs.topk_docs=8) (+3 lines)
+→ Grep: {"pattern": "max_length|PT_DATA|p_text|teacher", "path": "/beegfs/scratch/user/hdejean/pisco/pt_mm_4b.sh", "output_mode": "content", "-n": true}
+  ↳ 29:DATA=${PT_DATA:-/beegfs/scratch/user/hdejean/pisco/data/mm_pretrain_160k}
+Checking what lengths the stage-2 and finetune configs actually train on, then the probe scripts. After that I write the law.
+→ Grep: {"pattern": "max_length|topk|ae_target|p_text|p_find|n_pages|find", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/configs/pt_lora_mm.yaml", "output_mode": "content", "-n": true}
+  ↳ 3:# continuation) while text compression is rehearsed (p_text) so LongBench does not regress. (+4 lines)
+→ Grep: {"pattern": "def __init__|max_length|find_pages|n_find|topk_docs", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py", "output_mode": "content", "-n": true}
+  ↳ 88:    The image is one atomic compressor chunk; `compressor_max_length` only bounds text chunks. (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py
+  ↳ 260	            n_docs = int(np.random.randint(2, self.multi_max_docs + 1)) (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py
+  ↳ 455	            print("Teacher (uncompressed) inputs enabled; teacher max length", teacher_max_length) (+109 lines)
+→ Grep: {"pattern": "multi_max_docs|n_max_chunks|chunk_docs", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py", "output_mode": "content", "-n": true}
+  ↳ 72:      - description        (p_desc): 1..multi_max_docs images ("Document j:" + <MEM>s; the other images are (+7 lines)
+→ Grep: {"pattern": "^(CML|DML|BS|ACCUM|DATA)|compressor_max_length|decoder_max_length|msmarco|ae_ratio", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_text_4b_long.sh", "output_mode": "content", "-n": true}
+  ↳ 14:#   CML = collator compressor_max_length (chunk length, tokens); the reference chain used 256 (+9 lines)
+→ Grep: {"pattern": "eval_data/[a-z_0-9]+", "path": "/beegfs/scratch/user/hdejean/pisco/HANDOFF.md", "output_mode": "content", "-o": true}
+  ↳ 122:eval_data/text_mrqa_ood_1500 (+3 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probes"}
+  ↳ scripts/probes/probe_seal.py (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/HANDOFF.md
+  ↳ 100	  `probe_recall_4b.sh ref|ae_s2|ae_ftcomp` → `scripts/analyze_mem_recall.py`; serving `bench_combo_4b.sh`, (+39 lines)
+→ Grep: {"pattern": "longdoc|LongBench|longbench|11-20|g10|MRQA", "path": "/beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md", "output_mode": "content", "-n": true}
+  ↳ 111:every slot sits at the chunk end and the start of a long chunk is lost. Confirmed on MRQA (one ~900-token passage): (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md
+  ↳ 100	Same content, grouped differently, judge accuracy on 1,500 HotpotQA questions with 10 passages (~1,270 tokens joined), (+31 lines)
+Checking which baseline result files already exist for the reference model, so the law can reuse them instead of re-running.
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval"}
+  ↳ expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+1 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval"}
+  ↳ expQ/base_qwen35_4b/eval/mm_docqa_base.json (+28 lines)
+→ Grep: {"pattern": "longdoc", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 20}
+  ↳ 404:  - saw: pick@1 retr10 .87 -> .66 -> .55, longdoc .89 -> .76 -> .66; route1 judge longdoc .892 -> .786 -> .690; all-MEM answers collapse faster (.698 -> .354 -> .234) (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 398	  - saw: nav model all-MEM .804 > uncompressed finetuned .792; expanding HURTS it: route1 .761 (-.043, CI -.065..-.023), even gold frames raw .753 (-.051); order questions -.08. Generic 174908: al (+9 lines)
+→ Grep: {"pattern": "extra_distractors|chunk_docs|n_max_chunks", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true, "-C": 2}
+  ↳ 81- (+45 lines)
+→ Grep: {"pattern": "bucket|per_bucket|n_pages|500|max_pages|11|20", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/build_mm_eval_longdoc.py", "output_mode": "content", "-n": true, "head_limit": 30}
+  ↳ 8:            question's page window (1-20 pages). (+10 lines)
+→ Grep: {"pattern": "1-4.*5-10|pages per question|buckets", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 10}
+  ↳ 39:[Omitted long matching line] (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 390	- 2026-10-28 03:47 did: route-then-expand on ColQwen2-retrieved distractors, 1500 Q (ckpt 174908 vs uncompressed) (+5 lines)
+→ Grep: {"pattern": "^CAMP_(PATCH_LINES|COMMIT_PATHS|MAX_SUBMIT_PER_WAKE|NOISE_PT|WRITE_ROOTS|READ_DENY)=", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/campaign.conf", "output_mode": "content"}
+  ↳ 15:CAMP_MAX_SUBMIT_PER_WAKE=8        # new submissions one wake may make (probe campaigns with 2-minute cells want 3+) (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-16_1823.draft.log
+  ↳ 1	== law drafter 2026-11-16_1823  model=claude-opus-5-5  question=/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/QUESTION.md (+134 lines)
+→ Glob: {"pattern": "*/model/config.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk"}
+  ↳ expQ/longchunk/pt_text_1M_cml2048_188420/model/config.json (+9 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longchunk"}
+  ↳ expQ/longchunk/data_check.sbatch (+100 lines)
+→ Grep: {"pattern": "mem_position_stride|stride|legacy", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probe_mem_recall.py", "output_mode": "content", "-n": true}
+  ↳ No matches found
+→ Grep: {"pattern": "long|stride|position|many|budget|OpenEQA|length", "path": "/beegfs/scratch/user/hdejean/pisco/docs/data_review.md", "output_mode": "content", "-n": true, "head_limit": 30}
+  ↳ 14:| **1, text** (`pt_lora`, `qwen35_4b_pt.sh`) | `EleutherAI/SmolLM2-135M-10B`, 1M or 5M samples, 256-token chunks | the text itself | autoencoding 50% / continuation 50% (`ae_ratio` .5), rate 8 | on (+31 lines)
+I have what I need. Writing the law now.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 114	  (BLOCKED.md or a REQUEST). Still dropped: arm C seed 43, arm F seed 43 (its photo baseline 184785 ran on homer-008). (+7 lines)
+→ StructuredOutput: {"law": "# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-16 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-14** (launches allowed th…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=5.0625 turns=71 is_error=False denials=0
+== declared: {"law": "# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-16 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-14** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5-5`\n\nA probe campaign runs many short inference/evaluation cells (minutes each) and decides on counts or metrics\nagainst a baseline cell — not on training curves. The binding constraint is submissions per wake and queue\ntime, not GPU-hours (navmem: 0.4 of 12 GPU-h used, cells of 1m42–3m17).\n\n## Mission\nSuccessor of campaign 'longchunk' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.md). Open at hand-off: pt_text_4b_long.sh — job 189693 CANCELLED, no verdict.\n(REPORT.md is not written yet; REPORT.json carries the same Settled list. 189693 belongs to longchunk and was stopped by\nthe owner on 2026-11-16: never verdict it or relaunch it here.)\n**Question (owner, QUESTION.md):** every attempt at long inputs loses accuracy. WHERE is the bottleneck: training data,\ntraining itself, evaluation, or something the probes point to (the decoder reading many `<MEM>`s, positions)? This is a\nDIAGNOSIS: inference probes on trained models and CPU audits only. No training (hard rule 8).\nFacts to explain:\n- Long-chunk stage 1 lost: L1024 − C256 on g10 −1.1 / −3.3 pt, documents −6.2 / −4.3, photos +0.3 / 0.0 (paired, 1,500 Q,\n  seeds 42 / 
+== final:
+{"law":"# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-16 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-14** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5-5`\n\nA probe campaign runs many short inference/evaluation cells (minutes each) and decides on counts or metrics\nagainst a baseline cell — not on training curves. The binding constraint is submissions per wake and queue\ntime, not GPU-hours (navmem: 0.4 of 12 GPU-h used, cells of 1m42–3m17).\n\n## Mission\nSuccessor of campaign 'longchunk' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.md). Open at hand-off: pt_text_4b_long.sh — job 189693 CANCELLED, no verdict.\n(REPORT.md is not written yet; REPORT.json carries the same Settled list. 189693 belongs to longchunk and was stopped by\nthe owner on 2026-11-16: never verdict it or relaunch it here.)\n**Question (owner, QUESTION.md):** every attempt at long inputs loses accuracy. WHERE is the bottleneck: training data,\ntraining itself, evaluation, or something the probes point to (the decoder reading many `<MEM>`s, positions)? This is a\nDIAGNOSIS: inference probes on trained models and CPU audits only. No training (hard rule 8).\nFacts to explain:\n- Long-chunk stage 1 lost: L1024 − C256 on g10 −1.1 / −3.3 pt, documents −6.2 / −4.3, photos +0.3 / 0.0 (paired, 1,500 Q,\n  seeds 42 / 43; campaign_longchunk/STATE.md:17-25). Stage-2 and finetune held-out losses were higher at every point (:30),\n  while stage-1 ownership stayed .969. The two chains differ only in stage-1 chunk length (:42).\n- What training shows the decoder: stage 1 two chunks per document; stage 2 one image or 2-4 pages (`find`,\n  `multi_max_docs` 4, pisco/mm_collator.py:110); finetune 4 pages, decoder 1,024 tokens, text cut to 256 tokens\n  (pisco/configs/finetune_mm.yaml:39-41). The evals go up to 20 pages (docs/data_review.md:109).\n- On a fixed model, the gap between compressed and uncompressed has looked flat in length so far: 4 / 8 / 10 pages\n  .578 / .574 / .585 vs .809 / .807 / .801 (docs/architecture_review.md:31-33, model 174908). HotpotQA: ten chunks .579,\n  one 1,270-token chunk .617, uncompressed .752 (docs/multimodal_results.md:105-107, EXPERIMENTS.md:407). Whole documents\n  (500 Q): all-`<MEM>` .698 vs uncompressed .918 (EXPERIMENTS.md:394, 404). Route-then-expand loses −.115 at 11-20 pages,\n  and the loss comes from the page pick (architecture_review.md:71-77).\n- On multi-page documents the answer stays in the `<MEM>`s but the decoder does not use it (27 such failures vs 6 losses,\n  architecture_review.md:100-110). OpenEQA: more compressed frames barely help (48-52 vs 57 for 32 raw frames, HANDOFF.md:57).\n**Deciding numbers, one per candidate** (paired judge accuracy on the same questions unless stated):\n- evaluation: arm A's cut rate and parity, plus arm J's judge
+== rc=0

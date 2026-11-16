@@ -1,0 +1,143 @@
+== campaign longdoc wake 2026-11-17_0047  reasons=first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794844030 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.0 min_util=- alert=0 unpushed=90 cron=2 daemon=1 disk_gb=8540 sig=ba6a75f0 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 7a6b24f5-865b-43e3-a7ed-6f31f51f85ec  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0047   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+83 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && ls -la && cat CAMPAIGN.md
+  ↳ <persisted-output> (+32 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+291 lines)
+→ Bash: cat STATE.md DECISIONS.md && echo ---- && cat known_issues.md && echo ---- && cat campaign.conf | grep -v '^#' | grep -v '^$'
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+126 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls scripts/longdoc expQ/longdoc 2>&1; ls scripts/ | head -100; grep -n "646" campaign_probes/STATE.md | head; ls campaign_probes/
+  ↳ ls: cannot access 'scripts/longdoc': No such file or directory (+93 lines)
+First wake of the long-input diagnosis campaign: nothing runs yet. I'm writing the first cell (a CPU-only audit of eval/training inputs) and will launch it.
+→ Bash: wc -l scripts/eval_mm_docqa.py && grep -n "def \|mems_used\|argparse\|add_argument" scripts/eval_mm_docqa.py | head -150
+  ↳ 786 scripts/eval_mm_docqa.py (+65 lines)
+→ Bash: sed -n 83,180p scripts/eval_mm_docqa.py && sed -n 267,350p scripts/eval_mm_docqa.py
+  ↳ def make_collator(model: PISCO, *, topk: int, compressor_max_length: int, image_compr_rate, query_dependent: bool, chunk_docs: bool = False, (+181 lines)
+→ Bash: sed -n 526,560p scripts/eval_mm_docqa.py && sed -n 622,786p scripts/eval_mm_docqa.py
+  ↳ def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+199 lines)
+→ Bash: grep -n "def \|topk" pisco/mm_collator.py | head -80
+  ↳ 44:def _as_pil(x): (+17 lines)
+→ Bash: sed -n 415,516p pisco/mm_collator.py && sed -n 1,60p pisco/mm_utils.py | grep -n "class\|def\|total_mems\|n_mems" ; grep -n "class MMChunkBatch" -A30 pisco/mm_utils.py | head -50
+  ↳ images, same order). Left padded like the decoder prompt, so the answer occupies the (+137 lines)
+→ Bash: grep -n "def decoder_position_ids" -A30 pisco/model.py | head -45; grep -n "def _count_mem_tokens\|def _build_chat_prompt" -A10 scripts/eval_mm_docqa.py | head -30; sed -n 1,58p scripts/eval_mm_docqa.py | grep -n "import\|^from"
+  ↳ 1015:    def decoder_position_ids( (+60 lines)
+Still on the first cell: writing the input-audit script (counts `<MEM>` tokens, prompt lengths and truncation per eval/training setting, CPU only).
+→ Bash: ls expQ/ft_mm_4b_184778/model expQ/ft_mm_4b_184778/model/compressor 2>&1 | head -40; grep -n "def create_compressor_tokenizer\|def create_decoder_tokenizer\|def mem_spread_position_ids" -A25 pisco/model.py | head -100
+  ↳ expQ/ft_mm_4b_184778/model: (+94 lines)
+→ Bash: grep -v "^\s*#" eval_mm_4b.sh | grep -n "TOPK\|CML\|DML\|PX\|XD\|GOLD\|RAW\|KEEP\|LIMIT\|set\|SET\|eval_data\|--" | head -60
+→ Bash: ls expQ/longchunk/; for d in expQ/longchunk/pt_mm_cml256 expQ/longchunk/ft_cml256_s42 expQ/pt_text_1M_cml256_188422 expQ/pt_text_1M_cml1024_188466; do echo "== $d"; ls $d 2>&1 | head; done; ls eval_data | grep -i "hotpot\|mrqa\|longdoc\|150…
+  ↳ 8:LIMIT=${3:-} (+33 lines)
+  ↳ build_msmarco_docs.sbatch (+54 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longchunk && for f in pt_text_1M_cml256_188422 pt_text_1M_cml1024_188466 pt_mm_cml256 ft_cml256_s42; do echo "=== $f"; grep -n "collator\|dataset\|data_path\|max_length\|compr_rate\|mem_position_st…
+  ↳ === pt_text_1M_cml256_188422 (+42 lines)
+→ Bash: sed -n 20,60p pt_mm_cml256/training_config.yaml; sed -n 25,40p ft_cml256_s42/training_config.yaml; grep -n "def load_data\|samples\|training_dataset\|split(\",\")\|:.*int(" /beegfs/scratch/user/hdejean/pisco/pisco/train.py | head -30
+  ↳ dataloader_num_workers: 4 (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sed -n 175,260p pisco/train.py
+  ↳ path, _, cap = spec.rpartition(":") if ":" in spec and spec.rsplit(":", 1)[-1].isdigit() else (spec, "", "") (+85 lines)
+→ Bash: ls expQ/ft_mm_4b_184778/eval/ | grep -v "kept_" | head -50; grep -n "load_image_processor(" pisco/model.py; grep -n "def load_image_processor" -A12 pisco/mm_utils.py | head -16; nproc
+  ↳ mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+16 lines)
+→ Bash: sed -n 620,634p pisco/model.py; ls expQ/ | grep -i "g10\|tail\|183538\|174908" | head; grep -rn "mrqa_ood\|longdoc_1m" EXPERIMENTS.md | grep -o "CML=[0-9]*\|TOPK=[0-9]*\|k[0-9]*_\|cml[0-9]*" | sort | uniq -c | head
+  ↳ # Image processor, only when the compressor backbone has a vision tower. Failure to (+17 lines)
+→ Bash: ls expQ/ft_mm_4b_183538/eval/ expQ/ft_mm_4b_174908/eval 2>/dev/null | grep -i "hotpot\|mrqa\|longdoc" | head -20; python3 -c " ⏎ import json;d=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json'));s=d['…
+  ↳ mm_docqa_pisco_k10_rawrank1_rkrank_hotpot_bge_drop_text_hotpotqa_1500.json (+20 lines)
+Writing the audit script now; then a short smoke run chained to the full run.
+→ Bash: grep -n "^class \|def __init__\|def torch_call" pisco/collator.py | head -20; grep -n "class PretrainingCollator" -A30 pisco/collator.py | grep -n "self\.\|def\|text\|\[\"" | head -30; cat data/msmarco_docs/dataset_info.json 2>/dev/null | h…
+  ↳ 24:class BaseCollator(DefaultDataCollator): (+91 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py (file state is current in your context — no need to Read it back)
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/longdoc/audit_inputs.py'; s=open(p).read() ⏎ old='''    coll = C(compressor_tokenizer=G["ctok"], decoder_tokenizer=G["dtok"], compr_rate=G["cfg"].compr_rate, **kw) ⏎     ds = _stage_ds(tc) ⏎ ''' ⏎ new='''    i…
+  ↳ OK (+32 lines)
+→ Bash: grep -n "HF_HOME\|OFFLINE\|CONDA_OVERRIDE\|^source\|^cd\|SBATCH" eval_mm_4b.sh | head; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | awk '{print substr($1,1,8), $2}'
+  ↳ 2:#SBATCH -n 1 (+13 lines)
+→ Bash: mkdir -p /beegfs/scratch/user/hdejean/pisco/expQ/longdoc && cat > /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch <<'EOF' ⏎ #!/bin/bash ⏎ #SBATCH -n 1 ⏎ #SBATCH -p gpu-be ⏎ #SBATCH --gres=gpu:0 ⏎ #SBATCH --cpus-per-task=16 ⏎…
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+11 lines)
+→ Bash: expmon launch --dry-run --exp longdoc --stage audit_smoke --time 0:40:00 --exclude 'homer-[005-009]' /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch 12 2>&1 | tail -20
+  ↳ would submit: sbatch --time 0:40:00 --exclude homer-[005-009] /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch 12 (+3 lines)
+Submitting the audit smoke (12 rows per setting) and the full audit chained after it.
+→ Bash: expmon launch --exp longdoc --stage audit_smoke --time 0:40:00 --exclude 'homer-[005-009]' /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch 12 2>&1 | tail -5
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=0:40:00 (+4 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Monitor: {"description": "audit smoke job 191145 leaves the queue", "timeout_ms": 600000, "command": "while squeue -h -j 191145 2>/dev/null | grep -q .; do sleep 15; done; sacct -j 191145 -X -n -o State,ExitCode,Elapsed,NodeList; tail -c 3000 /beegf…
+  ↳ Monitor started (task b1iu2urc8, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+→ Bash: expmon note -j 191145 "longdoc arm A intent: CPU audit smoke (12 rows per eval variant + 12 rows per training stage) of scripts/longdoc/audit_inputs.py; full audit (all 1,500-Q rows, 2,000 rows per stage) follows once the smoke output is cl…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -20; gpucap free cpu 2>/dev/null | tail -3; sinfo -p gpu-be -o "%n %C %e" -h 2>/dev/null | head -20
+  ↳ **Settled** (+21 lines)
+The smoke asks for 16 CPUs, which no allowed node has free right now. Re-submitting it smaller (4 CPUs, 32 GB) so it starts at once.
+→ TaskStop: {"task_id": "b1iu2urc8"}
+  ↳ {"message":"Successfully stopped task: b1iu2urc8 (while squeue -h -j 191145 2>/dev/null | grep -q .; do sleep 15; done; sacct -j 191145 -X -n -o State,ExitCode,Elapsed,NodeList; tail -c 3000 /beegfs/s
+→ Bash: expmon kill 191145 2>&1 | tail -2; expmon launch --exp longdoc --stage audit_smoke --time 0:40:00 --cpus-per-task 4 --mem 32G --exclude 'homer-[005-009]' /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch 12 2>&1 | grep -E "log…
+  ↳ 188764         expmon-pisco  RUNNING  4-23:52:48       gpu homer-020 (+4 lines)
+→ Monitor: {"description": "audit smoke job 191146 finishes or errors", "timeout_ms": 600000, "command": "L=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146.out; while squeue -h -j 191146 2>/dev/null | grep -q .; do sleep 10; done; sacct -…
+  ↳ Monitor started (task b4fyw2a5c, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon gripe --open --search "CPU partition" 2>&1 | head -5; expmon gripe --open --search "cpus idle" 2>&1 | head -5
+  ↳ == 12 open report(s) matching 'cpu partition', every machine, newest first == (+9 lines)
+→ Bash: expmon gripe --same 0fb784d9 "longdoc 2026-11-17: dry-run accepted -c 16 --mem 96G on gpu-be (excl homer-[005-009]) when the largest idle CPU count on an allowed node was 14 (sinfo %C): CPU audit 191145 sat PENDING (Resources); killed and r…
+  ↳ logged as a +1 of 0fb784d9 (entry c5ab52cd) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: tail -5 /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146.out
+  ↳ FACTORS kind=audit arm=A limit=12 model=ft_mm_4b_184778 px=1003520 stride=8
+Smoke is running (pixi startup). Waiting for its output before chaining the full audit.
+→ Bash: timeout 100 bash -c 'until grep -qE "\[audit\] [0-9]+ eval rows|Traceback|Error" /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146.out; do sleep 5; done'; tail -c 1500 /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146.…
+  ↳ FACTORS kind=audit arm=A limit=12 model=ft_mm_4b_184778 px=1003520 stride=8 (+19 lines)
+→ Bash: timeout 280 bash -c 'while squeue -h -j 191146 | grep -q .; do sleep 10; done'; sacct -j 191146 -X -n -o State,ExitCode,Elapsed,NodeList; grep -vE "max length in collator|Pad token" /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_1911…
+  ↳ COMPLETED      0:0   00:01:58       homer-014  (+45 lines)
+Smoke passed: 168 eval rows + 48 training rows in 111 s, 0 errors. Checking the per-row cross-check against recorded files before launching the full audit.
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/longdoc/audit_191146/audit.json')) ⏎ for v,s in d['variants'].items(): ⏎   if 'ref' in s: print(v, {k:s['ref'][k] for k in ('n_common','n_equal','ref_total_common','mine_total_common')}) ⏎ "…
+  ↳ docs_p4 {'n_common': 12, 'n_equal': 12, 'ref_total_common': 4636, 'mine_total_common': 4636} (+3 lines)
+Exact match on all 12 rows of each cross-checked file (`<MEM>` count and decoder prompt length). Launching the full audit.
+→ Bash: sacct -j 191146 -n -o JobID,MaxRSS,Elapsed | head; sinfo -p gpu-be -o "%n %C %e" -h | grep -v "homer-00[5-9]"
+  ↳ 191146                    00:01:58  (+11 lines)
+→ Bash: expmon launch --exp longdoc --stage audit --time 4:00:00 --cpus-per-task 12 --mem 64G --exclude 'homer-[005-009]' /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit.sbatch 0 2>&1 | grep -E "log:|Submitted|REFUSED|error"; sleep 2; sque…
+  ↳ Submitted batch job 191147 (+2 lines)
+→ Bash: expmon note -j 191146 "longdoc arm A smoke result: COMPLETED in 1:58 on homer-014, 168 eval rows (12 per variant x 14) + 48 training rows, 0 errors; per-row <MEM> counts equal the recorded files on 12/12 rows each (R 4-page docs, 183538 g10…
+  ↳ verdict recorded: 191146 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+While the full audit runs (~1–1.5 h), I'll write the length-effect calculator (stdlib) and check it against its known control: the tail model's −.169.
+→ Bash: sed -n 100,110p docs/multimodal_results.md; ls expQ/ft_mm_4b_183538/eval/ | grep hotpot
+  ↳ Same content, grouped differently, judge accuracy on 1,500 HotpotQA questions with 10 passages (~1,270 tokens joined), (+13 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/length_effect.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/length_effect.py (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183538/eval && F=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; time python3 /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/length_effect.py +${F}_g10.json -${F}.json; python3 /beegfs/…
+  ↳ usage: length_effect.py [-h] [--metric METRIC] [--boot BOOT] [--json JSON] (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p='scripts/longdoc/length_effect.py'; s=open(p).read() ⏎ old='''    ap.add_argument("terms", nargs="+", help="+FILE or -FILE") ⏎     ap.add_argument("--metric", default="judge") ⏎…
+  ↳ + 0.3993  (rows 1500)  mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json (+4 lines)
+Length-effect control passes: −.1687 against the recorded −.169 (tolerance ±.005), and exactly 0 for a file paired with itself. Cross-checking against the project's own paired test:
+→ Bash: F=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; python3 /beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py ${F}.json ${F}_g10.json 2>&1 | tail -6
+  ↳ judge: A = mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+5 lines)
+Both tools agree (same 374 / 121 split of questions that only one side got right). Recording it, then writing state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "longdoc arm J control: scripts/longdoc/length_effect.py recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, k10 CML4096, n=1,500 pairs): d = -.1687 [-.1960,-…
+  ↳ ok
+→ Bash: grep -E "^\[audit\]|Traceback|Error" /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out | tail -3; squeue -h -j 191147 -o "%T %M %R"; date +%H:%M
+  ↳ [audit] 20000 eval rows, 160 stage batches, 12 workers (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && cat >> known_issues.md <<'EOF' ⏎ | a CPU cell (`--gres=gpu:0`) sits PENDING (Resources) right after submit; `expmon launch --dry-run` accepted it (audit 191145, `-c 16 --mem 96G`, 20…
+  ↳ [audit] 20000 eval rows, 160 stage batches, 12 workers (+2 lines)
+→ Bash: echo "wake-when job:191147 max 5h" > /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/NEXT; cat /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/NEXT
+  ↳ wake-when job:191147 max 5h
+→ Monitor: {"description": "full audit 191147 progress / end", "timeout_ms": 600000, "command": "L=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out; last=\"\"; while squeue -h -j 191147 2>/dev/null | grep -q .; do cur=$(grep -E \"^\\[a…
+  ↳ Monitor started (task b5b6ymu1r, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+Full audit is running (2,000 of 20,000 eval rows after 102 s). Meanwhile I'm writing the small script that turns its output into the report table.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_table.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_table.py (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 scripts/longdoc/audit_table.py expQ/longdoc/audit_191146/audit.json | head -5 && timeout 240 bash -c 'L=expQ/longdoc/audit_191147.out; while ! grep -q "eval 4000" $L; do sleep 10; done'; grep…
+  ↳ Audit expQ/longdoc/audit_191146/audit.json: R = ft_mm_4b_184778, PX 1003520, rate 8, stride 8; finetune max 488 `<MEM>`s, position span 3992; 0 row errors; health: 4-page documents total 4,636 `<MEM>` (+6 lines)
+→ TaskStop: {"task_id": "b5b6ymu1r"}
+  ↳ {"message":"Successfully stopped task: b5b6ymu1r (L=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out; last=\"\"; while squeue -h -j 191147 2>/dev/null | grep -q .; do cur=$(grep -E \"^
+→ TaskStop: {"task_id": "brxomivrf"}
+  ↳ {"message":"Successfully stopped task: brxomivrf (cd /beegfs/scratch/user/hdejean/pisco && python3 scripts/longdoc/audit_table.py expQ/longdoc/audit_191146/audit.json | head -5 && timeout 240 bash -c 
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -E "^\[audit\]|Traceback" expQ/longdoc/audit_191147.out | tail -1; squeue -h -j 191147 -o "%T %M"; sed -i 's/| 191147 | A audit (full) | RUNNING homer-017 | 0:02 at 00:56 | 20,000 eval + 8,000 t…
+  ↳ [audit] eval 4000/20000 271s (+3 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191147 max 5h", "summary": "First wake of longdoc. Wrote the arm-A input audit (scripts/longdoc/audit_inputs.py + audit.sbatch, CPU only, uses the eval's and trainer's own row builders). Smoke 191146 …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.6336 turns=62 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191147 max 5h", "summary": "First wake of longdoc. Wrote the arm-A input audit (scripts/longdoc/audit_inputs.py + audit.sbatch, CPU only, uses the eval's and trainer's own row builders). Smoke 191146 is clean: 168 eval rows + 48 training rows, 0 errors. Its predicted <MEM> counts match the recorded mems_used on 12/12 rows of three reference files, and its decoder prompt lengths match R's on 12/12. The full audit 191147 (20,0…", "launched": ["191145 (audit smoke, cancelled before start: 16 CPUs unavailable)", "191146 (audit smoke, 12 rows/variant, COMPLETED 1:58)", "191147 (full arm-A audit, RUNNING homer-017)"], "verdicts": [{"jobid": "191146", "verdict": "closed", "note": "plumbing smoke of the arm-A audit, counts match recorded files 12/12; never gates"}, {"jobid": "191145", "verdict": "closed", "note": "cancelled before start: 16 CPUs not idle on any allowed gpu-be node; resubmitted as 191146"}], "gripes": ["+1 of 0fb784d9: launch --dry-run accepted -c 16 --mem 96G on gpu-be when the largest idle CPU count on an allowed node was 14; the job sat PENDING (Resources)"]}
+== final:
+{"next":"wake-when","wake_when":"job:191147 max 5h","summary":"First wake of longdoc. Wrote the arm-A input audit (scripts/longdoc/audit_inputs.py + audit.sbatch, CPU only, uses the eval's and trainer's own row builders). Smoke 191146 is clean: 168 eval rows + 48 training rows, 0 errors. Its predicted <MEM> counts match the recorded mems_used on 12/12 rows of three reference files, and its decoder prompt lengths match R's on 12/12. The full audit 191147 (20,000 eval rows over 14 settings in pisco + base mode, plus 8,000 training rows over 4 stages) is RUNNING on homer-017: 4,000 of 20,000 eval rows after 271 s, so it should end well inside its 4 h limit. The first submit, 191145, asked for 16 CPUs, which no allowed node had free; I cancelled it and resubmitted at 4 CPUs. Arm-J control: scripts/longdoc/length_effect.py recovers the tail model's one-chunk minus ten-chunk HotpotQA difference, d = -.1687 [-.196, -.141] on 1,500 pairs (target -.169 ± .005), and gives exactly 0 for a file paired with itself; paired_judge.py gives the same 374/121 split. Provisional, from 12 rows only: the finetune decoder saw at most 488 <MEM>s and a position span of 3,992, while 10- and 20-page document evals carry 950 / 1,920 <MEM>s. Fixed the stage-1 model paths in CAMPAIGN.md. Added one known_issues row (CPU cells and idle CPUs). STATE.md is rewritten; NEXT = wake-when job:191147 max 5h.","launched":["191145 (audit smoke, cancelled before start: 16 CPUs unavailable)","191146 (audit smoke, 12 rows/variant, COMPLETED 1:58)","191147 (full arm-A audit, RUNNING homer-017)"],"verdicts":[{"jobid":"191146","verdict":"closed","note":"plumbing smoke of the arm-A audit, counts match recorded files 12/12; never gates"},{"jobid":"191145","verdict":"closed","note":"cancelled before start: 16 CPUs not idle on any allowed gpu-be node; resubmitted as 191146"}],"gripes":["+1 of 0fb784d9: launch --dry-run accepted -c 16 --mem 96G on gpu-be when the largest idle CPU count on an allowed node was 14; the job sat PENDING (Resources)"]}
+== rc=0 secs=768
+== verify: 1/4

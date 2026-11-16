@@ -1,0 +1,53 @@
+== verifier 2026-11-17_0047  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 31c6cc16-14eb-4ecb-aa86-3fbc315d94c6  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+170 lines)
+→ Glob: {"pattern": "{scripts/longdoc/**,campaign_longdoc/**,expQ/longdoc/**}"}
+→ Grep: {"pattern": "1687|191146|191147", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "!*.json", "output_mode": "files_with_matches"}
+  ↳ Found 10 files (+10 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "longdoc", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true}
+  ↳ 404:  - saw: pick@1 retr10 .87 -> .66 -> .55, longdoc .89 -> .76 -> .66; route1 judge longdoc .892 -> .786 -> .690; all-MEM answers collapse faster (.698 -> .354 -> .234) (+6 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc"}
+  ↳ scripts/longdoc/audit_inputs.py (+3 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1100	- 2026-11-16 18:23 [job 189693] longchunk: owner stopped the 2,048-token stage-1 run (step ~2,700/5,208); campaign closes on L1024's result (+17 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out
+  ↳ 1	FACTORS kind=audit arm=A limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+109 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146/audit.json
+  ↳ 1	{ (+785 lines)
+Checking the smoke audit numbers against STATE.md: they match so far. Next I'm checking the length-effect control against its source files.
+→ Grep: {"pattern": "1687|374|121|self", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0047.log", "output_mode": "content", "-n": true, "head_limit": 40}
+  ↳ 6:  ↳ # Wake brief — campaign longdoc — 2026-11-17_0047   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+83 lines) (+5 lines)
+→ Grep: {"pattern": "169", "path": "/beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md", "output_mode": "content", "-n": true}
+  ↳ 107:| one (~1,270 tokens) | **.617** | **+.037 (+.014 to +.062)** | .399 | −.169 (−.198 to −.141) |
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0047.log
+  ↳ 95	  ↳ 191146                    00:01:58  (+11 lines) (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md
+  ↳ 98	## Long chunks (probe 2026-11-10, no training) (+13 lines)
+→ Grep: {"pattern": "prompt.*(ref|equal|match)|(ref|equal|match).*prompt", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py", "output_mode": "content", "-n": true}
+  ↳ No matches found
+→ Grep: {"pattern": "prompt|decoder_len|n_tokens", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0047.log", "output_mode": "content", "-n": true, "head_limit": 30}
+  ↳ 25:  ↳ images, same order). Left padded like the decoder prompt, so the answer occupies the (+137 lines) (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0047.log
+  ↳ 84	  ↳ FACTORS kind=audit arm=A limit=12 model=ft_mm_4b_184778 px=1003520 stride=8 (+10 lines)
+→ Grep: {"pattern": "n_equal|n_common|mems_used|ref_total", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py", "output_mode": "content", "-n": true, "-C": 4}
+  ↳ 18-R = f"{ROOT}/expQ/ft_mm_4b_184778/model" (+22 lines)
+→ Grep: {"pattern": "\"(prompt[a-z_]*|n_prompt[a-z_]*|decoder_[a-z_]*|input_len[a-z_]*)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "-o": true…
+  ↳ 65:"decoder_prompt_tokens": (+6 lines)
+→ Grep: {"pattern": "prompt", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py", "output_mode": "content", "-n": true}
+  ↳ 4:Eval variants (pisco + base mode): <MEM>s per question, compressor tokens per chunk, decoder prompt tokens, decoder (+15 lines)
+Still checking: the audit code compares only `<MEM>` counts against the recorded files, so I'm checking the prompt-length claim by hand against the recorded file.
+→ Grep: {"pattern": "\"v\": \"docs_p4\",.*?\"prompt\": \\d+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191146/rows.jsonl", "output_mode": "content", "-o": true, "head_limit": 14}
+  ↳ 1:"v": "docs_p4", "i": 0, "qid": "presentation-140726083339-phpapp01_95__global-sustainable-energy-current-trends-and-future-prospects-12-1024.jpgquery_number_2", "src": "slidevqa", "n_mem": 388, "n_c (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ 50	 "records": [ (+39 lines)
+→ StructuredOutput: {"claims": [{"claim": "The length-effect calculator works: on the tail model (183538, HotpotQA, 1,500 pairs) one joined chunk minus ten chunks gives d = −.1687 [−.1960, −.1407], sign test +121 / −374 (target −.169 ± .005), and a file paired…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9882 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "The length-effect calculator works: on the tail model (183538, HotpotQA, 1,500 pairs) one joined chunk minus ten chunks …", "status": "provisional", "reason": "The evidence is real. The ledger (EXPERIMENTS.md:1116) records d = −.1687 [−.1960, −.1407], +121/−374, n = 1,500, and a …"}, {"claim": "The input audit reproduces what the eval really feeds: on 12 rows per variant (smoke 191146), the predicted <MEM> count …", "status": "provisional", "reason": "The <MEM> part checks out in expQ/longdoc/audit_191146/audit.json: n_equal 12/12 for docs_p4 (4,636 = 4,636), claim_g10_…"}, {"claim": "Arm A, full input audit (the feasibility gate): job 191147, RUNNING on homer-017 since 00:55, 20,000 eval rows (14 varia…", "status": "supported", "reason": "This is a status claim. The grid shows 191147 audit RUNNING, and the queue showed it RUNNING on homer-017, which is outs…"}, {"claim": "provisional (12 rows each, smoke 191146): the finetune decoder saw at most 488 <MEM>s and a position span of 3,992; 10- …", "status": "provisional", "reason": "The wake already marked this provisional, and the numbers match audit_191146/audit.json: finetune_max_mem 488 and finetu…"}], "summary": "Nothing in this STATE.md is wrong: every number I checked matches the smoke audit file (audit_191146/audit.json), the le…"}
+== final:
+{"claims":[{"claim":"The length-effect calculator works: on the tail model (183538, HotpotQA, 1,500 pairs) one joined chunk minus ten chunks gives d = −.1687 [−.1960, −.1407], sign test +121 / −374 (target −.169 ± .005), and a file paired with itself gives exactly 0. paired_judge.py gives the same 374 / 121 split. Arm J control 1 of 2 passed (no job: stdlib on recorded files, ledger 2026-11-17).","status":"provisional","reason":"The evidence is real. The ledger (EXPERIMENTS.md:1116) records d = −.1687 [−.1960, −.1407], +121/−374, n = 1,500, and a self-pair of 0. The tick log (2026-11-17_0047.log:108) shows the one-chunk file's judge mean at .3993, which matches .399 in multimodal_results.md:107. The target −.169 (−.198 to −.141) is the one the law states, so −.1687 is inside ±.005. But nothing backs it in the grid or verdicts: there is no job, and scripts/longdoc/length_effect.py is untracked in git (no commit). The script was also patched in the middle of the wake (log:106-107). Until it is committed, it stays provisional."},{"claim":"The input audit reproduces what the eval really feeds: on 12 rows per variant (smoke 191146), the predicted <MEM> count equals the recorded mems_used on 12 / 12 rows of R's 4-page documents, 183538's g10 and MRQA (CML 4096), and the decoder prompt length equals R's on 12 / 12. Plumbing only, decides nothing.","status":"provisional","reason":"The <MEM> part checks out in expQ/longdoc/audit_191146/audit.json: n_equal 12/12 for docs_p4 (4,636 = 4,636), claim_g10_cml4096 (1,916 = 1,916) and claim_mrqa_cml4096 (467 = 467). The grid and verdicts list 191146 as closed, plumbing. But the audit code compares only mems_used (audit_inputs.py:299-303), so no output file records the '12/12 prompt length' check. My spot check matches on rows 0-1 only (467 and 474 in rows.jsonl and in R's file). All 12 document rows are SlideVQA, one of the three sources. The arm-A health total (646,042) is still unchecked (pass_: null). That is too thin to back the general headline 'reproduces what the eval really feeds'."},{"claim":"Arm A, full input audit (the feasibility gate): job 191147, RUNNING on homer-017 since 00:55, 20,000 eval rows (14 variants, pisco + base mode) + 8,000 training rows (4 stages); expected ~1-1.5 h. Gate: cut rate ≤ 1% and parity 100% on every gating variant; health = 646,042 <MEM>s on R's 4-page documents.","status":"supported","reason":"This is a status claim. The grid shows 191147 audit RUNNING, and the queue showed it RUNNING on homer-017, which is outside homer-[005-009]. Its log (expQ/longdoc/audit_191147.out:8) reads '[audit] 20000 eval rows, 160 stage batches, 12 workers' and reaches 'eval 6000/20000 336s', with no error. The gate and the health number quoted are the ones the law states (cut ≤ 1%, parity 100%, 646,042). Minor: the queue showed 4:59 elapsed when this check began, which sits oddly with '~0:08 at 01:03'; the start time is approximate."},{"claim":"provisional (12 rows each, smoke 191146): the fine
+== rc=0
