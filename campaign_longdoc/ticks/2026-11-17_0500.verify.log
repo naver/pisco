@@ -1,0 +1,67 @@
+== verifier 2026-11-17_0500  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 03050d35-5b4a-407d-88f2-bc893b3799e0  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+265 lines)
+→ Glob: {"pattern": "expQ/longdoc/**/*.json", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "campaign_longdoc/**", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/QUESTION.md (+22 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-17_0330   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+18 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall_191169.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-1c1e7964-e609-ff64-a185-5a9122becb26) (+407 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/ae/controls/ae_pair_controls_n20.txt
+  ↳ 1	# planted +0.30 on l1024 s256 (must recover ~+0.30 on s256 only) (+21 lines)
+→ Grep: {"pattern": "70\\.5|byte|identical|192|recall_pair|360", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0500.log", "output_mode": "content"}
+  ↳ 21:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -60 scripts/longdoc/recall_pair.py; ls expQ/archq/recall/ (+6 lines)
+Checking the transcription-port and audit claims against the ledger and result files now.
+→ Grep: {"pattern": "191169|191170|191218|191219|191220|191221", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1154:- 2026-11-17 03:33 [job 191169] longdoc arm T intent: transcription-probe port validation (scripts/longdoc/mem_recall.sbatch v4kd 120): stride-1 legacy checkpoint expQ/pt_mm_v4kd_4b, 360 gold pag (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-17_0500.log
+  ↳ 1	== campaign longdoc wake 2026-11-17_0500  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+65 lines)
+→ Grep: {"pattern": "\"args\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/v4kd_n120.json", "output_mode": "count"}
+  ↳ expQ/longdoc/recall/v4kd_n120.json:1 (+2 lines)
+→ Grep: {"pattern": "architecture_review|71%|70\\.5", "path": "/beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md", "output_mode": "content"}
+  ↳ 50:| pages | requests at once | raw | all `<MEM>` (71% of accuracy) | route-then-expand (99%) | (+2 lines)
+→ Grep: {"pattern": "^\\[\\d+/501\\]|wrote|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall_191170.out", "output_mode": "content"}
+  ↳ 27:[20/501] 179s, mean 80 words (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall_191219.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-5e8470b6-c476-84f0-85cd-1b8a9b6cb9c5) (+28 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/aenll_191218.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-1c1e7964-e609-ff64-a185-5a9122becb26) (+24 lines)
+→ Grep: {"pattern": "finetune_max|646042|out_of_range_share|parity|\"cut_", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "head_limit": 120}
+  ↳ 8:  "finetune_max_mem": 488, (+76 lines)
+→ Grep: {"pattern": "173550|174908", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true}
+  ↳ 349:- 2026-10-21 16:49 [job 174908] norm arm launched: v4+KL recipe (173550) + RMSNorm on connector output, gain init 0.461 (+56 lines)
+Now spot-checking the transcription-port claim (legacy file vs ported file) and the ledger entry for the length-tool control.
+→ Grep: {"pattern": "\"source\": \"(infovqa|mpdocvqa|slidevqa)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/v4kd_n120.json", "output_mode": "count"}
+  ↳ expQ/longdoc/recall/v4kd_n120.json:360 (+2 lines)
+→ Grep: {"pattern": "\"source\": \"(infovqa|mpdocvqa|slidevqa)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq/recall/ae_s2.json", "output_mode": "count"}
+  ↳ expQ/archq/recall/ae_s2.json:360 (+2 lines)
+→ Grep: {"pattern": "2026-11-17 00:56", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1116:- 2026-11-17 00:56 longdoc arm J control: scripts/longdoc/length_effect.py recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, k10 CML4096, n=1,500 pairs): d = -.1687
+→ Grep: {"pattern": "\"(rebuild|rebuilt|transcript|generated|output)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/v4kd_n120.json", "output_mode": "content", "head_limit": 2, "-o": true}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/v4kd_n120.json
+  ↳ 1	{ (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall/v4kd_n120.json
+  ↳ 20	    "Wind" (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/archq/recall/ae_s2.json
+  ↳ 1	{ (+33 lines)
+→ Grep: {"pattern": "FACTORS|loaded trainable state|stride|^\\[\\d+/", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/recall_191220.out", "output_mode": "content"}
+  ↳ 2:FACTORS kind=probe_recall arm=s2_l1024 per_source=167 limit=0 data=mm_docqa_1500_1m px=1003520 (+2 lines)
+→ Grep: {"pattern": "intent|launched", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "offset": 0, "glob": "EXPERIMENTS.md", "head_limit": 0, "multiline": false, "-n": true, "-C": 0}
+  ↳ <persisted-output> (+15 lines)
+→ Grep: {"pattern": "gpuh|GPU-h|6\\.6", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md", "output_mode": "content"}
+  ↳ 5:ts=1794857402 live=191170:RUNNING,191169:RUNNING running=2 pending=0 problems=0 problems_other=0 new=0 gpuh24=6.6 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8496 sig=c94b0264 s (+2 lines)
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of range: 10- and 20-page documents 1,…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3071 turns=30 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "audit_191147/audit.json:8-9 gives finetune_max_mem 488 and f…"}, {"claim": "provisional: the evaluation feeds the long inputs it claims …", "status": "provisional", "reason": "audit.json shows cut_pisco = cut_base = 0 and parity 1.0 on …"}, {"claim": "provisional: the length-effect calculator recovers the tail …", "status": "provisional", "reason": "Ledger EXPERIMENTS.md:1116 has the same numbers (p 4e-31, se…"}, {"claim": "provisional: arm T LOCATE DECIDED — the long-chunk documents…", "status": "provisional", "reason": "Grid probes are 191152 .6353 / 191153 .568 / 191154 .628 / 1…"}, "… +8 more"], "summary": "I checked 12 claims against their source files: 8 supported,…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of range: 10- and 20-page documents 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500; 4-page documents 0/1,500 (max 485, span 3,962).","status":"supported","reason":"audit_191147/audit.json:8-9 gives finetune_max_mem 488 and finetune_max_span 4017. out_of_range_share is 1.0, 1.0, .99867 (=1,498/1,500), .02333 (=35/1,500), .396 (=198/500) and 0.0 for 4 pages. Verdict 191147 matches. It is correctly labelled a count. The max comes from 2,000 sampled rows, as the arm A design says."},{"claim":"provisional: the evaluation feeds the long inputs it claims (arm A, gate passed; job 191147): truncation cut 0/1,500 and parity 1,500/1,500 on every gating variant; health 646,042 = 646,042; the CML 256 controls fail (924/1,500 and 275/1,500); re-check on recorded runs 1,500/1,500, 1,500/1,500, 500/500.","status":"provisional","reason":"audit.json shows cut_pisco = cut_base = 0 and parity 1.0 on the gating variants. docs_p4_mems_total 646042 = expected (line 782-783). The controls fail: cut_pisco 924 (.616) and 275 (.183). The recorded-run re-check is in ledger EXPERIMENTS.md:1137. The wake labelled it provisional and the stated limits are real: parity is a page count, not page identity, and image cuts cannot fail."},{"claim":"provisional: the length-effect calculator recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, 1,500 pairs): d = −.1687 [−.1960, −.1407], sign +121/−374 (target −.169 ± .005), self-pair 0. Arm J control 1 of 2.","status":"provisional","reason":"Ledger EXPERIMENTS.md:1116 has the same numbers (p 4e-31, self-pair 0), within ±.005 of −.169. The judge-sensitivity control (project prompt + EM) of arm J has not run, so the instrument is not fully validated."},{"claim":"provisional: arm T LOCATE DECIDED — the long-chunk documents loss sits IN THE COMPRESSED PAGE. Gold only −6.7 [−8.9,−4.5] McN 106/207 (s42) and −4.9 [−7.1,−2.5] 113/186 (s43); picked page raw +0.1 [−0.8,+1.1] (s42) and −0.1 [−1.1,+0.9] (s43); route hit 98.5%; all-4-pages −6.2 / −4.3. 'the decoder is not the problem'.","status":"provisional","reason":"Grid probes are 191152 .6353 / 191153 .568 / 191154 .628 / 191155 .5793, giving −6.7 and −4.9. Verdicts 191152-191168 carry the same CIs, McNemar splits, 98.5% route hit and md5s. Both halves of the gate are met at both seeds: ≤ −3 with the CI below 0, and inside ±2. The 4-page reference row is in docs/longdoc_diagnosis.md. It stays provisional as labelled. The 'decoder is not the problem' line goes beyond the gate: the picked-page-raw cell only shows that both decoders read a RAW page equally well. The gold-only loss could still come from how the decoder reads <MEM>s, and the running transcription probe is what separates the two. The picked-page-raw cells have no RESULT in 
+== rc=0

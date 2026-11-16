@@ -1,0 +1,74 @@
+== campaign longdoc wake 2026-11-17_0500  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794859202 live=191170:RUNNING running=1 pending=0 problems=0 problems_other=0 new=0 gpuh24=7.5 idle_h=0.0 min_util=42 alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8476 sig=a89beedb same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191169_max_5h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191169 (ended)   (NEXT was: wake-when job:191169 max 5h)
+== session f3b796bc-8d15-4156-8b01-aaab9f173202  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0500   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+91 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md
+  ↳ Exit code 1 (+105 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 50	documents for every capability; tables name the metric and its direction, and carry the uncompressed decoder and a compression-rate column. (+119 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la; cat STATE.md
+  ↳ total 84 (+105 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 169	  most on existing models, and none is irreversible. The campaign ends at one checkpoint: the ranked causes reach the (+79 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/known_issues.md | cut -c1-400; echo ====; cat campaign_longdoc/VERIFY.md | head -40
+  ↳ Exit code 1 (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191169,191170 -o JobID,State,ExitCode,Elapsed,MaxRSS,NodeList -X; ls -la expQ/longdoc/recall/ 2>&1; expmon logs 191169 30 2>&1 | tail -40
+  ↳ JobID             State ExitCode    Elapsed     MaxRSS        NodeList  (+39 lines)
+Checking the transcription-probe port validation that just finished (job ended cleanly), then pairing it against the legacy result.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -60 scripts/longdoc/recall_pair.py; ls expQ/archq/recall/
+  ↳ """Pair two transcription-probe rebuilds per page against one reference (campaign longdoc, arm T). Stdlib only. (+62 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I scripts/longdoc/recall_pair.py --ref expQ/archq/recall/ref.json --a expQ/archq/recall/ae_s2.json --b expQ/longdoc/recall/v4kd_n120.json; echo ---; python3 -I scripts/longdoc/recall_pair.py -…
+  ↳ ref 360 / A 360 / B 360 pages; paired on 360 (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/archq/recall/ae_s2.json')); b=json.load(open('expQ/longdoc/recall/v4kd_n120.json')) ⏎ print([k for k in a if k!='records'], [k for k in b if …
+  ↳ ['args'] ['args'] (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; ls -la expQ/longdoc/; cat scripts/longdoc/mem_recall.sbatch | head -40; cat scripts/longdoc/ae_nl…
+  ↳ 50abc167  eval_mm_4b.sh (+82 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '^\[|wrote|load' expQ/longdoc/recall_191171.out | head; grep -E '^\[' expQ/longdoc/recall_191170.out | tail -2; sacct -j 191169,191171,191172 -o JobID,Elapsed,MaxRSS | grep -v extern; grep -E '…
+  ↳ [probe] 20 pages, arm=ae (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs 2>/dev/null | grep -E '^(19027[0-5]|18870[7-9]|18871[0-2]|19115[2])' | cut -c1-400
+  ↳ 188707     ended     -           longchunk      466b6a0+dirty  eval_mm_4b.sh    kind=eval_mm mode=pisco ckpt=ft_cml256_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=4515 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longchunk/ft_cml1024_s42/eval/ expQ/longdoc/t_l1024_s42/ expQ/longdoc/t_l1024_s42/eval 2>&1 | head -30; python3 -I -c " ⏎ import json,glob ⏎ for f in glob.glob('expQ/longchunk/ft_cml1024_s42/ev…
+  ↳ expQ/longchunk/ft_cml1024_s42/eval/: (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls -d .expmon/runs/*191165* 2>/dev/null | head -1); echo $f; ls .expmon/ | head; grep -rl 191165 .expmon/*.jsonl 2>/dev/null | head -2; grep -h '"191165"' .expmon/*.jsonl 2>/dev/null | head -1 | cu…
+  ↳ (eval):1: no matches found: .expmon/runs/*191165* (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"191165"' .expmon/runs.jsonl | head -1 | python3 -I -c "import json,sys; d=json.loads(sys.stdin.read()); print({k:d[k] for k in d if k in ('argv','cmd','command','sbatch_args','env','launcher','a…
+  ↳ {'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/longdoc/t_c256_s42/model', 'pisco', '', 'eval_data/mm_docqa_1500_1m'], 'env': {'PX': '1003520', 'RAW': 'route1'}}
+Preparing four submissions (dry-runs first): the full stage-1 rebuild probe, the two stage-2 transcription cells, and the first ten-chunk text cell.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; X='homer-[005-009]' ⏎ expmon launch --exp longdoc --stage T --dry-run --time 1:50:00 --mem 9G --partition gpu-be --exclude "$X" scripts/longdoc/ae_nll.sbatch 500 2>&1 | tail -6; echo ==== ⏎ expmon laun…
+  ↳ Exit code 1 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; X='homer-[005-009]' ⏎ expmon launch --exp longdoc --stage T --dry-run --time 5:15:00 --mem 12G --partition gpu-be --exclude "$X" scripts/longdoc/mem_recall.sbatch s2_c256 167 2>&1 | tail -4; echo '----…
+  ↳ would submit: sbatch --time 5:15:00 --mem 12G --partition gpu-be --exclude homer-[005-009] scripts/longdoc/mem_recall.sbatch s2_c256 167 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; X='homer-[005-009]' ⏎ expmon launch --exp longdoc --stage T --time 1:50:00 --mem 9G --partition gpu-be --exclude "$X" scripts/longdoc/ae_nll.sbatch 500 2>&1 | tail -2; echo '----' ⏎ expmon launch --exp…
+  ↳ follow:  expmon watch 191218 (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M="md5 eval_mm_4b.sh 50abc167 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / pisco/model.py 994cff3d" ⏎ expmon note -j 191169 "verdict-ready: transcription port validated on the legacy stri…
+  ↳ expmon note: 102 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -u hdejean -o "%.8i %.20j %.8T %.10M %.12R" | head; ls -la docs/longdoc_diagnosis.md 2>&1; grep -n 'transcription\|port' docs/longdoc_diagnosis.md 2>/dev/null | head
+  ↳ JOBID                 NAME    STATE       TIME NODELIST(REASON) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 25,45p docs/longdoc_diagnosis.md
+  ↳ | 4 pages (gold + 3 distractors) | 455 / 485 | .615 | .553 | −6.2 [−8.6, −3.9] | .603 | .561 | −4.3 [−6.7, −1.8] | .809 | (+20 lines)
+Four cells are running. Updating the diagnosis page and the campaign state file now.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'argparse\|add_argument\|plant\|self' scripts/longdoc/ae_pair.py | head; python3 -I -c "import json; d=json.load(open('expQ/longdoc/ae/ae_nll_n20.json')); print(list(d.keys())); r=d['records'] …
+  ↳ 3:(two-sided binomial on the non-zero d). The self-pair (A with itself) must give d = 0 exactly. (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json; d=json.load(open('expQ/longdoc/ae/ae_nll_n20.json')); m=d['models']; print(d['conds'], type(m), list(m.keys()) if isinstance(m,dict) else len(m)); k=list(m)[0]; v=m[k]; p…
+  ↳ ['s256', 'l1024', 'l1024_4x256', 'wrong256'] <class 'dict'> ['c256', 'l1024'] (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; mkdir -p expQ/longdoc/ae/controls; python3 -I - <<'EOF' ⏎ import json, copy ⏎ d=json.load(open('expQ/longdoc/ae/ae_nll_n20.json')) ⏎ p=copy.deepcopy(d) ⏎ for r in p['models']['l1024']['records']['s256'…
+  ↳ # planted +0.30 on l1024 s256 (must recover ~+0.30 on s256 only) (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+14 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo 'wake-when job:191170,191218,191219,191220,191221 max 6h' > campaign_longdoc/NEXT; cat campaign_longdoc/NEXT; expmon note "did: longdoc wake 05:00: transcription port validated (191169, 360/360 id…
+  ↳ wake-when job:191170,191218,191219,191220,191221 max 6h (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191170,191218,191219,191220,191221 max 6h", "summary": "The check of the ported page-transcription probe passed. It rebuilt 360 of 360 pages byte-identical to the original probe, word recall 70.5% vs …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7705 turns=31 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191170,191218,191219,191220,191221 max 6h", "summary": "The check of the ported page-transcription probe passed. It rebuilt 360 of 360 pages byte-identical to the original probe, word recall 70.5% vs 70.5% (job 191169, verdict closed), so it is cleared for the new stride-8 models. I submitted 4 cells, the cap for one wake. (1) The full stage-1 rebuild test: 500 held-out documents, short-chunk model vs long-chunk model (191218). (2) and (3) Transcription of 501 pages each by the short-chunk and long-chunk stage-2 models (191219 and 191220), to be paired against the uncompressed reference still running (191170). (4) The first of four ten-short-chunk HotpotQA cells, short-chunk model, seed 42 (191221). I also saved the planted-shift and self-pair checks of the rebuild-pairing script to a file and withdrew the unsaved number the verifier flagged: +0.30 planted, recovered +0.2999 [+0.2970, +0.3030]. Code checksums are unchanged. Cells used: 23 of 70; about 6.6 GPU-hours used. Next wake: pair all three probes and launch the 3 remaining text cells. Nothing needed from the owner.", "launched": ["191218", "191219", "191220", "191221"], "verdicts": [{"jobid": "191169", "verdict": "closed", "note": "port validation PASS: 360/360 pages byte-identical to legacy probe, word recall 70.5% = 70.5% (gate +-2 pt)"}], "gripes": []}
+== final:
+{"next":"wake-when","wake_when":"job:191170,191218,191219,191220,191221 max 6h","summary":"The check of the ported page-transcription probe passed. It rebuilt 360 of 360 pages byte-identical to the original probe, word recall 70.5% vs 70.5% (job 191169, verdict closed), so it is cleared for the new stride-8 models. I submitted 4 cells, the cap for one wake. (1) The full stage-1 rebuild test: 500 held-out documents, short-chunk model vs long-chunk model (191218). (2) and (3) Transcription of 501 pages each by the short-chunk and long-chunk stage-2 models (191219 and 191220), to be paired against the uncompressed reference still running (191170). (4) The first of four ten-short-chunk HotpotQA cells, short-chunk model, seed 42 (191221). I also saved the planted-shift and self-pair checks of the rebuild-pairing script to a file and withdrew the unsaved number the verifier flagged: +0.30 planted, recovered +0.2999 [+0.2970, +0.3030]. Code checksums are unchanged. Cells used: 23 of 70; about 6.6 GPU-hours used. Next wake: pair all three probes and launch the 3 remaining text cells. Nothing needed from the owner.","launched":["191218","191219","191220","191221"],"verdicts":[{"jobid":"191169","verdict":"closed","note":"port validation PASS: 360/360 pages byte-identical to legacy probe, word recall 70.5% = 70.5% (gate +-2 pt)"}],"gripes":[]}
+== rc=0 secs=248
+== verify: 7/12

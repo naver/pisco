@@ -30,9 +30,11 @@ Reading: L1024 answers worse than C256 even when the decoder sees only the one p
 (gap unchanged from 455 to 119 slots per question). When the picked page goes in raw, the gap vanishes at both seeds,
 and both models pick the answer page equally often (98.5%). So L1024's page `<MEM>`s still say WHERE the answer is,
 but hold the answer itself worse: stage-1 training on 1,024-token chunks damaged what a compressed page carries, and
-the decoder is not the problem. Next, under the same arm: the transcription probe (fewer words of the page in L1024's
-stage-2 `<MEM>`s?) and the stage-1 autoencoding probe (is L1024 worse at rebuilding 256-token chunks, the length later
-stages use?). Training arm this motivates (owner's call): keep stage-1 chunks at the length later stages compress,
+the decoder is not the problem. Running under the same arm (2026-11-17 05:00): the transcription probe (fewer words of
+the page in L1024's stage-2 `<MEM>`s? 501 pages per model; its port reproduced the legacy probe exactly, 360 / 360 pages
+identical, word recall 70.5% = 70.5%, job 191169), the stage-1 autoencoding probe (is L1024 worse at rebuilding
+256-token chunks, the length later stages use? 500 held-out documents), and ten short text chunks on the four
+finetunes (first cell running). Training arm this motivates (owner's call): keep stage-1 chunks at the length later stages compress,
 or add short chunks back to a long-chunk stage 1.
 Off-regime check (451,584 px, not gating): gold page only −6.3 (s42) / −4.7 (s43), the same gap at a smaller page budget.
 
