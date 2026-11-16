@@ -1,0 +1,109 @@
+== campaign longdoc wake 2026-11-17_0200  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794848401 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=1.2 idle_h=0.2 min_util=- alert=1 unpushed=0 cron=2 daemon=1 disk_gb=8515 sig=260cc69f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191148,191149,191150,191151_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191148,191149,191150,191151 (ended)   (NEXT was: wake-when job:191148,191149,191150,191151 max 3h)
+== session 480b6c1a-9877-40e2-9e6a-6f4d8c892d2e  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+78 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat STATE.md
+  ↳ 291 CAMPAIGN.md (+69 lines)
+→ Bash: cat CAMPAIGN.md
+  ↳ <persisted-output> (+27 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/480b6c1a-9877-40e2-9e6a-6f4d8c892d2e/tool-results/b278kn2f1.txt
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+291 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_longdoc/known_issues.md | head -40; sacct -j 191148,191149,191150,191151 --format=JobID,State,ExitCode,Elapsed,NodeList -X; for c in t_c256_s42 t_l1024_s42 t_c256_s43 t_l1024_s43; do ls …
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+53 lines)
+Arm T gold-only cells finished (4 × COMPLETED, ~17 min each). Checking health and pairing them now.
+→ Bash: python3 - <<'EOF' ⏎ import json,glob ⏎ for c in ["t_c256_s42","t_l1024_s42","t_c256_s43","t_l1024_s43"]: ⏎     f=f"expQ/longdoc/{c}/eval/mm_docqa_pisco_gold_mm_docqa_1500_1m.json" ⏎     d=json.load(open(f)) ⏎     if isinstance(d,dict): ⏎   …
+  ↳ t_c256_s42 keys ['summary', 'records'] (+19 lines)
+→ Bash: expmon runs 2>/dev/null | grep -E "19114[89]|19115[01]" | head; grep -n "PX\|GOLD\|image_max_pixels" eval_mm_4b.sh | head -30; python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/longchunk/ft_cml256_s42/eval/mm_docqa_pisco_px1003520_mm_docq…
+  ↳ 191148     ended     -           longdoc        409f1e9+dirty  eval_mm_4b.sh    GOLD=1 | p=gpu-be,x=homer-[005-009],t=0:55:00 | /beegfs/scratch/user/hdejean/pisco/expQ/191148 (+12 lines)
+→ Bash: ls expQ/191148/ 2>&1 | head; f=$(ls expQ/191148/*.json 2>/dev/null | head -1); [ -n "$f" ] && cat $f | head -50; expmon logs 191148 15 2>&1 | head -30
+  ↳ ls: cannot access 'expQ/191148/': No such file or directory (+17 lines)
+→ Bash: head -20 eval_mm_4b_191148.out; grep -n "191148" EXPERIMENTS.md | head; grep -rn "191148" .expmon/campaign/longdoc/*.log 2>/dev/null | head -5; ls .expmon/ | head -30
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-add475c6-4028-dea4-36fc-245b6ac2d9e6) (+58 lines)
+→ Bash: grep -n "expmon launch" .expmon/campaign/longdoc/hook.log | grep -i "gold\|t_c256" | head -5 | cut -c1-900; grep '"191148"' .expmon/runs.jsonl | head -2 | cut -c1-1500
+  ↳ 69:2026-11-17 01:32:36	full	Bash	allow		grep -n "OUT\|dirname\|realpath\|readlink\|GOLD\|RAW\|--time\|^#SBATCH" eval_mm_4b.sh | head -30; sacct -j 188440,188441,188708,188711,190270,190271,190272,1902 (+4 lines)
+→ Bash: sed -n 1,40p scripts/paired_judge.py | grep -n "argparse\|add_argument\|usage\|def main" ; ls expQ/ft_mm_4b_184778/eval/ | grep -i "gold\|1500_1m"
+  ↳ 8:import argparse (+1 lines)
+→ Bash: grep -n "add_argument" scripts/paired_judge.py; grep -rl "gold" expQ/*/eval/ 2>/dev/null | head; ls expQ/*/eval/*gold* 2>/dev/null | head
+  ↳ 52:    ap.add_argument("a") (+23 lines)
+→ Bash: for s in 42 43; do echo "### seed $s gold-only PX=451584 (off-regime) L1024 vs C256"; python3 scripts/paired_judge.py expQ/longdoc/t_c256_s$s/eval/mm_docqa_pisco_gold_mm_docqa_1500_1m.json expQ/longdoc/t_l1024_s$s/eval/mm_docqa_pisco_gold_m…
+  ↳ ### seed 42 gold-only PX=451584 (off-regime) L1024 vs C256 (+31 lines)
+Off-regime read: at the low pixel budget the gold-page-only deficit is −6.3 / −4.7 pt, same as the plain −6.2 / −4.3. Now relaunching the four cells at the law's pixel budget (dry-run first).
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; squeue -u hdejean -h -o "%i %j %T" ; ls expQ/longdoc/t_*/eval/ | grep px1003520; expmon launch --exp longdoc --stage T --dry-run --env G…
+  ↳ 50abc167  eval_mm_4b.sh (+10 lines)
+→ Bash: for n in c256_s42 l1024_s42 c256_s43 l1024_s43; do echo "== $n"; expmon launch --exp longdoc --stage T --env GOLD=1 --env PX=1003520 --time 0:55:00 --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/longdoc/t_$n/model pisco "…
+  ↳ == c256_s42 (+15 lines)
+→ Bash: M="md5 eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, model.py 994cff3d" ⏎ for p in "191152 c256_s42 191148" "191153 l1024_s42 191149" "191154 c256_s43 191150" "191155 l1024_s43 191151"; do set -- $p; expmon …
+  ↳ expmon verdict: jobids, comma-separated without spaces (got '191148 c256_s42 .528') (+7 lines)
+zsh didn't split the loop words, so the four intent notes came out garbled. Re-recording them correctly with bash.
+→ Bash: bash -c ' ⏎ M="md5 eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, model.py 994cff3d" ⏎ for p in "191152 c256_s42 191148" "191153 l1024_s42 191149" "191154 c256_s43 191150" "191155 l1024_s43 191151"; do set --…
+  ↳ expmon note: 83 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+27 lines)
+Cells 191152–191155 are already running. Recording the off-regime judge numbers into the grid and checking for existing gripes.
+→ Bash: expmon probe 191148 judge=0.528 2>&1 | tail -1; expmon probe 191149 judge=0.465 2>&1 | tail -1; expmon probe 191150 judge=0.530 2>&1| tail -1; expmon probe 191151 judge=0.483 2>&1 | tail -1; expmon gripe --open --search "note -j" 2>&1 | hea…
+  ↳ probe recorded: 191148 (judge=0.528)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+15 lines)
+→ Bash: git status -sb 2>&1 | head -2; git remote -v | head -2; timeout 30 git push --dry-run 2>&1 | tail -5; echo rc=$?
+  ↳ PreToolUse:Bash hook error: campaign guard: git push rewrites shared history or the tree — never from a wake (pull / fetch / status / log / diff / show are fine). Do not look for another spelling: not
+→ Bash: git status -sb 2>&1 | head -1; git remote -v | head -2; git log --oneline -1 origin/arc 2>&1 | head -1; git rev-list --count origin/arc..HEAD 2>&1
+  ↳ ## arc...origin/arc (+4 lines)
+→ Bash: timeout 40 git fetch origin arc 2>&1 | tail -2; git rev-parse --short origin/arc HEAD; git rev-list --count origin/arc..HEAD; ls -la campaign_longdoc/ALERT .expmon/campaign/longdoc/ALERT 2>&1
+  ↳ Exit code 2 (+6 lines)
+→ Bash: git rev-parse --short FETCH_HEAD; git rev-parse --short HEAD; git rev-parse --short refs/remotes/origin/arc; git rev-list --count FETCH_HEAD..HEAD
+  ↳ 5c2075f (+3 lines)
+Remote branch equals local HEAD (5c2075f, 0 unpushed): the push alert is stale. Clearing it and filing the gripes.
+→ Bash: rm campaign_longdoc/ALERT && echo removed; expmon gripe --open --search "ALERT push" 2>&1 | head -6; expmon gripe --open --search "pair env" 2>&1 | head -4
+  ↳ removed (+10 lines)
+→ Bash: expmon gripe --same 4442771e "pisco longdoc 2026-11-17: ALERT 'last push FAILED (push_rc=1)' + '91 unpushed' written 01:17; at 02:05 origin/arc = HEAD = 5c2075f after a fetch (0 unpushed): the next tick's push healed it, but the ALERT staye…
+  ↳ logged as a +1 of 4442771e (entry ee260455) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Now reading the verifier's findings in full to fix them in STATE.md.
+→ Bash: ls .expmon/campaign/longdoc/; cat campaign_longdoc/VERIFY.md 2>/dev/null || cat .expmon/campaign/longdoc/VERIFY.md
+  ↳ alerted (+42 lines)
+The verifier downgraded the feasibility gate to provisional (parity was compared from the same row builder in both modes). Checking whether the recorded result files let me test parity independently.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json'))['records'] ⏎ b=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json'))['record…
+  ↳ 1500 1500 (+2 lines)
+→ Bash: ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_174908/eval/ 2>/dev/null | grep -E "xd6|k10_px|longdoc" | head; python3 - <<'EOF' ⏎ import json,glob,os ⏎ pairs=[('expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json','expQ/b…
+  ↳ mm_docqa_pisco_k10_px1003520_mm_docqa_retr10_1m.json (+12 lines)
+Independent parity evidence from recorded runs: pages per question equal in both modes on 1,500/1,500 (4 pages), 1,500/1,500 (10 pages), 500/500 (whole documents). Now updating the deliverable page.
+→ Bash: wc -l docs/longdoc_diagnosis.md && cat docs/longdoc_diagnosis.md
+  ↳ 54 docs/longdoc_diagnosis.md (+54 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ s=s.replace("Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 01:35 (arm A, the input audit, decided).", ⏎ "Rewritten by each campaign wake w…
+  ↳ 1 (+1 lines)
+→ Bash: expmon note "longdoc arm A caveats (verifier 11-17 01:30): the feasibility gate pass stays provisional. On documents the cut check can only fail on prompt length (images never cut). The audit's parity used one row builder for both modes; re…
+  ↳ | an eval cell's result file lacks `_px1003520` in its name and its summary says `image_max_pixels: 451584` (arm T gold- (+15 lines)
+Writing STATE.md now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: echo "wake-when job:191152,191153,191154,191155 max 3h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && expmon note "longdoc wake 11-17 02:00: arm T gold-only cells 191148-191151 ran at 451,584 px (PX env omitted), closed off-regime…
+  ↳ wake-when job:191152,191153,191154,191155 max 3h (+4 lines)
+I relaunched the four "gold page only" tests at the right image resolution. The previous wake had run them at the wrong one, so they could not be compared with the earlier results. The new runs are going now and should finish around 02:25.
+
+**What happened.** The previous wake launched these four tests without setting the image resolution. They ran at 451,584 pixels per page instead of 1,003,520, which the earlier all-pages runs used. "Gold page only" means the pages that don't hold the answer are removed. The tests run on the four finetunes that differ only in first-stage chunk length (256 vs 1,024 tokens), for two seeds. All four finished cleanly (1,500 questions each, every answer judged). I closed them as off-regime and kept their numbers as a side reading.
+
+**What the side reading shows (not a decision).** The model first trained on 1,024-token chunks still loses even with the gold page alone:
+
+| seed | gold page only, low resolution (judge accuracy ↑, longer-chunk minus shorter-chunk) | all 4 pages, right resolution |
+|---|---|---|
+| 42 | −6.3 pt [−8.6, −3.8] | −6.2 pt [−8.6, −3.9] |
+| 43 | −4.7 pt [−7.0, −2.3] | −4.3 pt [−6.7, −1.8] |
+
+- pt = 1 point of judge accuracy; brackets are 95% confidence intervals; 1,500 paired questions per row.
+- Every source loses, at both seeds and both resolutions.
+- This is consistent with the loss sitting inside each compressed page, not in reading several pages. It decides nothing until the right-resolution runs land.
+
+**Other fixes this wake.**
+- **Push alert:** it was stale. The remote branch matches local, with 0 commits waiting, so I deleted the alert.
+- **Input-check gate:** it stays marked provisional, as the automatic checker asked. The check compared the two modes from the same code, so I re-checked recorded runs. Compressed and uncompressed runs get the same number of pages per question on 1,500/1,500, 1,500/1,500 and 500/500 questions. That counts pages; it does not prove they are the same pages.
+- **Records:** I added a known-issues row for the missing resolution setting. I updated `docs/longdoc_diagnosis.md` and filed three tool complaints. The ledger has four garbled launch notes from a shell-loop mistake; corrected notes follow them.
+
+**Next:** when the four runs end, I compare the two chunk lengths per seed. If the loss stays at 3 pt or more, the next test puts the model's chosen page in uncompressed.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191152,191153,191154,191155 max 3h", "summary": "Arm T gold-only cells 191148-191151 completed healthy but at 451,584 px (previous wake omitted --env PX=1003520), so they do not pair with the 1,003,52…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8590 turns=34 is_error=False denials=1
+== declared: {"next": "wake-when", "wake_when": "job:191152,191153,191154,191155 max 3h", "summary": "Arm T gold-only cells 191148-191151 completed healthy but at 451,584 px (previous wake omitted --env PX=1003520), so they do not pair with the 1,003,520-px plain cells: verdict closed off-regime, judge probes recorded. Their off-regime read L1024-C256 = -6.3 [-8.6,-3.8] (s42) / -4.7 [-7.0,-2.3] (s43), n=1,500 pairs each, matches the plain -6.2/-4.3 — consistent with the deficit in the compressed p…", "launched": ["191152", "191153", "191154", "191155"], "verdicts": [{"jobid": "191148", "verdict": "closed", "note": "off-regime PX=451584; judge .528"}, {"jobid": "191149", "verdict": "closed", "note": "off-regime PX=451584; judge .465"}, {"jobid": "191150", "verdict": "closed", "note": "off-regime PX=451584; judge .530"}, {"jobid": "191151", "verdict": "closed", "note": "off-regime PX=451584; judge .483"}], "gripes": ["+1 4442771e: watchdog keeps a push ALERT after a later push healed it (origin/arc = HEAD)", "wish: expmon launch --pair-with <jobid> to diff env/argv vs the run a cell pairs with (PX omitted cost 4 cells)", "defect: note -j accepts a space-containing arg and splits it into non-numeric job tags while verdict refuses it"]}
+== final:
+{"next":"wake-when","wake_when":"job:191152,191153,191154,191155 max 3h","summary":"Arm T gold-only cells 191148-191151 completed healthy but at 451,584 px (previous wake omitted --env PX=1003520), so they do not pair with the 1,003,520-px plain cells: verdict closed off-regime, judge probes recorded. Their off-regime read L1024-C256 = -6.3 [-8.6,-3.8] (s42) / -4.7 [-7.0,-2.3] (s43), n=1,500 pairs each, matches the plain -6.2/-4.3 — consistent with the deficit in the compressed page, not gating. Relaunched the four at PX=1003520 (191152-191155, running on homer-017, md5 unchanged). Arm A gate kept provisional per verifier; parity re-checked independently on recorded runs as a page count (1,500/1,500, 1,500/1,500, 500/500). Stale push ALERT cleared (origin/arc = HEAD = 5c2075f). Deliverable doc, known_issues, STATE rewritten.","launched":["191152","191153","191154","191155"],"verdicts":[{"jobid":"191148","verdict":"closed","note":"off-regime PX=451584; judge .528"},{"jobid":"191149","verdict":"closed","note":"off-regime PX=451584; judge .465"},{"jobid":"191150","verdict":"closed","note":"off-regime PX=451584; judge .530"},{"jobid":"191151","verdict":"closed","note":"off-regime PX=451584; judge .483"}],"gripes":["+1 4442771e: watchdog keeps a push ALERT after a later push healed it (origin/arc = HEAD)","wish: expmon launch --pair-with <jobid> to diff env/argv vs the run a cell pairs with (PX omitted cost 4 cells)","defect: note -j accepts a space-containing arg and splits it into non-numeric job tags while verdict refuses it"]}
+== rc=0 secs=330
+== verify: 3/6

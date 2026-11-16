@@ -1,6 +1,6 @@
 # Long inputs: where is the bottleneck? (campaign longdoc)
 
-Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 01:35 (arm A, the input audit, decided).
+Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 02:10 (arm A caveats; arm T first read, off-regime).
 Question (owner): every attempt at long inputs loses accuracy — is the cause the evaluation, the training data,
 training itself, or how the decoder reads many `<MEM>` slots (one `<MEM>` = one compressed slot, 8 tokens each)?
 
@@ -10,9 +10,9 @@ on the far side of 0 at both seeds; "not this cause" needs the CI inside ±3 pt.
 
 | candidate | probe | n | number | gate | verdict | questions repaired |
 |---|---|---|---|---|---|---|
-| evaluation feeds less than it claims | input audit, CPU (job 191147) | 1,500 Q per variant × 14 variants (one set of 500) | truncation cut 0 / 1,500 and pisco-vs-uncompressed parity 1,500 / 1,500 on every gating variant; the cut check does fail when it should (CML 256 controls: 924 / 1,500 and 275 / 1,500) | cut ≤ 1%, parity 100% | **not this cause** (gate passed) | 0 |
+| evaluation feeds less than it claims | input audit, CPU (job 191147) | 1,500 Q per variant × 14 variants (one set of 500) | truncation cut 0 / 1,500 and pisco-vs-uncompressed parity 1,500 / 1,500 on every gating variant; the cut check does fail when it should (CML 256 controls: 924 / 1,500 and 275 / 1,500). Limits: on documents the cut check can only fail on prompt length (pages are images, never cut); the audit's parity used one row builder for both modes, so it was re-checked on recorded runs: pages per question equal in both modes on 1,500 / 1,500 (4 pages), 1,500 / 1,500 (10 pages), 500 / 500 (whole documents) — count, not page identity | cut ≤ 1%, parity 100% | provisional: not this cause (gate passed; parity only partly independent) | 0 |
 | training never shows long inputs | input audit (count only) | as above | 10- and 20-page documents: 100% of questions beyond the finetune range; 40 text passages: 99.9%; 20 passages: 2.3% | names a cause only with a paired effect from the reading or position probes | open (count, not yet a cause) | — |
-| long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes | 1,500 Q × 2 seeds | running | deficit stays ≤ −3 pt with the gold page alone → it sits in the compressed page | open | — |
+| long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes | 1,500 Q × 2 seeds | all 4 pages (1,003,520 px): L1024 − C256 −6.2 [−8.6, −3.9] (s42), −4.3 [−6.7, −1.8] (s43). Gold page only, at the WRONG pixel budget (451,584 px, off-regime, not gating): −6.3 [−8.6, −3.8] McNemar 119 / 213 (s42), −4.7 [−7.0, −2.3] 128 / 198 (s43); every source negative. Gold page only at 1,003,520 px: running | deficit stays ≤ −3 pt with the gold page alone AND shrinks inside ±2 pt with the picked page raw → it sits in the compressed page; shrinks inside ±2 pt with the gold page alone → it sits in multi-page reading | open (consistent with the compressed page) | — |
 | length on a fixed model | 4 / 10 / 20 pages, 10 / 20 / 40 passages | — | not started | Δ_len ≤ −3 pt | open | — |
 | reading many `<MEM>`s | keep the most-attended eighth at the long size | — | not started | dilution D ≥ +3 pt | open | — |
 | positions past the trained range | shift `<MEM>` position ids | — | not started | offset cost ≤ −3 pt | open | — |

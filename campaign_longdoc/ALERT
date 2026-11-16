@@ -1,3 +1,0 @@
-ALERT 2026-11-17 01:17 — campaign longdoc (the next LLM wake must handle this, then delete the file)
-- last push FAILED (push_rc=1, behind 0) — git -C /beegfs/scratch/user/hdejean/pisco pull --no-rebase && git push
-- 91 commit(s) unpushed for >24h — push or it didn't happen (git -C /beegfs/scratch/user/hdejean/pisco push)
