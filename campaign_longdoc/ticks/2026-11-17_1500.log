@@ -1,0 +1,161 @@
+== campaign longdoc wake 2026-11-17_1500  reasons=problems-standing,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794895202 live=- running=0 pending=0 problems=1 problems_other=0 new=0 gpuh24=13.7 idle_h=2.7 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8283 sig=a690efc9 same=5 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191305,191306,191307,191308_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191305,191306,191307,191308 (ended)   (NEXT was: wake-when job:191305,191306,191307,191308 max 3h)
+== session 25cd50ab-ea3e-43b1-939b-dd739d79fd80  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_1500   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+95 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/CAMPAIGN.md; echo ======; cat campaign_longdoc/STATE.md
+  ↳ Exit code 1 (+108 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; wc -l campaign_longdoc/CAMPAIGN.md campaign_longdoc/STATE.md campaign_longdoc/known_issues.md; grep -n '^## ' campaign_longdoc/CAMPAIGN.md
+  ↳ 296 campaign_longdoc/CAMPAIGN.md (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 54	## Arms — what varies, what is held constant (+169 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+100 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/known_issues.md | cut -c1-400; echo ====; expmon logs 191308 60 2>&1 | tail -60
+  ↳ Exit code 1 (+35 lines)
+Reading the failed stage-2 autoencoding job's log, then pairing the three finished text cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 191308 60 2>&1 | tail -60; echo; expmon logs 191308 -e 2>&1 | tail -40
+  ↳ no log file for 191308 yet — pattern '*_%j.out' matched no existing file. Dir listing: (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191308 -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,StdOut%120 -P; head -30 scripts/longdoc/ae_nll.sbatch; ls -la logs 2>/dev/null | tail -3; ls -t slurm_logs 2>/dev/null | head
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|MaxRSS|StdOut (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/aenll_* expQ/longdoc/ae/ 2>&1; expmon runs 2>/dev/null | grep -E '191308|191218' ; grep -n 191308 EXPERIMENTS.md | head
+  ↳ -rw-r--r-- 1 hdejean hdejean 2997 Nov 17 03:39 expQ/longdoc/aenll_191172.out (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat expQ/longdoc/aenll_191308.out; sacct -j 191308 -D -o JobID,State,ExitCode,Start,End,Elapsed,NodeList -P; python3 -I -c " ⏎ import json;d=json.load(open('expQ/longdoc/ae/ae_nll_s2_n500.json'));print…
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-c3e0dcec-b18d-9f8d-83e0-d9bf01f4f44a) (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json;d=json.load(open('expQ/longdoc/ae/ae_nll_s2_n500.json'));print(d['args']);print(d['conds'], d['models'] if not isinstance(d['models'],dict) else list(d['models']));print(l…
+  ↳ {'model': ['c256=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml256/model', 'l1024=/beegfs/scratch/user/hdejean/pisco/expQ/longchunk/pt_mm_cml1024/model'], 'data_path': '/beegfs/scratch/us (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for c in t_c256_s42 t_l1024_s42 t_c256_s43 t_l1024_s43; do f=expQ/longdoc/$c/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; ls -la $f; python3 -I -c " ⏎ import json,sys ⏎ d=json.load(open(sys…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 813343 Nov 17 05:24 expQ/longdoc/t_c256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+53 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for c in t_c256_s42 t_l1024_s42 t_c256_s43 t_l1024_s43; do f=expQ/longdoc/$c/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; python3 -I -c " ⏎ import json,sys ⏎ d=json.load(open(sys.argv[1]));…
+  ↳ t_c256_s42 n 1500 judge 1500 unparse 0 mean 0.5793 mems 265880 err 0 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -40 scripts/paired_judge.py | grep -nE 'import|argv|add_argument|usage' ; grep -n 'paired_judge' EXPERIMENTS.md | tail -3 | cut -c1-300; ls expQ/longdoc/
+  ↳ 8:import argparse (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,7p scripts/paired_judge.py; grep -n 'add_argument' scripts/paired_judge.py
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; mkdir -p expQ/longdoc/text10; for s in 42 43; do python3 -I scripts/paired_judge.py expQ/longdoc/t_l1024_s$s/$F expQ/longdoc/t_c256_s$s/$F --n…
+  ↳ judge: L1024_s42 = expQ/longdoc/t_l1024_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,25p scripts/longdoc/length_effect.py | grep -vE '^import|^from'; expmon runs 2>/dev/null | grep -E '^(190270|190273|188707|188710) '
+  ↳ """Paired contrasts of judged eval files (campaign longdoc, arms J / L / U). Stdlib only. (+27 lines)
+Pairing done for the text cells; now comparing them against the recorded one-long-chunk text results.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longchunk/ft_cml256_s42/eval/ expQ/longchunk/ft_cml1024_s42/eval/ 2>&1 | grep -i g10; ls -la expQ/longchunk/ft_cml*_s4*/eval/*g10* 2>&1 | head
+  ↳ mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; T=eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json; G=eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json; LD=expQ/longdoc; LC=expQ/longchunk; for s in 42 43; do echo "== s$s g10 pair"; …
+  ↳ == s42 g10 pair (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 191306 400 2>&1 | grep -nE 'wrote|saved|judge|Judg|homer|nvidia|GPU 0|Start|attempt' | head -30
+  ↳ 379:wrote expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ | grep -E 'docqa_1500_1m|hotpot' ; echo ---; ls expQ/base_qwen35_4b/eval/ | grep -E 'docqa_1500_1m|hotpot'
+  ↳ mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'XD|TOPK|DML|CML|LIMIT|PX|OUT|SUF|name|FACTORS|sbatch|SBATCH' eval_mm_4b.sh | head -60
+  ↳ 2:#SBATCH -n 1 (+43 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; ls -la --time-style=+%m-%d_%H:%M eval_mm_4b.sh scripts/eval_mm_docqa.py pisco/model.py test_freez…
+  ↳ 50abc167  eval_mm_4b.sh (+9 lines)
+Code unchanged since the last wake. Now looking up how the earlier 10-page document runs were launched, to plan the next stage (input length on a fixed model).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon runs 2>/dev/null | grep -E 'extra_distractors=(6|16)' | grep -E 'docqa_1500_1m' | cut -c1-90,100-400 | head; grep -n 'xd6\|XD=6' EXPERIMENTS.md | head -5 | cut -c1-300
+  ↳ 174872     ended     -           archq          ea0c591+dirty  eval_mm_4b.sh    launcher=e.sh kind=eval_mm topk=10 max_pixels=1003520 ckpt=ft_mm_4b_173550 mode=pisco data=mm_docqa_1500_1m image_rate=c (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 174872,174874,184778,191152 -X -o JobID,JobName%15,State,Elapsed,MaxRSS,NodeList -P 2>/dev/null; sacct -j 174874,174872 -o JobID,MaxRSS,Elapsed -P | grep batch; cat expQ/174874/manifest* 2>/de…
+  ↳ Exit code 2 (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 10,24p eval_mm_4b.sh; ls -la expQ/base_qwen35_4b/ | head; grep -n '191152\]' EXPERIMENTS.md | head -2 | cut -c1-400; expmon help 2>&1 | grep -iE 'launch' | head -5
+  ↳ # (+25 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 61,70p eval_mm_4b.sh; grep -nE '"--checkpoint_path"|"--base_model"|args.mode == "base"' scripts/eval_mm_docqa.py | head
+  ↳ pixi run python -u scripts/eval_mm_docqa.py --mode "$MODE" --checkpoint_path "$CKPT" \ (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 700,760p scripts/eval_mm_docqa.py; grep -n 'extra_distractors' scripts/eval_mm_docqa.py | head -20
+  ↳ rank_scores = json.load(open(args.rank_scores)) if args.rank_scores else None (+65 lines)
+→ Bash: sinfo -p gpu-be -N -o "%n %G %C %e %T" | sort -u | head -30
+  ↳ homer-005 gpu:A100-SXM4-80GB:8(S:0-1) 27/1/0/28 10638 mixed (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'checkpoint_path' scripts/eval_mm_docqa.py | head; expmon runs 2>/dev/null | grep -E 'mode=base' | grep longdoc | head -3; grep -c . /dev/null
+  ↳ 11:  python scripts/eval_mm_docqa.py --mode pisco --checkpoint_path expQ/<run>/model \ (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 678,692p scripts/eval_mm_docqa.py; grep -n 'base_model_name' scripts/eval_mm_docqa.py | head -3; grep -n "177878\]" EXPERIMENTS.md | head -2 | cut -c1-300; sacct -j 177878 -X -o Elapsed,State -P
+  ↳ dense_coll = make_collator(model, topk=args.topk_docs, compressor_max_length=args.compressor_max_length, compr_rate=args.dense_rate, (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 28,32p eval_mm_4b.sh; head -5 eval_mm_4b_174874.out 2>/dev/null; ls eval_mm_4b_177878.out eval_mm_4b_174874.out 2>&1
+  ↳ RUN_DIR=$(dirname "$CKPT") (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 190271,190274,188708,191165,174908 -X -o JobID,Elapsed,State,NodeList -P; sacct -j 190271,188708 -o JobID,MaxRSS -P | grep batch; python3 -I -c " ⏎ import json ⏎ for f in ['expQ/ft_mm_4b_18477…
+  ↳ JobID|Elapsed|State|NodeList (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/t_c256_s42/ expQ/longdoc/s2_c256 | head; grep -n '191305\]' EXPERIMENTS.md | head -1 | cut -c1-120; expmon runs 2>/dev/null | grep -E '^191305' | cut -c1-200; grep -A3 -n 'launch' c…
+  ↳ expQ/longdoc/s2_c256: (+20 lines)
+Recording the two finished results (text chunk-length comparison, stage-2 autoencoding) before launching the next stage.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 191308 closed "stage-2 AE probe (same 500 held-out MS MARCO docs, nats/token, lower better, d = L1024 - C256, stage-2 models pt_mm_cml256 vs pt_mm_cml1024): s256 .0290 vs .0284, d +.0…
+  ↳ verdict recorded: 191308 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "provisional: longdoc arm T CLOSED (why long-chunk stage 1 lost; both seeds where a seed exists). Documents: the L1024-C256 loss sits in the compressed page (gold page only -6.7/-4.9 pt, pi…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m; expmon launch --dry-run --exp longdoc --stage L --time 1:00:00 --mem 32G --env PX=1003520 --env XD=16 --env TOPK=20 --env DML=19564 eval…
+  ↳ would submit: sbatch --time 1:00:00 --mem 32G eval_mm_4b.sh expQ/longdoc/l_r42/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m; expmon launch --dry-run --exp longdoc --stage L --time 1:00:00 --mem 32G --exclude='homer-[005-009]' --env PX=1003520 --env XD=16 --env …
+  ↳ would submit: sbatch --time 1:00:00 --mem 32G --exclude=homer-[005-009] eval_mm_4b.sh expQ/longdoc/l_r42/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m; expmon launch --exp longdoc --stage L --time 1:00:00 --mem 32G --exclude='homer-[005-009]' --env PX=1003520 --env XD=16 --env TOPK=20 --…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191375.out (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m; X='homer-[005-009]'; ⏎ expmon launch --exp longdoc --stage L --time 4:54:00 --mem 32G --exclude=$X --dependency=afterok:191375 --env PX=…
+  ↳ Submitted batch job 191376 (+5 lines)
+Four cells submitted for the length-on-a-fixed-model stage. Writing intent notes, then the deliverable doc and state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M="md5 eval_mm_4b.sh 50abc167 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / pisco/model.py 994cff3d"; ⏎ expmon note -j 191375 "longdoc arm L intent: PLUMBING (LIMIT=300) for the new 20-pag…
+  ↳ expmon note: 91 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat >> campaign_longdoc/known_issues.md <<'EOF' ⏎ | a campaign job shows `✗ FAILED exit=3` with Elapsed 0 s; its log says only "refusing to overwrite <out>.json" (ae_nll 191308, 2026-11-17) | benign: t…
+  ↳ 87 docs/longdoc_diagnosis.md (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+55 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json ⏎ for f in ['expQ/base_qwen35_4b/eval/mm_docqa_base_k10_text_hotpotqa_1500.json','expQ/longchunk/ft_cml256_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json'…
+  ↳ mm_docqa_base_k10_text_hotpotqa_1500.json 1500 0.752 0 0 0 (+2 lines)
+Now rewriting the deliverable document's arm T parts.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ old3=s.split('\n')[2] ⏎ s=s.replace(old3,"Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 15:10 (ar…
+  ↳ 86
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp longdoc 2>&1 | tail -2; expmon status 2>&1 | grep -E '19137[5-8]'; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search display rows 2>&1 | head -8; expmon gripe --open --search "0 table" 2>&1 | head -5
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '<tr' display_longdoc.html; expmon gripe --same 43db294f "longdoc 2026-11-17 15:10: same '0 table rows, 0 media files from 0 runs' message; the HTML holds $(grep -c '<tr' display_longdoc.html) …
+  ↳ 32 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; mkdir -p expQ/longdoc/locate; for s in 42 43; do for v in px1003520_gold px1003520_rawroute1; do python3 -I scripts/paired_judge.py expQ/longdoc/t_l1024_s$s/eval/mm_docqa_pisco_${v}_mm_docqa_1500_1m.js…
+  ↳ px1003520_gold s42 (+7 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "did: longdoc wake 15:00: arm T closed (provisional): stage-2 text AE L1024 not worse at 256 (d +.0006, p .82) -> page loss image-specific, enters in stage 2; ten short text chunks erase L1…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tail -c 600 eval_mm_4b_191375.out; echo; tail -c 300 eval_mm_4b_191378.out
+  ↳ Loading weights: 100%|██████████| 723/723 [00:00<00:00, 9657.95it/s] (+14 lines)
+I closed the long-chunk training question this wake and started the next stage, which measures how accuracy changes with input length on a fixed model. Nothing is needed from you.
+
+## Done: why long-chunk training lost accuracy (closed, still provisional until the checker re-derives it)
+The comparison is two otherwise identical chains: one pre-trained on 256-token text chunks, one on 1,024-token chunks. The long-chunk chain's loss is in **how it compresses image pages**. It enters in the second training stage, the one that trains on page images.
+
+| check | n | long minus short chunks (95% CI) | reading |
+|---|---|---|---|
+| Rebuild 256-token text from the compressed slots, after the image stage | 500 held-out documents | +.0006 nats/token, lower is better [−.0008, +.0019], sign test p .82 | not worse on text |
+| Same check, after text-only stage 1 (earlier wake) | 500 documents | −.0018 nats/token | not worse on text |
+| Rebuild a page image's words from its slots (earlier wake) | 500 pages | −8.0 pt of words [−10.6, −5.5] | worse on images |
+| Text QA, ten short passages (judge accuracy) | 1,500 questions per seed | +2.3 pt (seed 42), −0.6 pt (seed 43) | no loss |
+| Text QA, the same passages joined into one ~1.3k-token chunk (recorded) | 1,500 questions per seed | −1.1 pt, −3.3 pt | small loss |
+
+- The gap between the two text layouts is +3.4 / +2.7 pt (sign test p .017 / .028). That fits "the text loss shows only on long chunks". It misses the 3-point bar at seed 43, so it is not decided.
+- **Training change this points to (your call):** keep the 256-token first stage. If long chunks are tried again, change the image stage, and check page transcription before any finetune.
+- One job was flagged FAILED, but it was harmless. Its first attempt finished and wrote the full result. After a requeue, the second attempt refused to overwrite that file. I added this case to the campaign's known-issues list.
+
+## Running now: does accuracy drop as inputs get longer?
+This stage uses the seed-42 reference model on the 1,500 document questions.
+
+| cell | state |
+|---|---|
+| 10 pages, compressed | running |
+| 20 pages, uncompressed, 300-question test (checks that the ~19.5k-token prompt fits on one GPU) | running; past model loading and generating |
+| 20 pages, uncompressed, all 1,500 questions | waits for the test to pass |
+| 20 pages, compressed, all 1,500 questions | waits for the test to pass |
+
+The 4-page compressed and uncompressed results, plus the 10-page uncompressed result, already exist and will be reused.
+
+## Next
+- The next wake starts when the 20-page test and the 10-page cell finish (at most 3 hours).
+- It will check their health and compute the length effect at 10 pages: the compressed-vs-uncompressed gap at 10 pages minus the same gap at 4 pages.
+- It will then launch the seed-43 repeats and the text-length cells.
+- Budget so far: 31 of 70 cells and about 14 of 60 GPU-hours, with about 5 more for the cells now running.
+
+`docs/longdoc_diagnosis.md` is rewritten with the closed results and the text table.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm T closed (provisional): stage-2 text autoencoding shows L1024 not worse at 256 tokens (d +.0006 [-.0008,+.0019], p .82, 500 docs) -> the long-chunk loss is image-specific and enters in stage 2; ten shor…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.0113 turns=54 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm T closed (provisional): stage-2 text autoencoding shows L1024 not worse at 256 tokens (d +.0006 [-.0008,+.0019], p .82, 500 docs) -> the long-chunk loss is image-specific and enters in stage 2; ten short text chunks erase L1024's small text loss (+2.3/-0.6 vs one long chunk -1.1/-3.3, DiD +3.4/+2.7, sign p .017/.028). 191308's FAILED exit 3 was a benign requeue hitting the overwrite guard (known_issues row added). Arm L started on R s42 documents: 20-page uncompressed plumbing 191375 -> full 191376 and R 20-page 191377 (afterok), R 10-page 191378. Rewrote docs/longdoc_diagnosis.md arm T, saved locate pair tables, STATE.md rewritten.", "launched": ["191375", "191376", "191377", "191378"], "verdicts": [{"jobid": "191308", "verdict": "closed", "note": "stage-2 AE: L1024-C256 at s256 +.0006 [-.0008,+.0019], p .82 -> page loss image-specific (gate not met)"}, {"jobid": "191221", "verdict": "closed", "note": "ten-chunk text C256 s42 .579"}, {"jobid": "191305", "verdict": "closed", "note": "ten-chunk text L1024 s42 .603; L-C +2.3 [+0.3,+4.4]"}, {"jobid": "191306", "verdict": "closed", "note": "ten-chunk text C256 s43 .595"}, {"jobid": "191307", "verdict": "closed", "note": "ten-chunk text L1024 s43 .589; L-C -0.6 [-2.7,+1.3]"}], "gripes": ["+1 of 43db294f: display --exp longdoc prints '0 table rows' while the HTML holds 32 <tr> rows"], "wake_when": "job:191375,191378 max 3h"}
+== final:
+{"next":"wake-when","summary":"Arm T closed (provisional): stage-2 text autoencoding shows L1024 not worse at 256 tokens (d +.0006 [-.0008,+.0019], p .82, 500 docs) -> the long-chunk loss is image-specific and enters in stage 2; ten short text chunks erase L1024's small text loss (+2.3/-0.6 vs one long chunk -1.1/-3.3, DiD +3.4/+2.7, sign p .017/.028). 191308's FAILED exit 3 was a benign requeue hitting the overwrite guard (known_issues row added). Arm L started on R s42 documents: 20-page uncompressed plumbing 191375 -> full 191376 and R 20-page 191377 (afterok), R 10-page 191378. Rewrote docs/longdoc_diagnosis.md arm T, saved locate pair tables, STATE.md rewritten.","launched":["191375","191376","191377","191378"],"verdicts":[{"jobid":"191308","verdict":"closed","note":"stage-2 AE: L1024-C256 at s256 +.0006 [-.0008,+.0019], p .82 -> page loss image-specific (gate not met)"},{"jobid":"191221","verdict":"closed","note":"ten-chunk text C256 s42 .579"},{"jobid":"191305","verdict":"closed","note":"ten-chunk text L1024 s42 .603; L-C +2.3 [+0.3,+4.4]"},{"jobid":"191306","verdict":"closed","note":"ten-chunk text C256 s43 .595"},{"jobid":"191307","verdict":"closed","note":"ten-chunk text L1024 s43 .589; L-C -0.6 [-2.7,+1.3]"}],"gripes":["+1 of 43db294f: display --exp longdoc prints '0 table rows' while the HTML holds 32 <tr> rows"],"wake_when":"job:191375,191378 max 3h"}
+== rc=0 secs=507
+== verify: 8/16
