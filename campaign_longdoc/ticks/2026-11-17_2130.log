@@ -1,0 +1,119 @@
+== campaign longdoc wake 2026-11-17_2130  reasons=gate,request  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794918602 live=191393:PENDING,191392:RUNNING running=1 pending=1 problems=0 problems_other=0 new=0 gpuh24=18.6 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8197 sig=cc17ac9b same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191392,191393_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session cdd18258-6282-4eb6-841f-ea0f07f6f599  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_2130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+145 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md DECISIONS.md; cat CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat STATE.md; echo ======; cat known_issues.md; echo =====; cat GATE; ls -la
+  ↳ Exit code 1 (+109 lines)
+  ↳ <persisted-output> (+31 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/cdd18258-6282-4eb6-841f-ea0f07f6f599/tool-results/bovw1x9za.txt
+  ↳ 1	  340 CAMPAIGN.md (+345 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/DECISIONS.md | tail -12; echo ====; ls -la campaign_longdoc/; cat campaign_longdoc/known_issues.md | head -40; ls scripts/longdoc/
+  ↳ Exit code 1 (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la campaign_longdoc/; echo "---"; cat campaign_longdoc/known_issues.md; echo "---"; ls -la scripts/longdoc/
+  ↳ total 95 (+65 lines)
+Reading the owner's request (build a long-document test set, arm E) and checking the arm L cells that ended since the last full wake.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 191376 191377 191390 191391; do sacct -j $j -D -X -o JobID,State,ExitCode,NodeList,Start,End,Elapsed -n; done; echo "---"; ls -la expQ/base_qwen35_4b/eval/ | grep -E "k20_px1003520_xd16|k40" ;…
+  ↳ 191376        COMPLETED      0:0       homer-011 2026-11-17T15:23:11 2026-11-17T16:39:17   01:16:06  (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ import json ⏎ fs={"U20":"expQ/base_qwen35_4b/eval/mm_docqa_base_k20_px1003520_xd16_mm_docqa_1500_1m.json", ⏎ "R20s42":"expQ/longdoc/l_r42/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_d…
+  ↳ U20 ['summary', 'records'] (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ import json ⏎ fs={"U20":"expQ/base_qwen35_4b/eval/mm_docqa_base_k20_px1003520_xd16_mm_docqa_1500_1m.json", ⏎ "R20s42":"expQ/longdoc/l_r42/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_d…
+  ↳ Exit code 1 (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py | cut -c1-8,33-; stat -c '%y %n' eval_mm_4b.sh scripts/eval_mm_docqa.py; head -30 scripts/longdoc/length_effect.py…
+  ↳ b3d1cda1  eval_mm_4b.sh (+38 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; B=expQ/base_qwen35_4b/eval; U4=$B/mm_docqa_base_px1003520_mm_docqa_1500_1m.json; U10=$B/mm_docqa_base_k10_px1003520_xd6_mm_docqa_1500_1m.json; U20=$B/mm_docqa_base_k20_px1003520_xd16_mm_docqa_1500_1m.j…
+  ↳ == s43 p10 judge (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls eval_data/ | head -50; echo "---"; echo $HF_HOME $HF_DATASETS_CACHE; ls ${HF_HOME:-~/.cache/huggingface}/hub 2>/dev/null | grep -i -E "dataset" | head -40; grep -n -E "load_dataset|hf_hub|snapshot_d…
+  ↳ longbench_multifieldqa_en (+35 lines)
+Arm L results computed (documents: no length loss at 10 pages on both seeds; at 20 pages the gap shrinks on seed 42). Now looking at how to fetch long-document sources for the new test sets.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -rn -E "HF_HOME|HF_DATASETS|HF_HUB" eval_mm_4b.sh .env pixi.toml 2>/dev/null | head; ls -d /beegfs/scratch/user/hdejean/*cache* /beegfs/scratch/user/hdejean/hf* 2>/dev/null; ls ~/.cache/huggingfac…
+  ↳ eval_mm_4b.sh:17:export HF_HOME=/beegfs/scratch/user/hdejean/Reranking/cache (+15 lines)
+→ Bash: C=/beegfs/scratch/user/hdejean/Reranking/cache; ls $C; ls $C/hub 2>/dev/null | grep -i datasets | head -60; ls $C/datasets 2>/dev/null | head -40
+  ↳ cli (+106 lines)
+→ Bash: C=/beegfs/scratch/user/hdejean/Reranking/cache; ls $C/hub | grep -i -E "qual|qasper|longbench|mmlong|longdoc|docvqa|mp-doc|slide|scrolls|zero|infini|loogle|ruler|needle|narrative|tevatron|vidore|opendoc|visrag|lmms" 
+  ↳ datasets--jannalu--LongBench (+25 lines)
+→ Bash: cd /tmp; for r in emozilla/quality tasksource/QuALITY allenai/qasper deepmind/narrativeqa yubo2333/MMLongBench-Doc dengchao/LongDocURL bigai-nlco/LooGLE THUDM/LongBench-v2 lmms-lab-encoder/MP-DocVQA; do timeout 15 curl -s "https://huggingfa…
+  ↳ emozilla/quality | lic: None | gated: False | size: None | files: 4 ['.gitattributes', 'README.md', 'data/train-00000-of-00001-0bffe0bf790d89eb.parquet', 'data/validation-00000-of-00001-77baeb95382097 (+8 lines)
+→ Bash: cd /tmp; for r in emozilla/quality yubo2333/MMLongBench-Doc dengchao/LongDocURL; do echo "== $r"; timeout 15 curl -sL "https://huggingface.co/datasets/$r/raw/main/README.md" | grep -i -E -m5 "licen|cc-by|apache|mit"; done; for r in dengchao…
+  ↳ == emozilla/quality (+8 lines)
+→ Bash: for r in mayubo2333/MMLongBench-Doc nyu-mll/quality dengchao-ali/LongDocURL; do timeout 15 curl -s "https://api.github.com/repos/$r" | python3 -c " ⏎ import json,sys; d=json.load(sys.stdin); print('$r', (d.get('license') or {}).get('spdx_id…
+  ↳ mayubo2333/MMLongBench-Doc Apache-2.0  (+6 lines)
+Sources checked (all allow research use). Now reading how the eval feeds text and page rows, so the new builders write the right format.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in text_hotpotqa_1500 mm_docqa_longdoc_1m; do echo "== $s"; cat eval_data/$s/dataset_info.json 2>/dev/null | python3 -c "import json,sys;d=json.load(sys.stdin);print({k:(v.get('dtype') or v.get('…
+  ↳ == text_hotpotqa_1500 (+86 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls .pixi/envs/; ls .pixi/envs/default/lib/python3*/site-packages | grep -i -E "^(fitz|pymupdf|pypdfium2|pdf2image|pdfplumber|pypdf|PIL|pandas|pyarrow|tiktoken)" | head; which pdftoppm pdftotext 2>/dev/…
+  ↳ Exit code 1 (+14 lines)
+→ Bash: mkdir -p /tmp/ld_meta && cd /tmp/ld_meta && timeout 60 curl -sL -o ldu.jsonl https://huggingface.co/datasets/dengchao/LongDocURL/resolve/main/LongDocURL_public.jsonl && timeout 60 curl -sL -o mmlb.parquet https://huggingface.co/datasets/yub…
+  ↳ total 8092 (+7 lines)
+→ Bash: cd /tmp; python3 -I -c " ⏎ import json,collections ⏎ rows=[json.loads(l) for l in open('/tmp/ld_meta/ldu.jsonl')] ⏎ span=lambda r: max(r['evidence_pages'])-min(r['evidence_pages'])+1 if r['evidence_pages'] else 0 ⏎ tp=collections.Counter(mi…
+  ↳ total_pages [(40, 313), (60, 787), (80, 408), (100, 424), (120, 278), (140, 115)] (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E "argparse|add_argument|def |AutoTokenizer|from_pretrained|VARIANTS|variants|load_from_disk" scripts/longdoc/audit_inputs.py | head -50; cat scripts/longdoc/audit.sbatch
+  ↳ 4:Eval variants (pisco + base mode): <MEM>s per question, compressor tokens per chunk, decoder prompt tokens, decoder (+52 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 20,176p scripts/longdoc/audit_inputs.py
+  ↳ LC = f"{ROOT}/expQ/longchunk" (+154 lines)
+Writing the long-document set builders now (source: LongDocURL, Apache-2.0, 2,082 usable questions on 40-150-page PDFs). Checking the audit's main loop so the cut check can run on the new sets.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 233,345p scripts/longdoc/audit_inputs.py; grep -n -E "TOPK|topk|LIMIT|limit|closed|no_docs" scripts/eval_mm_docqa.py | head -30
+  ↳ def main(): (+127 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 586,600p scripts/eval_mm_docqa.py; sed -n 526,545p scripts/eval_mm_docqa.py; grep -n -E "TOPK|LIMIT|CML|DML|OUT=|out=|json" eval_mm_4b.sh | head -30
+  ↳ help="chunks per compressor forward (0 = one call); exact, only lowers peak memory (whole tours)") (+53 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/ft_mm_4b_184778/model/compressor/ | head; grep -n "^R =\|^ED =\|^ROOT" scripts/longdoc/audit_inputs.py; sinfo -p gpu-be -o "%n %C %e" -h | grep -v -E "homer-00[5-9]" | sort -t/ -k2 -n -r | head…
+  ↳ chat_template.jinja (+25 lines)
+Source chosen: LongDocURL (Apache-2.0; 2,082 usable questions on 40-150-page PDFs, evidence pages annotated). Same questions in all three sets, nested windows of 10/20/40 pages. Writing the builder.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/longdoc_build.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/longdoc_build.py (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/longdoc_build.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/longdoc_build.py has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/scripts/longdoc; for k in text pages mixed; do cat > build_long_$k.py <<EOF ⏎ """Arm E: build eval_data/longdoc_${k}_1500 (see longdoc_build.py for the construction). Extra args pass through.""" ⏎ impor…
+  ↳ OK (+16 lines)
+Builder written. Now adding the new sets to the input audit (the 0%-cut check), selectable so the old default run stays unchanged.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p="scripts/longdoc/audit_inputs.py"; s=open(p).read() ⏎ old='''    "claim_longdoc_k20": ("mm_docqa_longdoc_1m", 20, 0, 256, False, False), ⏎ } ⏎ ''' ⏎ new='''    "claim_longdoc_k2…
+  ↳ OK (+8 lines)
+→ Bash: expmon launch --exp longdoc --stage E --dry-run --time 5:00:00 --mem 32G --cpus-per-task 3 --exclude='homer-[005-009]' scripts/longdoc/build_long.sbatch all 1500 2>&1 | tail -15
+  ↳ would submit: sbatch --time 5:00:00 --mem 32G --cpus-per-task 3 --exclude=homer-[005-009] scripts/longdoc/build_long.sbatch all 1500 (+3 lines)
+→ Bash: expmon note "longdoc arm E build intent: scripts/longdoc/build_long.sbatch all 1500 (CPU, gpu-be gres 0, 3 CPUs, 32G, --time 5:00 = no measured wall yet; estimate ~2 h: 2.6 GB download + ~25k page renders on 3 CPUs). Source LongDocURL (Apac…
+  ↳ expmon note: 143 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+5 lines)
+→ Bash: expmon launch --exp longdoc --stage E --time 4:00:00 --mem 32G --cpus-per-task 3 --exclude='homer-[005-009]' --dependency=afterok:191515 scripts/longdoc/audit.sbatch 0 E_ 2>&1 | tail -4; expmon note -j 191515 "arm E cut check intent (chaine…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516.out (+6 lines)
+Build job and the chained cut-check are queued. Now recording the arm L results (verdicts and probes).
+→ Bash: expmon probe 191390 judge=0.608 dlen_vs_p4=0.0013 >/dev/null; expmon probe 191377 judge=0.5987 dlen_vs_p4=0.0433 >/dev/null; expmon probe 191376 judge=0.754 >/dev/null; expmon probe 191391 judge=0.53 >/dev/null ⏎ expmon verdict 191390 close…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: ls -la docs/longdoc_diagnosis.md 2>&1; wc -l docs/longdoc_diagnosis.md 2>/dev/null; grep -n -E "^#|pages" docs/longdoc_diagnosis.md 2>/dev/null | head -40
+  ↳ -rw-r--r-- 1 hdejean hdejean 14157 Nov 17 16:05 docs/longdoc_diagnosis.md (+32 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 69	## 2. Length curves (accuracy against input size) (+21 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md"; s=open(p).read() ⏎ rep=[ ⏎ ("Last rewrite 2026-11-17 16:10 (arm L: first length point, documents 10 pages seed 42, no length loss; seed 43 and 20 pages running; text 40 passages started).",…
+  ↳ done
+→ Bash: sed -n 545,566p scripts/eval_mm_docqa.py; sed -n 640,660p scripts/eval_mm_docqa.py
+  ↳ n_pad_tokens = int((ids == ip).sum()) (+42 lines)
+→ Bash: scontrol show res 2>&1 | head -8; squeue -u hdejean -o "%i %j %T %r %S" | grep -E "1915(15|16)|19139[23]"
+  ↳ No reservations in the system (+4 lines)
+The set build started. Checking its first log lines for an early crash before writing the state file.
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out | tail -20; ls -la /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/ 2>&1 | head; du -sh /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/hf 2>/dev/nu…
+  ↳ FACTORS kind=build_long arm=E sets=all max_q=1500 suffix=none source=LongDocURL px=1003520 piece=1000 (+8 lines)
+Extraction is running (download took under a minute). Writing the state file while the build continues.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: tail -8 /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out; ls /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/pdf | wc -l; ls /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/text 2>/dev/null | wc -l
+  ↳ FACTORS kind=build_long arm=E sets=all max_q=1500 suffix=none source=LongDocURL px=1003520 piece=1000 (+5 lines)
+→ Bash: rm campaign_longdoc/REQUEST && echo removed; timeout 60 expmon display --exp longdoc 2>&1 | tail -3; tail -3 expQ/longdoc/build_long_191515.out; ls eval_data/longdoc_src/text | wc -l
+  ↳ removed (+5 lines)
+→ Bash: expmon gripe --same 43db294f "longdoc 2026-11-17 21:50: still '0 table rows, 0 media files from 0 runs' after 4 more closed eval cells with probes (191376/191377/191390/191391); the page shows nothing the grid has" 2>&1 | tail -1; ls eval_d…
+  ↳ logged as a +1 of 43db294f (entry 3e246094) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,os,re,unicodedata ⏎ T="eval_data/longdoc_src/text" ⏎ def norm(s): ⏎     s=unicodedata.normalize("NFKC",s or "").lower(); return re.sub(r"\s+"," ",re.sub(r"[^\w\s]"," ",s)).strip() ⏎ rows=[json.loads(l) for…
+  ↳ docs 49 text-evidence Q 42 hits e-1 24 hits e 12 (+1 lines)
+→ Bash: expmon note --did "longdoc wake 21:30: executed owner REQUEST (arm E first): sources checked, builders scripts/longdoc/longdoc_build.py + build_long_{text,pages,mixed}.py + build_long.sbatch, audit_inputs.py --only E_; launched build 191515…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+11 lines)
+→ Bash: git status --short scripts/longdoc; git check-ignore -v scripts/longdoc/longdoc_build.py scripts/longdoc/build_long_text.py || echo "not ignored"; tail -2 expQ/longdoc/build_long_191515.out
+  ↳ M scripts/longdoc/audit.sbatch (+9 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Did the owner's request: arm E, a real long-document test set, is being built. Source is LongDocURL (Apache-2.0; 2,082 usable questions on 387 PDFs of 40-150 pages, with evidence pages marked). Each questio…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.1964 turns=51 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Did the owner's request: arm E, a real long-document test set, is being built. Source is LongDocURL (Apache-2.0; 2,082 usable questions on 387 PDFs of 40-150 pages, with evidence pages marked). Each question is asked on nested windows of its own PDF: 10/20/40 pages as images; 4k/8k/16k/32k tokens as the PDF's text layer (text and layout evidence only); and a mixed set where each page is text or im…", "launched": ["191515 arm E set build (CPU): longdoc_pages/text/mixed_1500 + needle sets from LongDocURL", "191516 arm E cut check (CPU, audit.sbatch 0 E_, afterok 191515)"], "verdicts": [{"jobid": "191390", "verdict": "closed", "note": "healthy; documents 10 vs 4 pages s43: length effect +0.1 [-2.2,+2.5] -> with s42, provisional no length loss at 10 pages"}, {"jobid": "191377", "verdict": "closed", "note": "healthy; documents 20 vs 4 pages s42: +4.3 [+1.8,+6.9] p .007, gap shrinks (uncompressed falls more); one seed"}, {"jobid": "191376", "verdict": "closed", "note": "healthy; uncompressed 20 pages .754"}, {"jobid": "191391", "verdict": "closed", "note": "plumbing OK, text 40 passages 300 rows"}], "gripes": ["+1 of 43db294f: expmon display --exp longdoc still shows 0 table rows despite closed cells with probes"], "wake_when": "job:191516 max 10h"}
+== final:
+{"next":"wake-when","summary":"Did the owner's request: arm E, a real long-document test set, is being built. Source is LongDocURL (Apache-2.0; 2,082 usable questions on 387 PDFs of 40-150 pages, with evidence pages marked). Each question is asked on nested windows of its own PDF: 10/20/40 pages as images; 4k/8k/16k/32k tokens as the PDF's text layer (text and layout evidence only); and a mixed set where each page is text or image. Each modality also gets a needle check: a made-up fact hidden at 10/50/90% depth of a real document. QuALITY and Qasper (both CC BY 4.0) are too short for the 16k/32k sizes. NarrativeQA marks no evidence location, so the nested windows cannot be built. MMLongBench-Doc (non-commercial research licence) is kept in reserve. The set-build job (CPU) and the cut check chained after it (the old input audit, extended with a --only E_ option) are submitted; the build has started. Evidence pages are 1-based (answer found on page e−1 in 24 of 42 text questions, on page e in 12). Arm L, provisional: documents at 10 vs 4 pages show no length loss at either seed (change in the compressed-minus-uncompressed gap +0.5 pt [−1.8, +2.7] and +0.1 pt [−2.2, +2.5], 1,500 pairs each). At 20 pages, seed 42 only, the gap shrinks by 4.3 pt [+1.8, +6.9] because the uncompressed model drops from .809 to .754 while the compressed one only drops from .610 to .599. The 20-page seed-43 cell waits for arm E's costing. REQUEST executed and deleted; STATE.md and docs/longdoc_diagnosis.md rewritten.","launched":["191515 arm E set build (CPU): longdoc_pages/text/mixed_1500 + needle sets from LongDocURL","191516 arm E cut check (CPU, audit.sbatch 0 E_, afterok 191515)"],"verdicts":[{"jobid":"191390","verdict":"closed","note":"healthy; documents 10 vs 4 pages s43: length effect +0.1 [-2.2,+2.5] -> with s42, provisional no length loss at 10 pages"},{"jobid":"191377","verdict":"closed","note":"healthy; documents 20 vs 4 pages s42: +4.3 [+1.8,+6.9] p .007, gap shrinks (uncompressed falls more); one seed"},{"jobid":"191376","verdict":"closed","note":"healthy; uncompressed 20 pages .754"},{"jobid":"191391","verdict":"closed","note":"plumbing OK, text 40 passages 300 rows"}],"gripes":["+1 of 43db294f: expmon display --exp longdoc still shows 0 table rows despite closed cells with probes"],"wake_when":"job:191516 max 10h"}
+== rc=0 secs=850
+== verify: 4/15

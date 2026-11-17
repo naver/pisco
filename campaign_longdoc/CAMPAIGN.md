@@ -28,7 +28,7 @@ Facts to explain:
 - On multi-page documents the answer stays in the `<MEM>`s but the decoder does not use it (27 such failures vs 6 losses,
   architecture_review.md:100-110). OpenEQA: more compressed frames barely help (48-52 vs 57 for 32 raw frames, HANDOFF.md:57).
 **Deciding numbers, one per candidate** (paired judge accuracy on the same questions unless stated):
-- evaluation: arm A's cut rate and parity, plus arm J's judge agreement;
+- evaluation: arm A's cut rate and parity, arm J's judge agreement, and arm E (do the gating sets hold long documents at all);
 - length on a fixed model: Δ_len per modality (arm L);
 - reading many `<MEM>`s: dilution D (arm U);
 - positions: the offset cost (arm P);
@@ -41,6 +41,12 @@ paired on query_id by `scripts/paired_judge.py` (bootstrap 95% CI + McNemar). Ga
 - text `eval_data/text_hotpotqa_1500` (HotpotQA distractor validation, 10 passages, TOPK=10, CML=4096);
 - mixed `eval_data/longdoc_mixed_1500` (to build, arm L).
 Reported only (n < 1,500): `mm_docqa_longdoc_1m` (500 Q, 1-20 pages) and the `longbench_multifieldqa_en` length buckets.
+**The gating sets are not long documents (owner, 2026-11-17: "do we really have the proper dataset to evaluate?" →
+"send it"; arm A's audit, job 191147):** g10 is 10 independent HotpotQA paragraphs glued together (p50 1,515 tokens,
+answer in ~110-token gold paragraphs); the text passage sets are many ~140-token chunks; MRQA chunks p50 401; document
+pages are separate images where text chunk length does not apply; only LongBench MultiFieldQA is long (0-4k / 4-8k /
+8-12k / 12k+ tokens: 39 / 48 / 48 / 15 Q = 150, too few for a 3-pt bar). So no recorded number measures one long
+coherent document. Arm E builds that yardstick; the long-chunk verdict on text is open until E's paired cells say.
 Models:
 - R = `expQ/ft_mm_4b_184778/model` (s42), repeated on `expQ/ft_mm_4b_184780/model` (s43);
 - C256 / L1024 finetunes = `expQ/longchunk/ft_cml256_s42|s43/model` / `ft_cml1024_s42|s43/model`; their stage-2 models
@@ -60,7 +66,25 @@ quoted here — cite the card, not the PDF.
 | U. reading many `<MEM>`s | as L at the longest size, with ONE probe env per cell: `KEEPF=0.125 KEEPM=attn_global`, `RAW=gold`, `RAW=route1` | slots kept / gold item raw / picked item raw | as L | R plain at the same size, and the same probe at the short size (exists for documents: eighth .613, job 189057; route1 .820, job 188441; gold-only .632, job 188440) | dilution D and picking (below) | ~12 |
 | P. positions | eval flag `--mem_position_offset N` (to write, patchable IF; env `MPOS`): shifts the decoder position ids of the `<MEM>`s and of everything after them by N | position only: N = the 20-page (40-passage) span minus the short span, taken from arm A | R; 4-page documents and 10-passage text; slot count | R plain. `MPOS=0` must give byte-identical predictions | offset cost ≤ −3 pt with the CI below 0, at s42 and at s43 → positions past the trained range cost accuracy | ~5 |
 | T. why long-chunk training lost | `eval_mm_4b.sh` on the C256 / L1024 finetunes (symlinked): `GOLD=1` and `RAW=route1` on documents (PX=1003520); plain `text_hotpotqa_1500` (ten chunks, TOPK=10, CML=4096). `scripts/longdoc/mem_recall.py` (to write: a stride-aware port of `scripts/probe_mem_recall.py`, which is legacy-only per HANDOFF.md:138) on the two stage-2 models, 500 gold pages. `scripts/longdoc/ae_nll.py` (to write) on the two stage-1 models, 500 MS MARCO documents from row 1,000,000 on (never trained on), chunks of 256 and 1,024 tokens | stage-1 chunk length (the only difference between the chains) | recipes, rows, seeds, code md5 | C256 of the same seed with the same probe. Plain pairs exist (190270-190275 vs 188707-188712) | locate (below) | ~16 |
+| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run inside that job, the way `scripts/build_mm_eval.py` fetched its sources); cells = `eval_mm_4b.sh` as in arm L | the set (text / pages / mixed), the length bucket (reported per bucket from one cell), the model | rate 8, PX=1003520, judge; ONE CML per comparison, the same for both models compared | uncompressed on the same rows; closed-book (uncompressed, no document) on the same rows | set soundness and the long-document gaps (below) | build 3 + plumbing 3 + soundness 6 + model cells (costed first) |
+Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1500`, `eval_data/longdoc_mixed_1500`
+(1,500 Q each where sources allow; else every usable question, with the smallest difference that n can show):
+- one coherent document per question (never independent passages glued together), answer needing the document;
+- text in length buckets of about 4k / 8k / 16k / 32k tokens; pages in buckets of about 10 / 20 / 40 pages;
+- candidate sources (sizes and licences to check before use; a licence that forbids research use excludes a source):
+  text — QuALITY (multiple choice, exact scoring), Qasper (whole papers), LongBench MultiFieldQA kept as reported-only;
+  pages — MMLongBench-Doc, LongDocURL, MP-DocVQA whole documents; mixed — the same PDFs with some pages given as their
+  text layer and the others as images (or another construction the wake justifies in STATE.md);
+- one synthetic needle check per modality: a fact placed at 10% / 50% / 90% depth of a real long document at each
+  bucket length, exact scoring (it measures capacity, it never decides a cause alone);
+- a long text document reaches the compressor whole: split into consecutive CML-token pieces (pre-split in the set, or
+  the collator's `chunk_docs` with `n_max_chunks` large enough). Without that the eval keeps only the first CML tokens
+  (`pisco/mm_collator.py:457-462`). Arm A's cut check is re-run on every E set and must give 0%.
+Model cells, in this order: R s42 then s43 (does the gap grow with length on real documents?); then the long-chunk
+question on text: the C256 and L1024 finetunes of the same seed, both at CML 1,024 (the length L1024 was trained on),
+paired, s42 and s43. A tie at CML 1,024 opens CML 256 for both as a second round, never in the same round.
 Start order (a hypothesis, not a work order): A → J controls → T (it answers the owner's first sentence) → L → U → P.
+Owner, 2026-11-17: arm E goes next, before U and P; L's queued and running cells finish as planned.
 Mixed cells go with L and U.
 
 Rules: every arm is a committed launcher + a committed cell spec, never raw overrides on the launch line. A
@@ -102,6 +126,14 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   L1024's detail on text too (a general capacity loss in stage 2); CI touching 0 or below → the loss is specific to
   image pages. Controls: `wrong256` far worse than `s256` for both models, self-pair 0.] On text, L1024 − C256 on ten short chunks, set
   against the recorded g10 pairs, tells whether its text loss depends on the chunk length used at eval.
+- **Arm E (owner, 2026-11-17), set soundness first, per set and per bucket:** (1) uncompressed with the document beats
+  closed-book by ≥ 20 pt (else answers come from the model's memory: the bucket is dropped, the set rejected if most
+  buckets go); (2) arm A's cut check 0% and parity 100%; (3) the needle check scores ≥ 90% uncompressed at that length
+  (else the length is past what the base model reads, and the bucket is dropped). Multiple-choice rows are scored on
+  the chosen option, and the judge still runs on them. Then: the gap R − uncompressed per bucket, and Δ_len vs the
+  shortest bucket (arm L's statistics and bars). Long-chunk: L1024 − C256 at CML 1,024, paired per question, overall
+  and per bucket: ≥ +3 pt with the CI above 0 at both seeds → long-chunk training helps on long documents (the g10 loss
+  was a yardstick fault); CI inside ±3 at both → no effect; ≤ −3 with the CI below 0 at both → a real loss.
 - Health per cell (a 0.0 that is a bug looks like a result):
   - n rows = the set size, a `judge` on every row, `judge_unparseable` 0, no "exceeds --decoder_max_length" error;
   - `mems_used` within ±1% of arm A's prediction for that variant (pruning, RAW and GOLD cells report the ratio instead, by design);
@@ -161,6 +193,10 @@ plumbing cell per new variant (the 20-page prompt fits on one A100, and the flag
   (A 2, J 3, L ~24, U ~12, P ~5, T ~16), mostly ≤ 1.6 h each. Uncompressed 20-page cells are unmeasured: the first one
   measures, with `--time 4:54:00` until then. CPU jobs count 0 GPU-h. A cell = every `expmon launch --exp longdoc`
   submission, builds and CPU jobs included; an automatic requeue is not a new cell.
+- Arm E (owner, 2026-11-17): its builds, `LIMIT=300` plumbing and soundness cells fit inside the caps above. Before
+  E's model cells, cost the grid (cells, and GPU-h from the measured plumbing walls and memory). If it passes the cells
+  or GPU-hours left, write ONE BLOCKED.md question with that cost and NEXT `waiting-owner`; never trim the grid to fit.
+  Uncompressed 32k-token and 40-page prompts are unmeasured: their plumbing cell measures wall and memory first.
 - LLM wakes: ≤ 50. Chain plumbing → full cell → paired test inside one wake; wait with `wake-when job:…`.
 - at most CAMP_MAX_SUBMIT_PER_WAKE new submissions per wake (campaign.conf: 4)
   Set to 4 by the owner on 2026-11-16; one wake is also capped at $8 (CAMP_MAX_USD).
@@ -188,6 +224,14 @@ plumbing cell per new variant (the 20-page prompt fits on one A100, and the flag
   - patches no shared eval file while a longchunk cell is queued or running;
   - keeps at most 2 cells on `gpu`, and keeps its wakes rare.
   (The probes and freeze campaigns are in STAND-DOWN.)
+- **Live sibling `qafreeze`** (armed 2026-11-17; campaign_qafreeze/CAMPAIGN.md, campaign.conf) and what it uses:
+  - GPUs: one 1-GPU finetune at a time on `gpu` (A100) inside the owner's shared 8-GPU cap; its evals and CPU checks on
+    `gpu-be --exclude=homer-[005-009]`. Machines: the shared homer A100 nodes, none reserved.
+  - Engine trees / worktrees: none of its own; this checkout (branch `arc`) and its pixi env. Wake quota: the same account.
+  - Dirs: `scripts/qafreeze/**`, `expQ/qafreeze/**`, `campaign_qafreeze/**`; it reads R's model dirs. Its evals pair
+    only on the code md5 50abc167 / dfe32aa0 / 02bc8748 / 994cff3d (campaign_qafreeze/CAMPAIGN.md:34).
+  This campaign therefore writes nothing under its dirs, never touches its jobs, counts its `gpu` finetune against the
+  8-GPU cap before using `gpu`, and patches no shared eval file while a qafreeze eval is queued or running.
 
 ## Deliverable — how results reach the owner
 `docs/longdoc_diagnosis.md`, rewritten (never appended) whenever an arm decides, holds four things:

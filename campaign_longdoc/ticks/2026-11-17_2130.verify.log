@@ -1,0 +1,32 @@
+== verifier 2026-11-17_2130  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 38cca418-5633-498d-80f7-144074cac636  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+372 lines)
+→ Glob: {"pattern": "expQ/longdoc/{length,locate}/*"}
+→ Glob: {"pattern": "expQ/longdoc/audit_*/*"}
+→ Grep: {"pattern": "191378", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content"}
+  ↳ campaign_longdoc/VERIFY.md:19:[Omitted long matching line] (+17 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-17_1600   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_em.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s43_em.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_match.json
+  ↳ 1	{ (+37 lines)
+Checking the last few claims now: the new length tables match STATE.md. Next I'm looking at the arm E build log.
+→ Grep: {"pattern": "(GB|tar|extract|rows|bucket|error|Error|Traceback)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out", "output_mode": "content", "head_limit": 30}
+  ↳ 3:21:42:33 extracting 396 pdfs from /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/hf/pdf_files.tar.gz
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documen…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.8832 turns=13 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "Verdict 191147 gives the finetune maximum (488 <MEM>s, span …"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%.…"}, {"claim": "provisional: the evaluation feeds the long inputs it claims …", "status": "provisional", "reason": "Verdict 191147 matches every number: cut 0, parity 1,500/1,5…"}, {"claim": "provisional: the length-effect calculator recovers the tail …", "status": "provisional", "reason": "The earlier pass found −.1687 at EXPERIMENTS.md:1116. That i…"}, "… +11 more"], "summary": "Every number I checked matches its source file or verdict: t…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documents 1,500 / 1,500, 40 text passages 1,498 / 1,500, 20 passages 35 / 1,500, whole documents 198 / 500; 4-page documents 0 / 1,500.","status":"supported","reason":"Verdict 191147 gives the finetune maximum (488 <MEM>s, span 4,017) and the out-of-range counts: docs 10/20 pages 1,500/1,500, text 20/40 passages 35 and 1,498 of 1,500, longdoc k20 198/500. The earlier pass found docs_p4 out_of_range_share 0.0 in audit.json. Caveat: 'never' is the maximum over 2,000 sampled rows per stage, and the bullet itself says it is a count, not a cause."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%. This is within the law's ±2 pt of the legacy 71% (architecture_review.md:105), and it was checked before the stride-8 runs 191219/191220 used the port."},{"claim":"provisional: the evaluation feeds the long inputs it claims (arm A, gate passed; job 191147): truncation cut 0 / 1,500 and pisco/base parity 1,500 / 1,500 on every gating variant; health 646,042 = 646,042; the CML 256 controls fail as they should (924 / 1,500 and 275 / 1,500). … BUT the gating sets are not long documents → arm E.","status":"provisional","reason":"Verdict 191147 matches every number: cut 0, parity 1,500/1,500, health 646,042 = expected. The controls fail as they should (g10 924/1,500, MRQA 275/1,500), so the check can fail. The wake labels it provisional and names its own limits (on documents the cut can only fail on prompt length; parity used one row builder for both modes; the sets are not long documents). The arm E re-run (191516) is still pending."},{"claim":"provisional: the length-effect calculator recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, 1,500 pairs): judge d = −.1687 [−.1960, −.1407], sign +121 / −374 (target −.169 ± .005), EM d −.1087, self-pair 0. Arm J control 1 of 2; the project-prompt re-judge has not run.","status":"provisional","reason":"The earlier pass found −.1687 at EXPERIMENTS.md:1116. That is within ±.005 of −.169, and the self-pair gives 0. There is no grid row or verdict for arm J. The law's second requirement (every deciding Δ_len keeps its sign within 2 pt under the project prompt and EM) is not met: rejudge.sbatch has not run."},{"claim":"provisional: arm T CLOSED — the long-chunk (L1024) loss on documents sits IN THE COMPRESSED IMAGE PAGE (gate met at both seeds). Where it enters is an inference: stage-1 models are text-only; the image-page loss was measured on stage-2 models only, one model per chain.","status":"provisional","reason":"The law's 'in the compressed page' gate is met at both seeds. Gold pag
+== rc=0

@@ -42,6 +42,18 @@ VARIANTS = {
     "claim_mrqa_cml256": ("text_mrqa_ood_1500", 4, 0, 256, False, False),
     "claim_longdoc_k20": ("mm_docqa_longdoc_1m", 20, 0, 256, False, False),
 }
+# Arm E sets (2026-11-17), run only with --only E_: TOPK 1000 = every doc of the row; CML 1024 = the length the
+# long-chunk comparison uses (text pieces are <= 1,000 tokens, so the cut must be 0); CML 256 = what it would cut.
+E_VARIANTS = {
+    "E_text_cml1024": ("longdoc_text_1500", 1000, 0, 1024, False, True),
+    "E_pages_cml1024": ("longdoc_pages_1500", 1000, 0, 1024, False, True),
+    "E_mixed_cml1024": ("longdoc_mixed_1500", 1000, 0, 1024, False, True),
+    "E_text_cml256": ("longdoc_text_1500", 1000, 0, 256, False, False),
+    "E_needle_text": ("longdoc_needle_text", 1000, 0, 1024, False, False),
+    "E_needle_pages": ("longdoc_needle_pages", 1000, 0, 1024, False, False),
+    "E_needle_mixed": ("longdoc_needle_mixed", 1000, 0, 1024, False, False),
+}
+VARIANTS.update(E_VARIANTS)
 G = {}
 
 
@@ -236,14 +248,16 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="rows per variant (smoke); 0 = all")
     ap.add_argument("--stage_rows", type=int, default=2000)
     ap.add_argument("--workers", type=int, default=int(os.environ.get("SLURM_CPUS_PER_TASK", 8)))
+    ap.add_argument("--only", default="", help="variant name prefix (E_ = the arm E sets; default: every non-E variant)")
     a = ap.parse_args()
+    SEL = {v: x for v, x in VARIANTS.items() if (v.startswith(a.only) if a.only else not v.startswith("E_"))}
     os.makedirs(a.out, exist_ok=True)
     os.environ["TOKENIZERS_PARALLELISM"] = "false"
     t0 = time.time()
     _setup()   # once, inherited by the forked workers
     import datasets
     tasks = []
-    for v, (setn, *_r) in VARIANTS.items():
+    for v, (setn, *_r) in SEL.items():
         d = datasets.load_from_disk(f"{ED}/{setn}")
         n = len(d["train"] if isinstance(d, datasets.DatasetDict) else d)
         tasks += [(v, i) for i in range(min(n, a.limit) if a.limit else n)]
@@ -275,7 +289,7 @@ def main():
     report = {"meta": dict(R=R, PX=PX, stride=G.get("stride"), limit=a.limit, stage_rows=a.stage_rows,
                            finetune_max_mem=ft_max_mem, finetune_max_span=ft_max_span, n_errors=len(errors),
                            errors=errors[:20], wall_s=round(time.time() - t0)), "variants": {}, "stages": {}}
-    for v in VARIANTS:
+    for v in SEL:
         rs = by.get(v, [])
         if not rs:
             continue

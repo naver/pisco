@@ -7,17 +7,18 @@ deleting the `GUESS:` marker; `expmon campaign preflight` refuses while one is l
 - none
 
 ## Always yours: budget
-- L155: - cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16). The estimate uses measured walls: a judged 1,500-Q document
-- L158: measures, with `--time 4:54:00` until then. CPU jobs count 0 GPU-h. A cell = every `expmon launch --exp longdoc`
+- L191: - cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16). The estimate uses measured walls: a judged 1,500-Q document
+- L194: measures, with `--time 4:54:00` until then. CPU jobs count 0 GPU-h. A cell = every `expmon launch --exp longdoc`
 
 ## Always yours: where your go-ahead is needed
-- L168: - **Owner checkpoint:** none before cells (owner, 2026-11-16). Nothing trains, every cell is an inference cell of a few GPU-hours at
+- L208: - **Owner checkpoint:** none before cells (owner, 2026-11-16). Nothing trains, every cell is an inference cell of a few GPU-hours at
 
 ## Always yours: what an accepted result becomes (default-on needs a proper judge)
-- L143: - **On acceptance:** a finding is delivered, nothing is switched on. Four of the five parts of a proper judge are missing:
+- L179: - **On acceptance:** a finding is delivered, nothing is switched on. Four of the five parts of a proper judge are missing:
 
 ## Always yours: what live campaigns already use
-- no live sibling campaign
+- qafreeze: - **Live sibling `qafreeze`** (armed 2026-11-17; campaign_qafreeze/CAMPAIGN.md, campaign.conf) and what it uses: / - Dirs: `scripts/qafreeze/**`, `expQ/qafreeze/**`, `campaign_qafreeze/**`; it reads R's model dirs. Its evals pair / 8-GPU cap before using `gp …
+- spread: 7. Settled by campaign 'longchunk' (hold constant what won, do not retry what closed): pre-campaign inference probe of 2026-11-06 (long-chunk grouping g1/g3/g10, no training); results in the ledger (spread g10 .617 vs g1 .579; tail .399); not a cell of the 2 …
 
 ## Checker findings
-- ⚠ length: 292 lines: every wake re-reads the law; move reasoning out (the templates are ~100 lines, the owner's laws 130-230)
+- ⚠ length: 341 lines: every wake re-reads the law; move reasoning out (the templates are ~100 lines, the owner's laws 130-230)
