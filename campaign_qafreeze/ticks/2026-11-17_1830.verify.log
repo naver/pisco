@@ -1,0 +1,58 @@
+== verifier 2026-11-17_1830  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session c7d4f566-37b0-4e1d-9c98-5009c4557d9e  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+165 lines)
+→ Glob: {"pattern": "campaign_qafreeze/**", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "scripts/qafreeze/**", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/qafreeze"}
+  ↳ scripts/qafreeze/build_init.sbatch (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/build_init.sbatch
+  ↳ 1	#!/bin/bash (+69 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze"}
+  ↳ expQ/qafreeze/init_s42/tokenizer.json (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out
+  ↳ 1	FACTORS kind=build_init seeds=42 43 decoder_from=pt_mm_5M_spread (+17 lines)
+Build log for job 191450 matches the first claim (md5s, 696 keys, 200/696 identical, exit 0). Now checking the three module-move logs.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh
+  ↳ 1	#!/bin/bash (+48 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191451.out
+  ↳ 1	FACTORS kind=check_module_move init=ft_mm_4b_184778 trained=qafreeze (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191452.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=qafreeze (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191453.out
+  ↳ 1	FACTORS kind=check_module_move init=ft_mm_4b_184780 trained=qafreeze (+10 lines)
+All three module-move logs match the cited numbers. Now checking how the model loader reads these files, plus the remaining Health bullets.
+→ Grep: {"pattern": "decoder_state\\.pt|compressor_state\\.pt|connector\\.pt", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/model.py", "output_mode": "content"}
+  ↳ 455:    """Load the trainable parts saved by PISCO.save_pretrained (decoder_state.pt, the compressor: (+11 lines)
+→ Grep: {"pattern": "b3d1cda1|50abc167|59bbae57", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-17_1830.log", "output_mode": "content"}
+  ↳ 23:  ↳ b3d1cda1  eval_mm_4b.sh (+50 lines) (+2 lines)
+→ Grep: {"pattern": "19139[23]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content"}
+  ↳ campaign_longdoc/STATE.md:3:Last wake: 2026-11-17 16:00 (ninth wake). NEXT: wake-when job:191376,191377,191390,191392,191393 max 4h. Question: (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-17_1830.log
+  ↳ 1	== campaign qafreeze wake 2026-11-17_1830  reasons=first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+129 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 95	Held-out loss ↓ (64 rows, no paired test; a health signal), at .23 / .46 / .69 / .92 / 1.0 epoch: (+15 lines)
+→ Grep: {"pattern": "model_name_or_path|freeze_compressor|connector_out_norm", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml", "output_mode": "content"}
+  ↳ 34:  connector_out_norm: true (+2 lines)
+→ Grep: {"pattern": "model_name_or_path", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/training_config.yaml", "output_mode": "content"}
+  ↳ 39:model_name_or_path: /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model
+→ Grep: {"pattern": "50abc167", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md", "output_mode": "content"}
+  ↳ 29:- **Same eval code on both sides of every pair:** md5 at 16:00 `eval_mm_docqa.py` dfe32aa0, `eval_mm_4b.sh` 50abc167, `judge_mm_docqa.py` 02bc8748, `paired_judge.py` a3cc13b2 = the gate-0 versions;
+Checked the code-version records. One last look at the training launcher, then I'll give the verdicts.
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/ft_qafreeze.sbatch
+  ↳ 1	#!/bin/bash (+53 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh
+  ↳ 1	#!/bin/bash (+54 lines)
+→ Grep: {"pattern": "train_runtime|EXIT CODE", "path": "/beegfs/scratch/user/hdejean/pisco/ft_freeze_188528.out", "output_mode": "content"}
+  ↳ 4442: (+4 lines)
+→ StructuredOutput: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); sam…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0005 turns=25 is_error=False denials=0
+== declared: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, …", "status": "supported", "reason": "qafreeze_build_init_191450.out:4-16 shows, for both seeds, m…"}, {"claim": "Feasibility gate PASS (all three checks, every tensor compar…", "status": "supported", "reason": "Each number is in its log. check_move_freeze_191451.out: com…"}, {"claim": "(none running) Next: the 20-step plumbing smoke of arm Q see…", "status": "supported", "reason": "This is a plan, not a result. The grid shows all 4 qafreeze …"}, {"claim": "Launcher ft_qafreeze.sbatch: its training command is byte-id…", "status": "supported", "reason": "I read both files. The pixi run python … EXIT CODE blocks ma…"}, "… +2 more"], "summary": "Both Settled bullets hold: build log 191450 and module-move …"}
+== final:
+{"claims":[{"claim":"The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); same 696 decoder tensor names, shapes, dtypes as R — job 191450, closed.","status":"supported","reason":"qafreeze_build_init_191450.out:4-16 shows, for both seeds, md5 OK on all four files: decoder == stage-2 dca63864; s42 compressor 6a67c55f, connector 4963a039, config 4a10d4ee; s43 19666dda / 6f1c2e6c / 4a10d4ee. It also shows 'keys R 696 swapped 696 only-one-side 0 shape/dtype mismatch 0', 200/696 tensors identical, and EXIT CODE 0. The grid row for 191450 is closed. Both R training_config.yaml files (184778:38, 184780:39) start from expQ/archq3/pt_mm_5M_spread/model, so the stage-2 decoder really is R's own start. These are whole-file checks, not a sample, so no n is needed. The claim is only file-level: PISCO.from_pretrained loading this init is first exercised by the 20-step smoke."},{"claim":"Feasibility gate PASS (all three checks, every tensor compared): R s42 → init_s42 compressor and connector rows changed 0.0%, decoder lora_B 68.6% (job 191451); stage-2 → init_s42 decoder rows 0.0%, compressor lora_B 73.8% (the known-positive control sees movement; job 191452); seed 43 same picture, decoder lora_B 67.5% (job 191453).","status":"supported","reason":"Each number is in its log. check_move_freeze_191451.out: compressor lora_A/lora_B/token_adapter and connector linear/norm_gain all 0.0%; decoder lora_B 68.6% (> 60%). check_move_freeze_191452.out: decoder lora_A/lora_B/token_adapter all 0.0%; compressor lora_B 73.8% (> 60%), in line with R s44's 74.1% at campaign_freeze/STATE.md:107. check_move_freeze_191453.out: compressor and connector 0.0%; decoder lora_B 67.5%. Gate 3 (key names and shapes) is in build log 191450 and is stronger than required: md5 equals stage-2 and keys/shapes/dtypes equal R. The token_adapter group (1,270M entries) could hide a one-row change at 0.1% precision (campaign_freeze/STATE.md:108), but the md5 byte-identity covers that. For seed 43 only check (1) ran; check (2) is implied by the same decoder md5 dca63864. All four grid rows are closed."},{"claim":"(none running) Next: the 20-step plumbing smoke of arm Q seed 42 + its module-move check, and the reference re-evaluations (the eval launcher changed since R was scored, see Health).","status":"supported","reason":"This is a plan, not a result. The grid shows all 4 qafreeze runs ended and none live. Queued jobs 191392 / 191393 belong to longdoc (campaign_longdoc/STATE.md:65-66). The launcher change is real: tick log 2026-11-17_1830.log:23 has md5 eval_mm_4b.sh b3d1cda1, against the recorded 50abc167 (campaign_freeze/STATE.md:29). So re-running the reference evals before any pairing is what the law requires."},{"claim":"Launcher ft_qafreeze.sbatch: its training command is byte-identical to expQ/freeze/ft_freeze.sh's; only model_name_or
+== rc=0

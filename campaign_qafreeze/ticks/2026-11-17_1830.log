@@ -1,0 +1,158 @@
+== campaign qafreeze wake 2026-11-17_1830  reasons=first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794907801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8254 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session aa1e9a91-8a9e-41f9-a096-a66dc76fbe9a  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-17_1830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+88 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && ls -la && cat CAMPAIGN.md
+  ↳ <persisted-output> (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+257 lines)
+→ Bash: cat STATE.md; echo ----; cat known_issues.md; echo ----; cat QUESTION.md; echo ----; cat DECISIONS.md; echo ----; cat campaign.conf
+  ↳ # STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+158 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -60
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+51 lines)
+Starting the first wake of this campaign: I'm reading the freeze campaign's recipes so I can write the start-model builder and the training launcher.
+→ Bash: ls -la expQ/freeze/ && cat expQ/freeze/ft_freeze.sh && echo ===== && cat expQ/freeze/check_module_move.sh
+  ↳ Exit code 1 (+83 lines)
+→ Bash: cat expQ/freeze/check_module_move.sh; echo '-----'; ls -la expQ/ft_mm_4b_184778/model expQ/ft_mm_4b_184778/model/compressor expQ/archq3/pt_mm_5M_spread/model expQ/archq3/pt_mm_5M_spread/model/compressor; ls expQ/ft_mm_4b_184780/model; ls -l…
+  ↳ Exit code 2 (+100 lines)
+→ Bash: diff <(python3 -m json.tool expQ/ft_mm_4b_184778/model/config.json) <(python3 -m json.tool expQ/archq3/pt_mm_5M_spread/model/config.json); echo; diff <(python3 -m json.tool expQ/ft_mm_4b_184778/model/config.json) <(python3 -m json.tool expQ…
+  ↳ 11,12c11,12 (+119 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py ft_mm_4b.sh | cut -c1-8,33-; ls expQ/ft_mm_4b_184778/; cat expQ/ft_mm_4b_184778/training_config.yaml | head -80
+  ↳ b3d1cda1  eval_mm_4b.sh (+50 lines)
+→ Bash: diff expQ/ft_mm_4b_184778/training_config.yaml expQ/freeze/ft_frozen_s42_smoke/training_config.yaml; echo; grep -n "model_name_or_path\|model_config_overrides\|from_pretrained" pisco/train.py | head -20; echo; expmon lineage 188652 2>&1 | h…
+  ↳ 23a24 (+21 lines)
+→ Bash: ls campaign_spread/ && cat campaign_spread/STATE.md | head -30; cat campaign_spread/NEXT 2>/dev/null; ls scripts/ | head -50; ls scripts/qafreeze 2>&1
+  ↳ Exit code 2 (+80 lines)
+→ Bash: sacct -j 188578,188579,188700 -X -o JobID,Elapsed,MaxRSS,State,NodeList -n; sacct -j 188578,188700 -o JobID,Elapsed,MaxRSS -n | head
+  ↳ 188578         00:00:47             COMPLETED       homer-010  (+6 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/build_init.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/build_init.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: sed -i 's/^set -u$//' scripts/qafreeze/build_init.sbatch && bash -n scripts/qafreeze/build_init.sbatch && echo SYNTAX_OK && grep -n "set -u" scripts/qafreeze/build_init.sbatch; df -h /beegfs/scratch/user/hdejean/pisco | tail -1
+  ↳ SYNTAX_OK (+2 lines)
+→ Bash: expmon launch --help 2>&1 | head -60
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+12 lines)
+→ Bash: expmon launch --dry-run --exp qafreeze --stage build --parent 184778 --time 0:20:00 --exclude 'homer-[005-009]' scripts/qafreeze/build_init.sbatch 42 43 2>&1 | tail -20
+  ↳ would submit: sbatch --time 0:20:00 --exclude homer-[005-009] scripts/qafreeze/build_init.sbatch 42 43 (+3 lines)
+→ Bash: expmon launch --exp qafreeze --stage build --parent 184778 --time 0:20:00 --exclude 'homer-[005-009]' scripts/qafreeze/build_init.sbatch 42 43 2>&1 | tail -10
+  ↳ Submitted batch job 191450 (+6 lines)
+Builder submitted. Now chaining the three weight-comparison checks to run after it.
+→ Bash: P=/beegfs/scratch/user/hdejean/pisco/expQ; expmon launch --exp qafreeze --stage check --parent 191450 --dependency afterok:191450 --time 0:20:00 --exclude 'homer-[005-009]' expQ/freeze/check_module_move.sh $P/ft_mm_4b_184778/model $P/qafree…
+  ↳ Submitted batch job 191451 (+2 lines)
+→ Bash: expmon note -j 191450 "qafreeze arm B intent: build the hybrid start models init_s42 / init_s43 = copy of R's model dir (184778 / 184780: QA-trained compressor/ + connector.pt + config.json) with decoder_state.pt swapped for the stage-2 dec…
+  ↳ NOTED
+Now writing the training launcher for the frozen arm (a copy of the freeze campaign's recipe, with the hybrid start model per seed). It will not be launched until the start-model checks pass.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/ft_qafreeze.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/ft_qafreeze.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: bash -n scripts/qafreeze/ft_qafreeze.sbatch && echo SYNTAX_OK; diff <(sed -n '/pixi run python/,/EXIT CODE/p' expQ/freeze/ft_freeze.sh) <(sed -n '/pixi run python/,/EXIT CODE/p' scripts/qafreeze/ft_qafreeze.sbatch) && echo TRAIN_CMD_IDENTIC…
+  ↳ SYNTAX_OK (+5 lines)
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out 2>&1 | tail -30
+  ↳ FACTORS kind=build_init seeds=42 43 decoder_from=pt_mm_5M_spread (+2 lines)
+While the builder runs, I'm looking up the exact commands of the recorded reference evaluations, which must be re-run because the eval launcher changed since.
+→ Bash: expmon runs 2>/dev/null | grep -E "^(188597|188602|188606|188615) " ; for j in 188597 188602 188606 188615; do expmon lineage $j 2>&1 | head -3; done
+  ↳ 188597     ended     -           freeze         d1d3c2b+dirty  eval_mm_4b.sh    kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0  (+15 lines)
+→ Bash: expmon help 2>&1 | grep -iE "show|cmd|relaunch|rerun|repeat|inspect" | head; ls .expmon/ | head; 
+  ↳ refuses to relaunch a factor-cell already marked `closed`. (+19 lines)
+→ Bash: ls .expmon/; grep -l "188597" .expmon/*.jsonl .expmon/*.tsv 2>/dev/null | head
+  ↳ adopted_ack (+29 lines)
+→ Bash: grep -E '"jobid": ?"?(188597|188602|188606|188615|188598|188603)\b' .expmon/runs.jsonl | python3 -c " ⏎ import sys, json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print({k:d[k] for k in d if k in ('jobid','launcher','argv','env','slurm',…
+  ↳ {'jobid': '188597', 'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/freeze/ref_s42/model', 'pisco', '', 'eval_data/mm_docqa_1500_1m'], 'slurm': {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time' (+5 lines)
+→ Bash: ls -la expQ/freeze/ref_s42/ expQ/freeze/ref_s42/eval/ | head -30; ls expQ/freeze/ref_s43/eval/ expQ/freeze/ft_frozen_s42/eval/ 2>&1 | head; tail -5 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out
+  ↳ expQ/freeze/ref_s42/: (+29 lines)
+→ Bash: git log --oneline -3 -- eval_mm_4b.sh; git diff fb397c0 --stat -- eval_mm_4b.sh; git show 5955890 --stat | head; git show 5955890 -- eval_mm_4b.sh | head -80
+  ↳ 5955890 freeze_part setting, probe arms E/G in the eval, requeue resume in eval_mm_4b.sh, freeze result in docs (+84 lines)
+The builder is checking seed 42's tensors. Checking its progress.
+→ Bash: sleep 45; tail -12 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out; squeue -j 191450,191451,191452,191453 -o "%i %T %r %N" -h
+  ↳ <tool_use_error>Blocked: sleep 45 followed by: tail -12 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out squeue -j 191450,191451,191452,191453 -o "%i %T %r %N" -h. To wait for a condi
+→ Bash: tail -12 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out; squeue -j 191450,191451,191452,191453 -o "%i %T %r %N" -h
+  ↳ FACTORS kind=build_init seeds=42 43 decoder_from=pt_mm_5M_spread (+13 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: until [ -z "$(squeue -j 191450,191451,191452,191453 -h -o %i 2>/dev/null)" ]; do sleep 15; done; sacct -j 191450,191451,191452,191453 -X -o JobID,State,ExitCode,Elapsed,NodeList -n
+  ↳ Command running in background with ID: bbmfywokt. Output is being written to: /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/aa1e9a91-8a9e-41f9-a096-a66dc76fbe9a/tasks/bbmfywokt.output. You
+While that runs, reading the eval launcher's settings so the reference re-runs copy the recorded settings exactly.
+→ Bash: sed -n 1,36p eval_mm_4b.sh; sed -n 44,58p eval_mm_4b.sh
+  ↳ #!/bin/bash (+50 lines)
+→ Bash: cat /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/aa1e9a91-8a9e-41f9-a096-a66dc76fbe9a/tasks/bbmfywokt.output; tail -4 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out; squeue -j 191450,191451,191452,191453 -o "…
+  ↳ md5 OK   config.json == R 4a10d4ee (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze && mkdir -p ref_s42 ref_s43 f_s42 f_s43 && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model ref_s42/model && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_18478…
+  ↳ lrwxrwxrwx 1 hdejean hdejean 66 Nov 17 18:35 f_s42/model -> /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/model (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -nE "gpu-be|on .gpu.|GPUs on|Dirs it writes|writes|qafreeze" campaign_spread/CAMPAIGN.md | head -20
+  ↳ 49:| A. case audit + slice power — **the feasibility gate** | `scripts/spread/case_audit.sbatch` → `scripts/spread/slice_pairs.py` (to write; CPU, `-p gpu-be --gres=gpu:0`; reads recorded judged jsons (+19 lines)
+Adding the second live sibling campaign (spread, armed the same day) to this campaign's no-touch list — a tightening the law allows.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cat /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/aa1e9a91-8a9e-41f9-a096-a66dc76fbe9a/tasks/bbmfywokt.output; tail -3 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out; squeue -j 191450,191451,191452,191453 -o "…
+  ↳ BUILT /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s42 (+6 lines)
+→ Bash: sed -n 60,120p campaign_freeze/STATE.md
+  ↳ - Stage A / stage B proper: take the reference finetune's QA-trained compressor (184778), freeze it, and train only the decoder on NEW data or a new task, against a full finetune on that data. Gate 0  (+59 lines)
+→ Bash: until [ -z "$(squeue -j 191450 -h -o %i 2>/dev/null)" ]; do sleep 10; done; tail -6 /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out
+  ↳ md5 OK   compressor_state.pt == R 19666dda (+5 lines)
+→ Bash: until [ -z "$(squeue -j 191451,191452,191453 -h -o %i 2>/dev/null)" ]; do sleep 10; done; cd /beegfs/scratch/user/hdejean/pisco; for j in 191451 191452 191453; do echo "== $j"; grep -vE "^\s*$" check_move_freeze_$j.out | grep -E "FACTORS|ch…
+  ↳ == 191451 (+36 lines)
+Feasibility gate passes on all three counts. Recording the verdicts.
+→ Bash: expmon verdict 191450 closed "arm B build OK: init_s42 / init_s43 built (exit 0, 3:07, homer-012). md5: decoder_state.pt == stage-2 pt_mm_5M_spread (dca63864); compressor_state.pt, connector.pt, config.json == R's (s42 6a67c55f/4963a039/4a1…
+  ↳ verdict recorded: 191450 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Bash: expmon gripe --open --search "states no n" 2>&1 | head -8; echo ---; expmon gripe --open --search "env lineage" 2>&1 | head -8; echo ---; expmon gripe --open --search "env recorded" 2>&1 | head -8
+  ↳ == 10 open report(s) matching 'states no n', every machine, newest first == (+21 lines)
+→ Bash: grep -E '"(191450|191451|191452|191453)"' .expmon/verdicts.jsonl | cut -c1-160
+  ↳ {"ts": "2026-11-17 18:37", "jobid": "191450", "verdict": "closed", "note": "arm B build OK: init_s42 / init_s43 built (exit 0, 3:07, homer-012). md5: decoder_st (+3 lines)
+All four verdicts are recorded. Adding one +1 to an existing tooling complaint, then writing the campaign state.
+→ Bash: expmon gripe --same 8efb1810 "qafreeze 2026-11-17: 3 of 4 verdicts on deterministic weight checks (check_module_move: 'changed 0.0%' over every tensor, n = all 156M LoRA entries) warned 'states no n'; a full-population check has no sample n…
+  ↳ logged as a +1 of 8efb1810 (entry 76e9c5bc) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: expmon campaign report --section leaves 2>&1 | head -30; expmon grid qafreeze 2>&1 | head -12
+  ↳ **Settled** (+12 lines)
+→ Bash: sacct -j 188528,188597,188602,188606,188615,188598,188603 -X -o JobID,Elapsed,State,NodeList,Timelimit -n; sacct -j 188528,188597 -o JobID,MaxRSS -n | grep batch
+  ↳ 188528         00:31:05  COMPLETED       homer-006   01:30:00  (+8 lines)
+Writing the campaign state file now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: git show 5955890^:eval_mm_4b.sh | md5sum | cut -c1-8; git show 5955890:eval_mm_4b.sh | md5sum | cut -c1-8; git status --short eval_mm_4b.sh
+  ↳ 59bbae57 (+1 lines)
+The recorded launcher checksum came from an uncommitted copy, so I can't confirm the change was plumbing-only. Correcting that claim in the state file.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "did: qafreeze first wake: wrote scripts/qafreeze/build_init.sbatch + ft_qafreeze.sbatch; built the hybrid start models init_s42/init_s43 (R's compressor+connector+config, stage-2 decoder; md5-checked) and passed the feasibility…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: expmon display --exp qafreeze 2>&1 | tail -3
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_qafreeze.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: echo "wake-in 30" > campaign_qafreeze/NEXT && cat campaign_qafreeze/NEXT && git status --short scripts/qafreeze campaign_qafreeze | head
+  ↳ wake-in 30 (+5 lines)
+The start model for the frozen-compressor test exists and passed its feasibility check, so the question can be tested without new model code. No training has started yet: the 4 job submissions allowed per wake all went to the build and its checks.
+
+**What was built**
+- Two start models, one per seed (42 and 43), under `expQ/qafreeze/init_s42` and `init_s43`.
+- Each one is the QA-finetuned reference model with one file swapped. Its compressor, connector and config are byte-identical copies, checked by checksum. Its decoder is replaced by the stage-2 decoder the reference training itself started from.
+
+**Feasibility check (pass)**
+
+The check compares every weight of the start model against its source (an exact count, not a sample):
+
+| comparison | compressor + connector changed | decoder low-rank adapter changed |
+|---|---|---|
+| reference seed 42 → start model | 0.0% (intact) | 68.6% (reset, as intended) |
+| reference seed 43 → start model | 0.0% | 67.5% |
+| stage-2 model → start model | compressor adapter 73.8% (real QA training is in it) | 0.0% (equals the stage-2 decoder) |
+
+**Two scripts written** in `scripts/qafreeze/`:
+- `build_init.sbatch` builds a start model per seed.
+- `ft_qafreeze.sbatch` is the training launcher. Its training command is identical to the earlier freeze campaign's; only the start model changes.
+
+**One thing found:** the eval launcher `eval_mm_4b.sh` changed since the reference models were scored. The old checksum came from an uncommitted copy, so git can't show what changed. As the campaign rules require, I will re-score the reference models (4 eval sets × 2 seeds) and the earlier frozen models (documents, 2 seeds) before comparing anything. This costs about 5 GPU-hours and is already in the 55 GPU-hour budget.
+
+**Next wake (in about 30 minutes):**
+- A 20-step test run of the frozen arm at seed 42, with its weight check.
+- The first two reference re-scorings (documents).
+- After the test run passes: the two full trainings (about 10 GPU-hours each), then their evals.
+
+I also added the second campaign armed today (spread) to this campaign's list of jobs and folders it must not touch.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-in", "wake_in_min": 30, "summary": "First wake. Wrote scripts/qafreeze/build_init.sbatch and ft_qafreeze.sbatch (training command identical to expQ/freeze/ft_freeze.sh, only the init dir changes). Built hybrid inits init_s42/…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.0016 turns=55 is_error=False denials=0
+== declared: {"next": "wake-in", "wake_in_min": 30, "summary": "First wake. Wrote scripts/qafreeze/build_init.sbatch and ft_qafreeze.sbatch (training command identical to expQ/freeze/ft_freeze.sh, only the init dir changes). Built hybrid inits init_s42/init_s43 (R's compressor+connector+config md5-equal, stage-2 decoder md5-equal, 696 decoder keys/shapes/dtypes match). Feasibility gate PASS: R->init compressor/connector 0.0% changed, decoder lora_B 68.6% (s42)…", "launched": ["191450", "191451", "191452", "191453"], "verdicts": [{"jobid": "191450", "verdict": "closed", "note": "arm B build OK: init_s42/init_s43, md5 + key/shape checks pass"}, {"jobid": "191451", "verdict": "closed", "note": "feasibility gate (1) PASS: R s42 -> init_s42 compressor/connector 0.0%, decoder lora_B 68.6%"}, {"jobid": "191452", "verdict": "closed", "note": "feasibility gate (2) PASS: stage-2 -> init_s42 decoder 0.0%, compressor lora_B 73.8%"}, {"jobid": "191453", "verdict": "closed", "note": "seed-43 init OK: compressor/connector 0.0%, decoder lora_B 67.5%"}], "gripes": ["+1 of 8efb1810: verdict 'states no n' warning fires on deterministic full-population weight checks"]}
+== final:
+{"next":"wake-in","wake_in_min":30,"summary":"First wake. Wrote scripts/qafreeze/build_init.sbatch and ft_qafreeze.sbatch (training command identical to expQ/freeze/ft_freeze.sh, only the init dir changes). Built hybrid inits init_s42/init_s43 (R's compressor+connector+config md5-equal, stage-2 decoder md5-equal, 696 decoder keys/shapes/dtypes match). Feasibility gate PASS: R->init compressor/connector 0.0% changed, decoder lora_B 68.6% (s42) / 67.5% (s43); stage-2->init decoder 0.0%, compressor lora_B 73.8%. eval_mm_4b.sh md5 is now b3d1cda1 vs recorded 50abc167 (uncommitted copy) -> R (8 cells) and F documents (2 cells) must be re-run before pairing; symlinked model dirs prepared in expQ/qafreeze/{ref,f}_s4x. Added sibling campaign spread to the law's no-touch list (tightening). Submission cap 4 used; next wake launches the 20-step smoke + its check + 2 reference re-runs.","launched":["191450","191451","191452","191453"],"verdicts":[{"jobid":"191450","verdict":"closed","note":"arm B build OK: init_s42/init_s43, md5 + key/shape checks pass"},{"jobid":"191451","verdict":"closed","note":"feasibility gate (1) PASS: R s42 -> init_s42 compressor/connector 0.0%, decoder lora_B 68.6%"},{"jobid":"191452","verdict":"closed","note":"feasibility gate (2) PASS: stage-2 -> init_s42 decoder 0.0%, compressor lora_B 73.8%"},{"jobid":"191453","verdict":"closed","note":"seed-43 init OK: compressor/connector 0.0%, decoder lora_B 67.5%"}],"gripes":["+1 of 8efb1810: verdict 'states no n' warning fires on deterministic full-population weight checks"]}
+== rc=0 secs=547
+== verify: 5/6

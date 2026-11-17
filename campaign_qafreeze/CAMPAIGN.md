@@ -152,7 +152,11 @@ Metric unit: judge accuracy in [0, 1]; "pt" = .01. Every difference is PAIRED pe
   `docs/longdoc_diagnosis.md` or `eval_data/longdoc_*`; never kills, requeues, relaunches or verdicts a longdoc job;
   never patches the shared eval or judge scripts (longdoc may change them — record their md5 with EVERY cell and pair
   only cells that ran on the same md5: a longdoc patch landing mid-campaign invalidates a pair); keeps at most 2 GPUs on
-  `gpu` and its evals on `gpu-be`. Campaigns `freeze` and `probes` are in STAND-DOWN and `longchunk` is closed: read
+  `gpu` and its evals on `gpu-be`.
+- **Live sibling `spread`** (campaign_spread/CAMPAIGN.md, armed 2026-11-17 with this one; added by the first wake): one
+  training at a time on `gpu` (its arm E) inside the same owner 8-GPU cap, evals on `gpu-be`; writes `scripts/spread/**`,
+  `expQ/spread/**`. This campaign writes nothing there or in `campaign_spread/**` and never touches its jobs.
+  Campaigns `freeze` and `probes` are in STAND-DOWN and `longchunk` is closed: read
   their files and run `expQ/freeze/check_module_move.sh`, write nothing in them.
 
 ## Deliverable — how results reach the owner
