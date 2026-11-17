@@ -1,0 +1,49 @@
+== verifier 2026-11-17_2000  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session 5c5131a9-65b1-4ba5-b4e7-387f53efdcb3  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+173 lines)
+→ Glob: {"pattern": "campaign_qafreeze/**"}
+→ Glob: {"pattern": "scripts/qafreeze/**"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+15 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/qafreeze"}
+  ↳ scripts/qafreeze/build_init.sbatch (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/qafreeze/build_init.sbatch
+  ↳ 1	#!/bin/bash (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign qafreeze — 2026-11-17_1830   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out
+  ↳ 1	FACTORS kind=build_init seeds=42 43 decoder_from=pt_mm_5M_spread (+17 lines)
+→ Glob: {"pattern": "check_move_freeze_19145*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+Checking the feasibility logs now: the build log matches the first claim; next I'm reading the three module-movement check logs.
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191451.out
+  ↳ 1	FACTORS kind=check_module_move init=ft_mm_4b_184778 trained=qafreeze (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191452.out
+  ↳ 1	FACTORS kind=check_module_move init=pt_mm_5M_spread trained=qafreeze (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191453.out
+  ↳ 1	FACTORS kind=check_module_move init=ft_mm_4b_184780 trained=qafreeze (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 90	| R reference (184778 / 184780 / 188652) | — (no checkpoint-100 kept) | .610 / .610 / .597 | (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-17_2000.log
+  ↳ 1	== campaign qafreeze wake 2026-11-17_2000  reasons=idle,scheduled  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+64 lines)
+→ Grep: {"pattern": "\"jobid\": \"19149[3-6]\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1054:{"ts": "2026-11-17 20:02", "jobid": "191493", "launcher": "scripts/qafreeze/ft_qafreeze.sbatch", "argv": ["frozen", "42", "20"], "git": "6afed5c+dirty", "outdir": "/beegfs/scratch/user/hdejean/pi (+3 lines)
+→ Grep: {"pattern": "\"jobid\": \"(188597|188602|188606|188615)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 902:[Omitted long matching line] (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl
+  ↳ 902	{"ts": "2026-11-11 10:03", "jobid": "188597", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ref_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "d1d3c2b+dirty", "outdir": "/bee
+→ Grep: {"pattern": "Priority|Resources|CPUs", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/known_issues.md", "output_mode": "content"}
+  ↳ 26:| `gpucap land a100 1` says "yes — N free node(s)" but the finetune pends `Resources` with a start estimate hours away | the nodes with free GPUs have no free CPUs (2026-11-12 23:50: homer-006/007  (+1 lines)
+Both feasibility claims match their logs. Now checking the training-cost numbers the wake cites for the budget point, then I'll write the verdict.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 113	## Training cost (A100-80GB) — provisional (node speed confounds time); peak memory = sacct gres/gpumem (grid probes `gpumem_gb`) (+13 lines)
+→ StructuredOutput: {"summary": "Both settled bullets hold, and every number checks out against its log. The build log 191450 shows the four md5 matches for each seed and the 696-key match. The module-movement checks show 0.0% on the frozen parts, decoder lora…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.8659 turns=21 is_error=False denials=0
+== declared: {"summary": "Both settled bullets hold, and every number checks out again…", "claims": [{"claim": "The hybrid start model can be built from saved checkpoints, …", "status": "supported", "reason": "qafreeze_build_init_191450.out:4-15, for both seeds: 'md5 OK…"}, {"claim": "Feasibility gate PASS (all three checks, every tensor compar…", "status": "supported", "reason": "check_move_freeze_191451.out: compressor lora_A/lora_B/token…"}, {"claim": "Arm Q plumbing smoke, seed 42, 20 steps (1,280 rows = .046 e…", "status": "supported", "reason": "This is status, not a result. runs.jsonl:1054 has 191493 ft_…"}, {"claim": "Reference R re-evaluated on documents with today's eval laun…", "status": "supported", "reason": "This is status, not a result. runs.jsonl:1056-1057 show eval…"}, "… +2 more"]}
+== final:
+{"summary":"Both settled bullets hold, and every number checks out against its log. The build log 191450 shows the four md5 matches for each seed and the 696-key match. The module-movement checks show 0.0% on the frozen parts, decoder lora_B 68.6% / 67.5%, and compressor lora_B 73.8% (the known-positive control is R s44 at 74.1%), all past the law's 60% bar. The two running items are queue status only, confirmed in runs.jsonl lines 1054-1057, and no result has been claimed yet. The one open point is the code-fingerprint (md5) re-check: its output is still not visible in any log I can read, so it stays provisional until the smoke or eval logs show the md5s.","claims":[{"claim":"The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); same 696 decoder tensor names, shapes, dtypes as R — job 191450, closed.","status":"supported","reason":"qafreeze_build_init_191450.out:4-15, for both seeds: 'md5 OK decoder_state.pt == stage-2 dca63864'; s42 compressor 6a67c55f / connector 4963a039 / config 4a10d4ee; s43 19666dda / 6f1c2e6c / 4a10d4ee. Also 'keys R 696 swapped 696 only-one-side 0 shape/dtype mismatch 0', 200/696 tensors identical to R, EXIT CODE 0. Grid row 191450: closed. Gate (3), a match with the stage-2 file, follows from the md5 identity."},{"claim":"Feasibility gate PASS (all three checks, every tensor compared): R s42 → init_s42 compressor and connector rows changed 0.0%, decoder lora_B 68.6% (job 191451); stage-2 → init_s42 decoder rows 0.0%, compressor lora_B 73.8% (the known-positive control sees movement; job 191452); seed 43 same picture, decoder lora_B 67.5% (job 191453).","status":"supported","reason":"check_move_freeze_191451.out: compressor lora_A/lora_B/token_adapter and connector linear/norm_gain all 0.0%; decoder lora_B 68.6% (> 60%). check_move_freeze_191452.out: all decoder rows 0.0%; compressor lora_B 73.8% (> 60%); the positive control is R s44 at 74.1% (campaign_freeze/STATE.md:107). check_move_freeze_191453.out: s43 compressor/connector 0.0%, decoder lora_B 67.5%. The check has no merger or vision row, so 'every tensor compared' rests on the compressor_state.pt md5 match, which covers those tensors. Check (2) was not run for s43, but the s43 decoder md5 is the same dca63864."},{"claim":"Arm Q plumbing smoke, seed 42, 20 steps (1,280 rows = .046 epoch) — job 191493 PENDING on `gpu` (Resources; scheduler estimate 23:48 tonight, worst case). Its module-movement check job 191494 waits on it (afterok).","status":"supported","reason":"This is status, not a result. runs.jsonl:1054 has 191493 ft_qafreeze.sbatch frozen 42 20, partition gpu, --time 0:40 (188528 wall 31:05 × 1.25). runs.jsonl:1055 has 191494 check_module_move.sh init_s42 → ft_frozen_s42_smoke/model. The current queue shows 191493 PENDING (Resources) and 191494 PENDING (Dependency). 20 × 64 = 1,280 rows, and 20/438 =
+== rc=0

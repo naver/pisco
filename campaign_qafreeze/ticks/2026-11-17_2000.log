@@ -1,0 +1,65 @@
+== campaign qafreeze wake 2026-11-17_2000  reasons=idle,scheduled  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794913202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=1.4 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8212 sig=3f0317b9 same=3 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-in_1
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session 322b2a8e-4c45-4958-abd5-275a89551b65  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-17_2000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+84 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && ls -la && cat CAMPAIGN.md
+  ↳ <persisted-output> (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+261 lines)
+→ Bash: cat STATE.md && echo ---- && cat known_issues.md && echo ---- && cat VERIFY.md && echo ---- && ls ticks && cat DECISIONS.md
+  ↳ # STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+126 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -la scripts/qafreeze expQ/qafreeze expQ/qafreeze/* 2>&1 | head -60; echo ----; cat scripts/qafreeze/ft_qafreeze.sbatch
+  ↳ expQ/qafreeze: (+113 lines)
+Checking the campaign state, then launching the 20-step smoke test of the frozen-compressor training and the first reference evaluations.
+→ Bash: grep -E '^CAMP_(MAX|GPU|UNTIL|DISK|NOISE|PATCH|COMMIT|RETRY)' campaign_qafreeze/campaign.conf; echo ----; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py ft_mm_4b.sh scripts/qaf…
+  ↳ CAMP_UNTIL='2027-02-15'            # YYYY-MM-DD, INCLUSIVE: launches allowed through that day 23:59 (default: init + 90 days, EXP_CAMP_WINDOW_DAYS); `expmon campaign extend` adds 90 more (+24 lines)
+→ Bash: gpucap land a100 1 2>&1 | tail -15; echo ----; squeue -u hdejean -o "%.8i %.20j %.8T %.9P %.10M %b %R" ; echo ----; sinfo -p gpu -N -o "%n %C %G %T" | head -30
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+25 lines)
+→ Bash: expmon lineage 191451 2>&1 | head -30; echo =====; expmon lineage 188597 2>&1 | head -40
+  ↳ Exit code 1 (+7 lines)
+→ Bash: expmon lineage 188597 2>&1 | head -40; echo '-----'; grep -h '"jobid": *"\?19145[13]' -r .expmon/runs.jsonl 2>/dev/null | head -3; ls .expmon | head -30
+  ↳ lineage of 188597: (+33 lines)
+→ Bash: head -20 expQ/freeze/check_module_move.sh; echo '-----'; grep -E '"jobid": "(188597|188602|188606|188615|188528)"' .expmon/runs.jsonl
+  ↳ #!/bin/bash (+25 lines)
+→ Bash: cat eval_mm_4b.sh | head -80
+  ↳ #!/bin/bash (+79 lines)
+Still reading how the reference evaluations were run, so the re-runs copy them exactly.
+→ Bash: ls -la expQ/freeze/ref_s42/eval/ expQ/freeze/ref_s43/eval/ 2>&1 | grep -v '^d' | head -30; grep -m3 -E 'eval_mm_docqa.py|--image_max_pixels|compressor_max_length' eval_mm_4b_188606.out 2>/dev/null | head; ls eval_mm_4b_1886*.out 2>/dev/null…
+  ↳ expQ/freeze/ref_s42/eval/: (+22 lines)
+→ Bash: expmon launch --exp qafreeze --stage smoke --parent 191450 --time 0:40:00 --dry-run scripts/qafreeze/ft_qafreeze.sbatch frozen 42 20 2>&1 | tail -20
+  ↳ would submit: sbatch --time 0:40:00 scripts/qafreeze/ft_qafreeze.sbatch frozen 42 20 (+3 lines)
+→ Bash: expmon note "qafreeze Qs smoke intent: ft_qafreeze.sbatch frozen 42 20 = arm Q recipe on init_s42 (R 184778 compressor+connector, stage-2 decoder), max_steps=20 (1,280 rows = .046 epoch). PASS = log 'freeze_compressor=True: froze N' + 'Comp…
+  ↳ expmon note: 107 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+8 lines)
+Now the chained module-movement check on the smoke model (runs only if the smoke ends cleanly).
+→ Bash: expmon launch --exp qafreeze --stage check --parent 191493 --dependency afterok:191493 -p gpu-be --exclude='homer-[005-009]' --time 0:20:00 --dry-run expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s42…
+  ↳ would submit: sbatch --dependency afterok:191493 -p gpu-be --exclude=homer-[005-009] --time 0:20:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s42 /beegfs/s (+3 lines)
+→ Bash: ls -d expQ/freeze/*smoke*/model 2>/dev/null | head -3; grep -E '"jobid": "188578"' .expmon/runs.jsonl | cut -c1-400
+  ↳ expQ/freeze/ft_compfrozen_s42_smoke/model (+3 lines)
+→ Bash: expmon note -j 191493 "qafreeze Qs plumbing check intent: check_module_move.sh init_s42 -> ft_frozen_s42_smoke/model, afterok 191493, CPU gpu-be. PASS = every compressor.* / connector.* row 0.0%, decoder lora_B > 0%. --time 0:20 (191451 ran…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Submitting the two reference re-evaluations on documents (seed 42 and 43), same env as the recorded cells.
+→ Bash: PX=1003520 expmon launch --exp qafreeze --stage eval-ref --parent 184778 -p gpu-be --exclude='homer-[005-009]' --time 0:40:00 --dry-run eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco '' eval_data/mm_docqa_1500_1m 2>&1 | tail -5
+  ↳ would submit: sbatch -p gpu-be --exclude=homer-[005-009] --time 0:40:00 eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco  eval_data/mm_docqa_1500_1m (+4 lines)
+→ Bash: expmon note "qafreeze R re-eval intent (eval-ref, documents s42 + s43): eval_mm_4b.sh expQ/qafreeze/ref_s4x/model pisco '' eval_data/mm_docqa_1500_1m, PX=1003520 (= recorded 188597 file mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json), gpu-b…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ Bash: grep -E '"jobid": "(191493|191494|191495|191496)"' .expmon/runs.jsonl | cut -c1-330; squeue -u hdejean -o "%.8i %.20j %.8T %.9P %.10M %R %E" | grep -E '19149[3-6]'; squeue -j 191493,191495,191496 --start -o "%.8i %.20S %R" 2>/dev/null
+  ↳ {"ts": "2026-11-17 20:02", "jobid": "191493", "launcher": "scripts/qafreeze/ft_qafreeze.sbatch", "argv": ["frozen", "42", "20"], "git": "6afed5c+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/e (+11 lines)
+→ Bash: expmon gripe --open --search dry-run empty 2>&1 | tail -5; expmon gripe --open --search shlex quote 2>&1 | tail -3; grep -E '"jobid": "191495"' .expmon/runs.jsonl | grep -o '"env": {[^}]*}'
+  ↳ -- closed matching 'dry-run empty' (if yours is one of these and it still happens, file it new: 'regression of <id>: ...') -- (+8 lines)
+→ Bash: expmon gripe -c wish "launch --dry-run prints the sbatch argv space-joined, so an empty positional (the LIMIT '' of eval_mm_4b.sh) shows as a double space and looks dropped; print it with shlex.join so the reader sees '' (runs.jsonl does ke…
+  ↳ logged (wish) -> /home/hdejean/.claude/feedback/ncp.log (+11 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Recording the wake in the ledger and writing the wake-up condition.
+→ Bash: expmon note "qafreeze wake 20:00" --did "launched arm Q 20-step smoke s42 (191493, gpu) + chained module-move check (191494), R documents re-evals s42/s43 (191495/191496, gpu-be); cap 4 reached" --saw "md5 eval_mm_docqa/judge/paired_judge/m…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Launched 4 jobs, the most one wake may submit. (1) The 20-step test training of arm Q, seed 42: the reference finetune recipe started from the hybrid model (QA-trained compressor kept frozen, stage-2 decode…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4784 turns=26 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Launched 4 jobs, the most one wake may submit. (1) The 20-step test training of arm Q, seed 42: the reference finetune recipe started from the hybrid model (QA-trained compressor kept frozen, stage-2 decoder), job 191493 on gpu. It is waiting for free CPUs; the scheduler's worst-case start is 23:48. (2) A check that the compressor and connector did not move during that test (job 191494). It runs only if the test ends cleanly. (3–4) The reference models re-scored on documents with today's eval launcher, seeds 42 and 43 (jobs 191495 / 191496 on gpu-be). They queue behind higher-priority users; worst-case start 11-22. I re-checked the code fingerprints (md5): eval_mm_docqa.py, the judge, paired_judge.py and model.py match the recorded values, which closes the verifier's open point. Only eval_mm_4b.sh changed (b3d1cda1), which is why the references are re-run. STATE.md is rewritten. It explains the verifier's budget point: the per-cell budget counts hours used, about 9 h per frozen run mea…", "launched": ["191493 arm Q smoke s42 (20 steps, gpu, --time 0:40)", "191494 module-move check init_s42 -> smoke model (afterok 191493, gpu-be CPU)", "191495 R re-eval documents s42 (PX=1003520, gpu-be)", "191496 R re-eval documents s43 (PX=1003520, gpu-be)"], "gripes": ["wish: launch --dry-run prints argv space-joined, so an empty positional ('' LIMIT) looks dropped; print with shlex.join"], "wake_when": "job:191493,191494 max 10h"}
+== final:
+{"next":"wake-when","summary":"Launched 4 jobs, the most one wake may submit. (1) The 20-step test training of arm Q, seed 42: the reference finetune recipe started from the hybrid model (QA-trained compressor kept frozen, stage-2 decoder), job 191493 on gpu. It is waiting for free CPUs; the scheduler's worst-case start is 23:48. (2) A check that the compressor and connector did not move during that test (job 191494). It runs only if the test ends cleanly. (3–4) The reference models re-scored on documents with today's eval launcher, seeds 42 and 43 (jobs 191495 / 191496 on gpu-be). They queue behind higher-priority users; worst-case start 11-22. I re-checked the code fingerprints (md5): eval_mm_docqa.py, the judge, paired_judge.py and model.py match the recorded values, which closes the verifier's open point. Only eval_mm_4b.sh changed (b3d1cda1), which is why the references are re-run. STATE.md is rewritten. It explains the verifier's budget point: the per-cell budget counts hours used, about 9 h per frozen run measured, while --time is a 1.25× ceiling. No arm decided this wake. GPU-hours used so far: 0. Nothing needed from the owner.","launched":["191493 arm Q smoke s42 (20 steps, gpu, --time 0:40)","191494 module-move check init_s42 -> smoke model (afterok 191493, gpu-be CPU)","191495 R re-eval documents s42 (PX=1003520, gpu-be)","191496 R re-eval documents s43 (PX=1003520, gpu-be)"],"gripes":["wish: launch --dry-run prints argv space-joined, so an empty positional ('' LIMIT) looks dropped; print with shlex.join"],"wake_when":"job:191493,191494 max 10h"}
+== rc=0 secs=217
+== verify: 5/6
