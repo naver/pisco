@@ -1,6 +1,6 @@
 # Long inputs: where is the bottleneck? (campaign longdoc)
 
-Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 15:10 (arm T closed: the long-chunk loss is image-specific and enters in stage 2; on text it shows only on one long chunk. Arm L started: documents at 10 and 20 pages, seed 42).
+Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 16:10 (arm L: first length point, documents 10 pages seed 42, no length loss; seed 43 and 20 pages running; text 40 passages started).
 Question (owner): every attempt at long inputs loses accuracy — is the cause the evaluation, the training data,
 training itself, or how the decoder reads many `<MEM>` slots (one `<MEM>` = one compressed slot, 8 tokens each)?
 
@@ -13,7 +13,7 @@ on the far side of 0 at both seeds; "not this cause" needs the CI inside ±3 pt.
 | evaluation feeds less than it claims | input audit, CPU (job 191147) | 1,500 Q per variant × 14 variants (one set of 500) | truncation cut 0 / 1,500 and pisco-vs-uncompressed parity 1,500 / 1,500 on every gating variant; the cut check does fail when it should (CML 256 controls: 924 / 1,500 and 275 / 1,500). Limits: on documents the cut check can only fail on prompt length (pages are images, never cut); the audit's parity used one row builder for both modes, so it was re-checked on recorded runs: pages per question equal in both modes on 1,500 / 1,500 (4 pages), 1,500 / 1,500 (10 pages), 500 / 500 (whole documents) — count, not page identity | cut ≤ 1%, parity 100% | provisional: not this cause (gate passed; parity only partly independent) | 0 |
 | training never shows long inputs | input audit (count only) | as above | 10- and 20-page documents: 100% of questions beyond the finetune range; 40 text passages: 99.9%; 20 passages: 2.3% | names a cause only with a paired effect from the reading or position probes | open (count, not yet a cause) | — |
 | long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes; page transcription and text autoencoding on their earlier stages; ten short vs one long text chunk | 1,500 Q × 2 seeds (QA); 500 pages / 500 documents (probes) | gold page only (distractor pages removed, 1,003,520 px): L1024 − C256 −6.7 [−8.9, −4.5] McNemar 106 / 207 (s42), −4.9 [−7.1, −2.5] 113 / 186 (s43). Picked page raw: +0.1 [−0.8, +1.1] (s42), −0.1 [−1.1, +0.9] (s43); both models pick the answer page on 98.5%. Page transcription (stage 2): −8.0 pt [−10.6, −5.5] of the page's words, p 4e-16. Text autoencoding at 256 tokens: stage 1 −.0018 nats, stage 2 +.0006 [−.0008, +.0019] p .82 (L1024 not worse). Text QA: −1.1 / −3.3 on one ~1.3k-token chunk, +2.3 / −0.6 on ten short chunks | deficit ≤ −3 pt with the gold page alone AND inside ±2 pt with the picked page raw → in the compressed page; stage-2 text autoencoding worse (CI above 0) → general stage-2 loss, else image-specific | provisional: CLOSED. IN THE COMPRESSED IMAGE PAGE, entering in stage 2: L1024's page slots hold fewer words, its text slots do not. Not multi-page reading, not the page pick, not the decoder. Motivates (owner): keep the 256-token stage 1; a long-chunk stage 1 would need its stage 2 changed, checked by page transcription before any finetune | the whole 4-page deficit: ~93 (s42) / ~65 (s43) of 1,500 questions |
-| length on a fixed model | 4 / 10 / 20 pages, 10 / 20 / 40 passages | 1,500 Q per size | running (documents, seed 42: 10 and 20 pages, uncompressed 20 pages) | Δ_len ≤ −3 pt | open | — |
+| length on a fixed model | 4 / 10 / 20 pages, 10 / 20 / 40 passages | 1,500 Q per size | documents, 10 vs 4 pages, seed 42: Δ_len +0.5 [−1.8, +2.7], sign 144 / 138, p .77 (EM +1.6, match +1.2). Seed 43 at 10 pages, both seeds at 20 pages, text 40 passages: running | Δ_len ≤ −3 pt (CI below 0) at both seeds = length loss; CI inside ±3 pt at both = none | open — provisional: no length loss at 10 pages (one seed) | — |
 | reading many `<MEM>`s | keep the most-attended eighth at the long size | — | not started | dilution D ≥ +3 pt | open | — |
 | positions past the trained range | shift `<MEM>` position ids | — | not started | offset cost ≤ −3 pt | open | — |
 
@@ -67,8 +67,26 @@ Probe validity: the transcription port reproduced the legacy probe exactly (360 
 70.5% = 70.5%, job 191169); a model paired with itself gives 0 in both probes.
 
 ## 2. Length curves (accuracy against input size)
-Running (arm L, documents, seed 42: jobs for 10 and 20 pages and uncompressed 20 pages). Columns will be: input size | `<MEM>` slots per question | compression rate |
-compressed judge accuracy ↑ | uncompressed judge accuracy ↑ | gap ↑ (pt) | Δ_len vs the shortest size (95% CI).
+Model R = reference finetune (expQ/ft_mm_4b_184778, seed 42; 184780 = seed 43). Same 1,500 questions at every size
+(500 per source); longer inputs add distractor pages from other documents, shuffled, the same draw in both modes.
+Rate 8 tokens per slot. Uncompressed = Qwen3.5-4B reading the same pages raw. Gap = compressed − uncompressed.
+Δ_len = (R − uncompressed at this size) − (R − uncompressed at 4 pages), paired per question.
+
+**Documents (`mm_docqa_1500_1m`, 1,003,520 px)**
+
+| input size | `<MEM>` slots per question p50 / max | compression (slots per page) | R s42 judge ↑ | uncompressed judge ↑ | gap s42 (pt) ↑ | Δ_len s42 (95% CI, sign test) | R s43 judge ↑ | Δ_len s43 |
+|---|---|---|---|---|---|---|---|---|
+| 4 pages | 455 / 485 | ~114 | .610 | .809 | −19.9 | 0 (reference) | .615 | 0 (reference) |
+| 10 pages | 1,125 / 1,208 | ~113 | .607 | .801 | −19.4 | provisional: +0.5 [−1.8, +2.7], 144 / 138, p .77 | running | running |
+| 20 pages | 2,234 / 2,405 | ~112 | running | running | — | — | queued next | — |
+
+Reading (one seed): from 4 to 10 pages both the compressed and the uncompressed reader stay flat (R −0.3 pt,
+uncompressed −0.8 pt), so the gap does not grow with length at 10 pages, although 10 pages put every question past
+the finetune's largest slot count (audit, section 3). Other metrics agree: Δ_len EM +1.6 [−0.8, +3.9], match +1.2
+[−0.9, +3.3].
+
+**Text (`text_hotpotqa_1500`, chunk ≤ 4,096 tokens)**: R at 10 passages .603 (s42) / .593 (s43), uncompressed .752;
+40 passages running (seed 42, both modes). 20 passages next.
 
 ## 3. Input audit: what the decoder sees in training vs in evaluation
 Job 191147, model R (expQ/ft_mm_4b_184778), images at 1,003,520 px, rate 8 tokens per slot, position stride 8.

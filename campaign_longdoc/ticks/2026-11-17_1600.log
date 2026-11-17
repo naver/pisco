@@ -1,0 +1,121 @@
+== campaign longdoc wake 2026-11-17_1600  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794898802 live=191376:RUNNING,191377:RUNNING running=2 pending=0 problems=0 problems_other=0 new=0 gpuh24=16.0 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=2 daemon=1 disk_gb=8276 sig=0264d7d5 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191375,191378_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191375,191378 (ended)   (NEXT was: wake-when job:191375,191378 max 3h)
+== session 13140608-8398-4f1d-afe7-19db6b1ee2b7  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ # Wake brief — campaign longdoc — 2026-11-17_1600   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+106 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ <persisted-output> (+30 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/13140608-8398-4f1d-afe7-19db6b1ee2b7/tool-results/beqwlyd1l.txt
+  ↳ 1	  296 CAMPAIGN.md (+300 lines)
+→ Bash: cat STATE.md && echo ======= && cat known_issues.md
+  ↳ Exit code 1 (+101 lines)
+→ Bash: cat known_issues.md; ls -la; sacct -j 191375,191376,191377,191378 --format=JobID,JobName%15,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End -X 2>&1 | head; sacct -j 191375,191378 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS 2>&1 |…
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+58 lines)
+Both waited-for jobs finished cleanly; I'm checking their output files and computing the 10-page length effect.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -la expQ/base_qwen35_4b/eval/ | grep -E "k20|k10" ; ls -la expQ/longdoc/l_r42/eval/ expQ/longdoc/ ; ls scripts/longdoc/; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pis…
+  ↳ -rw-rw-r-- 1 hdejean hdejean  833755 Oct 28 02:19 mm_docqa_base_k10_px1003520_mm_docqa_retr10_1m.json (+57 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for f in ["expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json","expQ/base_qwen35_4b/eval/mm_docqa_base_k20_px1003520_xd16_mm_docqa_1500_1m_lim300.json"]: ⏎     d=json.load(open(f…
+  ↳ expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json <class 'dict'> ['summary', 'records'] (+15 lines)
+→ Bash: ls expQ/longdoc/audit_191147/; grep -n "p10\|p20\|mems_total" expQ/longdoc/audit_191147.out | head -30; cat scripts/longdoc/length_effect.py | head -60
+  ↳ audit.json (+64 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/longdoc/audit_191147/audit.json")) ⏎ def walk(d,p=""): ⏎     if isinstance(d,dict): ⏎         for k,v in d.items(): ⏎             if 'p10' in p+k or 'p20' in p+k: ⏎                 if…
+  ↳ variants.docs_p10.n 1500 (+68 lines)
+Health of the 10-page cell passes: 1,500 rows, a judge verdict on every row, and `<MEM>` total 1,614,940, exactly the audit's prediction. Computing the 10-page length effect now.
+→ Bash: R10=expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json; R4=expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; U4=expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json; U10=…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 825457 Oct 21 07:04 expQ/base_qwen35_4b/eval/mm_docqa_base_k10_px1003520_xd6_mm_docqa_1500_1m.json (+32 lines)
+→ Bash: expmon logs 191377 8 2>&1 | tail -8; expmon logs 191376 8 2>&1 | tail -8; ls -la expQ/longdoc/l_r43/ ; readlink -f expQ/longdoc/l_r43/model expQ/longdoc/l_r42/model; ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/ | grep -i -E "hot…
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+21 lines)
+→ Bash: ls expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/; ls eval_data | grep -i -E "hotpot|mixed|mrqa"; python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/longdoc/audit_191147/audit.json")) ⏎ for k,v in a["variants"].items(): ⏎     i…
+  ↳ expQ/ft_mm_4b_184778/eval/: (+24 lines)
+→ Bash: grep -n "extra_distractors\|def with_distractors\|def main\|topk_docs\|text_hotpot\|doc_images\|is_text\|\"docs\"" scripts/eval_mm_docqa.py | head -60; grep -n "XD\|TOPK\|CML\|DML\|OUT=\|out_name\|_xd\|_k\$" eval_mm_4b.sh | head -40
+  ↳ 3:Data: a datasets dir (build_mm_eval.py / build_mm_finetune.py schema): docs, doc_images, (+37 lines)
+→ Bash: sed -n 130,160p scripts/eval_mm_docqa.py; sed -n 700,730p scripts/eval_mm_docqa.py; sed -n 20,36p eval_mm_4b.sh
+  ↳ out.append(model.compress(ids[a:b], mask[a:b])) (+78 lines)
+→ Bash: sed -n 262,276p scripts/eval_mm_docqa.py; grep -n "text_only" scripts/eval_mm_docqa.py | head; grep -n "184778\|184780" EXPERIMENTS.md | grep -i "hotpot\|text" | head -5; find expQ -maxdepth 4 -name "*text_hotpotqa_1500.json" -newer expQ/ft…
+  ↳ assert got, "no attention weights captured (eager attention not active?)" (+32 lines)
+→ Bash: for d in expQ/freeze/ref_s4*; do echo "$d -> $(readlink -f $d/model)"; ls -la $d/eval/ | grep hotpot; done; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in sorted(glob.glob("expQ/freeze/ref_s4*/eval/*text_hotpotqa_1500.json")): ⏎     d=json…
+  ↳ expQ/freeze/ref_s42 -> /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model (+8 lines)
+→ Bash: sacct -j 188615,188617,191221,191305,191306,191307 -X --format=JobID,State,Elapsed,NodeList,Start -n; grep -n "decoder_max_length" scripts/eval_mm_docqa.py | head; python3 - <<'EOF' ⏎ import json ⏎ f="expQ/base_qwen35_4b/eval/mm_docqa_base_…
+  ↳ 188615        COMPLETED   00:21:41       homer-016 2026-11-11T17:24:13  (+16 lines)
+→ Bash: sed -n 526,560p scripts/eval_mm_docqa.py
+  ↳ def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+32 lines)
+→ Bash: ls expQ/longdoc/l_r43/eval 2>&1; ls expQ/base_qwen35_4b/eval/ | grep -c "k40"; expmon launch --exp longdoc --stage L --time 2:32:00 --mem 18G --exclude='homer-[005-009]' --env PX=1003520 --env XD=6 --env TOPK=10 --env DML=1578 --dry-run eva…
+  ↳ ls: cannot access 'expQ/longdoc/l_r43/eval': No such file or directory (+6 lines)
+→ Bash: M="md5 eval_mm_4b.sh 50abc167 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / pisco/model.py 994cff3d"; expmon launch --exp longdoc --stage L --time 2:32:00 --mem 18G --exclude='homer-[005-009]' --env PX=1003520 --env XD=6 --env …
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191390.out (+3 lines)
+→ Bash: expmon note -j 191390 "longdoc arm L intent: R s43 (184780 via expQ/longdoc/l_r43) on 10-page documents, 1,500 Q (XD=6 TOPK=10 PX=1003520 DML=1578), the seed repeat of 191378 (s42 Delta_len at 10 pages +0.5 [-1.8,+2.7]). Pairs with 184780's…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+10 lines)
+→ Bash: grep -n "args.limit" scripts/eval_mm_docqa.py | head
+  ↳ 653:    if args.limit: (+1 lines)
+→ Bash: expmon launch --exp longdoc --stage L --time 0:55:00 --mem 12G --exclude='homer-[005-009]' --env PX=1003520 --env XD=30 --env TOPK=40 --env CML=4096 --env DML=1545 eval_mm_4b.sh expQ/longdoc/l_r42/model pisco 300 /beegfs/scratch/user/hdejea…
+  ↳ Submitted batch job 191391 (+1 lines)
+→ Bash: expmon launch --exp longdoc --stage L --time 2:45:00 --mem 12G --exclude='homer-[005-009]' --dependency=afterok:191391 --env PX=1003520 --env XD=30 --env TOPK=40 --env CML=4096 --env DML=1545 --dry-run eval_mm_4b.sh expQ/longdoc/l_r42/model…
+  ↳ factors:       (+7 lines)
+Launching the two full 40-passage text cells, chained after the plumbing cell.
+→ Bash: expmon launch --exp longdoc --stage L --time 2:45:00 --mem 12G --exclude='homer-[005-009]' --dependency=afterok:191391 --env PX=1003520 --env XD=30 --env TOPK=40 --env CML=4096 --env DML=1545 eval_mm_4b.sh expQ/longdoc/l_r42/model pisco "" …
+  ↳ Submitted batch job 191392 (+10 lines)
+→ Bash: M="md5 eval_mm_4b.sh 50abc167 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / pisco/model.py 994cff3d"; expmon note -j 191391 "longdoc arm L intent: PLUMBING (LIMIT=300) for the new 40-passage text variant: R s42 (184778 via l_r4…
+  ↳ expmon note: 116 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+Recording the 10-page result and closing the plumbing cell.
+→ Bash: sacct -j 191378,191375 -D -X -n --format=JobID,State,NodeList,Start,End; expmon probe 191378 judge=0.6067 2>&1 | tail -1; expmon probe 191378 dlen_vs_p4=0.0047 2>&1 | tail -1; expmon verdict 191375 closed "plumbing OK, never decides: uncomp…
+  ↳ 191375        COMPLETED       homer-011 2026-11-17T15:05:50 2026-11-17T15:23:11  (+4 lines)
+→ Bash: expmon note -j 191378 "longdoc arm L result (s42, one seed, not decided): R 184778 on 10-page documents (XD=6, 1,500 Q, judge on 1,500, unparseable 0, mems_used 1,614,940 = audit, homer-017, one attempt, 50:42). Judge R .607 vs uncompressed…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+103 lines)
+Updating the deliverable page (`docs/longdoc_diagnosis.md`) with the first length-curve rows.
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md" ⏎ s=open(p).read() ⏎ old_hdr=s.split("\n")[2] ⏎ new_hdr="Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-17 16:10 (arm L: first length point, documents 10 pages see…
+  ↳ 7:## 1. Bottleneck table (+6 lines)
+→ Bash: python3 -c " ⏎ import json;r=json.load(open('expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json'))['records'];print(len(r),round(sum(x['judge'] for x in r)/len(r),4), sum(x.get('mems_used',0) for x in r))"; expmon disp…
+  ↳ 1500 0.6147 646042 (+1 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40; cat campaign_longdoc/VERIFY.md | head -20
+  ↳ **Settled** (+36 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon logs 191391 5 2>&1 | tail -5
+  ↳ Total trainable parameters: 307771392 (+4 lines)
+→ Bash: grep -E "^\[[0-9]+/|exceeds|Error|Traceback" eval_mm_4b_191391.out | tail -3; grep -E "^\[[0-9]+/" eval_mm_4b_191390.out | tail -1
+  ↳ (Bash completed with no output)
+→ Bash: echo "wake-when job:191376,191377,191390,191392,191393 max 4h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && git status --short campaign_longdoc docs/longdoc_diagnosis.md expQ/longdoc | head
+  ↳ wake-when job:191376,191377,191390,191392,191393 max 4h (+4 lines)
+The first length result is in: going from 4 to 10 document pages costs the compressed model nothing at seed 42. The seed-43 repeat and the 20-page and 40-passage cells are running. Nothing is needed from you.
+
+## Done this wake
+- **Both cells I was waiting on finished cleanly.**
+  - The 300-question trial of the uncompressed model on 20-page documents passed in 17 minutes. The 19.5k-token prompt fits on one A100, so the two full 20-page runs (compressed and uncompressed) started after it.
+  - The compressed reference model (seed 42) on 10-page documents ran all 1,500 questions with a judge verdict on every row. Its `<MEM>` slot total (slots = compressed pieces, 8 tokens each) matches the input audit exactly.
+- **Length effect at 10 pages, seed 42.** This is the paired change, per question, in the gap between the compressed and uncompressed model, from 4 to 10 pages:
+
+| input | `<MEM>` slots per question (median) | slots per page | compressed judge accuracy ↑ | uncompressed judge accuracy ↑ | gap (pt) ↑ |
+|---|---|---|---|---|---|
+| 4 pages | 455 | ~114 | .610 | .809 | −19.9 |
+| 10 pages | 1,125 | ~113 | .607 | .801 | −19.4 |
+
+  - The change is +0.5 pt, 95% CI [−1.8, +2.7], sign test p .77, over 1,500 paired questions. Exact match (+1.6) and string match (+1.2) agree.
+  - The CI sits inside ±3 pt, so there is no length loss at 10 pages so far. This is still one seed: it stays provisional until seed 43 agrees.
+- **STATE.md** fixes the checker's points from the last wake:
+  - Exact match had in fact been computed for the calculator check.
+  - That the long-chunk loss "enters in stage 2" is an inference, not a measurement.
+  - The training proposal is a recommendation to you, not something an arm tested.
+- **`docs/longdoc_diagnosis.md`** now has the first length-curve table.
+
+## Running now (4 new submissions, 35 of 70 cells used)
+- Documents, 10 pages, seed 43: the repeat that decides the 10-page point.
+- Documents, 20 pages, seed 42, compressed and uncompressed: about half done.
+- Text, 40 passages, seed 42:
+  - A 300-question trial is checking that the extra-passage option reaches text questions. I read the code first: it does.
+  - The full compressed and uncompressed runs start after the trial.
+  - The 10-passage results already recorded for this model (both seeds, same code) are the short-size baseline.
+
+## Next
+- The next wake starts when those five jobs finish (at most 4 hours).
+- It computes the length effect for 10 pages at seed 43, 20 pages at seed 42 and 40 passages at seed 42.
+- It then launches 20 pages at seed 43, using the measured run time to set the time limit, plus 20 text passages and the seed-43 run at 40 passages.
+→ StructuredOutput: {"next": "wake-when", "summary": "Arm L (length on a fixed model) first point: R s42 on 10-page documents (191378, healthy, mems = audit 1,614,940) vs 4 pages gives Delta_len +0.5 pt [-1.8,+2.7], sign 144/138 p .77, 1,500 pairs (EM +1.6, ma…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3791 turns=37 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Arm L (length on a fixed model) first point: R s42 on 10-page documents (191378, healthy, mems = audit 1,614,940) vs 4 pages gives Delta_len +0.5 pt [-1.8,+2.7], sign 144/138 p .77, 1,500 pairs (EM +1.6, match +1.2) -> no length loss at 10 pages at one seed (provisional). Uncompressed 20-page plumbing 191375 passed (17:21, closed). Launched s43 10-page repeat 191390 and the 40-passage text chain (plumbing 191391 -> R s42 191392 + uncompressed 191393 afterok). 20-page s42 cells 191376/191377 still running. STATE.md rewritten (verifier fixes); docs/longdoc_diagnosis.md section 2 filled; display refreshed.", "launched": ["191390", "191391", "191392", "191393"], "verdicts": [{"jobid": "191375", "verdict": "closed", "note": "plumbing OK: uncompressed 20-page documents, 300 Q, 17:21 homer-011, judge on all rows; never decides"}], "wake_when": "job:191376,191377,191390,191392,191393 max 4h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"Arm L (length on a fixed model) first point: R s42 on 10-page documents (191378, healthy, mems = audit 1,614,940) vs 4 pages gives Delta_len +0.5 pt [-1.8,+2.7], sign 144/138 p .77, 1,500 pairs (EM +1.6, match +1.2) -> no length loss at 10 pages at one seed (provisional). Uncompressed 20-page plumbing 191375 passed (17:21, closed). Launched s43 10-page repeat 191390 and the 40-passage text chain (plumbing 191391 -> R s42 191392 + uncompressed 191393 afterok). 20-page s42 cells 191376/191377 still running. STATE.md rewritten (verifier fixes); docs/longdoc_diagnosis.md section 2 filled; display refreshed.","launched":["191390","191391","191392","191393"],"verdicts":[{"jobid":"191375","verdict":"closed","note":"plumbing OK: uncompressed 20-page documents, 300 Q, 17:21 homer-011, judge on all rows; never decides"}],"wake_when":"job:191376,191377,191390,191392,191393 max 4h","gripes":[]}
+== rc=0 secs=403
+== verify: 5/14
