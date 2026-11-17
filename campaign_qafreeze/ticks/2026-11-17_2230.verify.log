@@ -1,0 +1,70 @@
+== verifier 2026-11-17_2230  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session ca16dd7a-b300-4ae8-826a-c2ac034a8966  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+204 lines)
+→ Glob: {"pattern": "campaign_qafreeze/**/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "expQ/qafreeze/**/*.{log,out,txt,yaml,json}", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+18 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-17_2230.log
+  ↳ 1	== campaign qafreeze wake 2026-11-17_2230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+78 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/code_md5.txt
+  ↳ 1	# md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py  (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign qafreeze — 2026-11-17_2000   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+14 lines)
+→ Grep: {"pattern": "freeze_compressor|froze|rainable param|'loss'|train_runtime|Traceback|CUDA out|max_memory|peak", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191493.out", "output_mode": "content", "head_limit": 60}
+  ↳ 2:FACTORS kind=ft_mm arm=qa_frozen seed=42 smoke=20 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191494.out
+  ↳ 1	FACTORS kind=check_module_move init=qafreeze trained=ft_frozen_s42_smoke (+10 lines)
+Checking the smoke run's loss values and timing in its log next.
+→ Grep: {"pattern": "\\{'loss': '[0-9.]+'[^}]*\\}", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191493.out", "output_mode": "content", "-o": true}
+  ↳ 4393:{'loss': '0.5551', 'grad_norm': '0.05664', 'learning_rate': '1.158e-05', 'epoch': '0.02291'} (+1 lines)
+→ Grep: {"pattern": "20/20 \\[[^\\]]*\\]", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191493.out", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 4394:20/20 [26:03<00:00, 70.00s/it] (+4 lines)
+→ Grep: {"pattern": "\"jobid\": \"191493\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "content", "glob": "*.jsonl"}
+  ↳ .expmon/verdicts.jsonl:333:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "gpumem|peak|max_memory|GiB|GB", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191493.out", "output_mode": "content", "head_limit": 20}
+  ↳ 1:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-0e3489bc-cab9-6444-3213-5437eda8cbed)
+→ Grep: {"pattern": "\"jobid\": \"(191527|191530|191531|191532|191495|191496)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1056:{"ts": "2026-11-17 20:03", "jobid": "191495", "launcher": "eval_mm_4b.sh", "argv": ["expQ/qafreeze/ref_s42/model", "pisco", "", "eval_data/mm_docqa_1500_1m"], "git": "6afed5c+dirty", "outdir": "/ (+5 lines)
+→ Grep: {"pattern": "191493.*gpumem|gpumem.*191493", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "files_with_matches"}
+  ↳ No files found
+→ Grep: {"pattern": "max_steps|freeze_compressor|model_name_or_path", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42_smoke/training_config.yaml", "output_mode": "content"}
+  ↳ 24:  max_steps: 20 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42_smoke/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+38 lines)
+→ Grep: {"pattern": "md5|keys|mismatch|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/qafreeze_build_init_191450.out", "output_mode": "content"}
+  ↳ 4:  md5 OK   decoder_state.pt == stage-2 dca63864 (+10 lines)
+→ Grep: {"pattern": "changed|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "check_move_freeze_19145[123].out", "output_mode": "content"}
+  ↳ check_move_freeze_191452.out:2:decoder.lora_A                  68.94M entries  changed   0.0%  moved 0.0000 of its norm  RMS 0.01052  trained dtype torch.bfloat16 (+26 lines)
+Re-checks of the build, feasibility and smoke logs match STATE.md. Now confirming that the queued photo re-evals copy the recorded reference command.
+→ Grep: {"pattern": "\"jobid\": \"(188597|188602)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 902:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "\"jobid\": \"188602\".{0,450}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ 906:"jobid": "188602", "launcher": "eval_mm_4b.sh", "argv": ["expQ/freeze/ref_s42/model", "pisco", "", "eval_data/mm_naturalqa_1500"], "git": "0ceedcb+dirty", "outdir": "/beegfs/scratch/user/hdejean/p
+→ Grep: {"pattern": "\"jobid\": \"188602\".*\"env\": \\{[^}]*\\}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": "\"jobid\": \"188602\".*?\"env\": \\{.{0,80}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": "\"PX\": \"[0-9]+\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "offset": 0, "head_limit": 0}
+  ↳ 1004:"PX": "1003520" (+20 lines)
+→ Grep: {"pattern": "\"env\": \\{[^}]{0,200}\\}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "offset": 0, "head_limit": 0, "glob": "runs.jsonl"}
+  ↳ 1004:"env": {"PX": "1003520"} (+64 lines)
+Still checking: whether the queued photo re-evals use the same image budget (PX, max image pixels) as the recorded reference cell.
+→ Grep: {"pattern": "\"jobid\": \"18860[26]\".{0,1200}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ 906:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "\"jobid\": \"188602\".{0,300}\"limit\": \"all\",.{0,400}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": "\"data\": \"mm_naturalqa_1500\", \"limit\": \"all\",.{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 885:"data": "mm_naturalqa_1500", "limit": "all", "image_rate": "ckpt", "topk": "4", "max_pixels": "1003520", "merged": "0", "samples_per_q": "0", "raw_policy": "none", "answer_style": "brief", "gold_o (+6 lines)
+→ StructuredOutput: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); sam…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9131 turns=31 is_error=False denials=0
+== declared: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, …", "status": "supported", "reason": "qafreeze_build_init_191450.out lines 4-8 and 11-15: 'md5 OK …"}, {"claim": "Feasibility gate PASS (all three checks, every tensor compar…", "status": "supported", "reason": "check_move_freeze_191451.out: every compressor.* and connect…"}, {"claim": "Plumbing check PASS on the 20-step smoke, seed 42 (1,280 row…", "status": "supported", "reason": "ft_qafreeze_191493.out:112-114 has 'froze 506 compressor + c…"}, {"claim": "Arm Q full training, seed 42 (1 epoch = 28k rows) — job 1915…", "status": "supported", "reason": "This is queue status, not a result. runs.jsonl:1064 has ft_q…"}, "… +3 more"], "summary": "Every settled claim holds against its own log: the hybrid st…"}
+== final:
+{"claims":[{"claim":"The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); same 696 decoder tensor names, shapes, dtypes as R — job 191450, closed.","status":"supported","reason":"qafreeze_build_init_191450.out lines 4-8 and 11-15: 'md5 OK decoder_state.pt == stage-2 dca63864' for both seeds. Compressor / connector / config md5 match R: s42 6a67c55f / 4963a039 / 4a10d4ee, s43 19666dda / 6f1c2e6c / 4a10d4ee. 'keys R 696 swapped 696 only-one-side 0 shape/dtype mismatch 0'. Exit 0. Grid row 191450 is closed."},{"claim":"Feasibility gate PASS (all three checks, every tensor compared): R s42 → init_s42 compressor and connector rows changed 0.0%, decoder lora_B 68.6% (job 191451); stage-2 → init_s42 decoder rows 0.0%, compressor lora_B 73.8% (the known-positive control sees movement; job 191452); seed 43 same picture, decoder lora_B 67.5% (job 191453).","status":"supported","reason":"check_move_freeze_191451.out: every compressor.* and connector.* row 0.0%, decoder.lora_B 68.6% (law needs > 60%). 191452.out: every decoder.* row 0.0%, compressor.lora_B 73.8% (> 60%). 191453.out: frozen rows 0.0%, decoder.lora_B 67.5%. Check (3), the builder key/shape assert, is build log line 8. All three exit 0 and are closed in the grid."},{"claim":"Plumbing check PASS on the 20-step smoke, seed 42 (1,280 rows = .046 epoch; n = 1 smoke): log `froze 506 compressor + connector tensors`, `Compressor trainable parameters: 0`, trainable 155,978,240 = decoder only; loss step 10 .555 / step 20 .515 vs the earlier frozen smoke 188528 .594 / .584 (inside the ±.10 band); 80.97 s/step overall (70-73 steady); peak GPU memory 49.7 GB — job 191493, closed. Module movement init_s42 → smoke: every compressor / connector row 0.0%, decoder lora_B 76.0% — job 191494, closed.","status":"supported","reason":"ft_qafreeze_191493.out:112-114 has 'froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0' and 'Total trainable parameters: 155978240' (= Decoder trainable, line 87). Lines 4393-4394 give loss 0.5551 at epoch .0229 and 0.515 at .0458: gaps −.039 / −.069, inside ±.10. Line 4448: 80.97 s/it; train_runtime 1619 s. check_move_freeze_191494.out: compressor and connector rows 0.0%, decoder.lora_B 76.0% (> 0%). My own read of the two training_config.yaml files shows only max_steps, freeze_compressor and model_name_or_path differ. The 49.7 GB peak comes from sacct and is recorded only in the verdict note; no log file I can read shows it."},{"claim":"Arm Q full training, seed 42 (1 epoch = 28k rows) — job 191527 PENDING on `gpu` (Resources; scheduler estimate 23:48 tonight).","status":"supported","reason":"This is queue status, not a result. runs.jsonl:1064 has ft_qafreeze.sbatch frozen 42 on partition gpu, --time 12:20:00. That limit covers 80.97 × 438 × 1.25 = 12.31 h. The queue at verifier start shows 191527 
+== rc=0

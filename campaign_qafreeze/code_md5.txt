@@ -1,0 +1,9 @@
+# md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3cc13b2 (campaign_freeze/STATE.md:29)
+b3d1cda17302eb3f1d9fd4441ebc789a  eval_mm_4b.sh
+dfe32aa0f7b559ea4664c0d1afe7a4de  scripts/eval_mm_docqa.py
+02bc874887bce216c7da14dfab5b74f5  scripts/judge_mm_docqa.py
+a3cc13b237400b3894ea457d6b840948  scripts/paired_judge.py
+994cff3d483cf85645f7f78c2eb85d4a  pisco/model.py
+fd29d048c150e86052368388b2a21864  scripts/qafreeze/ft_qafreeze.sbatch
+6fa65d2cc919777c26e59b9429f02f14  scripts/qafreeze/build_init.sbatch
+b6c5f6f9aff612de7615bfd566a56396  expQ/freeze/check_module_move.sh

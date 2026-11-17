@@ -1,0 +1,79 @@
+== campaign qafreeze wake 2026-11-17_2230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794922202 live=191496:RUNNING,191495:RUNNING running=2 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.7 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8113 sig=31b41184 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:191493,191494_max_10h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== wait condition met: job:191493,191494 (ended)   (NEXT was: wake-when job:191493,191494 max 10h)
+== session aa1d455b-6a0d-4c97-b20d-b1e1ad76bd09  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-17_2230   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ====== && cat known_issues.md
+  ↳ Exit code 1 (+64 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+261 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ 1	# STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/known_issues.md
+  ↳ 1	# Known issues — campaign qafreeze   (symptom → verdict → action; check here BEFORE diagnosing) (+31 lines)
+→ Bash: expmon ledger 40 2>&1 | tail -60; echo '====='; sacct -j 191493,191494,191495,191496 -X -o JobID,JobName%20,State,ExitCode,Elapsed,NodeList,Start,End 2>&1
+  ↳ - 2026-11-17 16:05 [job 191378] longdoc arm L result (s42, one seed, not decided): R 184778 on 10-page documents (XD=6, 1,500 Q, judge on 1,500, unparseable 0, mems_used 1,614,940 = audit, homer-017,  (+66 lines)
+Smoke run and its module-movement check both finished OK (exit 0). Reading their logs now to apply the plumbing check.
+→ Bash: expmon logs 191494 80 2>&1 | tail -80
+→ Bash: L=$(ls expQ/qafreeze/ft_frozen_s42_smoke/ 2>&1); echo "$L"; expmon runs 2>&1 | grep -E '19149[34]' ; grep -n -E "freeze_compressor|froze|trainable parameters|'loss'|train_runtime|s/it|Error|error" $(ls -t /beegfs/scratch/user/hdejean/pisco/…
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191494.out (last 80) <== (+10 lines)
+  ↳ checkpoint-20 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42_smoke && wc -l train.log; grep -n -E "freeze_compressor|froze|rainable param|'loss'|train_runtime|Traceback|CUDA out|max_memory|peak" train.log | head -40; ls ../../../ | gre…
+  ↳ 34 train.log (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && F=ft_qafreeze_191493.out; wc -l $F; grep -n -E "freeze_compressor|froze|rainable param|'loss'|train_runtime|Traceback|CUDA out|max_memory|peak|s/it\]$" $F | head -40; echo '-----'; tail -5 $F
+  ↳ 4449 ft_qafreeze_191493.out (+60 lines)
+→ Bash: diff expQ/ft_mm_4b_184778/training_config.yaml expQ/qafreeze/ft_frozen_s42_smoke/training_config.yaml; echo "rc=$?"; echo '-----'; sacct -j 191493 -o JobID,MaxRSS,TRESUsageInMax%120 -P 2>&1 | head -5
+  ↳ 23a24 (+12 lines)
+Config diff is clean (only start model, freeze flag, max_steps). Peak GPU memory 49.7 GB. Plumbing check passes. Now preparing the two full training runs.
+→ Bash: cat scripts/qafreeze/ft_qafreeze.sbatch; md5sum scripts/qafreeze/ft_qafreeze.sbatch eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py; grep -E 'CAMP_MAX_TRAIN|CAMP_GPU|CAMP_UNTIL' campai…
+  ↳ #!/bin/bash (+61 lines)
+→ Bash: gpucap land a100 1 2>&1 | tail -15; echo '-----'; squeue -u hdejean -p gpu -o '%.8i %.20j %.8T %.10M %R' 2>&1; echo '-----'; sinfo -p gpu -N -o '%n %C %G %t' 2>&1 | head -20; grep -nE 'save_steps|eval_steps|save_strategy' pisco/configs/fine…
+  ↳ Goal: 1 node(s) x 1 a100 GPU(s) = 1 GPUs , <=0h (+22 lines)
+→ Bash: expmon lineage 191493 2>&1 | head -30; echo '-----'; expmon lineage 191495 2>&1 | head -30
+  ↳ lineage of 191493: (+12 lines)
+→ Bash: grep -E '"(191493|191495|191450)"' -m3 .expmon/runs.jsonl 2>/dev/null | head -3 | cut -c1-1500; ls .expmon/ | head; 
+  ↳ {"ts": "2026-11-17 18:32", "jobid": "191450", "launcher": "scripts/qafreeze/build_init.sbatch", "argv": ["42", "43"], "git": "fb397c0", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/191450", "exp (+12 lines)
+→ Bash: grep -E '"jobid": "(191493|191494|191495|191496)"' .expmon/runs.jsonl | cut -c1-900
+  ↳ {"ts": "2026-11-17 20:02", "jobid": "191493", "launcher": "scripts/qafreeze/ft_qafreeze.sbatch", "argv": ["frozen", "42", "20"], "git": "6afed5c+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/e (+3 lines)
+Plumbing check passes on every point. Recording verdicts, then launching the two full training runs (seeds 42 and 43) plus two reference re-evals on photos.
+→ Bash: sacct -j 188597,188602,188606,188615 -X -o JobID,JobName%15,State,Elapsed,NodeList 2>&1; grep -E '"jobid": "(188602|188606|188615)"' .expmon/runs.jsonl | cut -c1-600
+  ↳ JobID                JobName      State    Elapsed        NodeList  (+8 lines)
+→ Bash: expmon verdict 191493 closed "plumbing PASS (Qs, s42, 20 steps = 1,280 rows = .046 epoch; COMPLETED 0:0, homer-010, 29:19): log 'freeze_compressor=True: froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0', total …
+  ↳ verdict recorded: 191493 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+Now the full training runs. Dry-run first.
+→ Bash: python3 -c "print(80.97*438*1.25/3600)"; expmon launch --exp qafreeze --stage ft --parent 191450 --dry-run --time 12:20:00 scripts/qafreeze/ft_qafreeze.sbatch frozen 42 2>&1 | tail -20
+  ↳ 12.3141875 (+4 lines)
+→ Bash: expmon launch --exp qafreeze --stage ft --parent 191450 --time 12:20:00 scripts/qafreeze/ft_qafreeze.sbatch frozen 42 2>&1 | tail -8
+  ↳ Submitted batch job 191527 (+6 lines)
+→ Bash: expmon launch --exp qafreeze --stage ft --parent 191450 --dry-run --time 12:20:00 scripts/qafreeze/ft_qafreeze.sbatch frozen 43 2>&1 | tail -4 && expmon launch --exp qafreeze --stage ft --parent 191450 --time 12:20:00 scripts/qafreeze/ft_qa…
+  ↳ would submit: sbatch --time 12:20:00 scripts/qafreeze/ft_qafreeze.sbatch frozen 43 (+9 lines)
+Both trainings submitted. Now the two photo reference re-evals (same command and time limit as the recorded reference cells).
+→ Bash: ls -la expQ/qafreeze/ | head -20; PX=1003520 expmon launch --exp qafreeze --stage eval-ref --parent 184778 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:00 eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco '' eval_data/…
+  ↳ total 5 (+14 lines)
+→ Bash: PX=1003520 expmon launch --exp qafreeze --stage eval-ref --parent 184778 --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:00 eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco '' eval_data/mm_naturalqa_1500 2>&1 | grep -E 'job id|REF…
+  ↳ job id:  191531 (+1 lines)
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / pisco/model.py 994cff3d / ft_qafreeze.sbatch fd29d048"; expmon note -j 191527 "qafreeze arm Q full cell s42 intent: ft_qafre…
+  ↳ expmon note: 127 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+→ Bash: squeue -j 191527,191530,191531,191532,191495,191496 -o '%.8i %.14j %.9P %.8T %.10M %.20S %R' 2>&1
+  ↳ JOBID           NAME PARTITION    STATE       TIME           START_TIME NODELIST(REASON) (+6 lines)
+All four submissions are in (cap reached). Saving the code fingerprints to a file so the verifier can check them, then rewriting STATE.md.
+→ Bash: { echo "# md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3cc13b2 (campaign_freeze/STATE.md…
+  ↳ # md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3 (+23 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon display --exp qafreeze 2>&1 | tail -3; expmon note "qafreeze wake 22:30" --did "smoke s42 + module check PASS (191493/191494, 1 smoke, 20 steps); launched arm Q full cells s42 191527 + s43 191530 (gpu, --time 12:20) and R photos re-e…
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_qafreeze.html   (0 table rows, 0 media files from 0 runs) (+2 lines)
+→ Bash: expmon gripe --open --search display rows 2>&1 | head -8
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+7 lines)
+→ Bash: grep -c '<tr' display_qafreeze.html; expmon gripe --same 43db294f "qafreeze 2026-11-17 22:45: display --exp qafreeze again prints '0 table rows, 0 media files from 0 runs' while grid qafreeze lists 12 cells (6 closed with verdicts); HTML ha…
+  ↳ 13 (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191495,191496,191531,191532 max 4h", "summary": "The test run of the frozen-compressor training passed on every point, and both full training runs (seeds 42 and 43) are now queued.\n\n**Test run:** 20…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7374 turns=32 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191495,191496,191531,191532 max 4h", "summary": "The test run of the frozen-compressor training passed on every point, and both full training runs (seeds 42 and 43) are now queued.\n\n**Test run:** 20 training steps at seed 42, which is 1,280 rows or 0.046 of an epoch.\n- The log shows 506 compressor and connector tensors frozen, with 0 trainable compressor parameters. Only the decoder trains (155,978,240 parameters).\n- Training loss was .555 at st…", "launched": ["191527", "191530", "191531", "191532"], "verdicts": [{"jobid": "191493", "verdict": "closed", "note": "20-step test run passed: 506 compressor + connector tensors frozen, 0 trainable compressor parameters; loss .555 / .515 vs .594 / .584 earlier; config diff clean; 80.97 s/step; 49.7 GB"}, {"jobid": "191494", "verdict": "closed", "note": "weight check passed: compressor and connector weights 0.0% changed, decoder adapter weights 76.0% changed"}], "gripes": ["+1 on 43db294f: the results-page command reports 0 table rows while the page it writes has 13"]}
+== final:
+{"next":"wake-when","wake_when":"job:191495,191496,191531,191532 max 4h","summary":"The test run of the frozen-compressor training passed on every point, and both full training runs (seeds 42 and 43) are now queued.\n\n**Test run:** 20 training steps at seed 42, which is 1,280 rows or 0.046 of an epoch.\n- The log shows 506 compressor and connector tensors frozen, with 0 trainable compressor parameters. Only the decoder trains (155,978,240 parameters).\n- Training loss was .555 at step 10 and .515 at step 20. The earlier frozen test run gave .594 and .584, so both are inside the allowed ±.10 band.\n- Speed: 80.97 s per step overall, 70-73 s once warmed up. Peak GPU memory: 49.7 GB.\n- The training config differs from reference run 184778 in only three allowed fields: the step limit, the freeze flag and the starting model.\n- A weight comparison after the run: every compressor and connector weight is unchanged (0.0%), and 76.0% of the decoder's adapter weights moved.\n\n**Submitted this wake (the 4-per-wake limit is reached):**\n- Full training, seed 42: job 191527 on the `gpu` partition. Time limit 12:20, computed as 80.97 s/step × 438 steps × 1.25.\n- Full training, seed 43: job 191530, same settings.\n- Reference model re-scored on photos with today's eval launcher, seeds 42 and 43: jobs 191531 and 191532. They repeat the command of the earlier reference run 188602.\n- The reference re-scores on documents (jobs 191495 and 191496) were already running.\n\n**Housekeeping:**\n- The verifier could not confirm the code fingerprints (md5) from the last wake. I re-ran them and saved them to `campaign_qafreeze/code_md5.txt`. The eval launcher `eval_mm_4b.sh` differs from the recorded version, which is why the reference model is being re-scored. The other three eval scripts match the recorded values.\n- STATE.md is rewritten with the config diff and a skeleton of the results table.\n- The results page `display_qafreeze.html` was refreshed. Its summary line wrongly says 0 rows (the page actually has 13), so I added to an existing tooling complaint.\n\n**Next wake:** when the four reference re-scores finish, or after 4 hours at most. Then I check that each output file is complete, launch the reference re-scores for MRQA text and HotpotQA at both seeds, record the seed-42 training's first validation loss, and start the early 300-question documents check once that run has saved its quarter-way checkpoint.\n\nNothing needed from the owner.","launched":["191527","191530","191531","191532"],"verdicts":[{"jobid":"191493","verdict":"closed","note":"20-step test run passed: 506 compressor + connector tensors frozen, 0 trainable compressor parameters; loss .555 / .515 vs .594 / .584 earlier; config diff clean; 80.97 s/step; 49.7 GB"},{"jobid":"191494","verdict":"closed","note":"weight check passed: compressor and connector weights 0.0% changed, decoder adapter weights 76.0% changed"}],"gripes":["+1 on 43db294f: the results-page command reports 0 table rows while t
+== rc=0 secs=269
+== verify: 7/7
