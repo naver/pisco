@@ -5,7 +5,7 @@ In plain words: if you say yes, a layout tie can be called "equal" when the two 
 
 **What.** The law calls a case "equal" when one seed's 95% interval of the paired difference (spread − tail, judge
 accuracy, same questions) lies inside ±2 pt, at both seeds. Arm A (job 191454, 23 recorded pairs) measured how wide
-that interval is on the gating sets: documents .044–.050, text .041–.055, photos .036–.041. An interval wider than .040
+that interval is on the gating sets: documents .044–.050, text .041–.056, photos .037–.041 (photos sit at the band: "equal" only if the difference is ~0). An interval wider than .040
 cannot fit inside ±2 pt, so "equal" is out of reach on documents and text whatever the models do. This hits arm B's
 gate ("inside ±2 pt at ten chunks") and arm E's tie outcome ("CI inside ±2 pt at both seeds"), i.e. the very reading
 "the layout buys stage-2 data, not accuracy" can never be confirmed as written.

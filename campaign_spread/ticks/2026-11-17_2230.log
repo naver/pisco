@@ -1,0 +1,107 @@
+== campaign spread wake 2026-11-17_2230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794922202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.9 idle_h=0.1 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8113 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=5 uplaw=0 push_rc=0 next=wake-when_job:191455,191456,191457_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/hook.log
+== wait condition met: job:191455,191456,191457 (ended)   (NEXT was: wake-when job:191455,191456,191457 max 8h)
+== session 06eef49c-c3c2-4bfe-ace8-aee4dc3130fa  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md
+  ↳ # Wake brief — campaign spread — 2026-11-17_2230   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+126 lines)
+→ Bash: wc -l campaign_spread/CAMPAIGN.md campaign_spread/STATE.md campaign_spread/known_issues.md && cat campaign_spread/CAMPAIGN.md
+→ Bash: cat campaign_spread/STATE.md && echo ---------- && cat campaign_spread/known_issues.md
+  ↳ # STATE — campaign spread   (rewritten WHOLESALE by every LLM wake; never append) (+72 lines)
+  ↳ <persisted-output> (+29 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/06eef49c-c3c2-4bfe-ace8-aee4dc3130fa/tool-results/bj9ngjbsu.txt
+  ↳ 1	  313 campaign_spread/CAMPAIGN.md (+317 lines)
+→ Bash: sacct -j 191455,191456,191457 -X -D -o JobID,State,ExitCode,Elapsed,NodeList,Start,End -P; ls -la --time-style=full-iso expQ/spread/b_tail_s42/eval/ expQ/spread/b_spread_s42/eval/ 2>&1; expmon ledger 40 2>&1 | tail -60
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End (+77 lines)
+→ Bash: ls -la campaign_spread/ .expmon/campaign/spread/ 2>&1 | head -50; cat campaign_spread/VERIFY.md 2>/dev/null || cat .expmon/campaign/spread/VERIFY.md
+  ↳ campaign_spread/: (+65 lines)
+Reading the full verifier reasons, then I'll pair the three finished long-text cells (seed 42).
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('.expmon/campaign/spread/verify.result.json')) ⏎ s=d.get('structured_output') or d.get('result') or d ⏎ if isinstance(s,str): ⏎     print(s[:6000]) ⏎ else: ⏎     for c in s.get('claims',[]): ⏎  …
+  ↳ - supported | Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly from the recorded files — docu (+22 lines)
+→ Bash: ls scripts/spread/ expQ/spread/ && head -40 scripts/paired_judge.py && python3 -c " ⏎ import json ⏎ for f in ['expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json','expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_c…
+  ↳ expQ/spread/: (+51 lines)
+→ Bash: ls -la --time-style=full-iso expQ/freeze/ref_s42/eval/ expQ/freeze/ref_s43/eval/ 2>&1 | grep -i hotpot; python3 - <<'EOF' ⏎ import json,glob ⏎ fs=['expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json','expQ/spread…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 810794 2026-11-11 17:45:52.000000000 +0900 mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+14 lines)
+→ Bash: B=expQ/spread; echo "== one chunk s42: spread 184778 (191457) vs tail 174908 (191456)"; python3 scripts/paired_judge.py $B/b_spread_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json $B/b_tail_s42/eval/mm_docqa_pisco_k10_cml409…
+  ↳ Exit code 1 (+20 lines)
+→ Bash: grep -n '"19145[567]"\|19145[567]' .expmon/runs.jsonl 2>/dev/null | head -5 || true; ls .expmon/; ls -la expQ/spread/b_tail_s42/ expQ/spread/b_spread_s42/; ls -la expQ/ft_mm_4b_176242 2>/dev/null | head; ls -d expQ/*176242* expQ/*174908* ex…
+  ↳ 1051:{"ts": "2026-11-17 18:40", "jobid": "191455", "launcher": "eval_mm_4b.sh", "argv": ["expQ/spread/b_tail_s42/model", "pisco", "", "eval_data/text_hotpotqa_1500"], "git": "fb397c0+dirty", "outdir": (+54 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/judge_prompts.py | cut -c1-8,33-; sacct -j 191455,191456,191457 -o JobID,ReqMem,MaxRSS,AllocTRES%40 -P | head; expmon lau…
+  ↳ b3d1cda1  eval_mm_4b.sh (+25 lines)
+Seed-42 long-text results are in (one chunk: spread beats tail by 26 points). Now setting up the seed-43 cells and a same-code re-run of the spread ten-chunk cell.
+→ Bash: mkdir -p expQ/spread/b_tail_s43 expQ/spread/b_spread_s43 && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_176242/model expQ/spread/b_tail_s43/model && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model expQ/spr…
+  ↳ expQ/spread/b_spread_s43: (+31 lines)
+→ Bash: expmon launch --dry-run --exp spread --stage B --parent 191454 --env CML=4096 --env TOPK=10 --time 1:15:00 --mem 8G --partition gpu-be --exclude 'homer-[005-009]' eval_mm_4b.sh expQ/spread/b_spread_s42/model pisco "" eval_data/text_hotpotqa…
+  ↳ would submit: sbatch --time 1:15:00 --mem 8G --partition gpu-be --exclude homer-[005-009] eval_mm_4b.sh expQ/spread/b_spread_s42/model pisco  eval_data/text_hotpotqa_1500 (+4 lines)
+→ Bash: expmon note "spread arm B intent (wake 22:30): 4 text cells, TOPK=10 CML=4096, gpu-be excl homer-[005-009], --time 1:15 (slowest text cell 191307 24:43 x 3; B s42 walls 20:26/16:41/17:31), --mem 8G (B s42 MaxRSS 4.43 GB x 1.5). (1) spread 1…
+  ↳ expmon note: 113 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+13 lines)
+→ Bash: expmon runs --running 2>&1 | grep -E "19151[89]|19152[68]|JOBID"; for j in 191518 191519 191526 191528; do grep "\"$j\"" .expmon/runs.jsonl | python3 -c "import json,sys; r=json.loads(sys.stdin.read()); print(r['jobid'], r['argv'][0], r['ar…
+  ↳ JOBID      STATE     ELAPSED     EXP            GIT            LAUNCHER         FACTORS | SLURM | OUTDIR (+8 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -i hotpot; B=expQ/spread; for m in em match anls; do echo "== one chunk s42 metric $m"; python3 scripts/paired_judge.py $B/b_spread_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json $B/b_tai…
+  ↳ mm_docqa_base_k10_rkrank_hotpot_bge_keep1_text_hotpotqa_1500.json (+13 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ def rec(p): return {r['query_id']:r for r in json.load(open(p))['records']} ⏎ B='expQ/spread/' ⏎ base=rec('expQ/base_qwen35_4b/eval/mm_docqa_base_k10_text_hotpotqa_1500.json') ⏎ s1=rec(B+'b_spread_s42/eval/…
+  ↳ common 1500 base n 1500 (+7 lines)
+Recording the seed-42 verdicts, then fixing what the verifier flagged.
+→ Bash: for j in 191455 191456 191457; do :; done ⏎ expmon verdict 191455 closed "healthy (COMPLETED 0:0, homer-017, 20:26, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = freeze ref_s42 twin). Tail produc…
+  ↳ verdict recorded: 191455 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+7 lines)
+→ Bash: A=expQ/spread/audit_191454; ls $A; grep -nE "^## |^### " $A/audit.md | head -60; python3 - <<'EOF' ⏎ import json ⏎ d=json.load(open('expQ/spread/audit_191454/audit.json')) ⏎ print(list(d.keys())) ⏎ cases=d.get('cases') or {} ⏎ it = cases.it…
+  ↳ audit.json (+51 lines)
+→ Bash: for l in 64 128 160 192 224 256 288 320 352 384 416 452; do sed -n "$((l)),$((l+5))p" expQ/spread/audit_191454/audit.md | grep -E "^### |ALL|all" | head -3; done
+  ↳ ### red_docs_s42 — role gate, budget reduced, seed 42, set docs (+23 lines)
+→ Bash: sed -n 18,61p expQ/spread/audit_191454/audit.md | grep -E "18478[35]|18860[24]|188615|188606|176242|174908" | cut -c1-400
+  ↳ | freeze/ref_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json | 1500 | 1500 | 0 | rubric | 0.603 | 265,880 | 188615 | homer-016 (homer-016) | el9_8 | agrees | 8c9fccd+dirty | (+9 lines)
+→ Bash: ls expQ/freeze/ref_s42/eval/ expQ/freeze/ref_s43/eval/ | grep -i natural; ls -la expQ/freeze/ref_s42 expQ/freeze/ref_s43 | grep model
+  ↳ mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+3 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/spread/compare_answers.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/spread/compare_answers.py (file state is current in your context — no need to Read it back)
+→ Bash: mkdir -p expQ/spread/rerun_checks && E=expQ; python3 scripts/spread/compare_answers.py \ ⏎  "184778 photos: 184783 (homer-011, 11-09, 24b7a2c) vs 188602 (homer-016, 11-11)" $E/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.…
+  ↳ | pair | n | answers differ | judge A | judge B | judge flips (A-only/B-only) | A | B | (+5 lines)
+Photo-drift counts are now saved to a file. Next: update the deliverable page with the seed-42 long-text results.
+→ Bash: wc -l docs/spread_cases.md && cat docs/spread_cases.md
+  ↳ 59 docs/spread_cases.md (+59 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md' ⏎ s=open(p).read() ⏎ s=s.replace("""Rewritten whenever an arm decides. Last rewrite 2026-11-17 19:10, after arm A (audit of the recorded files, job 191454, ⏎ tables `expQ/spread/audit_191454/audi…
+  ↳ 27:| HotpotQA, 10 passages as 10 chunks | reduced | 1,500 | 177 | .579 | .568 | +.011 (−.012, +.034) | — | 162/145 | .752 | 3.3 | one seed; spread side ran on homer-006 | (+6 lines)
+→ Bash: sed -i 's/| HotpotQA, 10 passages as ONE chunk (~1,270 tokens) | full |/| HotpotQA, 10 passages as ONE chunk (~1,380 tokens = 173 slots × 8) | full |/; s/| 151\/152 | .752 | 3.3 | reported only/| 151\/152 | .752 | 3.4 | reported only/' docs…
+  ↳ 31:| HotpotQA, 10 passages as 10 chunks | full | 1,500 | 177 | .603 / running | .603 / running | −.001 (−.023, +.022) |  (+1 lines)
+→ Bash: grep -n "036\|\.055\|\.041" campaign_spread/CAMPAIGN.md campaign_spread/BLOCKED.md
+  ↳ campaign_spread/BLOCKED.md:8:that interval is on the gating sets: documents .044–.050, text .041–.055, photos .036–.041. An interval wider than .040 (+1 lines)
+→ Bash: sed -n 82,88p campaign_spread/CAMPAIGN.md
+  ↳ - A slice decides nothing with fewer than 300 questions or fewer than 40 discordant pairs (McNemar b + c); it is (+6 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_spread/CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old="""- Measured by arm A (191454, 23 recorded pairs): one seed's 95% CI on 1,500 Q is .044-.050 wide on documents and text, ⏎   .036-.041 on photos, so "equal" (CI i…
+  ↳ # BLOCKED — campaign spread (one question; the campaign keeps running its other cells meanwhile) (+10 lines)
+Refreshing the results page, then rewriting STATE.md.
+→ Bash: timeout 60 expmon display --exp spread 2>&1 | tail -5; timeout 60 expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_spread.html   (0 table rows, 0 media files from 0 runs) (+11 lines)
+→ Bash: expmon gripe --open --search display rows 2>&1 | head -15; echo ---; expmon gripe --open --search "result dir" 2>&1 | head -10; echo ---; expmon gripe --open --search symlinked model 2>&1 | head -10
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+28 lines)
+→ Bash: expmon gripe --same 43db294f "spread: display --exp spread writes '0 table rows, 0 media files from 0 runs' while grid spread has 4 finished cells (3 judged evals 191455-191457 + an audit); the eval json lands in expQ/spread/<cell>/eval/ (s…
+  ↳ logged as a +1 of 43db294f (entry 0960b9f9) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: expmon probe --help 2>&1 | head -12
+  ↳ (Bash completed with no output)
+→ Bash: expmon help 2>&1 | grep -iA3 "probe" | head -20
+  ↳ the latest in-flight probe when the run has no final yet; with (+19 lines)
+→ Bash: B=expQ/spread; expmon probe 191455 --from-json $B/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json --map judge=summary.judge --map em=summary.em --map n=summary.n 2>&1 | tail -2; expmon probe 191456 --from-json $B/b_tail_s…
+  ↳ probe recorded: 191455 (n=1500)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: tail -3 .expmon/probes.jsonl
+  ↳ {"ts": "2026-11-17 22:35", "jobid": "191455", "metrics": {"n": "1500"}} (+2 lines)
+→ Bash: B=expQ/spread; expmon probe 191455 --from-json $B/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json --map judge=summary.judge,em=summary.em,n=summary.n --dry-run 2>&1 | tail -3
+  ↳ would record: expmon probe 191455 judge=0.6033333333333334 em=0.36533333333333334 n=1500
+→ Bash: B=expQ/spread; M="--map judge=summary.judge,em=summary.em,n=summary.n"; expmon probe 191455 --from-json $B/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json $M | tail -1; expmon probe 191456 --from-json $B/b_tail_s42/eval/m…
+  ↳ expmon probe: unknown flag '--map judge=summary.judge,em=summary.em,n=summary.n' (see expmon probe --help) (+5 lines)
+→ Bash: B=expQ/spread; expmon probe 191455 --from-json $B/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json --map judge=summary.judge,em=summary.em,n=summary.n | tail -1; expmon probe 191456 --from-json $B/b_tail_s42/eval/mm_docqa_…
+  ↳ probe recorded: 191455 (judge=0.6033333333333334 em=0.36533333333333334 n=1500)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+6 lines)
+Writing the new STATE.md.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cat >> campaign_spread/known_issues.md <<'EOF' ⏎ | `expmon probe --from-json` with two `--map` flags records only the last key (e.g. only n=1500) | known expmon defect (gripe 8377084c) | pass ONE `--map a=summary.a,b=summary.b`; in zsh neve…
+  ↳ | a sacct `-X -D` listing of a requeued eval looks out of order | attempts of se (+2 lines)
+→ Bash: expmon note --did "spread wake 22:30: arm B s42 paired + verdicts (191455-191457 healthy); launched s43 one/ten-chunk cells 191519/191526/191528 + spread ten-chunk s42 re-run on today's code 191518 (cap 4); verifier fixes (CI ranges, photo-…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191518,191519,191526,191528 max 8h", "summary": "Seed 42 of the long-text test is done. Ten HotpotQA passages compressed as ONE chunk, full budget: spread scores .611 and the production tail model .35…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.6888 turns=46 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191518,191519,191526,191528 max 8h", "summary": "Seed 42 of the long-text test is done. Ten HotpotQA passages compressed as ONE chunk, full budget: spread scores .611 an…", "launched": ["191518 arm B spread 184778 s42 ten chunks, re-run on today's code (text_hotpotqa_1500, TOPK=10 CML=4096)", "191519 arm B tail 176242 s43 ten chunks", "191526 arm B tail 176242 s43 one chunk (text_hotpotqa_1500_g10)", "191528 arm B spread 184780 s43 one chunk (text_hotpotqa_1500_g10)"], "verdicts": [{"jobid": "191455", "verdict": "closed", "note": "healthy; tail 174908 ten chunks s42 judge .603"}, {"jobid": "191456", "verdict": "closed", "note": "healthy; tail 174908 one chunk s42 judge .351"}, {"jobid": "191457", "verdict": "closed", "note": "healthy; spread 184778 one chunk s42 judge .611; spread-tail +.260 [+.233,+.289]"}], "blocked": "BLOCKED.md (unchanged question, numbers corrected): how 'equal' is tested now that a 1,500-question CI is wider than the…", "gripes": ["+1 on 43db294f: display --exp spread writes 0 table rows although the grid has 4 finished cells; the eval json lands und…", "+1 on 8377084c: probe --from-json with two --map flags keeps only the last; the comma list works and should be documente…"]}
+== final:
+{"next":"wake-when","wake_when":"job:191518,191519,191526,191528 max 8h","summary":"Seed 42 of the long-text test is done. Ten HotpotQA passages compressed as ONE chunk, full budget: spread scores .611 and the production tail model .351. Spread minus tail is +.260 [+.233, +.289], McNemar 488/98, n 1,500. EM, match and ANLS all show the same sign. Tail drops .253 going from ten chunks to one; spread does not move. With the passages as ten chunks the two tie (−.001 [−.023, +.022]), but the spread side of that pair is an older-code file, so it is only reported. All three cells are healthy and closed. I launched four cells: the seed-43 one-chunk and ten-chunk cells, plus the spread ten-chunk seed-42 cell re-run on today's code. I fixed the verifier's points: corrected the CI widths (text .041-.056, photos .037-.041) in the law, the owner question and the results page, and saved the photo-drift counts to a file. I rewrote docs/spread_cases.md and STATE.md. The question in BLOCKED.md about how to test \"equal\" is still open.","launched":["191518 arm B spread 184778 s42 ten chunks, re-run on today's code (text_hotpotqa_1500, TOPK=10 CML=4096)","191519 arm B tail 176242 s43 ten chunks","191526 arm B tail 176242 s43 one chunk (text_hotpotqa_1500_g10)","191528 arm B spread 184780 s43 one chunk (text_hotpotqa_1500_g10)"],"verdicts":[{"jobid":"191455","verdict":"closed","note":"healthy; tail 174908 ten chunks s42 judge .603"},{"jobid":"191456","verdict":"closed","note":"healthy; tail 174908 one chunk s42 judge .351"},{"jobid":"191457","verdict":"closed","note":"healthy; spread 184778 one chunk s42 judge .611; spread-tail +.260 [+.233,+.289]"}],"blocked":"BLOCKED.md (unchanged question, numbers corrected): how 'equal' is tested now that a 1,500-question CI is wider than the ±2-pt band on documents and text. Recommendation: seed-pooled CI, 0 GPU-h. The campaign keeps running meanwhile.","gripes":["+1 on 43db294f: display --exp spread writes 0 table rows although the grid has 4 finished cells; the eval json lands under expQ/spread/<cell>/eval/","+1 on 8377084c: probe --from-json with two --map flags keeps only the last; the comma list works and should be documented"]}
+== rc=0 secs=406
+== verify: 4/11

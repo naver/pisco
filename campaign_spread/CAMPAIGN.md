@@ -81,8 +81,9 @@ campaign_longdoc/CAMPAIGN.md:83): **better** = ≥ +3 pt with the 95% CI above 0
 ±2 pt at both seeds; **worse** = ≤ −3 pt with the CI below 0 at both seeds. Decide arms as cells complete.
 - A slice decides nothing with fewer than 300 questions or fewer than 40 discordant pairs (McNemar b + c); it is
   reported with its discordant count and called "not resolvable here", never "equal".
-- Measured by arm A (191454, 23 recorded pairs): one seed's 95% CI on 1,500 Q is .044-.050 wide on documents and text,
-  .036-.041 on photos, so "equal" (CI inside ±2 pt) cannot be reached on documents or text. Until the owner answers
+- Measured by arm A (191454, 23 recorded pairs) and arm B s42: one seed's 95% CI on 1,500 Q is .044-.050 wide on
+  documents, .041-.056 on text, .037-.041 on photos (at the band: "equal" only if the difference is ~0), so "equal"
+  (CI inside ±2 pt) cannot be reached on documents or text. Until the owner answers
   BLOCKED.md, a case that would need "equal" is reported "not resolvable here (CI width w)", never "equal".
 - Photo re-runs drift across code dates even on el9_8 nodes: 184778 photos 184783 (homer-011, 11-09) vs 188602
   (homer-016, 11-11) differ on 233/1,500 answers, 85 judge flips, .677 vs .673; 184780's homer-008 photo file equals its

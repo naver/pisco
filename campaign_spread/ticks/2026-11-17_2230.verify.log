@@ -1,0 +1,53 @@
+== verifier 2026-11-17_2230  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session 0b4bddd3-4f13-4085-98da-90c077d0ae2c  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+188 lines)
+→ Glob: {"pattern": "expQ/spread/**/*.md"}
+→ Glob: {"pattern": "expQ/spread/**/*.json"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/photo_drift.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+255 lines)
+  ↳ 1	| pair | n | answers differ | judge A | judge B | judge flips (A-only/B-only) | A | B | (+5 lines)
+→ Grep: {"pattern": "^### |^## |\\| ALL \\| ALL|\\| source \\|", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "offset": 0, "head_limit": 0}
+  ↳ 5:## (1) Re-derivation of the recorded differences (tolerance +-.003) (+121 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread"}
+  ↳ expQ/spread/audit_191454/audit.json (+11 lines)
+Checking the arm B paired numbers next, using the wake's tick log and the deliverable doc.
+→ Grep: {"pattern": "488|151 / 152|151/152|\\.260|ANLS|match \\+", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2230.log", "output_mode": "content", "head_limit": 60}
+  ↳ 103:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "488|151/152|151 / 152|0\\.26|ANLS|anls", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2230.log", "output_mode": "content", "-o": true, "head_limit": 80}
+  ↳ 40:anls (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2230.log
+  ↳ 30	  ↳ b3d1cda1  eval_mm_4b.sh (+25 lines) (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2230.log
+  ↳ 1	== campaign spread wake 2026-11-17_2230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+28 lines)
+→ Grep: {"pattern": "488|151|\\.260|\\.253|\\.008|ANLS|match", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode": "content"}
+  ↳ 20:| documents, infographics only | full | 500 | — | .480 / .480 | .430 / .430 | +.050 (+.004, +.096) | +.050 (+.008, +.096) | 80/55 · 76/51 | .726 | 6.5 | provisional: better (s43 pair spans two code (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/b_spread_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json
+  ↳ 1	{ (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json
+  ↳ 1	{ (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json
+  ↳ 1	{ (+59 lines)
+Arm B seed-42 numbers check out against the eval files. Now checking the self-pair count and the remaining audit tables.
+→ Grep: {"pattern": "self", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "head_limit": 20}
+  ↳ 3:FEASIBILITY GATE: PASS  (1) re-derivation PASS  (2) self-pair PASS  health 184778 docs PASS
+→ Grep: {"pattern": "self", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json", "output_mode": "count"}
+  ↳ expQ/spread/audit_191454/audit.json:2 (+2 lines)
+→ Grep: {"pattern": "\"self[^\"]*\"\\s*:[^\\]\\}]{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 14189:"selfpair": { (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json
+  ↳ 14189	 "selfpair": { (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json
+  ↳ 14370	  "expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json": { (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/b_spread_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500_g10.json
+  ↳ 40	  "judge/hotpot_bridge": 0.5831244778613199, (+4 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly from the recorded files — documents +.093 / +.075 (reduced budget), photos +.023 / +.021, full bu…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2940 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit_191454/audit.md:9-16 shows all 8 differences re-derive…"}, {"claim": "Arm B cells, seed 42, healthy (191455 / 191456 / 191457, clo…", "status": "supported", "reason": "Grid probes give n=1500 with judge 0.6033 / 0.3507 / 0.6107,…"}, {"claim": "Re-run identity (photo_drift.md, compare_answers.py): 184778…", "status": "supported", "reason": "expQ/spread/rerun_checks/photo_drift.md rows 3-5 match exact…"}, {"claim": "provisional: spread better on ONE long text chunk at full bu…", "status": "provisional", "reason": "Every figure I could check holds. From the json summaries: j…"}, "… +7 more"], "summary": "All four settled facts check out against the audit, the eval…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly from the recorded files — documents +.093 / +.075 (reduced budget), photos +.023 / +.021, full budget documents +.011 / +.024, photos −.009 / +.010, with the recorded CIs; 39 self-pairs give 0.000; 184778's document file has 1,500 rows, a judge on every row, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit_191454/audit.md:9-16 shows all 8 differences re-derived equal to the expected values (for example red_docs_s42 +0.093 [+.069,+.115], 238/99). audit.json selfpair has 39 entries, each diff 0.0 with 0 discordant, and gate rederive_ok / selfpair_ok / health_184778_docs_ok are all true. Inventory line 57: 184778 docs has 1500 rows, 1500 judged, 0 unparseable, 646,042 mems. The grid probe agrees (feasibility=PASS, cases=23, files=39), and verdict 191454 is closed. The script md5s cannot be checked read-only, but this is peripheral."},{"claim":"Arm B cells, seed 42, healthy (191455 / 191456 / 191457, closed; COMPLETED 0:0 on homer-017 / homer-017 / homer-019, one attempt each; 1,500 rows, judge on all, 0 unparseable; mems_used 265,880 ten chunks = the freeze twin, 259,986 one chunk on both sides). Judge accuracy: tail 174908 ten chunks .603, ONE chunk .351; spread 184778 ONE chunk .611.","status":"supported","reason":"Grid probes give n=1500 with judge 0.6033 / 0.3507 / 0.6107, and the three verdicts are closed and healthy. The eval json summaries say n 1500, judge_unparseable 0, rubric judge, same settings on all three (topk 10, brief, max_pixels 451584). The freeze twin has 265,880 mems (audit.md:27), and the earlier one-chunk twin has 259,986 (audit.md:36). All nodes are outside homer-[005-009]."},{"claim":"Re-run identity (photo_drift.md, compare_answers.py): 184778 photos 184783 (homer-011, 11-09) vs 188602 (homer-016, 11-11) differ on 233 / 1,500 answers, 85 judge flips (45 / 40), .677 vs .673; 184780 photos 184785 (homer-008) vs its re-run: 0 / 1,500; 184778 documents recorded vs re-run: 0 / 1,500.","status":"supported","reason":"expQ/spread/rerun_checks/photo_drift.md rows 3-5 match exactly: 233 answers differ, 85 flips (45/40), .677/.673; 0 differ on the 184780 photo file vs 188604; 0 differ on 184778 docs. These are identity counts, not a gate metric. The compare_answers.py md5 cannot be checked read-only."},{"claim":"provisional: spread better on ONE long text chunk at full budget, seed 42 only: spread − tail = +.260 [+.233, +.289], McNemar 488 / 98, p < .001 (n 1,500, 191457 − 191456, same code, ~173 slots per question; uncompressed .752). Same sign under EM +.151, match +.199, ANLS +.174. Tail one − ten chunks = −.253; spread one chunk − freeze ten-chunk file = +.008 [−.016, +.031]. Reduced-budget collapse .568 → .399 not cured by full budget (.603 → .351). Seed 43 running.","status":"provisional","reason":"Every figure I could check holds. From the json summaries: judge .6107
+== rc=0
