@@ -11,9 +11,16 @@ Multimodal PISCO: compress images (document pages, photos, charts, video frames)
 decoder answers without seeing pixels, as close as possible to the uncompressed Qwen3.5-4B and much faster.
 
 ## Resume here (2026-11-17)
-- **Running: `campaign_longdoc` (armed 2026-11-17, probe kind, no training)** — diagnoses WHERE long inputs lose (data,
-  training, eval, or the decoder reading many `<MEM>`s). Law `campaign_longdoc/CAMPAIGN.md`, findings
-  `docs/longdoc_diagnosis.md`; watch `expmon campaign --dir campaign_longdoc status`.
+- **Running (watch each with `expmon campaign --dir campaign_<label> status`; questions via `expmon questions`):**
+  - `campaign_longdoc` (armed 2026-11-17, inference only): WHERE long inputs lose (data, training, eval, or the decoder
+    reading many `<MEM>`s); findings `docs/longdoc_diagnosis.md`.
+  - `campaign_qafreeze` (armed 2026-11-17, training): can 184778 / 184780's QA-trained compressor + connector stay frozen
+    while only a fresh decoder LoRA trains? Pass = documents, photos, MRQA each ≥ −2 pt, no CI wholly below 0, both seeds
+    → `<MEM>` cache hand-off. 55 GPU-h; +25 for a decoder lr 1e-4 arm only at the owner checkpoint.
+  - `campaign_spread` (armed 2026-11-17): why the spread layout's +.08 (reduced budget) vanished at full budget, where
+    spread beats / ties / loses to tail, whether the eval hides it. CPU audit → judge check → inference probes → owner
+    checkpoint → one-variable tail twin of the full chain (tail 5M stage 1 `qwen35_4b_pt_5M_143228`, ~60 GPU-h) and up to
+    2 training fixes, each on its own REQUEST. 30 GPU-h before the checkpoint, 95 in all; findings `docs/spread_cases.md`.
 - **Closed campaigns (disarmed by the owner 2026-11-14, `STAND-DOWN` in each dir):**
   - `campaign_probes` (inference only; `docs/probe_campaign_2026-11.md`): the picked page raw recovers the whole document
     gap (.820 / .822 vs .610 / .615, above all-raw .809); the most-attended eighth of the slots keeps the plain score;
@@ -22,7 +29,7 @@ decoder answers without seeing pixels, as close as possible to the uncompressed 
   - `campaign_longchunk` (closed 2026-11-16): 1,024-token stage-1 chunks LOSE (documents −6.2 / −4.3 pt, HotpotQA g10
     −1.1 / −3.3, photos flat; paired, 1,500 Q, 2 seeds); the 2,048 arm was stopped by the owner, never evaluated. Keep
     256-token training chunks; chunk length stays an inference-time choice.
-- **Open hand-offs to this project's chats** (`expmon handoff list`): the successor freeze campaign (Decisions pending 1).
+- **Open hand-offs to this project's chats:** none (`expmon handoff list`).
 
 ## Where we stand (one paragraph)
 Best model `expQ/ft_mm_4b_174908/model` (173550 recipe + connector norm). All-`<MEM>` on 1,500 Q: documents .599 vs
@@ -57,23 +64,20 @@ QA finetune, the connector may stay frozen (`docs/training_plan.md`).
 | 4 | **video** (ExtremeWhenBench on LVBench, `scripts/video/`) | zero-shot round **done** (`hierarchical_video.md` → 1); stage-B reader test: `<MEM>`s of all 65,964 frames cached (180520), `train_reader.py` ran a 4-step smoke only (180522) | 10 windows: model ≈ CLIP; whole hour: coarse level < CLIP, CLIP top-3 + zoom .498 vs .446; MCQ: pick is the bottleneck (.437 vs .492 with gold); ASR null; blind = chance | owner decision: run the reader training on the cached frames (3 folds, `scripts/video/train_reader.py`) or park video until archq3b gives a trained coarse level. Small fix: `mcq_levels.py summarize` crashes on blind runs (result file is written) |
 | 5 | **OpenEQA** (external nav test; regime "OpenEQA EM-EQA HM3D 557 Q, memory only") | **done** incl. whole tour (`multimodal_results.md` → "External navigation test") | LLM-Match (Qwen3-14B): generic PISCO 174908 at 16 / 32 / 64 / all frames **48.2 / 50.9 / 49.6 / 51.9** vs uncompressed 16 frames 50.0, 32 frames 57.0; retrieval (campaign, 15 frames) 54.0 (2B) / 59.3 (4B); nav PISCO `ft_nav_4b` 35-38 (templated finetune → 1-word answers). The whole tour compressed (≈ 4,700-11,600 `<MEM>`) edges 16 raw frames (+2.0, CI −1.7..+5.8) at fewer tokens, but the k curve is nearly flat: the decoder does not exploit a long compressed memory | next lever = stage B: decoder trained to read 32-all compressed frames, or route-then-expand over the tour; not before Tuesday (owner) |
 | 6 | judge human check | waits on the user | 114 rows in `expQ/judge_study/human_sheet.md` | label, then `scripts/judge_agreement.py … --human` (owner) |
-| 7 | **stage A / stage B proposal** (`training_plan.md` → "Standing proposal") | gate 0 **FAILED** (`campaign_freeze`, closed 2026-11-14) | paired judge, 1,500 Q, arm − reference 184778 / 184780 recipe: decoder-only finetune documents −2.8 / −3.5 / −4.1 pt, MRQA −2.3 / −2.7 / −2.5, photos ~0 (3 seeds); compressor alone frozen fails the same way (documents −2.9 / −3.9 / −3.5); connector alone frozen ties (documents +2.3 / −0.6, photos −0.6 / −1.3, MRQA +0.1 / +0.3, 2 seeds). Code: `PISCOConfig.freeze_compressor` and `freeze_part = compressor \| connector` + `test_freeze.py` | successor (owner-approved hand-off 5b6e55): keep 184778's QA-trained compressor frozen, decoder LoRA only — Decisions pending 1 |
+| 7 | **stage A / stage B proposal** (`training_plan.md` → "Standing proposal") | gate 0 **FAILED** (`campaign_freeze`, closed 2026-11-14) | paired judge, 1,500 Q, arm − reference 184778 / 184780 recipe: decoder-only finetune documents −2.8 / −3.5 / −4.1 pt, MRQA −2.3 / −2.7 / −2.5, photos ~0 (3 seeds); compressor alone frozen fails the same way (documents −2.9 / −3.9 / −3.5); connector alone frozen ties (documents +2.3 / −0.6, photos −0.6 / −1.3, MRQA +0.1 / +0.3, 2 seeds). Code: `PISCOConfig.freeze_compressor` and `freeze_part = compressor \| connector` + `test_freeze.py` | successor running as `campaign_qafreeze` (armed 2026-11-17): 184778's QA-trained compressor kept frozen, decoder LoRA only |
 | 8 | repo hygiene | open | `arc` = `origin/arc` (github.com/naver/pisco, public; the campaign ticks push after every wake); uncommitted: `freeze_part` in `pisco/model.py` + `test_freeze.py` (campaign freeze), probe arms E / G in `scripts/eval_mm_docqa.py` + `DENSE` and the requeue resume in `eval_mm_4b.sh`, these docs; `*.out` logs pile at the repo root | commit those (owner's go: the next tick pushes them); archive logs older than a week to `expQ/logs/` (Claude, on request) |
 
 Jobs by thread: `expmon status`; problems: `expmon check`. Rounds and their order: `docs/training_plan.md`.
 
 ## Decisions pending (owner)
-1. **Successor to campaign freeze (hand-off 5b6e55, approved 2026-11-14; arming is the owner's call)**: can a compressor
-   that has had ONE QA finetune stay frozen? Freeze 184778's compressor + connector, train the decoder LoRA only from the
-   stage-2 decoder on the same 28k rows, 2 seeds, paired vs 184778. Pass: documents, photos, MRQA each ≥ −2 pt, no CI
-   wholly below 0 at both seeds → build the `<MEM>` cache. Fail: ≤ −3 pt with CI below 0 at both seeds. ~9 GPU-h per
-   seed. Needs a new campaign (the freeze law forbids more compressor-freeze variants). 1b. A real slot hierarchy
-   (levels 1/2/4/8 + nested-budget training): the tail layout already degrades cheaply (−.04 docs at 50%), so a trained
-   level must beat that; low priority.
+1. **Owner checkpoints of the two new campaigns** arrive as `expmon questions`: `campaign_qafreeze` before its decoder
+   lr 1e-4 arm; `campaign_spread` before any training (the tail twin and up to 2 fixes, approved one by one). A real
+   slot hierarchy (levels 1/2/4/8 + nested-budget training) stays low priority: the tail layout already degrades cheaply
+   (−.04 docs at 50%), so a trained level must beat that.
 2. **Which stage-B training first** (both need the 1d regime; `training_plan.md` round 2): decoder-only GRPO on cached
    `<MEM>`s with an evidence-then-answer format (the "use" failures, OpenEQA's flat k curve), or routing rows on real
    questions ("find v2", the long-document pick). Gate 0 failed, so decoder-only training costs ~3 pt on documents unless
-   the successor test (1) passes; read it first.
+   `campaign_qafreeze` passes; read it first.
 3. **Video**: reader training on the cached frames now, or route with the attention-mass picker (1f) over the tour; the
    coarse level via archq3b is off the table.
 4. **Push** the `arc` branch to the public remote or not; SlideVQA whole decks need the NTT licence; OpenDocVQA corpus

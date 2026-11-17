@@ -1,0 +1,151 @@
+== law drafter 2026-11-17_1737  model=claude-opus-5  question=/beegfs/scratch/user/hdejean/pisco/campaign_spread/QUESTION.md
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+== session 0a2a47d5-4d23-427d-bcd0-2bd017c9f9bf  model claude-opus-5  tools 28
+I'll read the campaign materials in the prescribed order.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/QUESTION.md
+  ↳ 1	Owner's question (2026-11-17, in the owner's words): "i also need a camp to investigate why the spread layout was not (+33 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+118 lines)
+→ Read: /home/hdejean/.claude/expmon/templates/campaign/GUIDE.md
+  ↳ 1	# Writing a campaign law — the owner's guide (read while filling CAMPAIGN.md; the wake never reads this) (+110 lines)
+→ Glob: {"pattern": "campaign_*/*.md"}
+→ Glob: {"pattern": "campaign_*/campaign.conf"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*.md", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes"}
+  ↳ campaign_probes/prompt.md (+4 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc"}
+  ↳ campaign_longdoc/QUESTION.md (+28 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+296 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-16. (+57 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+8 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread"}
+  ↳ campaign_spread/known_issues.md (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+260 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-17. (+57 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/HANDOFF.md
+  ↳ 1	# HANDOFF — PISCO (multimodal) (+159 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN probes — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+195 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+121 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+293 lines)
+→ Grep: {"pattern": "spread", "path": "/beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md", "output_mode": "content", "-n": true, "-C": 3, "head_limit": 120}
+  ↳ 35-photos; the nav "uncompressed" number is the backbone LoRA-finetuned on the same rows (the fair ceiling, (+56 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/multimodal_results.md
+  ↳ 1	# Multimodal PISCO: what compresses well (+77 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 495	  - next: read previews ~01:00; ownership probes; 05:30 full layout table (+39 lines)
+→ Glob: {"pattern": "scripts/probes/*"}
+→ Glob: {"pattern": "scripts/longdoc/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probes"}
+  ↳ scripts/probes/probe_seal.py (+13 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc"}
+  ↳ scripts/longdoc/audit_inputs.py (+12 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183814/eval"}
+  ↳ expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_px1003520_checkpoint-100_mm_docqa_1500_1m_lim300.json (+17 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_183538/eval"}
+  ↳ expQ/ft_mm_4b_183538/eval/mm_docqa_pisco_mm_naturalqa_1500.json (+14 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_174908/eval"}
+  ↳ expQ/ft_mm_4b_174908/eval/mm_docqa_pisco_mm_naturalqa_1500.json (+54 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval"}
+  ↳ expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+1 lines)
+→ Glob: {"pattern": "*/eval/*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/t_c256_s43/eval/mm_docqa_pisco_gold_mm_docqa_1500_1m.json (+19 lines)
+→ Glob: {"pattern": "*/eval/*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/probes"}
+  ↳ expQ/probes/rep_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py
+  ↳ 1	"""Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py
+  ↳ 60	    assert ids, f"no shared question ids with metric {args.metric!r}" (+19 lines)
+→ Grep: {"pattern": "records\\.append|rec = \\{|\\\"query_id\\\":", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true, "-C": 14}
+  ↳ 743-                                    mem_quant=args.mem_quant, mem_keep_frac=args.mem_keep_frac, (+28 lines)
+→ Grep: {"pattern": "stats\\[\\\"[a-z_]+\\\"\\] =|stats = \\{", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true, "head_limit": 40}
+  ↳ 333:    stats = {"mems_used": got, "n_images": int(sum(batch.is_image)), (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 325	                                     return_dict_in_generate=True, output_logits=True, **posk) (+19 lines)
+→ Grep: {"pattern": "143228", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 25}
+  ↳ 90:  - saw: Qwen3.5-4B is a native VLM; ckpt 143228 already holds vision LoRA with lora_B=0; Qwen2VLImageProcessorPil works offline; 14 unit tests (+5 lines)
+→ Glob: {"pattern": "qwen35_4b_pt*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ No files found
+→ Grep: {"pattern": "qwen35_4b_pt_5M_143228|pt_5M_143228", "output_mode": "content", "-n": true, "head_limit": 20, "glob": "*.md"}
+  ↳ EXPERIMENTS.md:116:  - next: fair gate = LongBench on the text pretrain-only ckpt qwen35_4b_pt_5M_143228 (launched); the finetuned comparison comes after ft_mm_4b_171564
+→ Glob: {"pattern": "*pt*5M*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3"}
+  ↳ expQ/archq3/smoke_pt_text/training_config.yaml (+100 lines)
+  ↳ No files found
+→ Glob: {"pattern": "*143228*/config.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ No files found
+→ Grep: {"pattern": "143228|143229", "path": "/beegfs/scratch/user/hdejean/pisco/docs", "output_mode": "content", "-n": true, "head_limit": 20}
+  ↳ docs/architecture_review.md:240:  budget: 1M text samples (stage 1, 180486 vs the tail-layout 143229), one stage-2 pass with the v4kd recipe at 100k
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md
+  ↳ 225	 (+59 lines)
+→ Glob: {"pattern": "*5M*/model/config.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+→ Grep: {"pattern": "PT_OUT|pt_text_5M|5M text", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 15}
+  ↳ 488:[Omitted long matching line] (+4 lines)
+  ↳ expQ/qwen35_4b_pt_5M_143228/model/config.json (+3 lines)
+→ Grep: {"pattern": "probe_mixer|probe_ownership|answer_nll|probe_answer", "output_mode": "files_with_matches", "head_limit": 30}
+  ↳ Found 26 files (+26 lines)
+→ Grep: {"pattern": "probe_mixer", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 8}
+  ↳ 472:[Omitted long matching line] (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 472	- 2026-11-02 02:00 probe bugs fixed (2026-11-02): probe_mixer.sh / probe_mem_position.sh had lost their CKPT export (a sed on probe_connector.sh dropped the line), so 183625-183631 silently probed (+5 lines)
+→ Glob: {"pattern": "*.sh", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq2"}
+  ↳ expQ/archq2/probe_connector.sh (+7 lines)
+→ Glob: {"pattern": "*.py", "path": "/beegfs/scratch/user/hdejean/pisco/scripts"}
+  ↳ scripts/smoke_pretrain.py (+96 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ 1	# STATE — campaign spread   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+108 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-17. (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ 1	# STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/known_issues.md
+  ↳ 1	# Known issues — campaign spread   (symptom → verdict → action; check here BEFORE diagnosing) (+20 lines)
+→ Glob: {"pattern": "qwen35_4b_pt_5M_143228/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+→ Glob: {"pattern": "archq3/pt_mm_5M_spread/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ expQ/archq3/pt_mm_5M_spread/training_config.yaml (+1 lines)
+  ↳ expQ/qwen35_4b_pt_5M_143228/training_config.yaml (+1 lines)
+→ Glob: {"pattern": "qwen35_4b_pt_5M_143228/model/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ expQ/qwen35_4b_pt_5M_143228/model/decoder_state.pt (+5 lines)
+→ Glob: {"pattern": "archq3/pt_text_5M_spread/model/*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ expQ/archq3/pt_text_5M_spread/model/decoder_state.pt (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qwen35_4b_pt_5M_143228/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+47 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_5M_spread/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+46 lines)
+→ Grep: {"pattern": "184777", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 10}
+  ↳ 501:[Omitted long matching line] (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 509	- 2026-11-06 18:00 [job 185505] LONG-CHUNK PROBE launched (owner 'try the probe', 2026-11-06 19:00; label longchunk; no training): does the spread layout hold up when one chunk is long? Same conte (+1 lines)
+→ Grep: {"pattern": "184777|pt_mm_5M_spread", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze", "output_mode": "content", "-n": true, "head_limit": 10}
+  ↳ campaign_freeze/CAMPAIGN.md:28:`expQ/archq3/pt_mm_5M_spread/model` (job 184777) → finetunes `expQ/ft_mm_4b_184778/model` (seed 42) and (+11 lines)
+→ Glob: {"pattern": "*v4kd*/training_config.yaml", "path": "/beegfs/scratch/user/hdejean/pisco/expQ"}
+  ↳ expQ/pt_mm_v4kd_shake/training_config.yaml (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/pt_mm_v4kd_4b/training_config.yaml
+  ↳ 24	data: (+23 lines)
+→ Glob: {"pattern": "docs/*.md"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*.md", "path": "/beegfs/scratch/user/hdejean/pisco/docs"}
+  ↳ docs/latency.md (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/prompt.md
+  ↳ 1	You are the autonomous operator of experiment campaign "spread" in /beegfs/scratch/user/hdejean/pisco (project pisco). (+39 lines)
+→ StructuredOutput: {"law": "# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed thr…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=7.9472 turns=72 is_error=False denials=0
+== declared: {"law": "# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\n## Mission\n**Question (owner, QUESTION.md):** why was the spread `<MEM>` layout not va…", "summary": "Question as I read it: where is the spread `<MEM>` layout better, equal or worse than the tail layout, does the evaluation hide the difference, and why did the +.08 of the reduced-budget chains vanish at full budget — probes first, one training test after.\nFeasibility gate (CPU, 0 GPU-h, alone): re-derive the recorded layout differences from the recorded judged files (+.093/+.075 documents, +.023/…"}
+== final:
+{"law":"# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\n## Mission\n**Question (owner, QUESTION.md):** why was the spread `<MEM>` layout not validated — in which cases is it better, equal or\nworse than the tail layout, does the evaluation itself hide or inflate the difference, and can the gain be brought back?\nProbes (inference only) first; a training arm only after a probe supports it, one variable per arm.\n**The deciding number:** paired judge accuracy (Qwen3-8B rubric judge `scripts/judge_mm_docqa.py`; `scripts/paired_judge.py`\n= paired bootstrap 95% CI + exact McNemar), **spread − tail on the SAME questions**, per case; and, for the vanished gain,\nthe one-variable full-budget difference of arm E. Unit [0, 1], pt = .01, greedy decoding, 1,500 Q per gating set\n(500 per source), seeds 42 and 43. The answer is a CASE TABLE (better / equal / worse, with the evaluation's resolving\npower next to each case) plus a ranked list of tested hypotheses.\n**Facts to explain, each verified against the file named:**\n- Reduced budget, one variable (1M-text stage 1 → one 100k stage-2 pass → 28k finetune): documents **+.093**\n  [+.069, +.115] (s42, 183814 − 183538) / **+.075** [+.051, +.099] (s43), photos +.023 / +.021\n  (docs/architecture_review.md:243-248).\n- Full budget vs the PRODUCTION tail models: documents +.011 [−.014, +.035] / +.024 [−.002, +.048], photos −.009 / +.010\n  (EXPERIMENTS.md:518). **Not one variable:** production ran three stage-2 passes (170810 + 172617 + v4kd,\n  EXPERIMENTS.md:499). \"Stage-2 data covers what the layout gave\" is a hypothesis nobody tested.\n- The missing one-variable control EXISTS as a buildable chain: `expQ/qwen35_4b_pt_5M_143228/training_config.yaml` and\n  `expQ/archq3/pt_text_5M_spread/training_config.yaml` are identical except `compressor_mem_layout: spread` +\n  `mem_position_stride: 8` (lines 46-47), and both model dirs hold the same four checkpoint files. Arm E.\n- Where spread is known to win and tail to collapse: one 1,270-token chunk .617 vs ten chunks .579 (spread) against\n  .399 vs .568 (tail) (docs/multimodal_results.md:103-107); MRQA one long passage spread .694 = split .695, tail .639 vs\n  .689, production .631 vs .697 (EXPERIMENTS.md:521); image MCQ +.026 (multimodal_results.md:120-122); trained rate 16\n  under spread = tail at rate 8 at half the tokens (EXPERIMENTS.md:508).\n- Where spread costs: dropping half the slots blind costs spread −.121 on documents, tail −.043 (multimodal_results.md:92-94).\n- Why the gating eval may show none of it: the 4-page document set sits exactly at the finetune's maximum (455 / 485\n  slots vs 488; docs/longdoc_diagnosis.md:102-103), and the document loss is dominated by reading the compre
+== rc=0

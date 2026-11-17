@@ -1197,3 +1197,11 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
   - did: per-job markers in <run>/eval/.done (hand-off 5f4e2f)
   - saw: test 191448 PASS, 5 cases; unit tests 191449 12+33+10 OK
   - next: commit with freeze_part + probe arms E/G on the owner's go
+- 2026-11-17 17:57 drafted 2 campaigns, not armed: qafreeze (QA-trained compressor kept frozen) and spread (why the spread gain vanished at full budget)
+  - did: expmon campaign draft from the owner's words (hand-off 5b6e55; owner request 2026-11-17)
+  - saw: qafreeze 9 guesses, 55(+25) GPU-h; spread 4 guesses, 30 GPU-h before checkpoint, 95 total; tail/spread 5M stage-1 configs differ only in layout+stride
+  - next: owner confirms the guesses, then lawcheck, preflight, arm
+- 2026-11-17 18:05 armed campaign_qafreeze and campaign_spread (owner 'yes go', 2026-11-17)
+  - did: confirmed every drafted guess as advised; conf: patch 40 lines in own scripts dir, 4 submissions/wake; spread gets arm F (<= 2 training fixes, each on its own REQUEST)
+  - saw: lawcheck clean, preflight PASS both, model pinned claude-opus-5-5
+  - next: first wakes: qafreeze builds the frozen start model; spread re-derives the recorded layout numbers on CPU

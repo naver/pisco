@@ -1,0 +1,89 @@
+== law drafter 2026-11-17_1718  model=claude-opus-5  question=/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/QUESTION.md
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+== session cc02b2ba-8227-4c0a-a869-bfc6f8fad8fb  model claude-opus-5  tools 28
+I'll start by reading the campaign's question and scaffold, plus the guide.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/QUESTION.md
+  ↳ 1	Owner's question (approved 2026-11-14 in the ~/.claude chat as hand-off 5b6e55; owner said "yes" to drafting it on 2026-11-17): (+17 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+117 lines)
+→ Read: /home/hdejean/.claude/expmon/templates/campaign/GUIDE.md
+  ↳ 1	# Writing a campaign law — the owner's guide (read while filling CAMPAIGN.md; the wake never reads this) (+110 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/REPORT.md
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco. Did you mean REPORT.json?
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN freeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+229 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/REPORT.json
+  ↳ 1	{ (+741 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-11. (+49 lines)
+→ Glob: {"pattern": "campaign_qafreeze/**"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+296 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-16. (+57 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+136 lines)
+→ Glob: {"pattern": "campaign_qafreeze/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*.md", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+4 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_frozen_s42_smoke/training_config.yaml (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ 1	# STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+→ Glob: {"pattern": "expQ/freeze/*.sh"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "ft_freeze", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze", "output_mode": "files_with_matches"}
+  ↳ Found 48 files (+48 lines)
+→ Glob: {"pattern": "expQ/freeze/ft_*.sh", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_freeze.sh
+  ↳ 1	#!/bin/bash (+54 lines)
+→ Grep: {"pattern": "freeze_compressor|freeze_part|def from_pretrained|def save_pretrained|def load_trainable_state|compressor_model_name|adapter|connector.pt", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/model.py", "output_mode": "content", …
+  ↳ 47:    # compressor_model_name: str = "Qwen/Qwen3-4B" (+102 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/model.py
+  ↳ 1290	    def decoder_eos_ids(self) -> List[int]: (+120 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model"}
+  ↳ expQ/archq3/pt_mm_5M_spread/model/decoder_state.pt (+10 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model"}
+  ↳ expQ/ft_mm_4b_184778/model/decoder_state.pt (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model/config.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model/config.json
+  ↳ 1	{ (+37 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/known_issues.md (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh
+  ↳ 1	#!/bin/bash (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-17. (+57 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.gitignore
+  ↳ 1	# Byte-compiled / optimized / DLL files (+44 lines)
+→ Grep: {"pattern": "5b6e55|qafreeze|QA-trained|cache", "path": "/beegfs/scratch/user/hdejean/pisco/HANDOFF.md", "output_mode": "content", "-n": true, "-C": 2, "head_limit": 60}
+  ↳ 40-order (archq3b) is parked: a permutation, not a hierarchy. The standing (+36 lines)
+→ Grep: {"pattern": "Standing proposal", "path": "/beegfs/scratch/user/hdejean/pisco/docs/training_plan.md", "output_mode": "content", "-n": true, "-A": 30}
+  ↳ 65:## Standing proposal: two stages by what is frozen (stage A representation, stage B usage) (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/training_plan.md
+  ↳ 95	|---|---|---|---|---|---| (+44 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/freeze/check_module_move.sh
+  ↳ 1	#!/bin/bash (+48 lines)
+→ Grep: {"pattern": "homer-008|requeue|^\\| *2[01]|^## |^\\| *[0-9]+ \\|", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/known_issues.md", "output_mode": "content", "-n": true, "head_limit": 40}
+  ↳ 7:| gpu-be job shows CANCELLED then RUNNING again, Restarts>0, checkpoints keep advancing | benign preemption + requeue | verify world size (`sacct -j J -o AllocTRES`); no action | (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/known_issues.md
+  ↳ 18	| N jobs FAILED in < 60 s on ONE node, `cudaErrorDevicesUnavailable` / `device handle` in the log, `gpu-unavailable` from check | poisoned node: its GPUs are held by other users' processes, every l (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/known_issues.md
+  ↳ 1	# Known issues — campaign qafreeze   (symptom → verdict → action; check here BEFORE diagnosing) (+16 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model"}
+  ↳ expQ/ft_mm_4b_184780/model/decoder_state.pt (+10 lines)
+→ Glob: {"pattern": "scripts/paired_judge.py"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/prompt.md
+  ↳ 1	You are the autonomous operator of experiment campaign "qafreeze" in /beegfs/scratch/user/hdejean/pisco (project pisco). (+39 lines)
+→ StructuredOutput: {"law": "# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed t…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.6202 turns=41 is_error=False denials=0
+== declared: {"law": "# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\n## Mission\nSuccessor of campaign 'freeze' (its report: /beegfs/scratch/user/hdejean/…", "summary": "Question as I read it: can a compressor that already had ONE question-answering finetune (job 184778 / 184780) stay frozen while a fresh decoder LoRA is trained on the same 28k rows — the case `<MEM>` caching needs? Deciding number: paired Qwen3-8B judge accuracy, arm − reference of the same seed, 1,500 questions per set, pass = documents, photos, MRQA each ≥ −2 pt with no CI wholly below 0 at bot…"}
+== final:
+{"law":"# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-17 · kind **train** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-15** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\n## Mission\nSuccessor of campaign 'freeze' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/REPORT.md — not written yet; REPORT.json carries the same Settled list). Open at hand-off: nothing — the previous campaign settled every arm.\n**Question (owner, QUESTION.md; HANDOFF.md:66-70):** campaign freeze froze a compressor that had NEVER seen question-answering training. Can a compressor that HAS had one QA finetune then stay FROZEN while a fresh decoder LoRA is trained on the same rows? That is the case `<MEM>` caching needs: compress a collection once, train only the decoder afterwards.\n**Arm Q (what is tested):** the reference finetune recipe of 184778 / 184780 with ONE change — it starts from a hybrid init: R's own `compressor/` + `connector.pt` (QA-trained) with R's `decoder_state.pt` replaced by the stage-2 decoder (`expQ/archq3/pt_mm_5M_spread/model/decoder_state.pt`, R's own starting point), run with `+model_config_overrides.freeze_compressor=true`, so only the decoder LoRA trains. GUESS: the hybrid is assembled by copying R's model dir and swapping that one file — the only route that needs no new code, since `PISCO.from_pretrained` reads exactly `decoder_state.pt`, `compressor/compressor_state.pt`, `connector.pt` and `config.json` (pisco/model.py:1376-1405); the two configs differ only in `connector_out_norm` / its init / the image-processor path (`expQ/ft_mm_4b_184778/model/config.json:11-12,24`), and R's config travels with R's connector.\n**The deciding number:** paired judge accuracy (Qwen3-8B rubric judge `scripts/judge_mm_docqa.py`; `scripts/paired_judge.py` = bootstrap 95% CI + McNemar), Q − R of the same seed, n = 1,500 questions per set, seeds 42 (vs 184778) and 43 (vs 184780). GUESS: seed 43 freezes 184780's compressor (the seed-43 reference), so each seed is one self-contained replicate; the owner's question names only 184778.\nGating sets: documents `eval_data/mm_docqa_1500_1m`, photos `eval_data/mm_naturalqa_1500`, MRQA text `eval_data/text_mrqa_ood_1500`. HotpotQA `eval_data/text_hotpotqa_1500` is reported, not gating (freeze's text loss sat there: −3.0 / −2.8 / −3.6, QUESTION.md:11).\nPASS = every gating set ≥ −2 pt with no CI wholly below 0 at both seeds → the `<MEM>` cache is built (a hand-off; see On acceptance). FAIL = ≤ −3 pt with the CI wholly below 0 at both seeds.\n**Reference numbers, same instrument** (campaign_freeze/STATE.md:66-85, n = 1,500 per set): R documents .610 / .615, photos .673 / .685, MRQA .718 / .724, HotpotQA .603 / .593; F (stage-2 compressor + connector frozen, decoder only) − R documents −.028 / −.035 / −.041; A1 (compressor only frozen) − R −.029 / −.039 / −.
+== rc=0
