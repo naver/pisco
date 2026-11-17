@@ -1,0 +1,104 @@
+== campaign longdoc wake 2026-11-17_2200  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794920402 live=191392:PENDING,191516:PENDING,191393:RUNNING,191515:RUNNING running=2 pending=2 problems=0 problems_other=0 new=0 gpuh24=18.9 idle_h=0.0 min_util=- alert=1 unpushed=0 cron=4 daemon=1 disk_gb=8160 sig=5f0ae8a1 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191516_max_10h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 8d640666-5834-4e5e-8ace-6bec767666c2  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+19 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/8d640666-5834-4e5e-8ace-6bec767666c2/tool-results/bte2dssw8.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-17_2200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+156 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+  ↳ 340 CAMPAIGN.md (+146 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/known_issues.md | head -60; echo ----; grep -n "191378" EXPERIMENTS.md | head -20; echo ---; tail -30 expQ/longdoc/build_long_191515.out 2>/dev/null; ls -la eval_data/ | grep longd…
+  ↳ <persisted-output> (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "191378" EXPERIMENTS.md | cut -c1-400 | head -10; echo ---; wc -c expQ/longdoc/build_long_191515.out; tail -c 1500 expQ/longdoc/build_long_191515.out; echo; ls -la eval_data/ | grep longdoc
+  ↳ 1188:- 2026-11-17 15:06 [job 191378] longdoc arm L intent: R s42 (184778 via expQ/longdoc/l_r42) on 10-page documents, 1,500 Q (XD=6 TOPK=10 PX=1003520 DML=1578 = audit max + 256); variant not new (17 (+24 lines)
+I'm fixing the one unsupported claim the verifier flagged (job 191378 has no recorded verdict), then checking the long-document build that is running.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls expQ/longdoc/l_r42/eval/*k10_px1003520*mm_docqa_1500_1m*.json 2>/dev/null); echo "$f"; ls -la $f; sacct -j 191378 -X -o JobID,State,ExitCode,Elapsed,NodeList,Restarts -n; timeout 20 python3 -c "…
+  ↳ expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191378 -X -o JobID,State,ExitCode,Elapsed,NodeList -n; timeout 20 python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json'…
+  ↳ 191378        COMPLETED      0:0   00:50:42       homer-017  (+5 lines)
+Health confirmed from the file itself. Recording the missing verdict.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict 191378 closed "healthy (COMPLETED 0:0, homer-017, 50:42, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; re-read from the result file 2026-11-17 22:00)…
+  ↳ verdict recorded: 191378 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered)
+Now checking the long-document build progress.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tr '\r' '\n' < expQ/longdoc/build_long_191515.out | grep -v -E "it/s|examples/s|s/it|^\s*$" | tail -40 | cut -c1-300; ls expQ/longdoc/ | grep -i -E "191515|err"; tail -5 expQ/longdoc/build_long_191515.…
+  ↳ Exit code 1 (+9 lines)
+Build is healthy: 1,407 usable questions on 387 PDFs (650 with text evidence), 21,843 pages rendered, now saving the page-image set. Checking the law for anything worth doing while it runs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E "^#|Arm J|arm J|rejudge|GPU-h|budget" campaign_longdoc/CAMPAIGN.md | cut -c1-250 | head -60
+  ↳ 1:# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 60,75p campaign_longdoc/CAMPAIGN.md | cut -c1-900; echo; sed -n 190,266p campaign_longdoc/CAMPAIGN.md
+  ↳ ## Arms — what varies, what is held constant (+92 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191392 -D -o JobID,State,Submit,Start,End,NodeList -n | head; squeue -j 191392 -o "%i %T %r %S %p" -h; grep -n "judge" eval_mm_4b.sh | head; ls scripts/longdoc/
+  ↳ 191392        PREEMPTED 2026-11-17T16:04:44 2026-11-17T21:29:11 2026-11-17T21:34:11       homer-019  (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E "add_argument|already|skip|def main|judge_prompt|'judge'|\"judge\"" scripts/judge_mm_docqa.py | head -40; cat scripts/longdoc/ae_nll.sbatch | head -40
+  ↳ 7:summary, IN PLACE. --prompt rubric (default): the explicit rubric of scripts/judge_prompts.py, the judge replies (+51 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/length/; python3 -c " ⏎ import json ⏎ for f in ['dlen_docs_p10_s42_judge','dlen_docs_p10_s43_judge','dlen_docs_p20_s42_judge']: ⏎     d=json.load(open('expQ/longdoc/length/'+f+'.json'))…
+  ↳ dlen_docs_p10_s42_em.json (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r42/eval/mm_docqa_p…
+  ↳ 1500 rubric ['judge_model', 'judge_prompt', 'judge_unparseable'] ['l_r42', 'eval', 'mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json'] (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/191390/ 2>/dev/null; f=$(ls expQ/191390/*.out 2>/dev/null | head -1); [ -n "$f" ] && tr '\r' '\n' < $f | grep -n -E "judge|Judge|\[eval_mm_4b\]|[0-9]{2}:[0-9]{2}:[0-9]{2}" | grep -v -E "it/s\]$…
+  ↳ Exit code 1 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 191390 400 2>/dev/null | tr '\r' '\n' | grep -E "judge|Judge|eval_mm_4b|batches|[0-9]+/[0-9]+ \[" | grep -i -E "judge|eval_mm_4b|94/94|/94 \[" | tail -12 | cut -c1-250
+  ↳ [judge] mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json 336/1500 (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la --time-style=full-iso expQ/longdoc/l_r4{2,3}/eval/.done/ 2>/dev/null | grep -E "k10|k20" ; ls -la --time-style=full-iso expQ/base_qwen35_4b/eval/.done/ 2>/dev/null | grep -E "k20|k40"
+  ↳ (Bash completed with no output)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -i -E "(re-?judge|judge_mm_docqa).{0,120}([0-9]+ ?min|[0-9]+:[0-9]{2}|wall)" EXPERIMENTS.md | cut -c1-330 | tail -8; ls scripts/*rejudge* scripts/*/*rejudge* 2>/dev/null
+  ↳ Exit code 1 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -rl -E "prompt project|JPROMPT=project" --include=*.sh --include=*.sbatch --include=*.md scripts campaign_* 2>/dev/null | head; grep -n -i -E "project prompt|prompt project|JPROMPT" EXPERIMENTS.md…
+  ↳ (eval):1: no matches found: --include=*.sh (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,30p scripts/judge_mm_docqa.py; sed -n 41,80p scripts/judge_mm_docqa.py; sed -n 100,125p scripts/judge_mm_docqa.py
+  ↳ """LLM-judge scoring for multimodal doc-QA eval files (scripts/eval_mm_docqa.py output). (+95 lines)
+Writing the re-judge launcher now (copies only; originals untouched).
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/rejudge.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/rejudge.sbatch (file state is current in your context — no need to Read it back)
+Dry-run of the re-judge launch (8 files behind the 10-page and 20-page length results).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F="expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r42/eval/mm_docqa_pisco_k…
+  ↳ syntax-ok (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F="expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r42/eval/mm_docqa_pisco_k…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/rejudge_191517.out (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 191517 "longdoc arm J judge-sensitivity intent: scripts/longdoc/rejudge.sbatch docs_p10_p20 = project (Yes/No) prompt, Qwen3-8B, on COPIES (expQ/longdoc/rejudge/docs_p10_p20/) of the 8 f…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+Re-judge cell submitted (queued, estimated start tomorrow afternoon). Now rewriting the campaign state file.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40 | cut -c1-400
+  ↳ **Settled** (+14 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "without verdict" 2>&1 | head -8; expmon gripe --open --search "missing verdict" 2>&1 | head -8; tail -4 campaign_longdoc/known_issues.md | cut -c1-200
+  ↳ == 14 open report(s) matching 'without verdict', every machine, newest first == (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 002929d6 "longdoc 2026-11-17: a wake wrote 'verdict closed' in STATE.md for 191378, which had only probes; the verifier caught it one wake later and its ALERT cost a full Opus wake.…
+  ↳ logged as a +1 of 002929d6 (entry 029074f5) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "longdoc wake 22:00 ⏎   - did: verifier ALERT fixed: verdict 191378 recorded (health re-read from the result file: 1,500 rows, judge on all, unparseable 0, mems 1,614,940 = audit); wrote sc…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+I fixed the one claim the checker flagged and started the judge re-check. Nothing is needed from you.
+
+## Done
+- **Missing verdict fixed.** The checker that compares the campaign's state file with the results table found one claim with nothing behind it. The 10-page document run on seed 42 (job 191378) was listed as closed, but no verdict was on record. I re-read its result file before recording one:
+  - the job ended cleanly in 50 minutes;
+  - all 1,500 questions are present and the judge scored every answer;
+  - the number of compressed slots per question matches the earlier input audit.
+- **Judge re-check launched** (job 191517). Our length results so far use one judge prompt. A result only counts once a second prompt agrees: same sign, or within 2 points. I wrote a small launcher, `scripts/longdoc/rejudge.sbatch`. It re-scores copies of the 8 files behind the 10-page and 20-page results with the older yes/no prompt. The original files are not touched.
+
+## Running now
+- **Long-document test set build** (CPU job, healthy):
+  - 1,407 usable questions on 387 PDFs; 650 of them have their evidence in the text.
+  - That is fewer than the 1,500 planned, because of the cap of 6 questions per PDF.
+  - 21,843 pages are rendered, and the page-image set (4,221 rows) was being saved.
+  - The text, mixed and short-fact sets are still to build.
+  - A check that no input gets cut short runs automatically after the build.
+- **Text with 40 passages:** the uncompressed run is going. The compressed run was bumped by a higher-priority job and is back in the queue, expected to start around 13:15 tomorrow.
+- **Judge re-check:** queued, expected to start around 16:00 tomorrow.
+
+## Next
+- When the cut check finishes: small 300-row trial runs on the new long-document sets. These measure time and memory per run.
+- Then I will price the full set of model runs. I expect it to exceed the GPU-hours left (about 37). If so, you will get one question with the measured cost.
+- If the 40-passage compressed run is still waiting after 03:34, the campaign rules already allow me to move it to the wider queue.
+
+This session cost about $1.73.
+→ StructuredOutput: {"next": "wake-when", "summary": "Fixed the verifier's flag: job 191378 (10-page documents, seed 42) was described as closed but had no verdict. I re-read its result file: clean exit, 1,500 rows, judge on all, 0 unparseable, slot count = au…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8158 turns=33 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Fixed the verifier's flag: job 191378 (10-page documents, seed 42) was described as closed but had no verdict. I re-read its result file: clean exit, 1,500 rows, judge on all, 0 unparseable, slot count = audit. Verdict now recorded. Wrote scripts/longdoc/rejudge.sbatch and launched the judge-sensitivity re-check (191517): the yes/no prompt on copies of the 8 files behind the 10- and 20-page length results. The long-document build (191515) is healthy: 1,407 usable questions on 387 PDFs (650 with text evidence), 21,843 pages rendered, page set saving. Its cut check (191516) waits on the build. Text 40-passage cells: uncompressed running; compressed requeued after preemption.", "launched": ["191517"], "verdicts": [{"jobid": "191378", "verdict": "closed", "note": "healthy: COMPLETED 0:0 homer-017 50:42, 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; docs 10 vs 4 pages s42 delta_len +0.5 [-1.8,+2.7]"}], "gripes": ["+1 of 002929d6: the campaign report should print 'ended without a verdict: <ids>' so a wake sees a missing verdict before it writes STATE.md (the verifier caught 191378 one wake later, and that cost a full wake)"], "wake_when": "job:191516 max 10h"}
+== final:
+{"next":"wake-when","summary":"Fixed the verifier's flag: job 191378 (10-page documents, seed 42) was described as closed but had no verdict. I re-read its result file: clean exit, 1,500 rows, judge on all, 0 unparseable, slot count = audit. Verdict now recorded. Wrote scripts/longdoc/rejudge.sbatch and launched the judge-sensitivity re-check (191517): the yes/no prompt on copies of the 8 files behind the 10- and 20-page length results. The long-document build (191515) is healthy: 1,407 usable questions on 387 PDFs (650 with text evidence), 21,843 pages rendered, page set saving. Its cut check (191516) waits on the build. Text 40-passage cells: uncompressed running; compressed requeued after preemption.","launched":["191517"],"verdicts":[{"jobid":"191378","verdict":"closed","note":"healthy: COMPLETED 0:0 homer-017 50:42, 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; docs 10 vs 4 pages s42 delta_len +0.5 [-1.8,+2.7]"}],"gripes":["+1 of 002929d6: the campaign report should print 'ended without a verdict: <ids>' so a wake sees a missing verdict before it writes STATE.md (the verifier caught 191378 one wake later, and that cost a full wake)"],"wake_when":"job:191516 max 10h"}
+== rc=0 secs=295
+== verify: 8/18
