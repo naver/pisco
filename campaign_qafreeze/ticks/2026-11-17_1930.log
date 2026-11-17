@@ -1,0 +1,20 @@
+== campaign qafreeze wake 2026-11-17_1930  reasons=scheduled  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794911402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.9 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8212 sig=3f0317b9 same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-in_30
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session 9ac1dcb5-dbbb-4774-89ce-80b52f3f37da  model claude-sonnet-5-5  tools 52
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ 1	# STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+45 lines)
+  ↳ 1	# Wake brief — campaign qafreeze — 2026-11-17_1930   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+86 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/NEXT
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/NEXT (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ StructuredOutput: {"next": "wake-in", "wake_in_min": 1, "summary": "Nothing has changed since the first wake. There are no ✗ lines, no new results, and no owner files. The pending jobs in the queue (the longdoc and spread eval cells) belong to other campaign…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.2307 turns=6 is_error=False denials=0
+== declared: {"next": "wake-in", "wake_in_min": 1, "summary": "Nothing has changed since the first wake. There are no ✗ lines, no new results, and no owner files. The pending jobs in the queue (the longdoc and spread eval cells) belong to other campaigns. The next steps are the 20-step smoke run of arm Q (seed 42) and the reference re-runs. This light model can't launch, so I wrote `wake-in 1` for the pinned model. I also added the verifier's open item to STATE.md: three code md5s could not be re-checked read-only, so they stay provisional."}
+== final:
+{"next":"wake-in","wake_in_min":1,"summary":"Nothing has changed since the first wake. There are no ✗ lines, no new results, and no owner files. The pending jobs in the queue (the longdoc and spread eval cells) belong to other campaigns. The next steps are the 20-step smoke run of arm Q (seed 42) and the reference re-runs. This light model can't launch, so I wrote `wake-in 1` for the pinned model. I also added the verifier's open item to STATE.md: three code md5s could not be re-checked read-only, so they stay provisional."}
+== rc=0 secs=23
+== light wake handed over: the next wake runs claude-opus-5-5
