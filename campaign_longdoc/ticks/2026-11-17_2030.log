@@ -1,0 +1,15 @@
+== campaign longdoc wake 2026-11-17_2030  reasons=upstream,scheduled  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794915001 live=191393:PENDING,191392:PENDING running=0 pending=2 problems=0 problems_other=0 new=0 gpuh24=18.6 idle_h=3.6 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8209 sig=fbe94138 same=7 behind=0 upstream=2 upfiles=7 upmine=0 upsib=4 uplaw=0 push_rc=0 next=wake-when_job:191376,191377,191390,191392,191393_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session a4f3dbfe-3861-4cb2-a39e-692a8ccd454f  model claude-sonnet-5-5  tools 52
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-17_2030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+141 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/NEXT
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/NEXT (file state is current in your context — no need to Read it back)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191392,191393 max 4h", "summary": "No-op wake. The two longdoc evaluation jobs (191392, 191393) are still pending in the gpu-be queue. There are no failures and no owner files. The verifier's rows are…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.1923 turns=4 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191392,191393 max 4h", "summary": "No-op wake. The two longdoc evaluation jobs (191392, 191393) are still pending in the gpu-be queue. There are no failures and no owner files. The verifier's rows are all marked provisional and none needs a fix this wake. I left STATE.md unchanged and re-armed the wait."}
+== final:
+{"next":"wake-when","wake_when":"job:191392,191393 max 4h","summary":"No-op wake. The two longdoc evaluation jobs (191392, 191393) are still pending in the gpu-be queue. There are no failures and no owner files. The verifier's rows are all marked provisional and none needs a fix this wake. I left STATE.md unchanged and re-armed the wait."}
+== rc=0 secs=19
