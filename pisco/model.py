@@ -94,6 +94,7 @@ class PISCOConfig(PretrainedConfig):
         compressor_mem_layout: str = "tail",
         freeze_norm_gain: bool = False,
         freeze_compressor: bool = False,
+        freeze_part: Optional[str] = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -225,13 +226,34 @@ class PISCOConfig(PretrainedConfig):
         # and keeps both in eval mode during training (no LoRA dropout), so a training <MEM> equals the one
         # `compress` would cache. Only the decoder side trains. The checkpoint still saves compressor + connector.
         self.freeze_compressor = bool(freeze_compressor)
+        # Split test (campaign freeze, 2026-11-12): freeze ONE part only, same mechanics (requires_grad False, eval
+        # mode). "compressor" = adapter + <MEM> token row + merger, the connector trains; "connector" = MLP + norm
+        # gain, the compressor LoRA trains. None (default) freezes nothing. See frozen_parts.
+        self.freeze_part = freeze_part
 
 
-def freeze_compressor_side(model: nn.Module) -> int:
-    """Freeze `model.compressor` and `model.connector` (requires_grad False, eval mode). Returns the number of
-    tensors that were trainable before. See PISCOConfig.freeze_compressor."""
+FREEZE_PARTS = ("compressor", "connector")
+
+
+def frozen_parts(config) -> Tuple[str, ...]:
+    """Parts kept frozen and in eval mode: both under freeze_compressor, one under freeze_part, else ()."""
+    part = getattr(config, "freeze_part", None)
+    if getattr(config, "freeze_compressor", False):
+        if part:
+            raise ValueError(f"freeze_compressor=True already freezes both parts; unset freeze_part={part!r}")
+        return FREEZE_PARTS
+    if not part:
+        return ()
+    if part not in FREEZE_PARTS:
+        raise ValueError(f"freeze_part={part!r} not in {FREEZE_PARTS}")
+    return (part,)
+
+
+def freeze_compressor_side(model: nn.Module, parts: Tuple[str, ...] = FREEZE_PARTS) -> int:
+    """Freeze `model.compressor` and/or `model.connector` (requires_grad False, eval mode). Returns the number of
+    tensors that were trainable before. See PISCOConfig.freeze_compressor / freeze_part."""
     n = 0
-    for part in (model.compressor, model.connector):
+    for part in (getattr(model, name) for name in parts):
         for p in part.parameters():
             n += int(p.requires_grad)
             p.requires_grad = False
@@ -613,9 +635,13 @@ class PISCO(PreTrainedModel):
                 self.image_processor = None
 
 
+        _frozen = frozen_parts(config)  # raises on a bad freeze_part
         if getattr(config, "freeze_compressor", False):
             n_frz = freeze_compressor_side(self)
             print(f"[pisco] freeze_compressor=True: froze {n_frz} compressor + connector tensors (eval mode kept)")
+        elif _frozen:
+            n_frz = freeze_compressor_side(self, _frozen)
+            print(f"[pisco] freeze_part={_frozen[0]}: froze {n_frz} {_frozen[0]} tensors (eval mode kept)")
 
         print(
             f"Compressor trainable parameters: {self.compressor.num_parameters(only_trainable=True)}"
@@ -1267,10 +1293,10 @@ class PISCO(PreTrainedModel):
 
     def train(self, mode: bool = True):
         super().train(mode)
-        if mode and getattr(self.config, "freeze_compressor", False):
+        if mode:
             # frozen <MEM> producer stays deterministic (no dropout) under model.train()
-            self.compressor.eval()
-            self.connector.eval()
+            for name in frozen_parts(self.config):
+                getattr(self, name).eval()
         return self
 
     def save_pretrained(self, save_directory: str, **kwargs):

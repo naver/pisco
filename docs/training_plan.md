@@ -85,19 +85,31 @@ specialisation; keep query-dependent compression only where recompression is che
 In this repo "frozen compressor" means the compressor adapter **and** the connector (both define the stored vectors);
 original PISCO had one backbone and no connector, so there it meant the compressor adapter alone.
 
-**Gate 0 (documents, under one GPU-day, not run yet).** Freeze the compressor adapter and the connector of
-`pt_mm_v4kd_4b`, run the 173550 finetune recipe with the decoder LoRA alone on the same 28k rows, 2 seeds, paired
-judge against 174908 / 176242 on the 1,500-Q document and photo sets. Equal within noise = stage B as decoder-only is
-validated and the stored index can be shared across finetunes; worse = the finetune still needs the compressor, and
-the proposal waits for a stage A that already covers QA. Missing code: a `freeze_compressor` flag in `PISCOConfig`
-(compressor adapter + connector `requires_grad=False`; `freeze_decoder` exists as the pattern), plus
-`check_module_move.sh` on the result to confirm nothing but the decoder LoRA moved. Caching the `<MEM>`s is an
-optimisation for stage B proper, not needed for the gate.
+**Gate 0: FAILED (campaign freeze, 2026-11-14; law and record in `campaign_freeze/`).** Setup: the reference
+finetune recipe of 184778 / 184780 (spread layout, from `pt_mm_5M_spread`, same 28k rows), with parts frozen through
+`PISCOConfig.freeze_compressor` (compressor adapter + connector) or `freeze_part=compressor|connector` (one of the two);
+`check_module_move.sh` confirmed the frozen side moved 0.0%. Paired Qwen3-8B judge, 1,500 questions per set, arm −
+reference:
+
+| frozen | seeds | documents (judge, pt) | photos (judge, pt) | MRQA text (judge, pt) | verdict |
+|---|---|---|---|---|---|
+| compressor + connector (decoder LoRA alone; jobs 188650, 188701) | 3 | −2.8 / −3.5 / −4.1, CI below 0 at each | −0.9 / −1.3 / +0.5 | −2.3 / −2.7 / −2.5, CI below 0 at each | fails |
+| compressor alone (connector + decoder train; 189919, 190218) | 3 | −2.9 / −3.9 / −3.5, CI below 0 at each | 0.0 / −1.3 / +0.7 | −2.3 / −3.1 / −0.7 | fails the same way |
+| connector alone (compressor LoRA + merger + decoder train; 190020) | 2 | +2.3 / −0.6 | −0.6 / −1.3 | +0.1 / +0.3 | ties the reference |
+
+So the compressor's own question-answering finetune carries the ~3 pt; a stage B that trains only the decoder on
+cached `<MEM>`s costs them, and the `<MEM>`-cache engineering is not triggered. Freezing the connector is free (it
+confirms "keep the connector effectively frozen", 1c). The text loss sits in HotpotQA bridge questions (−3.0 / −2.8 /
+−3.6) and MRQA RelationExtraction. **Open:** gate 0 froze a compressor that had never seen QA training. Whether a
+compressor that has had ONE QA finetune (184778's) can then stay frozen for later decoder-only data is the case caching
+needs; it is the successor campaign the owner approved on 2026-11-14 (freeze 184778's compressor + connector, decoder
+LoRA only, 2 seeds; pass = documents, photos, MRQA each ≥ −2 pt with no CI wholly below 0 at both seeds).
 
 **Where the rounds stand against it.** Round 2 (decoder-only RL on cached `<MEM>`s) is the first stage-B training.
 The video reader test (`scripts/video/train_reader.py`, cache 180520 done, training 180522 pending) is stage B on
-video. archq3 and round 4 are stage-A changes. If gate 0 passes, the "find v2" routing rows and the long-context
-rows of round 4 move from the finetune into stage B, on cached vectors.
+video. archq3 and round 4 are stage-A changes. Gate 0 failed, so the "find v2" routing rows and the long-context
+rows of round 4 stay in a finetune that trains the compressor, unless the successor test (a QA-trained compressor kept
+frozen) passes.
 
 **Warning (2026-11-01).** The linear connector + `connector_lr=5e-5` pair came out worse (docs −.063 at seed 42,
 mostly multi-page documents −.126; −.012 at seed 43; photos −.02). The inference probe had shown linear = MLP, so the
