@@ -66,7 +66,8 @@ original command exactly (a flag left at its default is not a factor, but a chan
   campaign_probes/CAMPAIGN.md:56-57).
 - Record in every intent note the md5 of `eval_mm_4b.sh`, `scripts/eval_mm_docqa.py`, `scripts/judge_mm_docqa.py`,
   `scripts/paired_judge.py`, `pisco/model.py` (2026-11-17: 50abc167 / dfe32aa0 / 02bc8748 / a3cc13b2 / 994cff3d —
-  campaign_longdoc/STATE.md:103, campaign_freeze/STATE.md:29). Two cells pair only when they ran on the same code.
+  campaign_longdoc/STATE.md:103, campaign_freeze/STATE.md:29; `eval_mm_4b.sh` is b3d1cda1 since 17:11 = requeue markers
+  + an off-by-default DENSE env, same python call). Two cells pair only when they ran on the same code.
   A pair across code eras or node images is REPORTED, never decided, until one side is re-run on today's code: the code
   date does not move text answers (188518 = 185601, 1,500 / 1,500) but homer-008 moves image answers
   (campaign_probes/CAMPAIGN.md:70-89); launch with `--exclude=homer-[005-009]`.
@@ -80,6 +81,12 @@ campaign_longdoc/CAMPAIGN.md:83): **better** = ≥ +3 pt with the 95% CI above 0
 ±2 pt at both seeds; **worse** = ≤ −3 pt with the CI below 0 at both seeds. Decide arms as cells complete.
 - A slice decides nothing with fewer than 300 questions or fewer than 40 discordant pairs (McNemar b + c); it is
   reported with its discordant count and called "not resolvable here", never "equal".
+- Measured by arm A (191454, 23 recorded pairs): one seed's 95% CI on 1,500 Q is .044-.050 wide on documents and text,
+  .036-.041 on photos, so "equal" (CI inside ±2 pt) cannot be reached on documents or text. Until the owner answers
+  BLOCKED.md, a case that would need "equal" is reported "not resolvable here (CI width w)", never "equal".
+- Photo re-runs drift across code dates even on el9_8 nodes: 184778 photos 184783 (homer-011, 11-09) vs 188602
+  (homer-016, 11-11) differ on 233/1,500 answers, 85 judge flips, .677 vs .673; 184780's homer-008 photo file equals its
+  re-run 1,500/1,500; documents re-ran identical. A photo pair across code dates is reported, never decided.
 - **Feasibility gate (first, ALONE, 0 GPU-h): arm A — can the layout difference be measured from what exists?**
   (1) Re-derivation: from the recorded judged files, documents spread − tail = +.093 (s42) / +.075 (s43) and photos
   +.023 / +.021 at reduced budget, and +.011 / +.024 at full budget, each within ±.003 (tolerance: the recorded

@@ -1,0 +1,61 @@
+== verifier 2026-11-17_1830  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session c7c5c30d-d259-4b59-b502-b40c5293e4a4  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+166 lines)
+→ Glob: {"pattern": "expQ/spread/audit_191454/**"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign spread (one question; the campaign keeps running its other cells meanwhile) (+26 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+255 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 256	### full_photos_s42 — role gate, budget full, seed 42, set photos (+79 lines)
+→ Grep: {"pattern": "^### |self|SELF|drift|233|budget_", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content"}
+  ↳ 3:FEASIBILITY GATE: PASS  (1) re-derivation PASS  (2) self-pair PASS  health 184778 docs PASS (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 352	### red_text3_s42 — role reported, budget reduced, seed 42, set text_g3 (+9 lines)
+→ Grep: {"pattern": "\\| ALL \\| ALL \\|", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content"}
+  ↳ 69:| ALL | ALL | 1500 | 0.599 | 0.507 | +0.093 | [+0.069, +0.115] | 238/99 | 2.4e-14 | 0.44 | 0.33 | 0.809 | 3.4 | yes | (+22 lines)
+Checking the audit tables against each claim in STATE.md. The main numbers match so far. Next I'm reading the budget, MRQA and text sections.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 540	### full_mrqa_long_s42 — role reported, budget full, seed 42, set mrqa_long (+49 lines)
+→ Grep: {"pattern": "^A = |\\| source \\|", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "offset": 0}
+  ↳ 65:A = expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (homer-019, 24b7a2c+dirty) · B = expQ/ft_mm_4b_183538/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (homer-009, 24 (+95 lines)
+→ Grep: {"pattern": "self", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454", "output_mode": "content", "-i": true, "head_limit": 20}
+  ↳ expQ/spread/audit_191454/audit.md:3:FEASIBILITY GATE: PASS  (1) re-derivation PASS  (2) self-pair PASS  health 184778 docs PASS (+2 lines)
+→ Grep: {"pattern": "ref_s42", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json
+  ↳ 14185	    } (+207 lines)
+→ Grep: {"pattern": "ref_s42", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze", "output_mode": "content", "head_limit": 15}
+  ↳ campaign_freeze/REPORT.json:193:   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answe (+16 lines)
+→ Grep: {"pattern": "188602|233/1|233 /", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*.md", "output_mode": "content", "head_limit": 20}
+  ↳ EXPERIMENTS.md:747:- 2026-11-11 10:32 [job 188601] intent: arm F s42 photos cell: frozen final model, mm_naturalqa_1500, PX=1003520, afterok 188582, paired with 188602. --time 0:27:00 = slowest measur (+14 lines)
+→ Grep: {"pattern": "233|85 |1500/1500|1,500/1,500|identical", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_1830.log", "output_mode": "content", "head_limit": 40}
+  ↳ 88:→ Bash: git log --oneline -3 -- eval_mm_4b.sh && git diff 2c2333d HEAD --stat -- eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py && git diff 2c2333d HEAD -- eval_mm_ (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_1830.log
+  ↳ 80	  ↳ would submit: sbatch --time 0:10:00 --exclude=homer-[005-009] scripts/spread/case_audit.sbatch  (+3 lines) (+95 lines)
+Self-pairs (39 of them) and the budget and source numbers check out against the audit. Now checking whether the arm B ten-chunk pairing ran on the same code, and the photo-drift evidence.
+→ Grep: {"pattern": "\\[job 1886(15|06)\\]|\\[job 19145[5-7]\\]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 752:- 2026-11-11 10:32 [job 188606] intent: arm R s42 MRQA RE-EVAL: 184778 via ref_s42, PX=1003520 CML=4096, afterok 188582. --time 0:27:00 = slowest measured of photos/MRQA cells (20:53) x 1.25. eval (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md
+  ↳ 1	# Spread vs tail `<MEM>` layout — where each wins (campaign spread) (+59 lines)
+→ Grep: {"pattern": "184780|ref_s43", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md", "output_mode": "content", "head_limit": 15}
+  ↳ 26:`184780` (s43) for every "can we recover loss" probe (both seeds before a claim), and the reduced spread / tail pair (+2 lines)
+→ Grep: {"pattern": "ref_s43.*photos|photos.*ref_s43|188603|188604", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 10}
+  ↳ 749:- 2026-11-11 10:32 [job 188603] intent: arm F s43 photos cell: frozen final of 188583, afterok 188583, paired with 188604. --time 0:27:00 = slowest measured of photos/MRQA cells (20:53) x 1.25. ev (+8 lines)
+→ Grep: {"pattern": "994cff3d|model\\.py", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md", "output_mode": "content"}
+  ↳ 32:- **Split-freeze setting**: `PISCOConfig.freeze_part = compressor | connector` (default unset) in `pisco/model.py` (md5 994cff3d) + 5 new `test_freeze.py` cases; staged (189060) and installed (1890 (+1 lines)
+→ Grep: {"pattern": "\"(env|argv)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "glob": "runs.jsonl", "head_limit": 1}
+  ↳ 1:{"ts": "2026-07-17 17:10", "jobid": "145643", "launcher": "qwen35_4b_ft_mt.sh", "argv": ["/beegfs/scratch/user/hdejean/pisco/expQ/qwen35_4b_pt_mt_1M_144649/model", "/beegfs/scratch/user/hdejean/arc_ (+2 lines)
+→ Grep: {"pattern": "\"jobid\": \"(19145[5-7]|188615)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 914:[Omitted long matching line] (+3 lines)
+→ Grep: {"pattern": "\"jobid\": \"188615\".{0,40}|\"env\": \\{[^}]*\\}", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "offset": 0, "head_limit": 0, "glob": "runs.jsonl", "multiline": false}
+  ↳ 914:"jobid": "188615", "launcher": "eval_mm_4b.sh", "argv": [ (+50 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly from the recorded files — documents +.093 / +.075 (reduced budget, seeds 42 / 43), photos +.023 /…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6663 turns=27 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit.md section (1) shows 8/8 'yes' at the exact values (re…"}, {"claim": "provisional: the gain did not vanish because spread got wors…", "status": "provisional", "reason": "Every number matches the budget cases in audit.md: spreadbud…"}, {"claim": "provisional: the tail models' budget gain is largest on mult…", "status": "provisional", "reason": "Numbers match audit.md tailbudget_docs_s42 (lines 678-680: +…"}, {"claim": "The gating sets cannot show \"equal\": one seed's 95% CI on 1,…", "status": "provisional", "reason": "Downgraded. The document figure holds: gating document CIs a…"}, "… +4 more"], "summary": "The feasibility-gate pass is fully backed by the 191454 audi…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly from the recorded files — documents +.093 / +.075 (reduced budget, seeds 42 / 43), photos +.023 / +.021, full budget documents +.011 / +.024, photos −.009 / +.010, with the recorded CIs; 39 self-pairs give 0.000; 184778's document file has 1,500 rows, a judge on every row, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit.md section (1) shows 8/8 'yes' at the exact values (red_docs +0.093/+0.075, red_photos +0.023/+0.021, full_docs +0.011/+0.024, full_photos −0.009/+0.010, n 1500 each). audit.json 'selfpair' lists 39 files, each diff 0.0 with 0 discordant, and gate.feasibility=PASS. The inventory row for 184778 docs (writer 184781) reads 1500 rows / 1500 judged / 0 unparseable / 646,042. The grid and the verdict both record 191454 as closed with feasibility=PASS. One caveat: the job ran slice_pairs.py md5 229600a9, not the current 8acfcab7, and the STATE says so."},{"claim":"provisional: the gain did not vanish because spread got worse: spread full − spread reduced = documents +.011 [−.011, +.033] / −.003 [−.026, +.020], photos +.006 (s42); tail production − tail reduced = documents +.093 [+.068, +.117] / +.048 [+.025, +.072], photos +.037 [+.017, +.058] (n 1,500, job 191454). These pairs are NOT one variable (stage 1 5M vs 1M, stage 2 160k vs 100k for spread; three stage-2 passes for production).","status":"provisional","reason":"Every number matches the budget cases in audit.md: spreadbudget_docs +0.011/−0.003 (lines 613, 645), tailbudget_docs +0.093/+0.048 (677, 709), spreadbudget_photos +0.006 (741), tailbudget_photos +0.037 (773). It stays provisional. The pairs are not one variable, as stated. The tail photo pair also spans two code eras (174908 photos ea0c591 vs 183538 24b7a2c), and the law says such a pair is reported, never decided. The s43 spread pair has a homer-008 side (183816). By the law, CIs this wide are 'not resolvable', so 'spread did not get worse' means only 'not worse', not 'equal'."},{"claim":"provisional: the tail models' budget gain is largest on multi-page documents: MP-DocVQA +.162 / +.090, slides +.076 / +.040, infographics +.040 / +.014 (n 500 per source, job 191454).","status":"provisional","reason":"Numbers match audit.md tailbudget_docs_s42 (lines 678-680: +0.040/+0.162/+0.076) and s43 (lines 710-712: +0.014/+0.090/+0.040), n 500 each. Still provisional for three reasons. 'Largest' was never tested as a between-source difference. The infographics CIs touch or include 0 ([+0.000, +0.082] and [−0.028, +0.054]). The comparison has the same confound as the budget pairs (not one variable; the s43 pair spans ea0c591 vs 24b7a2c)."},{"claim":"The gating sets cannot show \"equal\": one seed's 95% CI on 1,500 Q is .044-.050 wide on documents and text, .036-.041 on photos (job 191454, 23 pairs) — wider than the ±2-pt band. Owner question in BLOCKED.md.","status":"pr
+== rc=0
