@@ -1,0 +1,69 @@
+== verifier 2026-11-18_2200  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session 347c7feb-ea0a-4492-83aa-672253e652df  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+324 lines)
+→ Glob: {"pattern": "campaign_qafreeze/pairs/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "campaign_qafreeze/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs"}
+  ↳ campaign_qafreeze/pairs/docs_QminusR_s42.txt (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/photos_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/photos_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/mrqa_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/mrqa_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/hotpot_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/hotpot_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_noop_R42.txt
+  ↳ 1	judge: R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_RminusF_s42.txt
+  ↳ 1	judge: R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_RminusF_s43.txt
+  ↳ 1	judge: R43 = expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+Pair files checked so far all match STATE.md. Now checking the campaign-freeze cross-references, BLOCKED.md and the loss line.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+39 lines)
+→ Glob: {"pattern": "BLOCKED.md", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/BLOCKED.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign qafreeze   (owner checkpoint; one question) (+32 lines)
+→ Grep: {"pattern": "(?i)predict", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 13:**Prediction, written before any cell (kept and marked if wrong):** Q − R on documents lands in [−1, +2] pt — A1 − F ≈ 0 says the connector cannot recover what the compressor's QA training gives (S (+1 lines)
+→ Grep: {"pattern": ".", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/QUESTION.md", "output_mode": "content", "head_limit": 20}
+  ↳ 1:Owner's question (approved 2026-11-14 in the ~/.claude chat as hand-off 5b6e55; owner said "yes" to drafting it on 2026-11-17): (+14 lines)
+→ Grep: {"pattern": "Prediction, written before any cell", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze", "output_mode": "files_with_matches"}
+  ↳ No files found
+→ Grep: {"pattern": "differ|identical", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze", "output_mode": "content", "glob": "*.{md,txt,log}", "head_limit": 30}
+  ↳ campaign_qafreeze/STATE.md:18:- F re-run on today's eval code gives the recorded answers: documents .582 (s42, 191677; 0 of 1,500 judgements differ from the recorded file) / .580 (s43, 191678). (+31 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign qafreeze — 2026-11-18_2130   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+25 lines)
+→ Grep: {"pattern": "freeze_compressor|model_name_or_path|learning_rate|max_steps|seed", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s43/training_config.yaml", "output_mode": "content"}
+  ↳ 7:  learning_rate: 2.0e-05 (+3 lines)
+→ Grep: {"pattern": "freeze_compressor|model_name_or_path|learning_rate|max_steps|seed", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/training_config.yaml", "output_mode": "content"}
+  ↳ 7:  learning_rate: 2.0e-05 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s43/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+I've checked every claim. 11 of 12 hold, and the held-out loss claim stays provisional. Sending the structured answer now.
+→ StructuredOutput: {"claims": [{"claim": "Arm Q VALIDATED at both seeds (gate: every gating set Q − R ≥ −2 pt, no CI wholly below 0). Paired judge accuracy, n = 1,500 pairs per set, Q passed first so diff = Q − R (campaign_qafreeze/pairs/)", "status": "suppor…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.8961 turns=31 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm Q VALIDATED at both seeds (gate: every gating set Q − R …", "status": "supported", "reason": "I checked the six pair tables (pairs/{docs,photos,mrqa}_Qmin…"}, {"claim": "documents +0.5 pt [−0.6, +1.6], McNemar p .470 (s42, 191626 …", "status": "supported", "reason": "docs_QminusR_s42.txt ALL: .615 vs .610, +0.005 [−0.006, +0.0…"}, {"claim": "photos −0.3 pt [−1.5, +0.9], p .741 (s42, 191659 vs 191531);…", "status": "supported", "reason": "photos_QminusR_s42.txt ALL: .677 vs .679, −0.003 [−0.015, +0…"}, {"claim": "MRQA text +1.1 pt [−0.1, +2.3], p .068 (s42, 191661 vs 19167…", "status": "supported", "reason": "mrqa_QminusR_s42.txt ALL: .726 vs .715, +0.011 [−0.001, +0.0…"}, "… +10 more"], "summary": "I checked 14 claims against the saved pair tables (n = 1,500…"}
+== final:
+{"claims":[{"claim":"Arm Q VALIDATED at both seeds (gate: every gating set Q − R ≥ −2 pt, no CI wholly below 0). Paired judge accuracy, n = 1,500 pairs per set, Q passed first so diff = Q − R (campaign_qafreeze/pairs/)","status":"supported","reason":"I checked the six pair tables (pairs/{docs,photos,mrqa}_QminusR_s4x.txt). Each ALL row has n=1500. The worst point is −0.5 pt and the lowest CI bound is −1.7 pt (photos s43). No CI lies wholly below 0, so this is the law's Validated rule at both seeds. Q − F docs is +3.3 with the CI above 0, as the law requires. Probes never rose above the first one (s42 .4129 first, s43 .3994 first). Module checks 191625/191627 show 0.0% / 66.9%. ft_frozen_s43 vs 184780 training_config.yaml differs only in +freeze_compressor and model_name_or_path."},{"claim":"documents +0.5 pt [−0.6, +1.6], McNemar p .470 (s42, 191626 vs 191495); −0.1 pt [−1.1, +0.9], p .896 (s43, 191628 vs 191496).","status":"supported","reason":"docs_QminusR_s42.txt ALL: .615 vs .610, +0.005 [−0.006, +0.016], 38/31 discordant, p 0.470, n=1500. docs_QminusR_s43.txt: .613 vs .615, −0.001 [−0.011, +0.009], 28/30, p 0.896. The grid gives judge .6147/.6133 (191626/191628) and .6100/.6147 (191495/191496)."},{"claim":"photos −0.3 pt [−1.5, +0.9], p .741 (s42, 191659 vs 191531); −0.5 pt [−1.7, +0.7], p .434 (s43, 191660 vs 191532).","status":"supported","reason":"photos_QminusR_s42.txt ALL: .677 vs .679, −0.003 [−0.015, +0.009], 39/43, p 0.741, n=1500. s43: .679 vs .685, −0.005 [−0.017, +0.007], 36/44, p 0.434. Verdicts 191659/191660 agree."},{"claim":"MRQA text +1.1 pt [−0.1, +2.3], p .068 (s42, 191661 vs 191675); +0.3 pt [−0.8, +1.5], p .661 (s43, 191662 vs 191676).","status":"supported","reason":"mrqa_QminusR_s42.txt ALL: .726 vs .715, +0.011 [−0.001, +0.023], 47/30, p 0.068, n=1500. s43: .727 vs .724, +0.003 [−0.008, +0.015], 44/39, p 0.661. Both sides are cml4096 files."},{"claim":"verdicts: training 191527 (s42) and 191530 (s43) → best.","status":"supported","reason":"The grid shows VERDICT best for 191527 and 191530. The recorded verdicts (2026-11-18 21:03/21:04) carry the same gate and control numbers."},{"claim":"HotpotQA (reported, not gating), same code md5 on both sides, n = 1,500 pairs: Q − R −0.5 pt [−1.9, +0.9], p .562, discordant 50/57 (s42, 191766 .600 vs 191768 .605); +0.9 pt [−0.5, +2.1], p .223, 55/42 (s43, 191767 .600 vs 191769 .591). Campaign freeze's never-QA frozen compressor lost −2.8 [−4.5, −1.3] / −2.3 [−4.1, −0.6] pt there (F − R, n = 1,500, campaign_freeze/STATE.md:13; its bridge questions alone −3.0 / −2.8, QUESTION.md:10).","status":"supported","reason":"hotpot_QminusR_s42.txt ALL: .600 vs .605, −0.005 [−0.019, +0.009], 50/57, p 0.562. s43: .600 vs .591, +0.009 [−0.005, +0.021], 55/42, p 0.223. n=1500. campaign_freeze/STATE.md:13 reads −.028 [−.045, −.013] / −.023 [−.041, −.006]. QUESTION.md:10 gives bridge −3.0/−2.8/−3.6. The 21:30 error is now corrected. Verdicts 191766-191769 list the same md5s on both sides."},{"claim":
+== rc=0
