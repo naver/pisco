@@ -9,9 +9,9 @@ documents ≈ 108 slots per page (430.7 per 4-page question, 646,042 / 1,500).
 |---|---|---|
 | 1 | does the finetune collator's 4-document cap drop the answer page? | **decided: not a cause** (0 of 20,000 rows) |
 | 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row batch moves the slots only by bf16 rounding, as much as batching with any other page |
-| 2b | does training-style padding (to 64) change judge accuracy? | running: wrapper check passed (300 Q); 1,500 Q × 2 seeds judged now |
-| 3 | do text slots of the page's transcription keep what image slots lose? | not started |
-| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | queued: page set build, 20-step training smoke, recall of the start model before training |
+| 2b | does training-style padding (to 64) change judge accuracy? | **decided: not a cause** (1,500 Q × 2 seeds: +0.5 / +0.9 pt, both CIs inside ±3) |
+| 3 | do text slots of the page's transcription keep what image slots lose? | running: page transcription (10-page plumbing, then shard 1 of 4) |
+| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | running: start model's recall measured (.702); the 210-step overfit training and its recall are running |
 
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
 
@@ -72,3 +72,45 @@ answers: in its 300-question wrapper check, 67 / 300 answers changed with traini
 
 **For the stage-2 rebuild:** padding is not a cause by itself on the paths we run; bf16 batch-shape rounding moves
 slots by a cosine of about .995 per question. Check 2b says whether that changes the judge score.
+
+## Check 2b — does training's padding change the judge score? (decided 2026-11-19: not a cause)
+
+Cells: jobs 191783 (seed 42, homer-020) and 191784 (seed 43, homer-019), each running both arms on one node with the same
+code (`scripts/slotcheck/eval_pad.py`: imports the shared eval and only hands its collator `pad_to_multiple_of=64`, as
+training does; the shared files are byte-identical, md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0). The
+wrapper with no padding was first shown to give 300 / 300 the same answers as the plain eval (job 191782). Metric:
+judge accuracy (Qwen3-8B rubric judge), paired per question by `scripts/paired_judge.py`.
+
+| check | model | set | n (pairs) | judge, padded to 64 ↑ | judge, no padding (eval as recorded) ↑ | padded − none (95% CI, McNemar p) | uncompressed judge ↑ (same Q) | compression rate | health | verdict |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 2b | R seed 42 | mm_docqa_1500_1m | 1,500 | .615 | .610 | **+0.5 pt** [−1.1, +2.1], p .62 (76 vs 69 questions flip) | .809 | 8 tokens per slot; 430.7 slots per question (646,042 in both arms) | 1,500 rows × 2, judge on all, 0 unparseable, no "exceeds", slot count ratio 1.0000 | not a cause |
+| 2b | R seed 43 | mm_docqa_1500_1m | 1,500 | .624 | .615 | **+0.9 pt** [−0.7, +2.5], p .29 (81 vs 67) | .809 | same | same | not a cause |
+
+Per source (seed 42 / seed 43, padded − none): InfoVQA +0.0 / +2.2, MP-DocVQA +1.4 / +1.6, SlideVQA +0.0 / −1.0 pt; no
+CI excludes 0. The unpadded arm reproduces the recorded scores exactly (.610 / .615). Padding changes the text of
+368 / 1,500 (seed 42) and 432 / 1,500 (seed 43) answers, and flips the judge on 145 / 148 questions, in both
+directions about equally: this is the bf16 batch-shape rounding of check 2a reaching the answers.
+
+**For the stage-2 rebuild:** the eval does not need training's padding; the gap is not here. Beside it: changing only
+the batch shape flips the judge on about 10% of questions (net ±1 pt), so a paired difference under ~1.5 pt between two
+arms is within what bf16 rounding alone produces on 1,500 questions.
+
+## Check 4 — can stage 2 memorise 100 dense pages? (running; baseline measured 2026-11-19)
+
+Pages: 100 dense PDF pages of `data/mm_pretrain_pdfa_1m` never trained on (674-760 text-layer tokens, 953 visual tokens,
+120 slots per page = 8 visual tokens per slot, about 4 words per slot) + 100 held-out pages of the same kind (build job
+191891). Metric: word recall = share of the words of the uncompressed transcription (Qwen3.5-4B reads the pixels) found
+in the text the model rebuilds from the page's slots alone (`scripts/longdoc/mem_recall.py`, image autoencoding format).
+Paired per page by `scripts/longdoc/recall_pair.py` (bootstrap CI, sign test).
+
+| row | model | pages | n | word recall ↑ | vs the start model | read |
+|---|---|---|---|---|---|---|
+| start model, before any overfit (baseline) | `expQ/archq3/pt_mm_5M_spread/model` | the 100 to overfit | 100 | **.702** | — | job 191893 |
+| start model (held-out control) | same | 100 held-out | 100 | **.670** | — | must not rise after the overfit |
+| ceiling: the page's own text layer (the training target) | — | 100 / 100 held-out | 100 | .974 / .983 | — | the bars (90% / 75%) are reachable |
+| control: reference against itself | — | 100 / 100 | 100 | 1.000 / 1.000 | 0.000 | the tool works |
+| overfit, bf16, 210 steps (≈ 14 passes over each page) | `expQ/slotcheck/o_bf16/model` | 100 / 100 held-out | 100 | running | — | gate: ≥ 90% → capacity is fine; ≤ 75% (with the loss flat) → a capacity limit |
+
+Training smoke (job 191892, 20 steps): 32.8 s per step (batch 8 × accumulation 8 = 64 pages per step), loss 0.600 →
+0.488 from step 10 to 20, config identical to the start's recipe except the data, the task mix (image autoencoding
+only) and `max_steps`. The step count 210 is what fits 2 GPU-hours.

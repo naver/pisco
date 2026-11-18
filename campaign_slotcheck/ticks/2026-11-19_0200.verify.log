@@ -1,0 +1,68 @@
+== verifier 2026-11-19_0200  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session e4e737d8-f356-4e45-8d5d-beeab6255341  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+281 lines)
+→ Glob: {"pattern": "expQ/slotcheck/**/*.json"}
+→ Glob: {"pattern": "scripts/slotcheck/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/slotcheck"}
+  ↳ scripts/slotcheck/audit_ft_rows.py (+19 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+85 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out
+  ↳ 1	FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+58 lines)
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content"}
+  ↳ campaign_slotcheck/VERIFY.md:11:[Omitted long matching line] (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191783.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-95c06290-d876-1afd-b3f7-0ab437aba704) (+661 lines)
+Checking the claims against the job logs. Next: the paired results at the end of the padding eval logs.
+→ Grep: {"pattern": "^(RESULT|PAIRED|paired|McNemar|mems_used|judge|diff|.*CI|.*discordant|.*exceeds|.*unparse)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191783.out", "output_mode": "content", "-i": true, "head_limit": 4…
+  ↳ 1728:  unparseable: 0 (+6 lines)
+→ Grep: {"pattern": "^(RESULT|PAIRED|paired|McNemar|mems_used|judge|diff|.*CI|.*discordant|.*exceeds|.*unparse|node)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191784.out", "output_mode": "content", "-i": true, "head_limi…
+  ↳ 3:node homer-019.kr.europe.naverlabs.com (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191783.out
+  ↳ 3438	  judge                        0.6147 (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191784.out
+  ↳ 3438	  judge                        0.6240 (+19 lines)
+→ Grep: {"pattern": "exceeds", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck", "glob": "eval_pad_19178[34].out", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ Grep: {"pattern": "(RESULT|recall|stride|mems|slots|SUMMARY|ceiling|node)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out", "output_mode": "content", "-i": true, "head_limit": 60}
+  ↳ 2:FACTORS kind=probe_recall arm=O_recall passes=start_dense100:start:slotcheck_dense100 ref_dense100:ref:slotcheck_dense100 start_heldout:start:slotcheck_dense100_heldout ref_heldout:ref:slotcheck_den (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out
+  ↳ 515	wrote /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/ref_heldout.json (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out
+  ↳ 55	[merge_lora_inplace] merged + unwrapped 346 LoRA layers (+19 lines)
+→ Grep: {"pattern": "0\\.702|\\.702|0\\.670|0\\.974|0\\.983", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log", "output_mode": "content", "head_limit": 20}
+  ↳ 128:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "slotcheck wake 02:00" --did "check 2b decided NOT A CAUSE (padded - unpadded judge +0.5 pt [-1.1,+2.1] s42, +0.9 [-0.7,+2.5] s43, n=1,50 (+2 lines)
+→ Grep: {"pattern": "recall_pair|mean_recall|recall_mean|slots|n_mems|mems per page|120", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log", "output_mode": "content", "head_limit": 40}
+  ↳ 2:== sensors: ts=1795021202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=5.7 idle_h=1.0 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7601 sig=260cc69f same=2 behind=0 u (+8 lines)
+Still verifying: now tracing where the start-model recall numbers (.702 / .670) and the "120 slots per page" figure come from.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log
+  ↳ 30	  ↳ === CONFIG DIFF vs the start (law invariant: data path, task mix, max_steps, precision, output paths only) === (+62 lines) (+39 lines)
+→ Grep: {"pattern": "\\.702|\\.670|120 slots|slots per page|sign test|0\\.974", "path": "/beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md", "output_mode": "content", "-C": 2}
+  ↳ 4-(`eval_data/mm_docqa_1500_1m`) — sits in what one page's `<MEM>` slots hold. Four checks, diagnosis only, before a (+30 lines)
+→ Grep: {"pattern": "\"(mean|summary|recall_mean|word_recall|n_mems|mems|stride)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "count"}
+  ↳ expQ/slotcheck/recall/start_dense100.json:200 (+2 lines)
+→ Grep: {"pattern": "\"(mems|n_mems|stride)\": *[0-9]+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 22:"mems": 121 (+11 lines)
+→ Grep: {"pattern": "(peak|max_memory|GPU mem|nvidia|MiB|GB|loss|RESULT|mems)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pt_overfit_191892.out", "output_mode": "content", "-i": true, "head_limit": 40}
+  ↳ 9:GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-999fcaa5-2b56-e397-204e-38c60f874b20) (+18 lines)
+→ Grep: {"pattern": "(per_device_train_batch_size|gradient_accumulation_steps|max_steps|save_steps|training_dataset|bf16|p_image_ae)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/training_config.yaml", "output_mode": "content"…
+  ↳ 4:  per_device_train_batch_size: 8 (+6 lines)
+→ Grep: {"pattern": "(loss|epoch|Error|Traceback|step)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/train.log", "output_mode": "content", "head_limit": 20}
+  ↳ No matches found
+Last checks: the running transcription plumbing job's log and whether its launcher is committed.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/transcribe_192009.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-4be8ab4b-492d-eef4-9f63-6c3b4a007425) (+17 lines)
+→ Grep: {"pattern": "transcribe_pages", "path": "/beegfs/scratch/user/hdejean/pisco/.gitignore", "output_mode": "content"}
+  ↳ No matches found
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 document rows (9.55%;…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4103 turns=30 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap n…", "status": "supported", "reason": "audit_ft_191663/summary.txt: trained rows dropped 0/20,000 (…"}, {"claim": "Check 2a (arm P padding probe), n = 120 pages, job 191672 (c…", "status": "supported", "reason": "Grid 191672: inert=False, w63_cos .934, controls_ok=True, ot…"}, {"claim": "Check 2b (arm P) decided: NOT A CAUSE. Padded to 64 − not pa…", "status": "supported", "reason": "eval_pad_191783.out:3451 reads ALL 1500, +0.005, CI [-0.011,…"}, {"claim": "Check 4 (arm O) baseline, job 191893 (closed): start model w…", "status": "supported", "reason": "Grid 191893 matches: recall_start_dense100 .702, heldout .67…"}, "… +3 more"], "summary": "The decided results hold up against the logs and grid: check…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 document rows (9.55%; all Docmatix) lose one of their two source pages. Job 191663 (closed).","status":"supported","reason":"audit_ft_191663/summary.txt: trained rows dropped 0/20,000 (docpages) and 0/8,000 (natural). Partial: 1,910 (9.55%), all in docmatix (19.10% of its 10,000). Gate checks pass: image_rows_complete_share 1.0, 50/50 sampled rows OK, planted [4,5] row counted 'dropped'. Health passes: rows read = set size, per-source counts sum to the total. Grid row 191663 says dropped_trained=0, gate1/gate2 True. 0% is under the law's 2% bar for 'closed, not a cause'."},{"claim":"Check 2a (arm P padding probe), n = 120 pages, job 191672 (closed): not inert. Split, n = 40 pages, job 191781 (closed): a ONE-row padded batch leaks the pads (median cosine .935 bf16 / .953 fp32 at 63 pads; .995 / 1.0000 with pad zeroing forced on) — latent, hand-off 2de131. Two-row padded batch: median .9948 bf16 / 1.0000 fp32 = no-pad two-row floor .9943 / 1.0000 → bf16 rounding; worst fp32 slot .985 padded vs .994 at the floor.","status":"supported","reason":"Grid 191672: inert=False, w63_cos .934, controls_ok=True, other-page control .739 (<.99, as the law requires). pad_split_191781.out has every quoted number: bf16 A63 .9345, Afix63 .9947, B63 .9948, twin0 .9943; fp32 A63 .9527, B63 1.0000, cos_min_min .9845 vs twin0 .9942. Hand-off 2de131 is filed in ticks/2026-11-18_2200.log:103. The 'latent' reading is reasoning (training batch 8 rows; the eval does not pad), not a measurement."},{"claim":"Check 2b (arm P) decided: NOT A CAUSE. Padded to 64 − not padded, judge accuracy, n = 1,500 paired questions per seed: s42 .615 − .610 = +0.5 pt [−1.1, +2.1], McNemar p .62 (job 191783, homer-020); s43 .624 − .615 = +0.9 pt [−0.7, +2.5], p .29 (job 191784, homer-019). Both CIs inside ±3 pt; health clean; 368 / 432 changed answers, 145 / 148 judge flips.","status":"supported","reason":"eval_pad_191783.out:3451 reads ALL 1500, +0.005, CI [-0.011, +0.021], 76/69, p 0.618. eval_pad_191784.out:3451 reads +0.009, CI [-0.007, +0.025], 81/67, p 0.285. Both logs: judge on 1500/1500, unparseable 0, mems_used 646,042 vs 646,042, 0 'exceeds' lines. md5s match the law (b3d1cda1 / dfe32aa0 / 02bc8748 / a3cc13b2 / 994cff3d). Each pair ran in one job, so same node, and both nodes are outside homer-[005-009]. 1500−1132=368 and 1500−1068=432. Both seeds have CIs inside ±3 pt, which is the law's 'not a cause' bar."},{"claim":"Check 4 (arm O) baseline, job 191893 (closed): start model word recall .702 on the 100 pages to overfit, .670 on the 100 held-out; text-layer ceiling .974 / .983; reference vs itself 1.000 / 1.000. Pages: 120 slots each (≈ 4 words per slot).","status":"supported","reason":"Grid 191893 matches: recall_start_dense100 .702, heldout .670, ceilings .974 / .983, 
+== rc=0

@@ -1,0 +1,142 @@
+== campaign slotcheck wake 2026-11-19_0200  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795021202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=5.7 idle_h=1.0 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7601 sig=260cc69f same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session 2900ebf6-d7d8-439d-99b2-377664170171  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-19_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+89 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+88 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 25	`expQ/ft_mm_4b_184780/model` (seed 43); stage-2 start `expQ/archq3/pt_mm_5M_spread/model`; uncompressed = (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 104	  rule is read from the logged loss afterwards — not reached = the recall is reported as a LOWER bound of what training (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; cat STATE.md; echo =====; cat known_issues.md | head -80; ls -la
+  ↳ Exit code 1 (+94 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; cat known_issues.md; echo; ls -la; sed -n 162,200p CAMPAIGN.md
+  ↳ # Known issues — campaign slotcheck   (symptom → verdict → action; check here BEFORE diagnosing) (+93 lines)
+Quick status: I'm reading this campaign's finished jobs (padding eval pairs, the overfit smoke and the recall baseline) to check their health and decide the next step.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191783,191784,191891,191892,191893 -X -o JobID,JobName%20,State,ExitCode,Elapsed,NodeList,Start,End,MaxRSS 2>&1; sacct -j 191783,191784,191891,191892,191893 -o JobID,State,ExitCode,Elapsed,Max…
+  ↳ JobID                     JobName      State ExitCode    Elapsed        NodeList               Start                 End     MaxRSS  (+45 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/slotcheck/ expQ/slotcheck/p2b_s42 expQ/slotcheck/p2b_s43 expQ/slotcheck/p2b_s4*/eval 2>&1 | head -60; cat scripts/slotcheck/eval_pad.sbatch | head -80
+  ↳ expQ/slotcheck/: (+135 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 191783 191784; do echo "## $j"; grep -nE 'FACTORS|^node|^[0-9a-f]{8} |exceeds|Traceback|Error|!!|RESULT|EXIT CODE|INVARIANT|paired|McNemar|CI|bootstrap|diff|pad64|padnone|unparse' expQ/slotche…
+  ↳ ## 191783 (+81 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 191783 191784; do echo "## $j"; sed -n '1,9p;1720,1728p;3435,3455p' expQ/slotcheck/eval_pad_$j.out; grep -c 'exceeds' expQ/slotcheck/eval_pad_$j.out; done
+  ↳ Exit code 1 (+82 lines)
+Check 2b decided: both seeds give a tie, CIs within ±3 pt. Now the overfit smoke and the recall baseline.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=expQ/slotcheck/pt_overfit_191892.out; head -30 $f; echo; grep -nE 'CONFIG DIFF|^[<>+-] |diff|s/it|loss|train_runtime|peak|max_memory|Traceback|Error|RESULT|EXIT|samples_per_second|steps_per_second' $…
+  ↳ FACTORS kind=train arm=O name=o_smoke max_steps=20 precision=bf16 data=slotcheck_dense100_train start=pt_mm_5M_spread task=image_ae_only bs=8 accum=8 lr=3e-5 px=1003520 (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=expQ/slotcheck/pt_overfit_191892.out; sed -n 4648,4673p $f; grep -nE 'eval_steps|save_steps|logging_steps|image_max_pixels|torch_dtype|bf16|lr_scheduler|warmup|save_total' expQ/slotcheck/o_smoke/trai…
+  ↳ === CONFIG DIFF vs the start (law invariant: data path, task mix, max_steps, precision, output paths only) === (+62 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=expQ/slotcheck/recall_191893.out; grep -vE "it/s\]|s/it\]" $f | grep -nE 'FACTORS|node|stride|pass|wrote|RESULT|EXIT|recall|Traceback|Error|empty|pages|mean|===' | head -60; ls -la expQ/slotcheck/rec…
+  ↳ 2:FACTORS kind=probe_recall arm=O_recall passes=start_dense100:start:slotcheck_dense100 ref_dense100:ref:slotcheck_dense100 start_heldout:start:slotcheck_dense100_heldout ref_heldout:ref:slotcheck_den (+52 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la scripts/slotcheck/ expQ/slotcheck/dense100_191891/; cat scripts/slotcheck/recall.sbatch; cat scripts/slotcheck/pt_overfit.sbatch | head -70
+  ↳ expQ/slotcheck/dense100_191891/: (+127 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la scripts/longdoc/recall_pair.py; md5sum scripts/longdoc/recall_pair.py | cut -c1-8; sed -n 1,200p scripts/longdoc/recall_pair.py
+  ↳ -rw-r--r-- 1 hdejean hdejean 3193 Nov 17 02:35 scripts/longdoc/recall_pair.py (+77 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; S=expQ/slotcheck/recall; T=expQ/slotcheck/dense100_191891; for set in dense100:train heldout:heldout; do IFS=: read a b <<< "$set"; echo "### $a: A = text layer, B = start model, ref = uncompressed tra…
+  ↳ ### dense100: A = text layer, B = start model, ref = uncompressed transcription (+19 lines)
+Padding check closed as "not a cause"; the start model's word recall baseline is .70 (ceiling .97). Next: launch the bf16 overfit training with its recall chained.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '^CAMP_(WAKE|TIMEOUT|MAX|UNTIL|PATCH|COMMIT|GPU|DISK)' campaign_slotcheck/campaign.conf; sinfo -p gpu-be -o "%n %C %e %G" 2>/dev/null | grep -vE 'homer-00[5-9]' | head -20; gpucap free a100 2>&…
+  ↳ CAMP_UNTIL='2027-02-16'            # YYYY-MM-DD, INCLUSIVE: launches allowed through that day 23:59 (default: init + 90 days, EXP_CAMP_WINDOW_DAYS); `expmon campaign extend` adds 90 more (+27 lines)
+→ Bash: sacct -j 191892,191893 -o JobID,AllocCPUS,TotalCPU,Elapsed,AllocTRES%60 | head; grep -nE 'dataloader_num_workers|num_workers' /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_smoke/training_config.yaml
+  ↳ JobID         AllocCPUS   TotalCPU    Elapsed                                                    AllocTRES  (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"19189[23]"' .expmon/runs.jsonl | python3 -I -c "import sys,json; [print({k:v for k,v in json.loads(l).items() if k in ('jobid','argv','stage','sbatch','slurm','factors','cmd','launch')}) for …
+  ↳ {'jobid': '191892', 'argv': ['o_smoke', '20'], 'slurm': {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '0:55:00'}, 'stage': 'O_smoke'} (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp slotcheck --stage O --parent 191892 --time 2:30:00 --mem 13G --cpus-per-task 1 --partition gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/pt_overfit.sbatch o_bf16 21…
+  ↳ would submit: sbatch --time 2:30:00 --mem 13G --cpus-per-task 1 --partition gpu-be --exclude homer-[005-009] scripts/slotcheck/pt_overfit.sbatch o_bf16 210 bf16 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py pisco/train.py pt_mm_4b.sh scripts/slotcheck/pt_overfit.sbatch scripts/slotcheck/recall.sb…
+  ↳ b3d1cda1  eval_mm_4b.sh (+10 lines)
+All code unchanged since the smoke. Launching the training, then the recall chained on it.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage O --parent 191892 --time 2:30:00 --mem 13G --cpus-per-task 1 --partition gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/pt_overfit.sbatch o_bf16 210 bf16 2>&…
+  ↳ Submitted batch job 192002 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model; expmon launch --dry-run --exp slotcheck --stage O_recall --parent 192002 --dependency afterok:192002 --time 4:10:00 --mem 8G --cpus-per…
+  ↳ (eval):1: bad substitution
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model; expmon launch --dry-run --exp slotcheck --stage O_recall --parent 192002 --dependency afterok:192002 --time 4:10:00 --mem 8G --cpus-per…
+  ↳ would submit: sbatch --dependency afterok:192002 --time 4:10:00 --mem 8G --cpus-per-task 1 --partition gpu-be --exclude homer-[005-009] scripts/slotcheck/recall.sbatch o_bf16_dense100:/beegfs/scratch/ (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model; expmon launch --exp slotcheck --stage O_recall --parent 192002 --dependency afterok:192002 --time 4:10:00 --mem 8G --cpus-per-task 1 --…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_192003.out (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; MD="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / model.py 994cff3d / train.py c208fd69 / pt_mm_4b.sh 3b63ee99 / pt_overfit.sbatch 44e…
+  ↳ expmon note: 147 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+Now the verdicts and probe records for the five finished jobs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 191783 closed "check 2b s42 NOT A CAUSE: COMPLETED 0:0 55:10 homer-020; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used 646,042 both (ratio 1.0000); pad64 - p…
+  ↳ verdict recorded: 191783 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '"191892"' .expmon/verdicts.jsonl; tail -3 .expmon/verdicts.jsonl | cut -c1-160
+  ↳ 1 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -iE 'check 3|arm X|transcri|imgtext|_500|shard' campaign_slotcheck/CAMPAIGN.md | cut -c1-400; sed -n '/## Deliverable/,/## Pre-authorised/p' campaign_slotcheck/CAMPAIGN.md | head -30
+  ↳ 38:| X. text slots beside image slots (check 3) | `scripts/slotcheck/transcribe_pages.{py,sbatch}` + `build_text_sets.py` (to write; they import the TRANSCRIBE prompt and `run_ref` of `scripts/probe_m (+25 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 38p campaign_slotcheck/CAMPAIGN.md; cat docs/slot_checks.md | head -120
+  ↳ | X. text slots beside image slots (check 3) | `scripts/slotcheck/transcribe_pages.{py,sbatch}` + `build_text_sets.py` (to write; they import the TRANSCRIBE prompt and `run_ref` of `scripts/probe_mem_ (+74 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "TRANSCRIBE\|^def \|^    def \|max_new_tokens\|enable_thinking" scripts/probe_mem_recall.py | head -40; grep -n "def example_chunks" -A 60 pisco/mm_collator.py | head -90
+  ↳ 34:TRANSCRIBE = ("Transcribe all the text of this image in reading order, including every number, label and table cell. " (+70 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "doc_images\|def main\|topk_docs\|compressor_max_length\|decoder_max_length\|load_from_disk\|def build_\|def run_\|args.mode\|query_id\|answers" scripts/eval_mm_docqa.py | head -70
+  ↳ 3:Data: a datasets dir (build_mm_eval.py / build_mm_finetune.py schema): docs, doc_images, (+69 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 267,300p scripts/eval_mm_docqa.py; sed -n 526,560p scripts/eval_mm_docqa.py; grep -n "CML\|DML\|TOPK\|LIMIT\|limit" eval_mm_4b.sh | head -30
+  ↳ def gen_pisco(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, decoder_max_length, max_new_tokens, (+79 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'TIMEOUT|_MIN=|MODEL' campaign_slotcheck/campaign.conf | cut -c1-200; ls -la campaign_slotcheck/ticks/ | tail -5; sed -n 1,80p scripts/probe_mem_recall.py
+  ↳ 7:CAMP_MODEL='claude-opus-5-5'            # PINNED model for LLM wakes — results must be attributable (NCP drifted mid-campaign) (+90 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 108,175p scripts/probe_mem_recall.py; cat scripts/slotcheck/build_dense100.sbatch | sed -n 1,30p
+  ↳ def main(): (+56 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'PY' ⏎ import re, pathlib ⏎ p = pathlib.Path("scripts/slotcheck/transcribe_pages.py"); s = p.read_text() ⏎ s = s.replace('''def pick_questions(ds, topk): ⏎     """[(row index, query_id, [(p…
+  ↳ 81:    pages, qmap = {}, {}   # key -> {"loc": (row, position) of its first occurrence, "qids"}; images not kept (RAM) (+5 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; bash -n scripts/slotcheck/transcribe_pages.sbatch && echo BASH_OK; md5sum scripts/slotcheck/transcribe_pages.py scripts/slotcheck/transcribe_pages.sbatch scripts/probe_mem_recall.py | cut -c1-8,33-; ex…
+  ↳ BASH_OK (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage X_transcribe_smoke --time 0:20:00 --mem 14G --cpus-per-task 1 --partition gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/transcribe_pages.sbatch 0 4 10 2>&1 …
+  ↳ job id:  192009
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage X_transcribe --parent 192009 --dependency afterok:192009 --time 5:30:00 --mem 14G --cpus-per-task 1 --partition gpu-be --exclude 'homer-[005-009]' scripts/slotchec…
+  ↳ job id:  192010 (+5 lines)
+Four submissions used (overfit training, its recall, transcription plumbing, first transcription shard). Now recording notes and rewriting the results doc.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 192009 "arm X (check 3) transcription PLUMBING intent (decides nothing): transcribe_pages.sbatch 0 4 10 = 10 pages of shard 0; 500 questions (167 infovqa / 167 mpdocvqa / 166 slidevqa, f…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 120,400p docs/slot_checks.md
+  ↳ (Bash completed with no output)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json,statistics as s ⏎ for f in ['start_dense100','start_heldout','ref_dense100']: ⏎     r=json.load(open('expQ/slotcheck/recall/%s.json'%f))['records'] ⏎     print(f, len(r), …
+  ↳ start_dense100 100 ['answers', 'gold_page', 'mems', 'query', 'query_id', 'source', 'stride', 'text'] (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'PY' ⏎ import pathlib ⏎ p = pathlib.Path("docs/slot_checks.md"); s = p.read_text() ⏎ old_rows = s[s.index("| 2b | does training-style padding"):s.index("## Check 1")] ⏎ new_rows = """| 2b |…
+  ↳ 95
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp slotcheck 2>&1 | tail -4; expmon gripe --open --search zsh modifier 2>&1 | tail -5; expmon gripe --open --search 'bad substitution' 2>&1 | tail -3
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_slotcheck.html   (0 table rows, 0 media files from 0 runs) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search zsh 2>&1 | head -12; expmon gripe --open --search display rows 2>&1 | head -8
+  ↳ == 2 open report(s) matching 'zsh', every machine, newest first == (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '<tr' display_slotcheck.html; expmon gripe -c gap "headless wake shell is zsh: an unbraced \$VAR followed by ':' in a launch arg (recall spec NAME:\$M:SET) is read as a zsh history modifier -> …
+  ↳ 16 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat >> campaign_slotcheck/known_issues.md <<'EOF' ⏎ | a launch line fails `(eval):1: bad substitution` before anything is submitted, the arg was `NAME:$M:SET` (recall spec, 2026-11-19) | the wake shell…
+  ↳ | a training on a small set: `pisco/train.py` moves `min(64, rows // 10)` RANDOM (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'PY' ⏎ import pathlib ⏎ p = pathlib.Path("campaign_slotcheck/known_issues.md"); s = p.read_text() ⏎ old = "expmon reads no RESULT line from a log (gripe +1 of 287192bc); `expmon display --e…
+  ↳ JOBID STATE NODELIST(REASON) TIME (+5 lines)
+→ Bash: scontrol show reservation 2>&1 | head -20; sinfo -p gpu-be -o "%n %t %C %G" 2>&1 | head -20
+  ↳ No reservations in the system (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE 'compressor_max_length|chunk_docs|topk_docs|decoder_max_length|training_dataset|text_rag|query_dependent' expQ/ft_mm_4b_184778/training_config.yaml | head; grep -n "compressor_max_length\|chun…
+  ↳ 25:  training_dataset: /beegfs/scratch/user/hdejean/pisco/data/mm_ft_docpages_20k_1m_teacher:20000,/beegfs/scratch/user/hdejean/pisco/data/mm_ft_natural_8k_teacher:8000 (+11 lines)
+Queue is full of CPU-saturated nodes, so the transcription plumbing waits for a slot; nothing to fix. Now rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+→ Bash: expmon help 2>&1 | grep -n -i -A6 'wake-when' | head -30
+  ↳ (Bash completed with no output)
+→ Bash: grep -rn -i 'wake-when' ~/.claude/skills/expmon/*.md 2>/dev/null | head -8; cat /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/NEXT 2>/dev/null; git -C /beegfs/scratch/user/hdejean/pisco log -p -3 --format=%h -- campaign_slotcheck/NEXT…
+  ↳ /home/hdejean/.claude/skills/expmon/SKILL.md:192:   `wake-when handoff:<id>[,<id>]` (met when one closes; one look a day meanwhile). Bookkeeping wakes run claude-sonnet-5-5 (+5 lines)
+→ Bash: sed -n 180,200p ~/.claude/skills/expmon/SKILL.md
+  ↳ (supported / provisional / unsupported with the reason) and ALERTs once per unsupported claim, so the next (+20 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "slotcheck wake 02:00" --did "check 2b decided NOT A CAUSE (padded - unpadded judge +0.5 pt [-1.1,+2.1] s42, +0.9 [-0.7,+2.5] s43, n=1,500 each); check 4 baseline: start recall .702 / held-…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+6 lines)
+Wrapping up: a last check that the overfit training is progressing.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tr '\r' '\n' < expQ/slotcheck/pt_overfit_192002.out | grep -aE 's/it\]|Traceback|Error|OOM|loss' | tail -3 | cut -c1-200
+  ↳ 1%|          | 2/210 [03:29<5:20:04, 92.33s/it]   (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ StructuredOutput: {"next": "wake-when", "summary": "Check 2b is closed as \"not a cause\". Padding the eval's compressor batch to 64, as training does, moves judge accuracy by only +0.5 pt [-1.1, +2.1] on seed 42 and +0.9 pt [-0.7, +2.5] on seed 43 (n = 1,50…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.1851 turns=63 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Check 2b is closed as \"not a cause\". Padding the eval's compressor batch to 64, as training does, moves judge accuracy by only +0.5 pt [-1.1, +2.1] on seed 42 and +0.9 pt [-0.7, +2.5] on seed 43 (n = 1,500 paired questions each). Both CIs sit inside ±3 pt. Check 4 baseline: the start model rebuilds .702 of a page's words from its slots (.670 on 100 held-out pages); the text-layer ceiling is .974, …", "launched": ["192002", "192003", "192009", "192010"], "verdicts": [{"jobid": "191783", "verdict": "closed", "note": "check 2b s42 not a cause: +0.5 pt [-1.1,+2.1], McNemar p .62, n=1,500, healthy"}, {"jobid": "191784", "verdict": "closed", "note": "check 2b s43 not a cause: +0.9 pt [-0.7,+2.5], p .29, n=1,500, healthy"}, {"jobid": "191891", "verdict": "closed", "note": "dense100 build OK: 100 + 100 pages, overlap 0"}, {"jobid": "191892", "verdict": "closed", "note": "training smoke OK: 32.8 s/step, loss 0.600 -> 0.488, config diff within the law"}, {"jobid": "191893", "verdict": "closed", "note": "start-model recall baseline .702 / held-out .670, ceiling .974 / .983, self-control 1.000"}], "gripes": ["gap: headless wake shell is zsh; an unbraced $VAR followed by ':' in a launch arg is read as a history modifier (':s' errors, ':h'/':t' would silently rewrite paths)"], "wake_when": "job:192003,192010 max 8h"}
+== final:
+{"next":"wake-when","summary":"Check 2b is closed as \"not a cause\". Padding the eval's compressor batch to 64, as training does, moves judge accuracy by only +0.5 pt [-1.1, +2.1] on seed 42 and +0.9 pt [-0.7, +2.5] on seed 43 (n = 1,500 paired questions each). Both CIs sit inside ±3 pt. Check 4 baseline: the start model rebuilds .702 of a page's words from its slots (.670 on 100 held-out pages); the text-layer ceiling is .974, so the 90% / 75% bars can be reached. Launched the bf16 overfit training (210 steps, about 14 passes over each page) with its recall chained after it. Wrote the page-transcription script for check 3 and launched a 10-page plumbing run, chained to the first of 4 full shards; that shard measures the cost for the owner checkpoint. Results doc docs/slot_checks.md and STATE.md are rewritten.","launched":["192002","192003","192009","192010"],"verdicts":[{"jobid":"191783","verdict":"closed","note":"check 2b s42 not a cause: +0.5 pt [-1.1,+2.1], McNemar p .62, n=1,500, healthy"},{"jobid":"191784","verdict":"closed","note":"check 2b s43 not a cause: +0.9 pt [-0.7,+2.5], p .29, n=1,500, healthy"},{"jobid":"191891","verdict":"closed","note":"dense100 build OK: 100 + 100 pages, overlap 0"},{"jobid":"191892","verdict":"closed","note":"training smoke OK: 32.8 s/step, loss 0.600 -> 0.488, config diff within the law"},{"jobid":"191893","verdict":"closed","note":"start-model recall baseline .702 / held-out .670, ceiling .974 / .983, self-control 1.000"}],"gripes":["gap: headless wake shell is zsh; an unbraced $VAR followed by ':' in a launch arg is read as a history modifier (':s' errors, ':h'/':t' would silently rewrite paths)"],"wake_when":"job:192003,192010 max 8h"}
+== rc=0 secs=657
+== verify: 4/7
