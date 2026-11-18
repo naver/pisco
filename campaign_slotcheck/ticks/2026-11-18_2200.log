@@ -1,0 +1,180 @@
+== campaign slotcheck wake 2026-11-18_2200  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795006801 live=191784:RUNNING,191783:RUNNING running=2 pending=0 problems=0 problems_other=0 new=0 gpuh24=1.0 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7679 sig=21269c93 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=2 uplaw=0 push_rc=0 next=wake-when_job:191781,191782_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== wait condition met: job:191781,191782 (ended)   (NEXT was: wake-when job:191781,191782 max 2h)
+== session 4e3b6873-9049-4ad2-9193-08dd336cbfeb  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-18_2200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+87 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ==== && cat known_issues.md
+  ↳ Exit code 1 (+92 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+317 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat STATE.md; echo =====; cat known_issues.md | head -80; ls -la
+  ↳ Exit code 1 (+74 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat known_issues.md; echo "-----"; ls -la; echo "-----"; cat VERIFY.md 2>/dev/null | head -40
+  ↳ # Known issues — campaign slotcheck   (symptom → verdict → action; check here BEFORE diagnosing) (+65 lines)
+Reading the two finished jobs: the padding split probe and the padded-eval wrapper check.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -60; sacct -j 191781,191782,191783,191784 -X -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End 2>&1
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+54 lines)
+→ Bash: expmon logs 191781 120 2>&1 | tail -120
+  ↳ no log file for 191781 yet — pattern '*_%j.out' matched no existing file. Dir listing: (+1 lines)
+→ Bash: grep -E '"(191781|191782)"' .expmon/runs.jsonl | head -5 | cut -c1-1500; ls -d expQ/slotcheck/* ; ls -lt expQ/slotcheck/ | head
+  ↳ {"ts": "2026-11-18 21:07", "jobid": "191781", "launcher": "scripts/slotcheck/pad_split.sbatch", "argv": ["40"], "git": "e49c313+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/191781", "exp (+24 lines)
+→ Bash: cat expQ/slotcheck/pad_split_191781.out; ls -la expQ/slotcheck/pad_split_191781/
+  ↳ FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+61 lines)
+→ Bash: grep -vE 'Loading weights|it/s\]|^\s*$' expQ/slotcheck/eval_pad_191782.out | grep -iE 'INVARIANT|compare|identical|mems_used|differ|exit|FACTORS|node|md5|[0-9a-f]{8}  |RESULT|SUMMARY|step|plain|none|pad' | head -60
+  ↳ FACTORS kind=eval_pad arm=P2b cell=p2b_s42 steps=plain,none,64 limit=300 judge=0 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model set=mm_docqa_1500_1m px=1003520 topk=4 mnt=32 (+59 lines)
+→ Bash: grep -vE 'Loading weights|it/s\]|pad_token_id|^\s*$' expQ/slotcheck/eval_pad_191782.out | grep -E '===|INVARIANT|compare|identical|differ|exit|RESULT|SUMMARY|wrote|mems|pad_to|judge|score|EM|done|rows' | head -60
+  ↳ FACTORS kind=eval_pad arm=P2b cell=p2b_s42 steps=plain,none,64 limit=300 judge=0 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model set=mm_docqa_1500_1m px=1003520 topk=4 mnt=32 (+26 lines)
+The padding split probe and the wrapper check both finished cleanly; recording them now, then starting the overfit-capacity check (arm O).
+→ Bash: grep -nE 'per_device_train_batch_size|gradient_accumulation|max_steps|learning_rate|p_image_ae|p_text|p_image_cont|p_desc|p_find|training_dataset|torch_dtype|bf16|fp16' expQ/archq3/pt_mm_5M_spread/training_config.yaml | head -40; echo "----…
+  ↳ 4:  per_device_train_batch_size: 8 (+57 lines)
+→ Bash: sed -n 200,260p pisco/mm_utils.py; grep -n "def compress" -A40 pisco/model.py | grep -nE 'split|image|text|chunk|batch|for ' | head -20
+  ↳ span = list(image_prefix_ids) + span (+80 lines)
+→ Bash: sed -n 905,1000p pisco/model.py | grep -nE 'for |split|chunk_size|batch_size|range\(' | head
+  ↳ 9:        It returns a list of embeddings, one for each input_ids, (+6 lines)
+→ Bash: cat expQ/archq3/pt_mm_5M_spread/training_config.yaml; echo "-----"; cat pt_mm_4b.sh
+  ↳ output_dir: ./outputs/run (+90 lines)
+→ Bash: cat scripts/slotcheck/build_dense100.sbatch; sed -n 1,400p scripts/slotcheck/build_dense100.py | head -200
+  ↳ #!/bin/bash (+135 lines)
+→ Bash: grep -nE 'p_image_ae|p_text|p_image_cont|p_desc|p_find|ae_ratio|def __init__|teacher_kd|teacher_inputs|random\(\)|rng' pisco/mm_collator.py | head -60
+  ↳ 33:    build_teacher_inputs, (+43 lines)
+Still on the overfit-capacity check: confirming the training collator copes with an all-autoencoding batch before writing the training launcher.
+→ Bash: sed -n 140,160p pisco/mm_collator.py; sed -n 370,400p pisco/mm_collator.py; grep -n "def build_teacher_inputs" -A30 pisco/mm_utils.py | head -40
+  ↳ # Qwen3.5's Triton (GatedDeltaNet) kernels re-tune for every new (batch, length) (+82 lines)
+→ Bash: ls scripts/longdoc/ | grep -i recall; sed -n 1,60p scripts/longdoc/mem_recall.py; grep -nE "add_argument" scripts/longdoc/mem_recall.py
+  ↳ mem_recall.py (+72 lines)
+→ Bash: sed -n 60,140p scripts/longdoc/mem_recall.py; cat scripts/longdoc/mem_recall.sbatch; grep -nE "def pick_rows|def run_ref|def word|recall" scripts/probe_mem_recall.py | head -20
+  ↳ extra = {} (+87 lines)
+→ Bash: grep -nE 'eval|split|test_size|samples|select|max_steps|save_pretrained|output_dir|model\b' pisco/train.py | head -50; ls expQ/archq3/pt_mm_5M_spread/
+  ↳ 27:from pisco.model import PISCO, load_trainable_state (+52 lines)
+→ Bash: head -30 expQ/archq3/pt_mm_5M_spread/train.log | cut -c1-300; grep -E "it/s|s/it" expQ/archq3/pt_mm_5M_spread/train.log | tail -3 | tr '\r' '\n' | tail -3 | cut -c1-200; grep -E "'train_runtime'|train_runtime" expQ/archq3/pt_mm_5M_spread/tr…
+  ↳ [2026-11-07 09:30:40,438][httpx][INFO] - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect" (+29 lines)
+→ Bash: grep -n "pt_mm_5M_spread" EXPERIMENTS.md | head -8 | cut -c1-400; ls expQ/archq3/pt_mm_5M_spread/runs/ | head
+  ↳ 499:- 2026-11-03 21:47 [job 184709] FULL-BUDGET SPREAD CHAIN launched (owner: 'lets go', 2026-11-03 22:50), label archq3, SLURM afterany chain: stage 1 184709 = 5M text, 4 GPUs, 143228 recipe + compre (+7 lines)
+→ Bash: sed -n 499,500p EXPERIMENTS.md | cut -c1-1200; grep -nE "\[job 18(47|50|51|52)[0-9]{2}\].*(stage 2|pt_mm_5M_spread).*(s/it|s/step|h |wall|COMPLETED)" EXPERIMENTS.md | head -5 | cut -c1-500
+  ↳ - 2026-11-03 21:47 [job 184709] FULL-BUDGET SPREAD CHAIN launched (owner: 'lets go', 2026-11-03 22:50), label archq3, SLURM afterany chain: stage 1 184709 = 5M text, 4 GPUs, 143228 recipe + compressor (+3 lines)
+→ Bash: grep -l "pt_mm_5M_spread" pt_mm_4b_*.out 2>/dev/null | head; 
+  ↳ pt_mm_4b_184770.out (+1 lines)
+→ Bash: for f in pt_mm_4b_184770.out pt_mm_4b_184777.out; do echo "== $f"; head -5 $f | cut -c1-300; grep -aE "pt_mm_5M_spread" $f | head -2 | cut -c1-300; tr '\r' '\n' < $f | grep -aE "s/it\]" | tail -2 | cut -c1-160; tr '\r' '\n' < $f | grep -aE …
+  ↳ == pt_mm_4b_184770.out (+34 lines)
+→ Bash: cat pisco/configs/pt_lora_mm.yaml; echo "-----"; cat pisco/configs/defaults.yaml | head -60; git log --oneline -3 -- pisco/configs/pt_lora_mm.yaml
+  ↳ # Stage-2 MULTIMODAL pretraining: continue a text PISCO checkpoint on (page image, page text) (+64 lines)
+→ Bash: sed -n 1,40p scripts/longdoc/recall_pair.py; grep -n "add_argument" scripts/longdoc/recall_pair.py; sed -n 38,80p scripts/probe_mem_recall.py
+  ↳ """Pair two transcription-probe rebuilds per page against one reference (campaign longdoc, arm T). Stdlib only. (+85 lines)
+Writing the overfit-capacity pieces now: a builder fix (copies so the trainer's 64-row eval split can't drop a page, plus a text-layer ceiling file), the training launcher and a recall launcher.
+→ Bash: gpucap free a100 2>&1 | tail -12; sinfo -p gpu-be -o "%n %C %e %G" 2>&1 | grep -vE 'homer-00[5-9]' | head -30
+  ↳ NODE        TYPE                    FREE PARTITIONS                 CUDA (+13 lines)
+→ Bash: python3 - <<'EOF' ⏎ import re ⏎ p="scripts/slotcheck/build_dense100.py" ⏎ s=open(p).read() ⏎ s=s.replace('''    ap.add_argument("--tag", default="", help="suffix of the written set names (a smoke writes _smoke)") ⏎ ''','''    ap.add_argumen…
+  ↳ 15:  <out>/textlayer_{train,heldout}.json    each page's own text layer as a mem_recall record (the recall ceiling) (+6 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="scripts/slotcheck/build_dense100.py" ⏎ s=open(p).read() ⏎ old='''    # words first (cheap), tokenize only the densest candidates ⏎     cand = [(len((t or "").split()), k) for k, t in enumerate(texts) if t and docids[k…
+  ↳ compiled (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pt_overfit.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pt_overfit.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: bash -n scripts/slotcheck/pt_overfit.sbatch && echo "bash -n OK"; sacct -j 191169,191170 -o JobID,State,Elapsed,MaxRSS,NodeList | grep -E 'batch|^1911' 
+  ↳ bash -n OK (+6 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/recall.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/recall.sbatch (file state is current in your context — no need to Read it back)
+Launchers written; now dry-running the four-job chain (builder smoke → full build → 20-step training smoke + pre-training recall baseline).
+→ Bash: bash -n scripts/slotcheck/recall.sbatch && bash -n scripts/slotcheck/build_dense100.sbatch && echo "bash -n OK"; expmon launch --help 2>&1 | head -40
+  ↳ bash -n OK (+13 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage O_build_smoke --time 0:30:00 --exclude 'homer-[005-009]' scripts/slotcheck/build_dense100.sbatch 3000 _smoke 2>&1 | tail -15
+  ↳ would submit: sbatch --time 0:30:00 --exclude homer-[005-009] scripts/slotcheck/build_dense100.sbatch 3000 _smoke (+3 lines)
+→ Bash: expmon launch --exp slotcheck --stage O_build_smoke --time 0:30:00 --exclude 'homer-[005-009]' scripts/slotcheck/build_dense100.sbatch 3000 _smoke 2>&1 | tail -5
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=0:30:00 (+4 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage O_build --time 0:30:00 --exclude 'homer-[005-009]' --dependency afterok:191890 scripts/slotcheck/build_dense100.sbatch 60000 2>&1 | tail -4 && expmon launch --exp slotcheck --stage O_build --t…
+  ↳ would submit: sbatch --time 0:30:00 --exclude homer-[005-009] --dependency afterok:191890 scripts/slotcheck/build_dense100.sbatch 60000 (+5 lines)
+→ Bash: sed -n 150,200p pisco/train.py; sed -n 236,260p pisco/train.py
+  ↳ print(OmegaConf.to_yaml(config, resolve=True)) (+75 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage O_smoke --time 0:55:00 --exclude 'homer-[005-009]' --dependency afterok:191891 scripts/slotcheck/pt_overfit.sbatch o_smoke 20 2>&1 | tail -4
+  ↳ would submit: sbatch --time 0:55:00 --exclude homer-[005-009] --dependency afterok:191891 scripts/slotcheck/pt_overfit.sbatch o_smoke 20 (+3 lines)
+→ Bash: expmon launch --exp slotcheck --stage O_smoke --time 0:55:00 --exclude 'homer-[005-009]' --dependency afterok:191891 scripts/slotcheck/pt_overfit.sbatch o_smoke 20 2>&1 | grep -E "log:|Submitted|refus|error"; expmon launch --dry-run --exp s…
+  ↳ Submitted batch job 191892 (+5 lines)
+→ Bash: expmon launch --exp slotcheck --stage O_recall --time 4:30:00 --exclude 'homer-[005-009]' --dependency afterok:191891 scripts/slotcheck/recall.sbatch start_dense100:start:slotcheck_dense100 ref_dense100:ref:slotcheck_dense100 start_heldout:…
+  ↳ Submitted batch job 191893 (+2 lines)
+Four jobs submitted (builder smoke 191890 → full build 191891 → training smoke 191892 and recall baseline 191893). Now recording verdicts, probes and intent notes.
+→ Bash: expmon verdict 191781 closed "split decided (40 pages x widths 17/63, bf16 + fp32, homer-011, COMPLETED 0:0 9:22): the 2a not-inert read has two parts. (1) 1-row path, pads left in: bf16 A63 median cos .935 vs Afix63 (pad zeroing forced on)…
+  ↳ verdict recorded: 191781 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / model.py 994cff3d / mem_recall.py $(md5sum scripts/longdoc/mem_recall.py|cut -c1-8) / build_dense100.py $(md5sum scripts/slo…
+  ↳ md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / model.py 994cff3d / mem_recall.py 9f241620 / build_dense100.py b7170cf5 / pt_overfit.sb (+4 lines)
+→ Bash: expmon handoff list 2>&1 | tail -15
+  ↳ 3 open hand-off(s) for or from pisco (+9 lines)
+→ Bash: expmon handoff add --to pisco "latent pad leak in compress(): a ONE-row compressor batch with left pads (pad_to_multiple_of set, one chunk) moves that page's <MEM>s (median cos .935 bf16 / .953 fp32 vs unpadded). Guard it in pisco/model.py …
+  ↳ hand-off 2de131 filed: pisco:slotcheck -> pisco (its chats): latent pad leak in compress(): a ONE-row compressor batch with left pads (pad_to_multiple_of set, one chunk) moves that page's <MEM>s (medi (+1 lines)
+→ Bash: for j in 191783 191784; do echo "== $j"; grep -aE "^=== step|wrote|INVARIANT|RESULT|EXIT" expQ/slotcheck/eval_pad_$j.out | tail -4; tr '\r' '\n' < expQ/slotcheck/eval_pad_$j.out | grep -aE "^\[?[0-9]+/1500|it/s|s/it" | tail -1 | cut -c1-120…
+  ↳ == 191783 (+23 lines)
+→ Bash: cat docs/slot_checks.md
+  ↳ # Slot checks — campaign slotcheck (2026-11) (+66 lines)
+Updating the deliverable page with the padding split result (and correcting its earlier wrong guess that photo rows train on one-row batches).
+→ Bash: python3 - <<'EOF' ⏎ p="docs/slot_checks.md" ⏎ s=open(p).read() ⏎ old_status='''| 2a | does left padding change the `<MEM>` vectors? | **decided: not inert** (120 pages): pads move the slots on both batch paths; why is being split (job 19178…
+  ↳ inert bar (.9999 in bf16) cannot be met even by that floor, so check 2b asks whether this bf16 movement changes (+4 lines)
+→ Bash: cat >> campaign_slotcheck/known_issues.md <<'EOF' ⏎ | the same page compressed in bf16 inside a different batch (one more row, no pads) gives `<MEM>` cosine ≈ .994 (worst slot .66), not 1.0000 (pad_split 191781, 2026-11-18) | bf16 rounding …
+  ↳ | the same page compressed in bf16 inside a different batch (one more row, no pa (+1 lines)
+Tightening the campaign law for the overfit check (stop rule, text-layer ceiling control, page copies) and for the photo repeat of check 2b.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n "^| O. overfit" campaign_slotcheck/CAMPAIGN.md | cut -c1-700
+  ↳ 39:| O. overfit capacity (check 4; the ONLY training) | `scripts/slotcheck/build_dense100.py` (100 dense pages from `data/mm_pretrain_pdfa_1m`, by page-text length) + `pt_overfit.sbatch` (written 2026
+→ Bash: python3 - <<'EOF' ⏎ p="campaign_slotcheck/CAMPAIGN.md" ⏎ s=open(p).read() ⏎ old="`pt_overfit.sbatch` (written 2026-11-18; `recall.sbatch` runs the recall passes: `pt_mm_4b.sh` with the recipe of `expQ/archq3/pt_mm_5M_spread/training_config.…
+  ↳ ok
+→ Bash: expmon gripe --open --search DependencyNeverSatisfied 2>&1 | tail -5; expmon gripe --open --search "afterok chain" 2>&1 | tail -5
+  ↳ == 2 open report(s) matching 'dependencyneversatisfied', every machine, newest first == (+8 lines)
+→ Bash: squeue -u hdejean -o "%.8i %.20j %.9T %.10M %.20R" 2>&1 | grep -E "1918|1917|JOBID"; expmon display --exp slotcheck 2>&1 | tail -3
+  ↳ JOBID                 NAME     STATE       TIME     NODELIST(REASON) (+11 lines)
+→ Bash: grep -vE "it/s\]|Loading" expQ/slotcheck/dense100_191890.out | tail -12; sacct -j 191890 -o JobID,State,ExitCode,Elapsed,MaxRSS,NodeList | grep -E "batch|^191890 "
+  ↳ FACTORS kind=build arm=O_build scan=3000 tag=_smoke n=100 max_tokens=760 (+21 lines)
+Builder smoke passed in 1 minute (100 + 100 pages, 674-760 tokens each); the full build is running.
+→ Bash: expmon verdict 191890 closed "plumbing OK (decides nothing): COMPLETED 0:0 1:01 homer-010, MaxRSS 1.2 GB; scan 3,000 tail rows -> 100 + 100 pages, 674-760 tokens (mean 714 / 716), overlap 0, trained docids in the scan 0, train set 1,000 row…
+  ↳ verdict recorded: 191890 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+4 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+Now rewriting STATE.md for the next wake.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: sacct -j 191891,191892,191893 -X -o JobID,State,Start,Elapsed,NodeList 2>&1; sed -i 's/- Budget: 11 of 32 cells, ≈ 0.6 of 30 GPU-h used/- Budget: 11 of 32 cells, ≈ 0.8 of 30 GPU-h used/' campaign_slotcheck/STATE.md; grep -n "Budget: 11" cam…
+  ↳ JobID             State               Start    Elapsed        NodeList  (+5 lines)
+→ Bash: expmon note "did: slotcheck wake 22:00: split 191781 closed (one-row padded batch leaks pads: cos .935 bf16 / .953 fp32, fixed by forcing the zeroing; masked two-row path = bf16 batch-shape floor .9948 vs .9943, fp32 1.0000; latent in train…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Two padding findings are in, and the memory-capacity check has started. Nothing needs you right now.
+
+## Done this wake
+
+**Padding: why left pads moved the slots.** Slots are the `<MEM>` vectors a page is compressed into. A 40-page probe found two separate effects:
+- **One page alone, with pads:** the pads leak into the slots (cosine .935 in bf16, .953 in fp32, against 1.0 for unchanged). The installed transformers library only clears pads in Qwen3.5's linear-attention layers when a batch has more than one row. Forcing that clearing on brings it back to normal. No training run or eval uses this path: training batches always have at least 2 rows, and the eval adds no padding. It is a hidden bug, so I sent it to the main pisco chat (hand-off 2de131) to guard before anyone compresses one page at a time with padding.
+- **Several pages, padded as in training:** in fp32 the slots don't change (1.0000). In bf16 they move by about the same amount as putting the page in a batch with any other page, with no padding at all (.9948 vs .9943). So this is bf16 rounding, not a padding effect.
+
+**Padding: the eval wrapper check passed** (300 questions). My wrapper with padding off gives exactly the same answers as the shared eval script, 300 out of 300. With training-style padding, 67 of the 300 answers change. Whether that changes the judge score is what the two full runs now going will show.
+
+**Memory-capacity check (can the model memorise 100 dense pages?):**
+- Before its first run I fixed the page builder in two ways:
+  - The training script silently moves 10% of rows into its own eval split, so on 100 pages it would have skipped 10. Each page is now repeated 10 times.
+  - I added a ceiling check: each page's own text compared with the uncompressed model's transcription.
+- I wrote the training launcher and the recall launcher. The builder test run passed in 1 minute: 100 + 100 pages of 674–760 tokens each.
+
+**Campaign rules tightened:**
+- The overfit training stops at a step count that fits the 2 GPU-hour limit, measured from the 20-step test.
+- If its loss hasn't levelled off by then, the recall result counts only as a lower bound.
+- In the photo repeat of the padding check, one-image questions are reported separately and don't decide the result.
+
+## Running now
+- **Padding vs judge accuracy:** two full runs of 1,500 questions, one per seed. Each judges padded and unpadded answers on the same node. They should finish around 23:00 and 23:20.
+- **Memory check:** the full page-set build is running. Waiting on it are a 20-step training test and the starting model's recall on the 100 training pages and 100 held-out pages.
+
+## Next
+I'll wake when both padding runs and the training test have finished (3 hours at most). Then I apply the padding gate and launch the real overfit training, with its recall run chained after it.
+
+Budget: 11 of 32 runs and about 0.8 of 30 GPU-hours used.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Padding split decided (job 191781): a one-row padded compressor batch leaks pads into the slots (cos .935 bf16 / .953 fp32; fixed by forcing the zeroing), a path no training or eval run takes (hand-off 2de1…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.3086 turns=65 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Padding split decided (job 191781): a one-row padded compressor batch leaks pads into the slots (cos .935 bf16 / .953 fp32; fixed by forcing the zeroing), a path no training or eval run takes (hand-off 2de131); the masked several-row path moves slots only by bf16 batch-shape rounding (.9948 vs no-pad floor .9943; fp32 1.0000). Padded-eval wrapper invariant PASS (191782: 300/300 identical with pad off; pad 64 changes 67/300 answers). Full judged 2b pairs 191783/191784 running. Arm O started: builder fixed (token-cap selection, 10 copies vs train.py's eval split, text-layer ceiling), smoke 191890 OK, chain build 191891 -> 20-step training smoke 191892 + start-model recall baseline 191893. Law tightened for arm O stop rule/ceiling and the 2b photo repeat.", "launched": ["191890", "191891", "191892", "191893"], "verdicts": [{"jobid": "191781", "verdict": "closed", "note": "split: one-row padded batch leaks (cos .935 bf16/.953 fp32, fixed by forced zeroing); masked two-row path = bf16 batch-shape floor (.9948 vs .9943; fp32 1.0000); latent"}, {"jobid": "191782", "verdict": "closed", "note": "plumbing: wrapper invariant PASS 300/300; pad 64 changes 67/300 predictions"}, {"jobid": "191890", "verdict": "closed", "note": "builder plumbing OK: 100+100 pages 674-760 tokens, overlap 0"}], "wake_when": "job:191783,191784,191892 max 3h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"Padding split decided (job 191781): a one-row padded compressor batch leaks pads into the slots (cos .935 bf16 / .953 fp32; fixed by forcing the zeroing), a path no training or eval run takes (hand-off 2de131); the masked several-row path moves slots only by bf16 batch-shape rounding (.9948 vs no-pad floor .9943; fp32 1.0000). Padded-eval wrapper invariant PASS (191782: 300/300 identical with pad off; pad 64 changes 67/300 answers). Full judged 2b pairs 191783/191784 running. Arm O started: builder fixed (token-cap selection, 10 copies vs train.py's eval split, text-layer ceiling), smoke 191890 OK, chain build 191891 -> 20-step training smoke 191892 + start-model recall baseline 191893. Law tightened for arm O stop rule/ceiling and the 2b photo repeat.","launched":["191890","191891","191892","191893"],"verdicts":[{"jobid":"191781","verdict":"closed","note":"split: one-row padded batch leaks (cos .935 bf16/.953 fp32, fixed by forced zeroing); masked two-row path = bf16 batch-shape floor (.9948 vs .9943; fp32 1.0000); latent"},{"jobid":"191782","verdict":"closed","note":"plumbing: wrapper invariant PASS 300/300; pad 64 changes 67/300 predictions"},{"jobid":"191890","verdict":"closed","note":"builder plumbing OK: 100+100 pages 674-760 tokens, overlap 0"}],"wake_when":"job:191783,191784,191892 max 3h","gripes":[]}
+== rc=0 secs=660
+== verify: 6/8

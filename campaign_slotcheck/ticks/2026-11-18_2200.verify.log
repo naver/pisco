@@ -1,0 +1,67 @@
+== verifier 2026-11-18_2200  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session 0665391a-eab8-456f-8c1f-66da10226809  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+259 lines)
+→ Glob: {"pattern": "expQ/slotcheck/**/*.json"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ 1	# Slot checks — campaign slotcheck (2026-11) (+74 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "expQ/slotcheck/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+25 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out
+  ↳ 1	FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191782.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-95c06290-d876-1afd-b3f7-0ab437aba704) (+678 lines)
+I'm checking each claim in the campaign's state file against the job logs. Next: the plumbing check's numbers, then the two running jobs.
+→ Grep: {"pattern": "INVARIANT|mems_used|identical|same_pred|RESULT|EXIT CODE", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191782.out", "output_mode": "content"}
+  ↳ 384:=== EXIT CODE 0 === (+5 lines)
+→ Grep: {"pattern": "^\\[(1[0-9]{3}|[0-9]{3})/1500\\]|=== step|node homer|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191783.out", "output_mode": "content", "head_limit": 40}
+  ↳ 3:node homer-020.kr.europe.naverlabs.com (+41 lines)
+→ Grep: {"pattern": "^\\[(1[0-9]{3}|[0-9]{3})/1500\\]|=== step|node homer|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191784.out", "output_mode": "content", "head_limit": 40}
+  ↳ 3:node homer-019.kr.europe.naverlabs.com (+41 lines)
+→ Grep: {"pattern": "def collate_compressor|pad_to_multiple_of|padding_side|pad\\(", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/mm_utils.py", "output_mode": "content", "-n": true}
+  ↳ 214:def collate_compressor(batches: Sequence[MMChunkBatch], collator, vision_ids: Tuple[int, int, int]) -> dict: (+6 lines)
+→ Grep: {"pattern": "per_device_train_batch_size", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/configs", "output_mode": "content", "-n": true}
+  ↳ pisco/configs/finetune_mm.yaml:11:  per_device_train_batch_size: 2 (+8 lines)
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "files_with_matches"}
+  ↳ No files found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/dense100_191890.out
+  ↳ 1	FACTORS kind=build arm=O_build scan=3000 tag=_smoke n=100 max_tokens=760 (+20 lines)
+→ Grep: {"pattern": "other|SUMMARY|RESULT|batch4|mems_same|controls", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191672.out", "output_mode": "content", "head_limit": 30}
+  ↳ 1:FACTORS kind=probe arm=P2a n_pages=120 n_batch4=30 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+6 lines)
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content", "head_limit": 10}
+  ↳ campaign_slotcheck/STATE.md:17:  all chunks padded together in `collate_compressor`), and the eval pads nothing. Hand-off 2de131 to the pisco chat. (+6 lines)
+→ Grep: {"pattern": "batch|n_rows|rows|>\\s*1|shape\\[0\\]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-18_2200.log", "output_mode": "content", "head_limit": 30}
+  ↳ 22:  ↳ {"ts": "2026-11-18 21:07", "jobid": "191781", "launcher": "scripts/slotcheck/pad_split.sbatch", "argv": ["40"], "git": "e49c313+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/191781 (+31 lines)
+The state file's claims mostly hold up: 7 of the 9 check out against the logs, 1 is overstated, and 1 is not backed by any number.
+
+**Claims that hold**
+- **Check 1** (does the 4-document cap drop answer pages): 0 of 20,000 document rows and 0 of 8,000 photo rows lose every answer page. That is under the law's 2% bar, so "not a cause" stands. The 1,910 rows that lose one of two pages (9.55%) also match the audit file.
+- **Check 2a** (do left pads change the `<MEM>` vectors, the compressed slots): "not inert" stands on 120 pages. Every number matches the job 191672 log, and both controls pass.
+- **Check 2b plumbing** (the padding wrapper gives the same answers as the plain eval when padding is off): 300 of 300 answers are identical, and the slot counts match (118,147 each). With training padding on, 233 of 300 are identical.
+- **Arm O page-set build:** 100 + 100 pages, mean 714 / 716 tokens, no overlap, 1,000 training rows.
+- **What is running:** the two full padding evals, the page-set build, and the queued training smoke and recall baseline all match the grid. Check 3 has not started.
+
+**Claim that is overstated (marked provisional)**
+- **The padding cause split (job 191781, 40 pages).** The one-row leak is well shown: forcing pad zeroing on brings the vectors back to the floor. Three things are weaker than the state file says:
+  - **"Not a pad effect" for masked batches** holds only at the median. In fp32 the worst slot drops to .985 against a no-pad floor of .994, and the typical max difference is about twice the floor (.078 vs .034).
+  - **"The eval pads nothing"** is not exact. The eval pads several-page batches to the longest page (`pisco/mm_utils.py:231`). Only a one-row eval batch has no pads.
+  - **"Every training batch has 2 or more compressor rows"** comes from the batch-size settings (8 and 2), not from a count.
+
+**Claim that is not backed**
+- **Generation progress for the running padding evals.** The state file says 1,220 of 1,500 and 740 of 1,500. I could not find either number: the lines I read stop at 470 of 1,500 in both logs, and nothing ties a count to the time quoted.
+
+One rule gap: the law says headline claims in the state file should start with "provisional:" until a critic pass. None of the settled bullets do.
+
+Nothing needed from you.
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%; all Docmatix,…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0112 turns=20 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap n…", "status": "supported", "reason": "Matches the grid (191663 dropped_trained=0, partial_trained=…"}, {"claim": "Check 2a (arm P, padding probe) is NOT inert, n = 120 pages …", "status": "supported", "reason": "pad_probe_191672.out SUMMARY: repeat cos 1.0000 maxabs 0; ot…"}, {"claim": "Check 2a cause split, n = 40 pages x widths 17/63 x bf16+fp3…", "status": "provisional", "reason": "The medians match pad_split_191781.out: A63 .9345 / .9527, A…"}, {"claim": "Check 2b wrapper invariant PASS (job 191782, plumbing): on R…", "status": "supported", "reason": "eval_pad_191782.out:1124-1128: 'identical predictions 300 / …"}, "… +4 more"], "summary": "Seven of the eight claims checked out against the logs and t…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%; all Docmatix, 19.1% of its 10,000) lose one of two source pages. Job 191663.","status":"supported","reason":"Matches the grid (191663 dropped_trained=0, partial_trained=1910, rows_trained=20000, gate1/gate2 True) and expQ/slotcheck/audit_ft_191663/summary.txt. Docmatix partial 1910/10000 = 19.10%. natural_8k dropped 0/8000. Health OK: rows_read_eq_set and sources_sum_to_total are true; there are no text_rag rows. Controls OK: 50/50 sampled rows, planted [4,5] counted as dropped. 0% is at or below the law's 2% bar, so 'closed, not a cause' is the gate as written."},{"claim":"Check 2a (arm P, padding probe) is NOT inert, n = 120 pages (job 191672; controls pass: repeat cos 1.0000 / max abs 0 on 120/120, another page median cos .739; <MEM> count identical). 1 page + 17/63 pads: median cos .934/.934, max abs 2.65/2.80 (floor 0); 4-page questions padded to 64 (30 Q): .9966. Bar .9999 missed on both paths.","status":"supported","reason":"pad_probe_191672.out SUMMARY: repeat cos 1.0000 maxabs 0; other .7388; w17 .9336 / 2.652; w63 .9341 / 2.799; batch4 (30 questions) .9966. Grid row 191672 controls_ok=True, mems_same=True, inert=False. Both of the new metric's controls are in the same cell, as the law requires, and the .9999 bar is missed. Note: on the several-row path, the bf16 batching floor itself (.9943, job 191781) is below .9999."},{"claim":"Check 2a cause split, n = 40 pages x widths 17/63 x bf16+fp32 (job 191781): (1) one-row padded batch .935 bf16 / .953 fp32 at 63 pads, .995 / 1.0000 with pad zeroing forced on → leak is the transformers rule zeroing pads only for >1-row batches; latent because every training batch has >=2 compressor rows and the eval pads nothing; hand-off 2de131. (2) Two-row padded batch .9948 / 1.0000 = no-pad two-row floor .9943 / 1.0000 → bf16 rounding, not a pad effect.","status":"provisional","reason":"The medians match pad_split_191781.out: A63 .9345 / .9527, Afix63 .9947 / 1.0000, B63 .9948 / 1.0000, twin0 .9943 / 1.0000. Hand-off 2de131 was filed (tick log line 103). The forced-zeroing run backs part (1). Part (2) is overstated: in fp32, B63's worst slot is .9845 against twin0's .9942, and its typical max abs is .078 against .034 (rel_l2 .0058 vs .0028), so a small masked-pad residual remains that the median hides. 'The eval pads nothing' is not exact: collate_compressor pads several-row batches to the longest row (mm_utils.py:231-235). '>=2 rows in every training batch' is inferred from the bs 8 / bs 2 settings, not counted. Single 40-page run."},{"claim":"Check 2b wrapper invariant PASS (job 191782, plumbing): on R s42, 300 Q, homer-020, plain eval_mm_4b.sh vs wrapper pad=None give 300/300 identical predictions and mems_used (118,147 both); with pad=64, 233/300 identical. No judge.","status":"su
+== rc=0

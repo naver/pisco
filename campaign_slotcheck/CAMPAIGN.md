@@ -36,7 +36,7 @@ quoted here — cite the card, not the PDF.
 | C. finetune-set count (check 1) — **the feasibility gate** | `scripts/slotcheck/audit_ft_rows.sbatch` → `audit_ft_rows.py` (to write; CPU, `-p gpu-be --gres=gpu:0`), over every row of `data/mm_ft_docpages_20k_1m_teacher` (≈ 20k rows, campaign_qafreeze/CAMPAIGN.md:25) | nothing — recorded data | the committed collator (`MultimodalFineTuningCollator.example_chunks`, imported, never rewritten), `topk_docs=4` (pisco/mm_collator.py:489) | — | feasibility gate below, then "Check 1" | 1 (+1 re-run) |
 | P. padding (check 2) | (a) `scripts/slotcheck/pad_probe.sbatch` → `pad_probe.py` (to write; 1 GPU): the same pages compressed with 0 / 17 / 63 left pad tokens; (b) `scripts/slotcheck/eval_pad64.sbatch` (to write): a wrapper that IMPORTS `scripts/eval_mm_docqa.py` and hands its collator `pad_to_multiple_of=64` (training's value, pisco/mm_collator.py:431; the eval passes None, scripts/eval_mm_docqa.py:90) — the shared file stays byte-identical | pad width (a); training padding on / off (b) | model, pages/questions, PX=1003520, rate 8, judge; same node, same code md5 | (a) the same input compressed twice (noise floor) + another page (planted difference); (b) the SAME wrapper with `pad_to_multiple_of=None`, re-run on this code and node, never the recorded 11-09 file | Check 2a / 2b | 2 + 4 |
 | X. text slots beside image slots (check 3) | `scripts/slotcheck/transcribe_pages.{py,sbatch}` + `build_text_sets.py` (to write; they import the TRANSCRIBE prompt and `run_ref` of `scripts/probe_mem_recall.py` — run, never edit — and write `eval_data/slotcheck_docqa_{text,imgtext}_500`); cells = `eval_mm_4b.sh expQ/slotcheck/<cell>/model pisco "" <set>` with `TOPK`/`CML`/`DML` from the build's measured maxima | what is compressed: page image / page transcription as text / both | model R s42, the same 500 questions, rate 8, judge, PX=1003520; **no raw page ever enters the decoder prompt** | the same model and questions with image slots only, re-run on this code and node; uncompressed on the same rows (ceiling) | Check 3 | 4 build/shards + 6 |
-| O. overfit capacity (check 4; the ONLY training) | `scripts/slotcheck/build_dense100.py` (100 dense pages from `data/mm_pretrain_pdfa_1m`, by page-text length) + `pt_overfit.sbatch` (to write: `pt_mm_4b.sh` with the recipe of `expQ/archq3/pt_mm_5M_spread/training_config.yaml`, task mix `p_image_ae=1, p_text=0, p_image_cont=0`); recall by `scripts/longdoc/mem_recall.py` (exists, validated 360 / 360, EXPERIMENTS.md:1163 — run, never edit) | precision: bf16 / fp32 master weights (one variable) | start `expQ/archq3/pt_mm_5M_spread/model`, the same 100 pages, rate 8 (8 tokens per slot), 1,003,520 px | the SAME start model's recall on the SAME 100 pages before the overfit; uncompressed transcription of those pages (`--arm ref`) | Check 4 | 1 build + 1 smoke + 2 trainings + 4 recall |
+| O. overfit capacity (check 4; the ONLY training) | `scripts/slotcheck/build_dense100.py` (100 dense pages from `data/mm_pretrain_pdfa_1m`, by page-text length) + `pt_overfit.sbatch` (written 2026-11-18: `pt_mm_4b.sh` with the recipe of `expQ/archq3/pt_mm_5M_spread/training_config.yaml`, task mix `p_image_ae=1, p_text=0, p_image_cont=0, p_desc=0, p_find=0`); recall by `scripts/longdoc/mem_recall.py` (exists, validated 360 / 360, EXPERIMENTS.md:1163 — run, never edit) through `scripts/slotcheck/recall.sbatch` | precision: bf16 / fp32 master weights (one variable) | start `expQ/archq3/pt_mm_5M_spread/model`, the same 100 pages, rate 8 (8 tokens per slot), 1,003,520 px | the SAME start model's recall on the SAME 100 pages before the overfit; uncompressed transcription of those pages (`--arm ref`) | Check 4 | 1 build + 1 smoke + 2 trainings + 4 recall |
 Start order (a hypothesis, not a work order): C → P(a) → P(b) → O → X. X is last, not third, because its page
 transcriptions are the campaign's biggest single cost (measured 12.6 s/page: 501 pages in 1:45:10, job 191170,
 EXPERIMENTS.md:1177).
@@ -78,6 +78,9 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   with the CI above 0 at both seeds → the eval's missing training padding costs accuracy (a hand-off to the pisco
   chats: it moves every campaign's yardstick, so the wake never applies it); CI inside ±3 pt at both → not a cause;
   1.2-3 pt with the CI above 0 → PROMISING, one repeat on photos `eval_data/mm_naturalqa_1500`.
+  Before that repeat (tightened 2026-11-18, job 191781): a question whose compressor batch has ONE row takes the
+  one-row pad leak when padded (median cos .953 even in fp32) — a path no training run uses. Count compressor rows
+  per photo question first; one-row questions are reported apart and do not gate.
 - **Check 3 (arm X, n = 500 pairs, seed 42; seed 43 only if the first read clears the bar):** text slots − image slots,
   and image+text slots − image slots, paired per question. ≥ +5 pt with the CI above 0 → the image slots lose
   content the page's own words keep → a text side channel beside the image slots is worth building (a stage-2
@@ -96,6 +99,14 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   191219 / 191220 — never used as this baseline), the reference paired with itself = 100%, and 100 held-out
   dense pages whose recall must NOT rise, else the cell measured a general gain, not memorisation. fp32 masters are a
   second cell, one variable (precision), only if the budget line below still holds.
+  Tightened 2026-11-18 22:00 (before any arm O cell ran): `max_steps` = the smaller of 1,000 and the steps that fit
+  2 GPU-h at the 20-step smoke's measured s/step (minus the smoke's load time), fixed on the launch line; the plateau
+  rule is read from the logged loss afterwards — not reached = the recall is reported as a LOWER bound of what training
+  can store, never as a capacity verdict ≤ 75%. Ceiling control (added): the page's own text layer (the AE target)
+  scored against the same uncompressed transcription (`textlayer_*.json` of the build); the 90% / 75% bars are read
+  against this ceiling too, and a ceiling under 90% is reported beside the verdict. The training set repeats each page
+  10 times (`pisco/train.py` moves `min(64, rows // 10)` random rows to its eval split; on 100 rows it would drop 10
+  pages) — same 100 pages, same data path.
 - **Health per arm** (a 0.0 that is a bug looks exactly like a negative result):
   - C: rows read = the set's row count; per-source counts sum to the total; `text_rag` rows (empty `gold_positions` by
     construction, scripts/build_mm_finetune.py:163) reported apart; the planted 6-doc row is counted as "gold dropped".
