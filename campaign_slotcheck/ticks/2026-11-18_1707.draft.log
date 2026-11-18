@@ -1,0 +1,74 @@
+== law drafter 2026-11-18_1707  model=claude-opus-5  question=/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/QUESTION.md
+Warning: no stdin data received in 3s, proceeding without it. If piping from a slow command, redirect stdin explicitly: < /dev/null to skip, or wait longer.
+== session a3234ac3-4bfe-458b-88ff-5a185a7b4f13  model claude-opus-5  tools 28
+I'll start by reading the campaign's question and scaffold, plus the guide.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/QUESTION.md
+  ↳ 1	Owner (2026-11-18): "no progress has been done after many tries to improve the models. double check again training set, (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+123 lines)
+→ Read: /home/hdejean/.claude/expmon/templates/campaign/GUIDE.md
+  ↳ 1	# Writing a campaign law — the owner's guide (read while filling CAMPAIGN.md; the wake never reads this) (+110 lines)
+→ Glob: {"pattern": "campaign_slotcheck/**"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+340 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+321 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+261 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-18. (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-16. (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-17. (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/campaign.conf
+  ↳ 1	# campaign.conf — knobs for `expmon campaign` (sourced by preflight / tick / watchdog). Created 2026-11-17. (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py
+  ↳ 400	    """ (+139 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 60	def _cfg_value(v: str): (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/relabel_mm_teacher.py
+  ↳ 30	 (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/configs/finetune_mm.yaml
+  ↳ 1	# MULTIMODAL RAG finetuning: retrieved documents are page images (and/or text passages). (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/build_mm_finetune.py
+  ↳ 1	"""Build the multimodal RAG finetuning set: page images as retrieved documents + QA. (+216 lines)
+→ Glob: {"pattern": "data/mm_ft_docpages_20k_1m_teacher/*"}
+→ Glob: {"pattern": "scripts/longdoc/*"}
+→ Glob: {"pattern": "eval_data/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+145 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/HANDOFF.md
+  ↳ 1	# HANDOFF — PISCO (multimodal) (+163 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py
+  ↳ 1	""" (+199 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mem_recall.py
+  ↳ 1	"""Stride-aware port of scripts/probe_mem_recall.py (campaign longdoc, arm T): are a page's words in its <MEM>s? (+108 lines)
+→ Grep: {"pattern": "Features|Value\\(|Sequence\\(|datasets.Image\\(\\)", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/build_mm_eval.py", "output_mode": "content", "-n": true, "-C": 3}
+  ↳ 115-        import datasets (+6 lines)
+→ Grep: {"pattern": "def pick_rows|def run_ref|word recall|def recall|per_source", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/probe_mem_recall.py", "output_mode": "content", "-n": true, "-C": 8}
+  ↳ 5-  --arm ae   a PISCO checkpoint trained on image autoencoding (stage-2) rebuilds the page text from its <MEM>s alone, (+80 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/relabel_mm_teacher.py
+  ↳ 89	    proc = load_image_processor(args.model, max_pixels=args.image_max_pixels) (+33 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_probes/CAMPAIGN.md
+  ↳ 30	 (+99 lines)
+→ Grep: {"pattern": "add_argument", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 563:    ap.add_argument("--mode", choices=["pisco", "base", "pisco_text"], default="pisco") (+36 lines)
+→ Grep: {"pattern": "19117[0-9]|191219|191220|mem_recall|recall", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "head_limit": 40}
+  ↳ 24:[Omitted long matching line] (+30 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/probe_campaign_2026-11.md
+  ↳ 1	# Probe campaign 2026-11 — why the compressed model loses, and what recovers it without training (+49 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/REPORT.json
+  ↳ 1	{ (+39 lines)
+I have what I need. Here is the law.
+→ StructuredOutput: {"law": "# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-18 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-16** (launches allowed …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.0945 turns=33 is_error=False denials=0
+== declared: {"law": "# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-18 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-16** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\nA probe campaign runs many short inference/evaluation cells (minutes each) and deci…", "summary": "Question as I read it: of the four approved checks, which (if any) explains the document loss (.610/.615 compressed vs .809 uncompressed, 1,500 Q) — dropped gold pages in the finetune set, a train/eval padding mismatch, missing page text in the slots, or slot capacity itself. Diagnosis only; the only training is the 100-page overfit. No route-then-expand anywhere.\nFeasibility gate: check 1, the CP…"}
+== final:
+{"law":"# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append)\n\ncreated 2026-11-18 · kind **probe** · root `/beegfs/scratch/user/hdejean/pisco` · window until **2027-02-16** (launches allowed through that day 23:59) · owner herve.dejean@naverlabs.com · wakes run `claude-opus-5`\n\nA probe campaign runs many short inference/evaluation cells (minutes each) and decides on counts or metrics\nagainst a baseline cell — not on training curves. The binding constraint is submissions per wake and queue\ntime, not GPU-hours (navmem: 0.4 of 12 GPU-h used, cells of 1m42–3m17).\n\n## Mission\nSuccessor of campaign 'longdoc' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/REPORT.md). Open at hand-off: rejudge.sbatch — job 191629 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 — job 191634 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 — job 191635 COMPLETED, no verdict; CML=1024 DML=5612 PX=1003520 TOPK=1000 — job 191636 COMPLETED, no verdict.\n**Those four jobs belong to the LIVE sibling longdoc: never verdict, relaunch, kill or re-use them here.**\n**Question (owner, QUESTION.md):** \"no progress has been done after many tries to improve the models. double check\nagain training set, models architecture, evaluation dataset and protocol.\" The document loss — judge accuracy **.610 /\n.615 compressed vs .809 uncompressed** on the same 1,500 questions (`eval_data/mm_docqa_1500_1m`;\ncampaign_qafreeze/CAMPAIGN.md:12) — sits in what ONE page's `<MEM>` slots hold, and no training arm so far aimed at it.\nThe owner approved four checks and nothing else (\"yes go 1-4 with camp\", QUESTION.md:4): diagnosis only — inference\nprobes, CPU audits and ONE small overfit training; no full training run.\n**The number that decides it:** per check, one number with its regime (below); the campaign's answer is the four\nverdicts ranked by how much of the 19.9-pt document gap each one explains, plus the one-line consequence of each for\nthe stage-2 rebuild that would follow.\n**Regime of every number:** judge accuracy in [0, 1], pt = .01, Qwen3-8B rubric judge (`scripts/judge_mm_docqa.py`),\ngreedy decoding, paired per `query_id` by `scripts/paired_judge.py` (bootstrap 95% CI + exact McNemar). Documents\n`eval_data/mm_docqa_1500_1m` (4 pages, PX=1003520, 430.7 slots per question = 646,042 / 1,500,\ndocs/probe_campaign_2026-11.md:6-7). Models: R = `expQ/ft_mm_4b_184778/model` (seed 42) and\n`expQ/ft_mm_4b_184780/model` (seed 43); stage-2 start `expQ/archq3/pt_mm_5M_spread/model`; uncompressed =\n`eval_mm_4b.sh … base` on the same rows (recorded files in `expQ/base_qwen35_4b/eval/`). Owner's standing rules: probe\nbefore training; one variable per cell; text, images and mixed for every capability; every table names its metric and\ndirection, carries a compression-rate column (tokens per slot, slots per page) and the uncompressed decoder on the\nsame questions.\nIf it replicates or extends a paper, `papers/<slu
+== rc=0

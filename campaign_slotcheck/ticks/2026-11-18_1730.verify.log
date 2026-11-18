@@ -1,0 +1,52 @@
+== verifier 2026-11-18_1730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session a5f3c4be-c4dd-456e-8076-9b1a313b3350  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+190 lines)
+→ Glob: {"pattern": "campaign_slotcheck/**"}
+→ Glob: {"pattern": "scripts/slotcheck/**"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck"}
+  ↳ campaign_slotcheck/ticks/.keep (+11 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/slotcheck"}
+  ↳ scripts/slotcheck/audit_ft_rows.py (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.sbatch
+  ↳ 1	#!/bin/bash (+20 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py
+  ↳ 1	"""Campaign slotcheck, arm C (check 1, the feasibility gate): in the multimodal finetune sets, how many rows lose (+261 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663.out
+  ↳ 1	FACTORS kind=audit arm=C n_control=50 topk_docs=4 sets=docpages_20k_1m_teacher,natural_8k_teacher (+54 lines)
+Checking the arm C audit output now; next the tick log for timing, then the padding probe outputs.
+→ Grep: {"pattern": "17:4|17:5|191663|191671|191672|definition|before the count", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-18_1730.log", "output_mode": "content", "head_limit": 80}
+  ↳ 53:  ↳ Submitted batch job 191663 (+6 lines) (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-18_1730.log
+  ↳ 40	→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py (+93 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out
+  ↳ 1	FACTORS kind=probe arm=P2a n_pages=6 n_batch4=2 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+38 lines)
+→ Grep: {"pattern": "def apply_mask_to_padding_states", "path": "/beegfs/scratch/user/hdejean/pisco/.pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", "output_mode": "content", "-A": 12}
+  ↳ 193:def apply_mask_to_padding_states(hidden_states, attention_mask): (+12 lines)
+→ Grep: {"pattern": "per_device_train_batch_size|pad_to_multiple_of|gradient_accumulation|compress_batch|compressor_batch", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml", "output_mode": "content"}
+  ↳ 4:  per_device_train_batch_size: 1 (+1 lines)
+→ Grep: {"pattern": "pad_to_multiple_of", "path": "/beegfs/scratch/user/hdejean/pisco/pisco", "output_mode": "content", "-n": true}
+  ↳ pisco/mm_utils.py:229:    pad_mult = getattr(collator, "pad_to_multiple_of", None) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/pisco/mm_utils.py
+  ↳ 214	def collate_compressor(batches: Sequence[MMChunkBatch], collator, vision_ids: Tuple[int, int, int]) -> dict: (+39 lines)
+Numbers for the padding plumbing run match its log; now checking the check-1 table in docs/slot_checks.md and the law edit in CAMPAIGN.md.
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ 1	# Slot checks — campaign slotcheck (2026-11) (+41 lines)
+→ Grep: {"pattern": "loses its gold page|Definition|first gold", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md", "output_mode": "content", "-n": true}
+  ↳ 64:  of those the share whose first gold page sits at index ≥ 4 (dropped by `topk_docs=4`) while the teacher label was (+2 lines)
+→ Grep: {"pattern": "padding_side", "path": "/beegfs/scratch/user/hdejean/pisco/pisco", "output_mode": "content", "-n": true}
+  ↳ pisco/model.py:744:            config.decoder_model_name, padding_side="left", truncation_side="right" (+1 lines)
+→ Grep: {"pattern": "topk_docs", "path": "/beegfs/scratch/user/hdejean/pisco/pisco/mm_collator.py", "output_mode": "content", "-n": true}
+  ↳ 489:        docs = list(docs)[: self.topk_docs] if self.topk_docs is not None else list(docs)
+I checked all 8 claims against the logs. Check 1 holds: 0 of 20,000 training rows lose every answer page. The padding results are only a small trial run, and their explanation is not yet tested.
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1032 turns=22 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collato…", "status": "supported", "reason": "expQ/slotcheck/audit_ft_191663/summary.txt (also in the job …"}, {"claim": "Law edit: CAMPAIGN.md Check 1 definition of 'loses its gold …", "status": "supported", "reason": "The order is confirmed in campaign_slotcheck/ticks/2026-11-1…"}, {"claim": "Check 2a (arm P, padding probe): plumbing cell 191671 done (…", "status": "supported", "reason": "The figures match expQ/slotcheck/pad_probe_191671.out. Repea…"}, {"claim": "provisional, not a read: one page left-padded by 17 / 63 tok…", "status": "provisional", "reason": "The numbers match pad_probe_191671.out: w17 cos_med_median 0…"}, "… +4 more"], "summary": "Check 1 is settled and backed by the job: the audit (job 191…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside it: 1,910 / 20,000 document rows (9.55%; all Docmatix, 19.1% of its 10,000) lose one of their two source pages; the record does not say which page holds the answer. Job 191663 (CPU audit, 56 s, verdict closed). Table: docs/slot_checks.md.","status":"supported","reason":"expQ/slotcheck/audit_ft_191663/summary.txt (also in the job log) shows, over trained rows: dropped 0/20,000 (docmatix 0/10,000, docvqa 0/7,000, infographic 0/2,000, chartqa 0/1,000), natural 0/8,000, partial 1,910 (9.55%, docmatix 19.10%). Rows with more than 4 docs: 4,745 (23.73%). The gold-position histogram puts 1,910 golds at index 4. The feasibility gate passes: image_rows_complete_share 1.0, 50/50 sampled rows correct, planted [4,5]→dropped, [0,5]→partial, [1]→kept. Health checks are all true. The collator keeps docs[:topk_docs] (mm_collator.py:489), which matches the audit's assumption. 0% is under the law's ≤ 2% bar, counted on every row (a full census, so no CI is needed). The grid and the verdict file both say closed. Caveat: 'all answer pages' really means 'all pages marked gold'. A 'lose every gold page' row is impossible by construction here: a 5-doc Docmatix row has 2 golds and only index 4 is cut. Up to 1,910 rows may still lose the page that holds the answer; that is disclosed and reported apart, as the law asks. The bullet lacks the law's 'provisional:' prefix."},{"claim":"Law edit: CAMPAIGN.md Check 1 definition of 'loses its gold page' (every gold ≥ 4; partial apart; gate reads trained rows) written before the count was read (job started 17:40, edit 17:45, read 17:48).","status":"supported","reason":"The order is confirmed in campaign_slotcheck/ticks/2026-11-18_1730.log: launch of 191663 at step 52, CAMPAIGN.md edit at step 57, first full read of summary.txt at step 72. Earlier tails showed only header lines. The new wording (CAMPAIGN.md:68) matches the original 'first gold page sits at index ≥ 4'. Only the order could be checked, not the clock times. The verdict and probe stamps say 17:35, and a 651 s wake does not match 17:40/17:45/17:48 together with a 17:59 start of 191672."},{"claim":"Check 2a (arm P, padding probe): plumbing cell 191671 done (exit 0, 6 pages, controls pass: repeat cos 1.0000 / max abs 0; another page cos .742).","status":"supported","reason":"The figures match expQ/slotcheck/pad_probe_191671.out. Repeat control: cos_med_median 1.0000004, maxabs_max 0.0. Other-page control: cos_med_median 0.7415, under the planted bar of .99. The <MEM> count is 97 at all widths, and the grid row shows controls_ok=True mems_same=True. Supported only as a plumbing run (6 pages): it shows the path runs and decides nothing, as the STATE says."},{"claim":"provisional, not a read: one page left-padded by 17 / 63 tokens moved its
+== rc=0

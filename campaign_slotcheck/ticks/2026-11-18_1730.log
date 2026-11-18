@@ -1,0 +1,133 @@
+== campaign slotcheck wake 2026-11-18_1730  reasons=first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794990601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session 0229391b-f66f-4425-9a87-65f6c83e95f0  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && ls -la && cat CAMPAIGN.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-18_1730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+85 lines)
+  ↳ <persisted-output> (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+313 lines)
+→ Bash: cat STATE.md; echo ----; cat known_issues.md; echo ----; cat DECISIONS.md; echo ----; cat QUESTION.md; echo ---; cat campaign.conf | grep -v '^#' | grep -v '^$'
+  ↳ # STATE — campaign slotcheck   (rewritten WHOLESALE by every LLM wake; never append) (+180 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls scripts/slotcheck 2>&1; ls scripts/longdoc/; sed -n 380,560p pisco/mm_collator.py
+  ↳ ls: cannot access 'scripts/slotcheck': No such file or directory (+198 lines)
+→ Bash: grep -n "topk_docs" pisco/collator.py pisco/configs/*.yaml | head -20; ls expQ/ft_mm_4b_184778/; grep -n -i "topk\|training_dataset\|collator\|decoder_max\|compressor_max\|pad_to" expQ/ft_mm_4b_184778/model/training_config.yaml 2>/dev/null …
+  ↳ pisco/collator.py:746:        topk_docs: int = 5,  # how many docs to keep per query. (+17 lines)
+Reading the finetune config and data layout to write the arm C audit (first check of the slot campaign).
+→ Bash: cat expQ/ft_mm_4b_184778/training_config.yaml | head -80; ls data/mm_ft_docpages_20k_1m_teacher; cat data/mm_ft_docpages_20k_1m_teacher/*.json 2>/dev/null | head -c 2000
+  ↳ output_dir: ./outputs/run (+44 lines)
+→ Bash: ls data/mm_ft_docpages_20k_1m_teacher/train data/mm_ft_docpages_20k_1m_teacher/shard_00 | head; cat data/mm_ft_docpages_20k_1m_teacher/train/dataset_info.json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dum…
+  ↳ data/mm_ft_docpages_20k_1m_teacher/shard_00: (+92 lines)
+→ Bash: sed -n 1,60p scripts/build_mm_finetune.py | head -80; grep -n "gold_positions\|text_rag\|n_distract\|shuffle\|source" scripts/build_mm_finetune.py | head -50
+  ↳ """Build the multimodal RAG finetuning set: page images as retrieved documents + QA. (+86 lines)
+→ Bash: sed -n 94,145p scripts/build_mm_finetune.py; sed -n 40,80p scripts/relabel_mm_teacher.py; ls data/mm_ft_docpages_20k_1m_teacher/../ | grep docpages; cat data/mm_ft_docpages_20k_1m_teacher/*.md data/mm_ft_docpages_20k_1m_teacher/*.txt 2>/dev…
+  ↳ def iter_docqa_rows(repo, config, *, source, n, qa_per_doc, max_gold_pages, distractors, max_pixels, rng, (+96 lines)
+→ Bash: sed -n 1,120p scripts/longdoc/audit_inputs.py; cat scripts/longdoc/audit.sbatch
+  ↳ """Arm A (campaign longdoc): what the compressor and the decoder actually receive, per eval variant and per training (+139 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for p in ['data/mm_ft_natural_8k_teacher/train/dataset_info.json','data/mm_ft_docpages_20k_1m_teacher/train/dataset_info.json']: ⏎     d=json.load(open(p)); print(p, list(d['features'].keys()), d.get('splits')) …
+  ↳ data/mm_ft_natural_8k_teacher/train/dataset_info.json ['docs', 'doc_images', 'query', 'answers', 'gold_positions', 'source', 'query_id', 'gold_label', 'mistral_label'] None (+13 lines)
+Writing the arm C audit script (CPU count of gold pages dropped by the 4-document cap); checking how training samples rows first.
+→ Bash: grep -n "split(\":\")\|rsplit(\":\"\|':'\|\":\"" pisco/train.py | head; grep -n "def load_.*dataset\|shuffle\|select(range" pisco/train.py | head -20
+  ↳ 175:        path, _, cap = spec.rpartition(":") if ":" in spec and spec.rsplit(":", 1)[-1].isdigit() else (spec, "", "") (+5 lines)
+→ Bash: sed -n 165,205p pisco/train.py; sinfo -p gpu-be -o "%n %C %e" | grep -v "homer-00[5-9]" | head -30
+  ↳ model = PISCO.from_pretrained(config.model_name_or_path, **_ov) (+51 lines)
+→ Bash: grep -v "^#" .expmon.conf | grep -v "^$" | head -40
+  ↳ EXP_ROOT=. (+13 lines)
+→ Bash: grep -n "^class MMChunkBatch\|^def load_image_processor\|^def segments_to_chunks" -A 12 pisco/mm_utils.py | head -60; grep -n "chunk_docs\|n_max_chunks\|chunk_overlap" pisco/collator.py | sed -n 1,12p
+  ↳ 56:def load_image_processor(source: Optional[str], min_pixels: int = DEFAULT_MIN_PIXELS, (+52 lines)
+Now writing the audit script and its launcher.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.py has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/audit_ft_rows.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: mkdir -p expQ/slotcheck && bash -n scripts/slotcheck/audit_ft_rows.sbatch && python3 -c "import ast,sys; ast.parse(open('scripts/slotcheck/audit_ft_rows.py').read()); print('syntax ok')" && grep -n "def total_mems\|total_mems" pisco/mm_util…
+  ↳ syntax ok (+6 lines)
+→ Bash: sed -n 150,156p pisco/mm_utils.py; expmon launch --help 2>&1 | head -40
+  ↳ self.image_grid_thw.extend(other.image_grid_thw) (+19 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage C --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --cpus-per-task 4 --mem 24G scripts/slotcheck/audit_ft_rows.sbatch 50 2>&1 | tail -25
+  ↳ would submit: sbatch --time 0:30:00 --partition gpu-be --exclude homer-[005-009] --cpus-per-task 4 --mem 24G scripts/slotcheck/audit_ft_rows.sbatch 50 (+3 lines)
+→ Bash: expmon launch --exp slotcheck --stage C --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --cpus-per-task 4 --mem 24G scripts/slotcheck/audit_ft_rows.sbatch 50 2>&1 | tail -8
+  ↳ Submitted batch job 191663 (+6 lines)
+→ Bash: expmon note -j 191663 "intent: slotcheck arm C (check 1, feasibility gate), CPU audit scripts/slotcheck/audit_ft_rows.py (md5 in log): every row of data/mm_ft_docpages_20k_1m_teacher (+ natural_8k_teacher, reported apart; 'trained' = first …
+  ↳ expmon note: 123 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+3 lines)
+While the audit runs, I'm tightening the law's wording of "dropped" and preparing the padding probe (check 2a).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n "^def collate_compressor" -A 60 pisco/mm_utils.py | head -80
+  ↳ 214:def collate_compressor(batches: Sequence[MMChunkBatch], collator, vision_ids: Tuple[int, int, int]) -> dict: (+60 lines)
+→ Bash: tail -30 expQ/slotcheck/audit_ft_191663.out; squeue -j 191663 -h -o "%T %M" 2>&1
+  ↳ FACTORS kind=audit arm=C n_control=50 topk_docs=4 sets=docpages_20k_1m_teacher,natural_8k_teacher (+7 lines)
+→ Bash: grep -n "from_pretrained\|\.compress(\|attn_implementation\|def _compress\|collate_compressor\|pad_to_multiple_of" scripts/eval_mm_docqa.py | head -20; grep -n "    def compress" -A 45 pisco/model.py | head -70
+  ↳ 42:from pisco.mm_utils import (MMChunkBatch, collate_compressor, image_span_text, image_to_span, merge_size_of,  # noqa: E402 (+85 lines)
+→ Bash: sed -n 80,135p scripts/eval_mm_docqa.py; sed -n 655,682p scripts/eval_mm_docqa.py; tail -40 expQ/slotcheck/audit_ft_191663.out
+  ↳ return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True, enable_thinking=False) (+90 lines)
+→ Bash: sed -n 948,990p pisco/model.py; grep -n "compressor_max_length\|CML" eval_mm_4b.sh | head -8; grep -n "def compressor_pad" -A 12 pisco/collator.py | head -16
+  ↳ mm_token_type_ids=mm_token_type_ids, (+57 lines)
+→ Bash: sed -n 1,60p scripts/eval_mm_docqa.py | grep -n "import\|sys.path\|^[A-Z_]* =" | head -30; tail -5 expQ/slotcheck/audit_ft_191663.out; squeue -j 191663 -h -o "%T %M"
+  ↳ 21:import argparse (+27 lines)
+Arm C finished; reading its full table.
+→ Bash: cat expQ/slotcheck/audit_ft_191663/summary.txt; sacct -j 191663 -X -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS -n; sacct -j 191663 -o JobID,MaxRSS -n | head -3
+  ↳ topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+41 lines)
+Check 1 passes its gate and decides: no trained row loses all its answer pages. Recording the verdict, then launching the padding probe.
+→ Bash: expmon verdict 191663 closed "check 1 decided, not a cause: COMPLETED 0:0 56 s homer-017; feasibility gate PASS (image rows complete 20,000/20,000; controls 50/50 sampled rows give min(n,4) blocks, planted [4,5]->dropped, [0,5]->partial, [1…
+  ↳ verdict recorded: 191663 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+Now the padding probe (check 2a): same page compressed with 0, 17 and 63 left pad tokens, plus repeat and other-page controls.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_probe.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_probe.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_probe.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_probe.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: python3 - <<'EOF' ⏎ import re ⏎ p='scripts/slotcheck/pad_probe.py' ⏎ s=open(p).read() ⏎ s=s.replace("    from eval_mm_docqa import make_collator, compress_sliced\n","    from eval_mm_docqa import make_collator\n") ⏎ s=s.replace("""    for k…
+  ↳ ok (+5 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage P2a --smoke --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 16G scripts/slotcheck/pad_probe.sbatch 6 2 2>&1 | tail -5
+  ↳ would submit: sbatch --time 0:30:00 --partition gpu-be --exclude homer-[005-009] --mem 16G scripts/slotcheck/pad_probe.sbatch 6 2 (+3 lines)
+→ Bash: expmon launch --exp slotcheck --stage P2a --smoke --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 16G scripts/slotcheck/pad_probe.sbatch 6 2 2>&1 | grep -E "Submitted|job id"
+  ↳ (Bash completed with no output)
+→ Bash: tail -3 .expmon/runs.jsonl | cut -c1-300; squeue -u hdejean -h -o "%i %j %T %M %R" | head
+  ↳ {"ts": "2026-11-18 17:35", "jobid": "191666", "launcher": "eval_mm_4b.sh", "argv": ["expQ/spread/b_tail_s42/model", "pisco", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m"], "git" (+12 lines)
+→ Bash: expmon launch --exp slotcheck --stage P2a --smoke --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 16G scripts/slotcheck/pad_probe.sbatch 6 2 2>&1 | tail -15
+  ↳ expmon smoke: EXP_SMOKE_CMD not set in /beegfs/scratch/user/hdejean/pisco/.expmon.conf — author a per-project smoke launcher first (the 'expmon' skill does this). (+1 lines)
+Padding-probe submission: dropping expmon's `--smoke` flag (needs a project smoke command); launching a small 6-page run as a normal cell, then the full run chained after it.
+→ Bash: expmon launch --exp slotcheck --stage P2a_smoke --ok-exit 3 --time 0:30:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 16G scripts/slotcheck/pad_probe.sbatch 6 2 2>&1 | grep -E "Submitted|refus|REFUS|error"
+  ↳ Submitted batch job 191671
+→ Bash: expmon launch --exp slotcheck --stage P2a --ok-exit 3 --dependency afterok:191671 --time 0:45:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 16G scripts/slotcheck/pad_probe.sbatch 120 30 2>&1 | grep -E "Submitted|refus|REFUS|error"…
+  ↳ Submitted batch job 191672 (+2 lines)
+→ Bash: expmon note -j 191671 "intent: arm P check 2a plumbing: scripts/slotcheck/pad_probe.py on R s42 (184778), 6 pages of eval_data/mm_docqa_1500_1m (+2 batch4 questions), widths 0/17/63, eval's own example_chunks (pad None, TOPK 4, CML 256) + m…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+While the probe runs, writing the deliverable page with check 1's table.
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md (file state is current in your context — no need to Read it back)
+→ Bash: expmon note -j 191663 "result: check 1 (arm C) decided, not a cause: 0 / 20,000 trained document rows lose every answer page to topk_docs=4 (0 / 8,000 photo rows); 1,910 / 20,000 (9.55%, all docmatix = 19.1% of its 10,000) lose one of their…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+10 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: tail -15 expQ/slotcheck/pad_probe_191671.out | cut -c1-600; squeue -j 191671,191672 -h -o "%i %T %M %R"
+  ↳ FACTORS kind=probe arm=P2a n_pages=6 n_batch4=2 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat >> known_issues.md <<'EOF' ⏎ | `expmon launch --smoke …` prints "EXP_SMOKE_CMD not set … real job NOT submitted" (pad probe, 2026-11-18) | `--smoke` runs the project's smoke co…
+  ↳ Base compressor nb parameters 4694624256 (+7 lines)
+→ Bash: sleep 50; tail -12 /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out | cut -c1-900; squeue -j 191671,191672 -h -o "%i %T %M %R"
+  ↳ <tool_use_error>Blocked: sleep 50 followed by: tail -12 /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out cut -c1-900 squeue -j 191671,191672 -h -o "%i %T %M %R". To wait for a co
+→ Bash: tail -12 /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out | cut -c1-900; squeue -j 191671,191672 -h -o "%i %T %M %R"
+  ↳ Compressor Pad token <|endoftext|> (+15 lines)
+Waiting for the 6-page padding probe to finish (model loaded, compressing now).
+→ Bash: F=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out; timeout 300 bash -c "until grep -q 'RESULT\|Traceback\|Error' $F || [ -z \"\$(squeue -j 191671 -h 2>/dev/null)\" ]; do sleep 5; done"; grep -E "^\[pad\] page|SUMMARY|…
+  ↳ [pad] page 0: tokens 867 mems {0: 97, 17: 97, 63: 97} repeat {'n': 97, 'cos_med': 1.0000004768371582, 'cos_min': 1.000000238418579, 'maxabs': 0.0, 'rel_l2': 0.0} w17 {'n': 97, 'cos_med': 0.93891656398 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && F=$(ls .pixi/envs/default/lib/python3*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py 2>/dev/null | head -1); echo $F; grep -n "def apply_mask_to_padding_states" -A 8 $F | head -12; gr…
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py (+11 lines)
+Confirmed in the installed transformers: the pad-zeroing in Qwen3.5's linear-attention layers is skipped when the batch has one row. Saving state and the plan now.
+→ Bash: expmon note -j 191671 "result: plumbing OK (exit 0, 6 pages, controls PASS: repeat cos 1.0000 / max abs 0, other page cos .742). provisional, NOT a check-2a read: single-page left pad 17 / 63 moved <MEM>s to median cos .930 / .941 (min .657…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && python3 - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ s=s.replace("""**Open, and running** ⏎ - Check 2a (arm P, padding probe): plumbing cell 191671 (6 pages) running on homer-011;…
+  ↳ wake-when job:191672 max 2h (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ s=s.replace("| 2a | does left padding change the `<MEM>` vectors? | running |","| 2a | does left padding change the `<MEM>` vectors? |…
+  ↳ 11:| 2a | does left padding change the `<MEM>` vectors? | running; the 6-page plumbing run shows a probe fault to remove first (1-row batches skip pad zeroing in Qwen3.5's linear-attention layers) |
+→ StructuredOutput: {"next": "wake-when", "summary": "First wake of slotcheck. Check 1 (arm C) decided, not a cause: CPU audit 191663 found 0 of 20,000 trained document rows (and 0 of 8,000 photo rows) lose every answer page to topk_docs=4. Feasibility gate PA…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.4242 turns=57 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "First wake of slotcheck. Check 1 (arm C) decided, not a cause: CPU audit 191663 found 0 of 20,000 trained document rows (and 0 of 8,000 photo rows) lose every answer page to topk_docs=4. Feasibility gate PASS: 20,000/20,000 rows complete; 50/50 sampled rows correct; 3 planted rows correct. Beside it, 1,910 of 20,000 rows (9.55%, all Docmatix) lose one of their two source pages; the record does not say which page holds the answer. Table in docs/slot_checks.md. Check 2a (padding probe): 6-page plumbing run 191671 done, controls pass. Provisional: padding moved <MEM>s a lot (median cos .93 on one page). That single-page arm is likely a probe fault: in the installed transformers, Qwen3.5's linear-attention layers zero pad states only when a batch has more than one row (modeling_qwen3_5.py:198). The same 1-row case occurs in training for 1-image photo rows. Full 120-page run 191672 is running. Next wake: check left-pad handling in the spread position ids, separate the 1-row path from the 2+-row path in the probe, then read 2a.", "launched": ["191663", "191671", "191672"], "verdicts": [{"jobid": "191663", "verdict": "closed", "note": "check 1 not a cause: 0/20,000 trained doc rows lose every gold page; partial 1,910 (9.55%, docmatix); gate PASS"}], "wake_when": "job:191672 max 2h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"First wake of slotcheck. Check 1 (arm C) decided, not a cause: CPU audit 191663 found 0 of 20,000 trained document rows (and 0 of 8,000 photo rows) lose every answer page to topk_docs=4. Feasibility gate PASS: 20,000/20,000 rows complete; 50/50 sampled rows correct; 3 planted rows correct. Beside it, 1,910 of 20,000 rows (9.55%, all Docmatix) lose one of their two source pages; the record does not say which page holds the answer. Table in docs/slot_checks.md. Check 2a (padding probe): 6-page plumbing run 191671 done, controls pass. Provisional: padding moved <MEM>s a lot (median cos .93 on one page). That single-page arm is likely a probe fault: in the installed transformers, Qwen3.5's linear-attention layers zero pad states only when a batch has more than one row (modeling_qwen3_5.py:198). The same 1-row case occurs in training for 1-image photo rows. Full 120-page run 191672 is running. Next wake: check left-pad handling in the spread position ids, separate the 1-row path from the 2+-row path in the probe, then read 2a.","launched":["191663","191671","191672"],"verdicts":[{"jobid":"191663","verdict":"closed","note":"check 1 not a cause: 0/20,000 trained doc rows lose every gold page; partial 1,910 (9.55%, docmatix); gate PASS"}],"wake_when":"job:191672 max 2h","gripes":[]}
+== rc=0 secs=651
+== verify: 5/8
