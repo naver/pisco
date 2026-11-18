@@ -1,0 +1,53 @@
+== campaign qafreeze wake 2026-11-18_1800  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794992402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=22.5 idle_h=0.1 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=3f0317b9 same=1 behind=0 upstream=0 upfiles=0 upmine=0 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:191659,191660,191661,191662_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== wait condition met: job:191659,191660,191661,191662 (ended)   (NEXT was: wake-when job:191659,191660,191661,191662 max 2h)
+== session 6b18b690-3950-4291-a75d-9bd54382eb4a  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-18_1800   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+105 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ==== && cat known_issues.md
+  ↳ Exit code 1 (+64 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+261 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ 1	# STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) (+108 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && ls -la; ls -la ~/.. >/dev/null; cat known_issues.md 2>&1 | head -80
+  ↳ total 83 (+46 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -45; sacct -j 191659,191660,191661,191662 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End 2>&1
+  ↳ - saw: provisional text 40 vs 10 passages s42 Delta_len -2.6 [-5.6,+0.3] 199/236 p .084, n=1,500 pairs (EM +0.8): undecided; every arm E bucket is beyond the finetune's 488-slot range (+50 lines)
+→ Bash: for j in 191659 191660 191661 191662; do echo "## $j"; expmon logs $j 25 2>&1 | tail -25; done
+  ↳ ## 191659 (+111 lines)
+All four Q evals finished cleanly. Next: health checks on them, pair Q photos against R, then launch the R MRQA and F documents reference re-runs.
+→ Bash: ls -la expQ/qafreeze/ft_frozen_s42/eval/ expQ/qafreeze/ft_frozen_s43/eval/ expQ/qafreeze/ref_s42/eval/ expQ/qafreeze/ref_s43/eval/ 2>&1; ls expQ/qafreeze/; for j in 191659 191660 191661 191662; do echo "## $j"; f=$(ls expQ/$j/*.log 2>/dev/n…
+  ↳ expQ/qafreeze/ft_frozen_s42/eval/: (+61 lines)
+→ Bash: ls campaign_qafreeze/pairs/; head -30 campaign_qafreeze/pairs/docs_QminusR_s42.txt; python3 -I -c " ⏎ import json,sys ⏎ for f in ['expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json','expQ/qafreeze/ft_frozen_s4…
+  ↳ docs_noop_R42.txt (+15 lines)
+→ Bash: sed -n 1,40p scripts/paired_judge.py | grep -E "argparse|add_argument|usage|^\"\"\"|names|label" ; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/judge_prompts.py scrip…
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+20 lines)
+Code unchanged since the reference re-runs. Pairing Q photos against R (same launcher).
+→ Bash: for s in 42 43; do python3 scripts/paired_judge.py expQ/qafreeze/ft_frozen_s$s/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json expQ/qafreeze/ref_s$s/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json --names Q$s R$s > campaign_qafree…
+  ↳ judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+13 lines)
+→ Bash: ls -la expQ/qafreeze/ref_s42 expQ/qafreeze/ref_s43 expQ/qafreeze/f_s42 expQ/qafreeze/f_s43; expmon lineage 191531 2>&1 | head -40
+  ↳ expQ/qafreeze/f_s42: (+29 lines)
+→ Bash: expmon help 2>&1 | grep -iE "lineage|show|argv|cmd|info|runs" | head -20
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+19 lines)
+→ Bash: grep -E '"(191531|191532|191661|191662|191495|188606|188613)"' .expmon/runs.jsonl | python3 -I -c " ⏎ import json,sys ⏎ for l in sys.stdin: ⏎     r=json.loads(l) ⏎     print(r.get('jobid'), {k:r[k] for k in r if k in ('launcher','argv','env…
+  ↳ 188606 {'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/freeze/ref_s42/model', 'pisco', '', 'eval_data/text_mrqa_ood_1500'], 'outdir': '/beegfs/scratch/user/hdejean/pisco/expQ/188606', 'exp': 'freeze', 's (+7 lines)
+→ Bash: expmon help 2>&1 | sed -n '/^  launch/,/^  [a-z]/p' | head -40; grep -nE 'OUT|eval_dir|dirname' eval_mm_4b.sh | head
+  ↳ launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid>] [--stage <label>] [--force] [--env K=V]… [--ok-exit N] (+30 lines)
+→ Bash: python3 -I -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r.get('exp')=='freeze' and (r.get('stage') in ('ft','eval') ) and any('ft_frozen_s4' in a for a in r.get('argv',[])): ⏎         print(r.get(…
+  ↳ 188596 eval ['expQ/freeze/ft_frozen_s42/model', 'pisco', '', 'eval_data/mm_docqa_1500_1m'] None 0:40:00 (+24 lines)
+Q photos are inside the gate at both seeds. Now launching the four reference re-runs (R on MRQA text, F on documents) needed for the final gate read.
+→ Bash: grep -E '"jobid": ?"?(188596|188598)' .expmon/runs.jsonl | python3 -I -c " ⏎ import json,sys ⏎ for l in sys.stdin: r=json.loads(l); print(r['jobid'], r.get('parent'))"
+  ↳ 188596 188582 (+1 lines)
+→ Bash: expmon launch --dry-run --exp qafreeze --stage eval-ref --parent 184778 --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:00 --env PX=1003520 --env CML=4096 eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco '' eval_data/text_mrqa_ood…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:27:00 eval_mm_4b.sh expQ/qafreeze/ref_s42/model pisco  eval_data/text_mrqa_ood_1500 (+9 lines)
+→ Bash: expmon note "qafreeze intent: launch the 4 remaining reference re-runs on today's launcher (md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / pisco/model.py 994cff3d): R MRQA s4…
+  ↳ expmon note: 84 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+9 lines)
+→ Bash: for s in 42 43; do p=$([ $s = 42 ] && echo 188582 || echo 188583); expmon launch --exp qafreeze --stage eval-ref --parent $p --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 --env PX=1003520 eval_mm_4b.sh expQ/qafreeze/f_s$s/mo…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191677.out (+11 lines)
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== result: subtype=success cost=1.2379 turns=21 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== rc=1 secs=190
