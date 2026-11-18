@@ -1,0 +1,86 @@
+== campaign qafreeze wake 2026-11-18_1730  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794990601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=21.3 idle_h=0.4 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=2 uplaw=0 push_rc=0 next=wake-when_job:191626,191628_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== wait condition met: job:191626,191628 (ended)   (NEXT was: wake-when job:191626,191628 max 2h)
+== session b2798a3e-0d1c-4063-9487-b2b524ce0b8e  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-18_1730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+90 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat CAMPAIGN.md && echo ---- && cat STATE.md && echo ---- && cat known_issues.md && echo ---- && cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY.md 2>/dev/nu…
+  ↳ <persisted-output> (+13 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b2798a3e-0d1c-4063-9487-b2b524ce0b8e/tool-results/b9vo54xjw.txt
+  ↳ 1	# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+383 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls .expmon/campaign/qafreeze/; cat .expmon/campaign/qafreeze/VERIFY.md 2>/dev/null | head -40; expmon runs 2>/dev/null | grep -E "19162[68]" ; sacct -j 191626,191628 -X -o JobID,State,ExitCode,Elapsed,…
+  ↳ armed_at (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat .expmon/campaign/qafreeze/verify.result.json | head -c 3000; echo; expmon logs 191626 30; echo '====='; expmon logs 191628 30
+  ↳ { (+157 lines)
+Both arm Q documents evals finished: judge .615 (seed 42) and .613 (seed 43), against the reference's .610 / .615. Now I pair them question by question and launch the next four evals.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_qafreeze/code_md5.txt 2>/dev/null; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/qafreeze/ft_qafreeze.sbatch expQ/f…
+  ↳ # md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3 (+38 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 2>/dev/null | grep -E "19149[56]|19153[12]|ref_s4|eval-ref" | head -20; ls -la --time-style=+%m-%d_%H:%M expQ/ft_mm_4b_184778/eval/ expQ/ft_mm_4b_184780/eval/; ls -la expQ/qafreeze/
+  ↳ - did: smoke s42 + module check PASS (191493/191494, 1 smoke, 20 steps); launched arm Q full cells s42 191527 + s43 191530 (gpu, --time 12:20) and R photos re-evals 191531/191532 (gpu-be); cap 4 reach (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze; ls -la ref_s42 ref_s43 f_s42 f_s43; ls -la ref_s42/* ref_s43/* f_s42/* f_s43/* 2>/dev/null | head -40; find ref_s42/ ref_s43/ -name "*.json" -newer init_s42 | xargs ls -la
+  ↳ f_s42: (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; for s in 42 43; do echo "== Q-R docs s$s"; python3 scripts/paired_judge.py expQ/qafreeze/ref_s$s/eval/$D expQ/qafreeze/ft_frozen_s$s/eval/$D --names R$…
+  ↳ == Q-R docs s42 (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; for s in 42 43; do f=expQ/qafreeze/ft_frozen_s$s/eval/$D; python3 - "$f" <<'EOF' ⏎ import json,sys ⏎ d=json.load(open(sys.argv[1])) ⏎ print(type(d).__n…
+  ↳ dict ['summary', 'records'] (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; for s in 42 43; do python3 -c " ⏎ import json,sys;d=json.load(open('expQ/qafreeze/ft_frozen_s$s/eval/$D'))['summary'];print({k:d[k] for k in d if any(x…
+  ↳ {'image_max_pixels': 1003520, 'image_min_pixels': None, 'time_compress_mean_s': 0.44658591913680235, 'time_decode_mean_s': 0.33822964887569346, 'judge': 0.6146666666666667, 'judge/slidevqa': 0.682, 'j (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon lineage 191531 2>&1 | head -40; echo '====='; expmon lineage 188606 2>&1 | head -40
+  ↳ lineage of 191531: (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -iE "show|cmd|argv|recall|lineage|runs" | head; grep -E "^(191531|188606|188615|191626|188602|188597)\b" .expmon/runs*.tsv 2>/dev/null | head; ls .expmon/ | head -30
+  ↳ --local runs a JOBLESS experiment in the foreground (login-node CPU, seconds) as (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"(jobid|job)": ?"?(191531|191532|191626|188606|188615|188602)\b' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print({k:d[k] for k in d if k no…
+  ↳ {'ts': '2026-11-11 10:32', 'jobid': '188602', 'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/freeze/ref_s42/model', 'pisco', '', 'eval_data/mm_naturalqa_1500'], 'git': '0ceedcb+dirty', 'outdir': '/beegfs (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"jobid": ?"(188606|188615|188602|191531)"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print(d['jobid'], d.get('factors'))"; ls eval_mm_4b_18…
+  ↳ 188602 {'kind': 'eval_mm', 'mode': 'pisco', 'ckpt': 'ref_s42', 'data': 'mm_naturalqa_1500', 'limit': 'all', 'image_rate': 'ckpt', 'topk': '4', 'max_pixels': '1003520', 'merged': '0', 'samples_per_q':  (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE '\$\{?(PX|CML|TOPK|DML|LIMIT)[:}=-]' eval_mm_4b.sh | head -20; grep -m5 -oE "compressor_max_length[^,]*|decoder_max_length[^,]*|topk[^,]*" eval_mm_4b_188606.out | head; grep -m3 -E "^\+? *(pix…
+  ↳ 25:PX=${PX:-451584}    # image pixel budget (env); eval sets built at another budget need the matching PX (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/freeze/ref_s42/eval/ expQ/freeze/ref_s43/eval/ expQ/freeze/ft_frozen_s42/eval/ 2>&1; grep -m3 "wrote" eval_mm_4b_188606.out eval_mm_4b_188615.out; sed -n 1,24p eval_mm_4b.sh | grep -vE "^\s*$" …
+  ↳ expQ/freeze/ft_frozen_s42/eval/: (+42 lines)
+Recording the documents results, then dry-running the four next evals (arm Q photos and MRQA text at both seeds).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict 191626 closed "healthy: COMPLETED 0:0 homer-017 28:51 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s42 documents judge .615 vs R re-run 191495 .6…
+  ↳ verdict recorded: 191626 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp qafreeze --stage eval --parent 191527 --dry-run --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:00 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s42/model pisco '' eva…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:27:00 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s42/model pisco  eval_data/mm_naturalqa_1500 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42 43; do p=$([ $s = 42 ] && echo 191527 || echo 191530); PX=1003520 expmon launch --exp qafreeze --stage eval --parent $p --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:00 eval_mm…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191659/   (unless the script sets a named run dir) (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42 43; do p=$([ $s = 42 ] && echo 191527 || echo 191530); PX=1003520 CML=4096 expmon launch --exp qafreeze --stage eval --parent $p --partition gpu-be --exclude 'homer-[005-009]' --time 0:27:0…
+  ↳ Submitted batch job 191661 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / pisco/model.py 994cff3d"; expmon note -j 191659 "intent: arm Q photos s42 (eval_data/…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎   d=json.loads(l) ⏎   if d.get('exp')=='freeze' and d.get('stage')=='eval-ref': print(d['jobid'], d['argv'][0], d['argv'][-1], d.get(…
+  ↳ 188597 expQ/freeze/ref_s42/model eval_data/mm_docqa_1500_1m None 0:40:00 (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -m1 FACTORS eval_mm_4b_188613.out; grep -m1 wrote eval_mm_4b_188613.out; expmon note -j 191662 "correction to the intent above: the recorded s43 MRQA reference cell is 188613 (file expQ/freeze/ref…
+  ↳ FACTORS kind=eval_mm mode=pisco ckpt=ref_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_qua (+2 lines)
+Next: a provisional check of Q against F (campaign freeze's frozen never-QA compressor) on documents, using F's older files. The law needs F re-run on today's code before this counts.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; for s in 42 43; do echo "== Q-F docs s$s (F file old code)"; python3 scripts/paired_judge.py expQ/qafreeze/ft_frozen_s$s/eval/$D expQ/freeze/ft_frozen_…
+  ↳ == Q-F docs s42 (F file old code) (+19 lines)
+Q beats F by +3.3 pt at both seeds (CI above 0, p .003), so the instrument does see an effect this size. Saving the paired tables, then updating the display page and STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; mkdir -p campaign_qafreeze/pairs; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; for s in 42 43; do python3 scripts/paired_judge.py expQ/qafreeze/ft_frozen_s$s/eval/$D expQ/qafreeze/ref_s$s/eval/$D …
+  ↳ docs_noop_R42.txt (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 191626 --step 1.0 judge=0.6147 2>&1|tail -1; expmon probe 191628 --step 1.0 judge=0.6133 2>&1|tail -1; for j in 191495:0.6100 191496:0.6147 191531:0.6787 191532:0.6847; do :; done; python3…
+  ↳ probe recorded: 191626 @1.0 (judge=0.6147)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 191495 --step 1.0 judge=0.6100 | tail -1; expmon probe 191496 --step 1.0 judge=0.6147 | tail -1; expmon probe 191531 --step 1.0 judge=0.6793 | tail -1; expmon probe 191532 --step 1.0 judge…
+  ↳ probe recorded: 191495 @1.0 (judge=0.6100)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp qafreeze 2>&1 | tail -3; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_qafreeze.html   (0 table rows, 0 media files from 0 runs) (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 43db294f "qafreeze 11-18 17:45: same — display --exp qafreeze writes '0 table rows, 0 media files from 0 runs' while grid qafreeze lists 20 cells with verdicts and judge probes" 2>&…
+  ↳ logged as a +1 of 43db294f (entry 7ae571c4) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Now rewriting STATE.md with the documents results and the plan for the remaining cells.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 191659,191660,191661,191662 -o "%.8i %.9T %.10M %R %S"; sacct -j 191527,191530 -o JobID%16,MaxRSS,TRESUsageInMax%120 -P 2>/dev/null | grep -E "batch" | head
+  ↳ JOBID     STATE       TIME NODELIST(REASON) START_TIME (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; python3 - <<'EOF' ⏎ p='STATE.md'; s=open(p).read() ⏎ s=s.replace("| Q s42 (191527) | 8:58:42 | 73.6 | not yet read (sacct) |","| Q s42 (191527) | 8:58:42 | 73.6 | 49.9 GB (sacct gpume…
+  ↳ 21:- Arm Q MRQA text s42 / s43 — jobs 191661 / 191662 RUNNING (gpu-be); the R side must be re-run on today's launcher (next wake). (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; printf '%s\n' '| `paired_judge.py R.json Q.json` prints a negative `diff` while Q'"'"'s accuracy is higher (documents s42: R .610, Q .615, diff −0.005) | the `diff` column is A − B (f…
+  ↳ | a `wake-when` condition was met hours ago (jobs ended 00:27) but the wake arrives much later (16:30), sensors show `paced=1`, and the brief's effici (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191659,191660,191661,191662 max 2h", "summary": "Arm Q (the QA-trained compressor kept frozen, only a fresh decoder LoRA trained) ties the reference on documents at both seeds. Paired over 1,500 quest…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8771 turns=36 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191659,191660,191661,191662 max 2h", "summary": "Arm Q (the QA-trained compressor kept frozen, only a fresh decoder LoRA trained) ties the reference on documents at both seeds. Paired over 1,500 questions on the same code: Q − R = +0.5 pt [−0.6, +1.6], p .47 (seed 42) and −0.1 pt [−1.1, +0.9], p .90 (seed 43). The no-op control (R paired with itself) gives 0.000. Q also beats F, campaign freeze's frozen never-QA compressor, by +3.3 pt at both se…", "launched": ["191659", "191660", "191661", "191662"], "verdicts": [{"jobid": "191626", "verdict": "closed", "note": "healthy; Q s42 documents judge .615, Q-R +.005 [-.006,+.016] p .470, n=1,500"}, {"jobid": "191628", "verdict": "closed", "note": "healthy; Q s43 documents judge .613, Q-R -.001 [-.011,+.009] p .896, n=1,500"}], "gripes": ["+1 of 287192bc: the grid RESULT column stays '-' on judged eval cells; copied by hand via expmon probe", "+1 of 70b40b88: the paired CI tables were again computed and saved by hand", "+1 of 43db294f: display --exp qafreeze writes 0 table rows from 0 runs although the grid has 20 cells"]}
+== final:
+{"next":"wake-when","wake_when":"job:191659,191660,191661,191662 max 2h","summary":"Arm Q (the QA-trained compressor kept frozen, only a fresh decoder LoRA trained) ties the reference on documents at both seeds. Paired over 1,500 questions on the same code: Q − R = +0.5 pt [−0.6, +1.6], p .47 (seed 42) and −0.1 pt [−1.1, +0.9], p .90 (seed 43). The no-op control (R paired with itself) gives 0.000. Q also beats F, campaign freeze's frozen never-QA compressor, by +3.3 pt at both seeds (CI above 0, p .003), so the instrument sees an effect this size. These stay provisional until F is re-run on today's launcher and the photos and MRQA sets are in. Both documents eval cells are healthy and closed. Launched 4 evals on gpu-be: Q photos and Q MRQA text at both seeds. Recorded probes, verdicts and a ledger note. Rewrote STATE.md with the deliverable, module-movement and cost tables (peak GPU memory 49.9 GB). Added a known_issues row: paired_judge prints diff = A − B. Next wake: R MRQA re-runs ×2 + F documents re-runs ×2, then the gate read and HotpotQA ×4.","launched":["191659","191660","191661","191662"],"verdicts":[{"jobid":"191626","verdict":"closed","note":"healthy; Q s42 documents judge .615, Q-R +.005 [-.006,+.016] p .470, n=1,500"},{"jobid":"191628","verdict":"closed","note":"healthy; Q s43 documents judge .613, Q-R -.001 [-.011,+.009] p .896, n=1,500"}],"gripes":["+1 of 287192bc: the grid RESULT column stays '-' on judged eval cells; copied by hand via expmon probe","+1 of 70b40b88: the paired CI tables were again computed and saved by hand","+1 of 43db294f: display --exp qafreeze writes 0 table rows from 0 runs although the grid has 20 cells"]}
+== rc=0 secs=317
+== verify: 10/13

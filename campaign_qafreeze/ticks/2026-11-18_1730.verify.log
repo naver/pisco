@@ -1,0 +1,72 @@
+== verifier 2026-11-18_1730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session a4ae68f3-44a2-4af9-bb0a-dc8cfa997791  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+272 lines)
+→ Glob: {"pattern": "campaign_qafreeze/**", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs"}
+  ↳ campaign_qafreeze/pairs/docs_QminusR_s42.txt (+4 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/QUESTION.md (+27 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_noop_R42.txt
+  ↳ 1	judge: R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s42_provisional_oldF.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s43_provisional_oldF.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Grep: {"pattern": "66\\.9|differ|0 of 1,500|\\.441|\\.471|\\.442", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1630.log", "output_mode": "content"}
+  ↳ 67:Both weight checks pass (compressor and connector unchanged 0.0%, decoder LoRA moved 66.9%); the two document evals are running. Recording verdicts and notes. (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/VERIFY.md
+  ↳ 1	# VERIFY — campaign qafreeze — 2026-11-18_1630   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+17 lines)
+Checking the last few numbers (whether the R re-run answers match the recorded ones, the s43 loss curves), then I'll give the verdict.
+→ Grep: {"pattern": "differ|prediction|\\[−1|-1, \\+2|\\.441|\\.471", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1730.log", "output_mode": "content"}
+  ↳ 82:[Omitted long matching line] (+1 lines)
+→ Grep: {"pattern": "differ", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1730.log", "output_mode": "content", "-o": true, "-C": 0}
+  ↳ No matches found
+→ Grep: {"pattern": ".{0,200}(of 1,500|1500 differ|answers differ|identical answers|same answers).{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze", "output_mode": "content", "-o": true}
+  ↳ campaign_qafreeze/STATE.md:12:- Reference R re-evaluated on today's eval launcher (md5 b3d1cda1), 1,500 questions each, every row judged, 0 unparseable: documents .610 (s42, job 191495) / .615 (s43, j (+2 lines)
+→ Grep: {"pattern": ".{0,250}differ.{0,250}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks", "output_mode": "content", "-o": true, "glob": "2026-11-18_1630.log"}
+  ↳ No matches found
+→ Grep: {"pattern": ".{0,300}(prediction|\\.471|\\.441|ft_frozen_s43).{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1630.log", "output_mode": "content", "-o": true, "head_limit": 20}
+  ↳ 25:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/qafreeze/ expQ/qafreeze/ft_frozen_s42 expQ/qafreeze/ft_frozen_s43 expQ/qafreeze/ref_s42 expQ/qafreeze/ref_s42/eval expQ/qafreeze/ref_s43/e (+6 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.47135603427886963, (+4 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.4419252574443817, (+4 lines)
+Loss curves for seed 43 check out. One last check: whether the "R re-run gave the same answers" figure has any evidence behind it.
+→ Grep: {"pattern": ".{0,200}(identical|same answer|0/1500|ndiff|n_diff|mismatch|!=).{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks", "output_mode": "content", "-o": true, "glob": "2026-11-18_1*.log", "head_limit": 30…
+  ↳ campaign_qafreeze/ticks/2026-11-18_1730.verify.log:30:→ Grep: {"pattern": ".{0,200}(of 1,500|1500 differ|answers differ|identical answers|same answers).{0,200}", "path": "/beegfs/scratch/user/hdejean/ (+7 lines)
+→ Grep: {"pattern": ".{0,250}(recorded|ft_mm_4b_18477|ft_mm_4b_18478|disagree).{0,250}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1730.log", "output_mode": "content", "-o": true, "head_limit": 30}
+  ↳ 18:  ↳ # md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judg (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1730.log
+  ↳ 19	→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 2>/dev/null | grep -E "19149[56]|19153[12]|ref_s4|eval-ref" | head -20; ls -la --time-style=+%m-%d_%H:%M expQ/ft_mm_4b_184778/eval/ e (+29 lines)
+→ Grep: {"pattern": ".{0,300}(ft_mm_4b_184778/eval|freeze/ref_s42/eval/mm_docqa).{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks", "output_mode": "content", "-o": true, "glob": "2026-11-18_1*.log", "head_limit": 15}
+  ↳ campaign_qafreeze/ticks/2026-11-18_1730.log:19:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 2>/dev/null | grep -E "19149[56]|19153[12]|ref_s4|eval-ref" | head -20; ls -la --time-sty (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1630.log
+  ↳ 25	→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/qafreeze/ expQ/qafreeze/ft_frozen_s42 expQ/qafreeze/ft_frozen_s43 expQ/qafreeze/ref_s42 expQ/qafreeze/ref_s42/eval expQ/qafreeze/ref_s43/e (+9 lines)
+→ Grep: {"pattern": "\"(em|f1|anls|judge|mems_used)\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 6}
+  ↳ 3:  "em": 0.5073333333333333, (+7 lines)
+→ Grep: {"pattern": "\"(em|f1|anls|judge|mems_used)\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "content", "head_limit": 6}
+  ↳ 3:  "em": 0.5073333333333333, (+7 lines)
+The recorded and re-run R files have identical EM/F1/ANLS to 16 digits. Checking that they are really two separate files, not one file reached by two paths.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ref_s42"}
+  ↳ expQ/qafreeze/ref_s42/eval/.done/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json.191495.gen (+5 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ref_s42/eval"}
+  ↳ expQ/freeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+3 lines)
+→ Grep: {"pattern": "\"(eval_code|md5|launcher|code_md5|git|started|time_compress_mean_s|time_decode_mean_s)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": …
+  ↳ 40:  "time_compress_mean_s": 0.43881180159250893, (+1 lines)
+→ Grep: {"pattern": "\"(eval_code|md5|launcher|code_md5|git|started|time_compress_mean_s|time_decode_mean_s)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json", "output_mode": "c…
+  ↳ 40:  "time_compress_mean_s": 0.4450917248216768, (+1 lines)
+→ Grep: {"pattern": "[Pp]rediction|predict", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/CAMPAIGN.md", "output_mode": "content", "head_limit": 8}
+  ↳ 13:**Prediction, written before any cell (kept and marked if wrong):** Q − R on documents lands in [−1, +2] pt — A1 − F ≈ 0 says the connector cannot recover what the compressor's QA training gives (S (+1 lines)
+→ StructuredOutput: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); sam…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0020 turns=32 is_error=False denials=0
+== declared: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, …", "status": "supported", "reason": "Verdict 191450 (closed) gives decoder_state.pt == stage-2 dc…"}, {"claim": "Feasibility gate PASS (all three checks, every tensor compar…", "status": "supported", "reason": "Verdicts 191451 (0.0% / 68.6%), 191452 (decoder 0.0%, compre…"}, {"claim": "Plumbing check PASS on the 20-step smoke, seed 42 (1,280 row…", "status": "supported", "reason": "Verdict 191493 quotes 'froze 506 compressor + connector tens…"}, {"claim": "After the full epoch (28k rows) the frozen side did not move…", "status": "supported", "reason": "Verdicts 191625 and 191627 (closed) give compressor.* / conn…"}, "… +9 more"], "summary": "Every Settled bullet matches its backing job. That covers th…"}
+== final:
+{"claims":[{"claim":"The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); same 696 decoder tensor names, shapes, dtypes as R — job 191450, closed.","status":"supported","reason":"Verdict 191450 (closed) gives decoder_state.pt == stage-2 dca63864 and R's compressor/connector/config md5s for s42 (6a67c55f/4963a039/4a10d4ee) and s43 (19666dda/6f1c2e6c/4a10d4ee), with 696 key names, shapes and dtypes matching R. Grid row 191450 build is closed. The previous verifier read the build log lines."},{"claim":"Feasibility gate PASS (all three checks, every tensor compared): R s42 → init_s42 compressor and connector rows changed 0.0%, decoder lora_B 68.6% (job 191451); stage-2 → init_s42 decoder rows 0.0%, compressor lora_B 73.8% (job 191452); seed 43 same picture, decoder lora_B 67.5% (job 191453).","status":"supported","reason":"Verdicts 191451 (0.0% / 68.6%), 191452 (decoder 0.0%, compressor lora_B 73.8% > 60%, the known-positive control) and 191453 (0.0% / 67.5%) match the law's thresholds exactly. Check (3) is in build verdict 191450. The stage-2 check for s43 is covered because both inits carry the same decoder md5, dca63864."},{"claim":"Plumbing check PASS on the 20-step smoke, seed 42 (1,280 rows = .046 epoch; n = 1 smoke): froze 506 compressor + connector tensors, compressor trainable 0; loss step 10 .555 / step 20 .515 vs 188528 .594 / .584 (inside ±.10) — job 191493, closed; smoke weights: compressor / connector 0.0%, decoder lora_B 76.0% — job 191494, closed.","status":"supported","reason":"Verdict 191493 quotes 'froze 506 compressor + connector tensors' and 'Compressor trainable parameters: 0'. Losses .555 / .515 differ from the law's .594 / .584 by −.039 / −.069, inside ±.10. The config diff is clean (max_steps, freeze_compressor, model_name_or_path only). Verdict 191494: compressor/connector 0.0%, decoder lora_B 76.0% > 0%. This is a plumbing check, not a result, as the claim says."},{"claim":"After the full epoch (28k rows) the frozen side did not move: every compressor and connector row changed 0.0%, decoder lora_B 66.9% at both seeds (F full runs 66.3-66.7%) — jobs 191625 (s42), 191627 (s43), closed.","status":"supported","reason":"Verdicts 191625 and 191627 (closed) give compressor.* / connector.* 0.0% and decoder lora_B 66.9% (> 60% law bar). The identical 66.9 / 14.8 at both seeds is not a duplicated check: the previous verifier found distinct 'moved' values in the two .out files (0.0696 vs 0.0695)."},{"claim":"Reference R re-evaluated on today's eval launcher (md5 b3d1cda1), 1,500 questions each, every row judged, 0 unparseable: documents .610 (s42, job 191495) / .615 (s43, job 191496), the same answers as the recorded files (0 of 1,500 differ at both seeds); photos .679 (s42, job 191531) / .685 (s43, job 191532).","status":"supported","reason":"Grid rows give judge .6100 / .614
+== rc=0

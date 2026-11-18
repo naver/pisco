@@ -1,0 +1,7 @@
+judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+       F = expQ/freeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+source             n     Q42       F     diff      SE            95% CI  A-only  B-only    p McN
+ALL             1500   0.615   0.582   +0.033   0.011 [+0.011, +0.053]     159     110    0.003
+infovqa          500   0.478   0.454   +0.024   0.018 [-0.008, +0.058]      45      33    0.213
+mpdocvqa         500   0.684   0.632   +0.052   0.023 [+0.008, +0.096]      78      52    0.028
+slidevqa         500   0.682   0.660   +0.022   0.016 [-0.008, +0.054]      36      25    0.200

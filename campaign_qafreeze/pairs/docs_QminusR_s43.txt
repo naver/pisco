@@ -1,0 +1,7 @@
+judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+       R43 = expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+source             n     Q43     R43     diff      SE            95% CI  A-only  B-only    p McN
+ALL             1500   0.613   0.615   -0.001   0.005 [-0.011, +0.009]      28      30    0.896
+infovqa          500   0.468   0.480   -0.012   0.010 [-0.032, +0.006]       9      15    0.307
+mpdocvqa         500   0.678   0.678   +0.000   0.009 [-0.018, +0.018]      10      10    1.000
+slidevqa         500   0.694   0.686   +0.008   0.007 [-0.006, +0.022]       9       5    0.424
