@@ -1,0 +1,165 @@
+== campaign longdoc wake 2026-11-19_0830  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795044602 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=6.8 idle_h=0.3 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7542 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:192007,192008_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192007,192008 (ended)   (NEXT was: wake-when job:192007,192008 max 8h)
+== session b8dddeda-7be0-439c-bf6c-56b63dd9cc6f  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b8dddeda-7be0-439c-bf6c-56b63dd9cc6f/tool-results/btt3h5tg3.txt
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b8dddeda-7be0-439c-bf6c-56b63dd9cc6f/tool-results/btt3h5tg3.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-19_0830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+149 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b8dddeda-7be0-439c-bf6c-56b63dd9cc6f/tool-results/btt3h5tg3.txt
+  ↳ 150	191147     audit -        ended     closed     -        -        -        -        -        -          -        -          -        -             -          -            -         -         -      (+38 lines)
+→ Bash: cat campaign_longdoc/STATE.md; echo ----; ls campaign_longdoc/
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+193 lines)
+→ Bash: sacct -j 192007,192008 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End -P | head -20; ls -la expQ/longdoc/l_r43/eval/ 2>&1 | head
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|MaxRSS|Start|End (+11 lines)
+Both seed-43 length jobs finished; I'm checking their health, then computing the length effects.
+→ Bash: sacct -j 192007 -D --format=JobID,State,ExitCode,Elapsed,NodeList,Start,End -P | head; ls expQ/longdoc/l_r43/eval/.done; expmon logs 192007 40 2>&1 | tail -45
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End (+19 lines)
+→ Bash: ls expQ/longdoc/length/; sed -n 1,60p scripts/longdoc/length_effect.py | head -80
+  ↳ dlen_docs_p10_s42_em.json (+75 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for f in ['dlen_docs_p20_s42_judge','dlen_docs_p10_s43_judge','dlen_text_n40_s42_judge','dlen_docs_p10_s43_project']: ⏎     d=json.load(open('expQ/longdoc/length/'+f+'.json')); print(f, {k:v for k,v in d.items()…
+  ↳ dlen_docs_p20_s42_judge {'metric': 'judge', 'n': 1500, 'mean': 0.043333333333333335, 'ci95': [0.018, 0.06933333333333333], 'pos': 197, 'neg': 146, 'sign_p': 0.006853054355018892, 'files': [{'sign': 1. (+3 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for f in ['expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json','expQ/longdoc/l_r43/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json']: ⏎     d=json.load(open(f)…
+  ↳ mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json rows 1500 judged 1500 uniq q 1500 (+5 lines)
+→ Bash: L=expQ/longdoc/length; B=expQ/base_qwen35_4b/eval ⏎ R20=expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json ⏎ R4=expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json ⏎ R40=expQ/longdoc/l_r43/e…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 812724 Nov 10 14:09 expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+37 lines)
+→ Bash: wc -l campaign_longdoc/CAMPAIGN.md campaign_longdoc/known_issues.md; grep -n '^#' campaign_longdoc/CAMPAIGN.md
+  ↳ 356 campaign_longdoc/CAMPAIGN.md (+15 lines)
+Seed-43 results are in and healthy; now reading the campaign's decision rules for the length arm.
+→ Bash: sed -n 120,282p campaign_longdoc/CAMPAIGN.md
+  ↳ ## Decision gates (+161 lines)
+→ Bash: cat campaign_longdoc/known_issues.md | cut -c1-260; echo; grep -n '191629' .expmon/runs.jsonl | head -3 | cut -c1-900; sacct -j 191629 --format=JobID,State,Elapsed,MaxRSS -P | head -3
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+42 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     d=json.loads(l) ⏎     if d.get('jobid')=='191629': print({k:v for k,v in d.items()}) ⏎ d=json.load(open('expQ/longdoc/length/dlen_text_n40_s42_project.json')); print([f…
+  ↳ {'ts': '2026-11-18 16:35', 'jobid': '191629', 'launcher': 'scripts/longdoc/rejudge.sbatch', 'argv': ['dlen_docs_text', 'expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json', (+50 lines)
+→ Bash: for j in 191630 191518 192008; do echo "== $j"; grep -m1 "\"$j\"" .expmon/runs.jsonl | python3 -c "import json,sys; d=json.loads(sys.stdin.read()); print(d['exp'], d['git'], d['launcher'], d.get('env'))"; f=$(ls eval_mm_4b_$j.out expQ/*/eva…
+  ↳ Exit code 1 (+11 lines)
+→ Bash: grep '"191630"' .expmon/runs.jsonl | head -2 | cut -c1-600; ls eval_mm_4b_191630.out eval_mm_4b_191518.out eval_mm_4b_192008.out 2>&1; for j in 191630 191518 192008; do f=eval_mm_4b_$j.out; [ -f $f ] && { echo "== $j"; grep -m8 -iE 'md5|^[0…
+  ↳ Exit code 1 (+8 lines)
+→ Bash: readlink -f expQ/spread/b_spread_s43/model expQ/longdoc/l_r43/model; git diff --stat 5923159 32f9a78 -- eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/judge_prompts.py pisco/model.py pisco/mm_collator.py | tail -3
+  ↳ /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model (+1 lines)
+Same model, same committed eval code on both sides. Now launching the second-judge-prompt check on the three new files (dry run first).
+→ Bash: expmon launch --dry-run --exp longdoc --stage J --time 0:20:00 --mem 4G -p gpu-be --exclude='homer-[005-009]' scripts/longdoc/rejudge.sbatch dlen_docs_text expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json expQ…
+  ↳ would submit: sbatch --time 0:20:00 --mem 4G -p gpu-be --exclude=homer-[005-009] scripts/longdoc/rejudge.sbatch dlen_docs_text expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1 (+3 lines)
+→ Bash: expmon note "longdoc arm L/J intent: project-prompt re-judge (arm J rule) of the s43 length cells 192007 (docs 20 p) and 192008 (text 40 passages) + the borrowed s43 10-passage file (spread 191630) into expQ/longdoc/rejudge/dlen_docs_text (…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+6 lines)
+→ Bash: grep -E '\[job 19137[7]\] verdict|\[job 19139[2]\] verdict' EXPERIMENTS.md | cut -c1-900; grep -c mems_used expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json; grep -n 'mems_used\|mems' eval_mm_4b_192007.out | t…
+  ↳ - 2026-11-17 21:41 [job 191377] verdict: closed — healthy (1,500 rows, judge on all, unparseable 0, mems_used 3,229,884 = audit; homer-017). Docs 20 vs 4 pages s42: R .599 vs .610, uncompressed .754 v (+2 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for f in ['expQ/longdoc/l_r43/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json','expQ/longdoc/l_r42/eval/mm_docqa_pisco_k20_px1003520_xd16_mm_docqa_1500_1m.json','expQ/longdoc/l_r43/eval/mm_docqa_pis…
+  ↳ l_r43 mm 3229884 2405 (+3 lines)
+→ Bash: expmon verdict 192007 closed "healthy: COMPLETED 0:0; 4 preemptions, generation+judge by attempt 4 on homer-017 (06:37-08:09, file 08:09), attempt 5 reused it; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 3,229,884 =…
+  ↳ verdict recorded: 192007 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+5 lines)
+→ Bash: grep -E 'documents 20 vs 4|answer cap is 512|needle\) PASS|text 40 vs 10' campaign_longdoc/VERIFY.md | cut -d'|' -f4 
+  ↳ Verdicts 191777 and 191778 still say 8/300 = 2.7%. The corrected 7/300 exists only in the ledger (EXPERIMENTS.md:1460), with no job behind the recount. Closed-book 5/1,407 and R mixed 4/300 match verd (+3 lines)
+Recorded both seed-43 verdicts. Now checking a confound the verifier raised: whether the 32-token answer cap cut more uncompressed answers at 20 pages than at 4.
+→ Bash: python3 -c " ⏎ import json; r=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_k20_px1003520_xd16_mm_docqa_1500_1m.json'))['records'][0]; print({k:(str(v)[:80]) for k,v in r.items()})"
+  ↳ {'query_id': 'presentation-140726083339-phpapp01_95__global-sustainable-energy-current-trends-', 'source': 'slidevqa', 'query': 'Which renewable energy was most produced in Germany in 2011?', 'answers
+→ Bash: timeout 60 .pixi/envs/default/bin/python -I -c " ⏎ import json, tokenizers ⏎ t=tokenizers.Tokenizer.from_file('/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model/tokenizer.json'); t.no_padding(); t.no_truncation() ⏎ B='expQ/base_…
+  ↳ U4 rows 1500 at cap(>=30 tok) 86 of which judged wrong 72 max 33 (+8 lines)
+The 32-token answer cap cut the uncompressed reader far more at 20 pages (245 of 1,500 answers) than at 4 pages (86). Checking how much that moves the length effect.
+→ Bash: timeout 120 .pixi/envs/default/bin/python -I -c " ⏎ import json, random, tokenizers ⏎ t=tokenizers.Tokenizer.from_file('/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model/tokenizer.json'); t.no_padding(); t.no_truncation() ⏎ B='e…
+  ↳ docs20_s42  all    n=1500 dlen=+4.3 [+1.8,+6.9]  R_long 0.599 U_long 0.754 R_short 0.610 U_short 0.809 (+11 lines)
+→ Bash: grep -n -iE 'same cap|cap 512|MNT|answer cap' campaign_longdoc/CAMPAIGN.md | cut -c1-400; sacct -j 191376,191377,191378,191390,191392,191393,191375 -X --format=JobID,State,Elapsed,NodeList -P; sacct -j 191376,191393 --format=JobID,MaxRSS -P…
+  ↳ 69:| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run (+13 lines)
+→ Bash: sed -n 60,119p campaign_longdoc/CAMPAIGN.md
+  ↳ ## Arms — what varies, what is held constant (+58 lines)
+Arm L's uncompressed runs at the 32-token cap fail the campaign's own "under 5% of answers at the cap" rule. Recording a per-file count before updating the law and the owner question.
+→ Bash: timeout 120 .pixi/envs/default/bin/python -I -c " ⏎ import json, tokenizers ⏎ t=tokenizers.Tokenizer.from_file('/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model/tokenizer.json'); t.no_padding(); t.no_truncation() ⏎ s=json.load(…
+  ↳ 103/1500   6.9%  expQ/base_qwen35_4b/eval/mm_docqa_base_k10_px1003520_xd6_mm_docqa_1500_1m.json (+14 lines)
+→ Bash: expmon note "longdoc arm L finding (provisional, frontend count, no job; expQ/longdoc/length/cap32_sensitivity.json): every arm L UNCOMPRESSED file ran at the shared 32-token answer cap and fails the law's 5% at-cap bar: docs 4/10/20 pages …
+  ↳ Exit code 1 (+6 lines)
+→ Bash: expmon note --did "longdoc: counted answers at the 32-token cap in every arm L file (frontend, tokenizer; expQ/longdoc/length/cap32_sensitivity.json)" --saw "uncompressed at cap: docs 4/10/20 p 5.7/6.9/16.3%, text 10/40 32.9/46.9% (bar 5%).…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: cat campaign_longdoc/BLOCKED.md | sed -n 1,12p; wc -l docs/longdoc_diagnosis.md; grep -n -iE '20 pages|20 vs 4|shrink|40 passages|arm L|^#' docs/longdoc_diagnosis.md | cut -c1-200
+  ↳ ## Arm E model cells: approve about 50 more GPU-hours and 16 more cells? (+32 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+103 lines)
+Updating the results document: arm L's numbers stay, but marked as distorted by the answer cap, with the no-cap reading beside them.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ old3=s.split('\n')[2] ⏎ new3="Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-19 08:30 (arm L seed 43 in: documents 20 vs 4 pages +3.1, text 40 …
+  ↳ 1
+→ Bash: grep -c 'NOT DECIDED — the uncompressed' docs/longdoc_diagnosis.md; grep -c '+3.1 / (project re-judge' docs/longdoc_diagnosis.md; grep -c 'Last rewrite 2026-11-19 08:30' docs/longdoc_diagnosis.md
+  ↳ 1 (+2 lines)
+Now the length-curve tables in the same document.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ a=s.index('**Documents (`mm_docqa_1500_1m`, 1,003,520 px)**'); b=s.index('**Arm E trial runs') ⏎ new='''**Documents (`mm_docqa_1500_1m`, 1,003,520 px)** — every row ran a…
+  ↳ Side finding (audit only, no accuracy effect measured): stage-1 C256 decoder rows sit at their 512-token cap on the (+4 lines)
+Now tightening the law (a cap check before any length number decides) and adding the known-issue row.
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_longdoc/CAMPAIGN.md'; s=open(p).read() ⏎ old="  inside ±3 pt at both seeds. Report each size's R, U and gap next to it.\n" ⏎ assert s.count(old)==1 ⏎ new=old+("  [2026-11-19 08:30, tightening] A Δ_len decides…
+  ↳ | on a new eval set the UNCOMPRESSED decoder scores far below the compressed model (LongDocURL pages, 300 rows: .34 vs R (+1 lines)
+Rewriting the owner question with the new budget picture and the arm L re-run as an option.
+→ Bash: sed -n 12,60p campaign_longdoc/BLOCKED.md
+  ↳ **Cost of the grid the law asks for** (GPU-h = measured wall per 300 judged rows × rows; one GPU per cell): (+28 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: ids=$(python3 -c " ⏎ import json ⏎ s=set() ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: d=json.loads(l) ⏎     except: continue ⏎     if d.get('exp')=='longdoc': s.add(d['jobid']) ⏎ print(','.join(sorted(s)))"); echo "$ids" | tr , '\n' …
+  ↳ 57 (+1 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_longdoc/BLOCKED.md'; s=open(p).read() ⏎ for a,b in [("approve about 52 more GPU-hours","approve about 54 more GPU-hours"),("(52 above what is left","(54 above what is left"), ⏎  ("Used so far: ≈ 30 GPU-h (sac…
+  ↳ ## Arm E model cells: approve about 54 more GPU-hours and 17 more cells? (+1 lines)
+→ Bash: squeue -j 192142 -h -o '%i %T %M %N %r' ; tail -3 expQ/longdoc/rejudge_192142.out 2>/dev/null; expmon display --exp longdoc 2>&1 | tail -3
+  ↳ match                        0.4347 (+3 lines)
+The second-prompt re-judge already finished; computing its numbers now.
+→ Bash: sacct -j 192142 -X --format=State,ExitCode,Elapsed,NodeList -P -n; grep -E 'done already|copy |unparseable' expQ/longdoc/rejudge_192142.out; J=expQ/longdoc/rejudge/dlen_docs_text; L=expQ/longdoc/length ⏎ echo "== docs p20 s43 project"; pyth…
+  ↳ COMPLETED|0:0|00:02:21|homer-014 (+10 lines)
+→ Bash: expmon verdict 192142 closed "healthy: COMPLETED 0:0 2:21 homer-014, one attempt; 3 copies re-judged with the project prompt, unparseable 0 (3/3). s43 Delta_len project prompt: docs 20 vs 4 pages +3.1 [+0.5,+5.6] 194/149 p .017 (rubric +3.1…
+  ↳ verdict recorded: 192142 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+→ Bash: expmon gripe --open --search "display 0 table" 2>&1 | head -8; expmon gripe --open --search "display rows" 2>&1 | head -8
+  ↳ == 10 open report(s) matching 'display 0 table', every machine, newest first == (+15 lines)
+→ Bash: grep -c '<tr' display_longdoc.html; grep -c '192007' display_longdoc.html
+  ↳ 58 (+1 lines)
+Now rewriting STATE.md for the next wake.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n -iE 'shrink|20 pages|longdoc' /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/pisco-multimodal-campaign.md | cut -c1-250
+  ↳ 26:  multi-page 74%, infographics 56% kept); photos .665 vs .717 (93%); nav .806 vs fair ceiling .792. Beats shrinking (+4 lines)
+→ Bash: sed -n 110,125p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/pisco-multimodal-campaign.md
+  ↳ within noise (+.011/+.024 docs) with one stage-2 pass instead of three. **Long chunks free at inference:** one (+15 lines)
+→ Edit: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/memory/pisco-multimodal-campaign.md
+  ↳ <tool_use_error>File is in a directory that is denied by your permission settings.</tool_use_error>
+→ Bash: expmon note --did "longdoc wake 08:30: verdicts 192007/192008 (R s43 20 pages / 40 passages, healthy) and 192142 (project re-judge); counted 32-token cap hits in all arm L files; tightened the Delta_len gate (<5% at cap in all four files); …
+  ↳ expmon note: 81 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+2 lines)
+Seed 43 is in, but both length results from this arm are now void: the uncompressed baseline was cut off by the 32-token answer limit. Nothing is running. The campaign waits on your budget decision.
+
+**Done this wake**
+- **Seed-43 runs are healthy.** These are the compressed model on 20-page documents and on 40-passage text. Each has all 1,500 rows, every row judged, and the slot counts match the audit. The 20-page run was preempted 4 times and still completed.
+- **The second judge prompt gives the same numbers** (one short GPU job, 2 min).
+
+**What changed**
+- **The answer limit cuts the uncompressed answers.** The shared eval script stops every answer at 32 tokens. That cuts the uncompressed model mid-sentence, and more often on longer inputs:
+
+  | input | uncompressed answers cut by the limit |
+  |---|---|
+  | documents, 4 pages | 5.7% |
+  | documents, 20 pages | 16.3% |
+  | text, 10 passages | 32.9% |
+  | text, 40 passages | 46.9% |
+
+  The campaign's bar is under 5%. The compressed model is only cut on 0.6-5.9% of answers.
+- **"At 20 pages the compressed model closes the gap" is withdrawn.**
+  - Gap change from 4 to 20 pages, seeds 42 / 43: +4.3 / +3.1 points.
+  - Same, on only the questions where no answer was cut: −0.6 / −2.0 points.
+- **On text the picture flips toward a real loss.** On the uncut questions, the gap widens by 4.8 / 3.4 points from 10 to 40 passages. Those questions were chosen by looking at the answers, so this decides nothing.
+- **Rule added:** a length result counts only if every file in the comparison has under 5% of answers cut. Re-runs use the 512-token limit, as the long-document runs already do. I also added a known-issues entry, and updated `docs/longdoc_diagnosis.md` with both seeds and the share of answers cut.
+- **The long-document measurement is now the only clean length measurement.** It uses real documents of 4k-32k tokens or 10-40 pages, and already runs at the 512-token limit.
+
+**Budget:** 32.0 of 60 GPU-hours used (counted from SLURM over all 57 jobs), and 57 of 70 jobs.
+
+**Not saved:** a note about this answer-limit trap in the project memory. This run is not allowed to write there. Someone in a normal chat should add it.
+
+Your decision (in `campaign_longdoc/BLOCKED.md`), on whether to measure on real long documents:
+
+| option | GPU-hours | jobs | what you get |
+|---|---|---|---|
+| 1. full long-document measurement (recommended) | +54 (60 → 114) | +17 (70 → 87) | how the gap grows with length on real long documents, both seeds, text / pages / mixed; whether long-chunk training helps on long text |
+| 2. option 1, plus the short-set length runs again at the 512-token limit (12 jobs) | +66 (→ 126) | +31 (→ 101) | also settles the 20-page and 40-passage questions on the usual eval sets |
+| 3. option 1 without the long-chunk text runs | +39 (→ 99) | +13 (→ 83) | the length answer only |
+| 4. stop | 0 | 0 | no length number decides anything |
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Arm L seed-43 cells (192007 docs 20 pages, 192008 text 40 passages) healthy; s43 Δ_len docs 20v4 +3.1 [+0.6,+5.7], text 40v10 +0.1 [−3.0,+3.1]; project re-judge 192142 agrees (+3.1 / +0.9). Following th…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.5122 turns=54 is_error=False denials=1
+== declared: {"next": "waiting-owner", "summary": "Arm L seed-43 cells (192007 docs 20 pages, 192008 text 40 passages) healthy; s43 Δ_len docs 20v4 +3.1 [+0.6,+5.7], text 40v10 +0.1 [−3.0,+3.1]; project re-judge 192142 agrees (+3.1 / +0.9). Following the verifier's flag, counted 32-token answer-cap hits: every arm L uncompressed file fails the 5% bar (docs 4/10/20 pages 5.7/6.9/16.3%, text 10/40 32.9/46.9%), so all arm L Δ_len are confounded; without capped questions docs 20v4 becomes −0.6/−2.0 and text 40v10 −4.8/−3.4. 'Gap shrinks at 20 pages' withdrawn. Tightened the Δ_len gate (all four files <5% at cap), added a known_issues row, rewrote docs/longdoc_diagnosis.md, BLOCKED.md (arm E budget now +54 GPU-h / +17 cells; option 2 adds arm L re-run at 512) and STATE.md. 32.0/60 GPU-h, 57/70 cells used. Memory note was refused (outside write roots).", "launched": ["192142"], "verdicts": [{"jobid": "192007", "verdict": "closed", "note": "healthy; R s43 docs 20 pages .591; Δ_len +3.1 [+0.6,+5.7] — confounded by 32-token cap"}, {"jobid": "192008", "verdict": "closed", "note": "healthy; R s43 text 40 passages .549; Δ_len +0.1 [−3.0,+3.1] — confounded by 32-token cap"}, {"jobid": "192142", "verdict": "closed", "note": "healthy project-prompt re-judge; s43 docs20 +3.1, text40 +0.9"}], "blocked": "BLOCKED.md: arm E model-cell budget (+54 GPU-h 60→114, +17 cells 70→87; recommendation option 1; option 2 also re-runs arm L at the 512-token cap)", "gripes": []}
+== final:
+{"next":"waiting-owner","summary":"Arm L seed-43 cells (192007 docs 20 pages, 192008 text 40 passages) healthy; s43 Δ_len docs 20v4 +3.1 [+0.6,+5.7], text 40v10 +0.1 [−3.0,+3.1]; project re-judge 192142 agrees (+3.1 / +0.9). Following the verifier's flag, counted 32-token answer-cap hits: every arm L uncompressed file fails the 5% bar (docs 4/10/20 pages 5.7/6.9/16.3%, text 10/40 32.9/46.9%), so all arm L Δ_len are confounded; without capped questions docs 20v4 becomes −0.6/−2.0 and text 40v10 −4.8/−3.4. 'Gap shrinks at 20 pages' withdrawn. Tightened the Δ_len gate (all four files <5% at cap), added a known_issues row, rewrote docs/longdoc_diagnosis.md, BLOCKED.md (arm E budget now +54 GPU-h / +17 cells; option 2 adds arm L re-run at 512) and STATE.md. 32.0/60 GPU-h, 57/70 cells used. Memory note was refused (outside write roots).","launched":["192142"],"verdicts":[{"jobid":"192007","verdict":"closed","note":"healthy; R s43 docs 20 pages .591; Δ_len +3.1 [+0.6,+5.7] — confounded by 32-token cap"},{"jobid":"192008","verdict":"closed","note":"healthy; R s43 text 40 passages .549; Δ_len +0.1 [−3.0,+3.1] — confounded by 32-token cap"},{"jobid":"192142","verdict":"closed","note":"healthy project-prompt re-judge; s43 docs20 +3.1, text40 +0.9"}],"blocked":"BLOCKED.md: arm E model-cell budget (+54 GPU-h 60→114, +17 cells 70→87; recommendation option 1; option 2 also re-runs arm L at the 512-token cap)","gripes":[]}
+== rc=0 secs=628
+== verify: 2/19

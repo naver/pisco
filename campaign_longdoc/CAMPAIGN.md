@@ -127,6 +127,12 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   the short size). Report the mean, a paired bootstrap 95% CI, and a sign test on the non-zero d; its known-positive
   control is arm J's. A length loss is Δ_len ≤ −3 pt with the CI below 0, at s42 and at s43. No length loss is the CI
   inside ±3 pt at both seeds. Report each size's R, U and gap next to it.
+  [2026-11-19 08:30, tightening] A Δ_len decides only if, in each of its four files, fewer than 5% of the answers
+  reach the answer cap (the token rule of arm E). Every arm L cell so far ran at the shared 32-token cap and its
+  uncompressed files fail it (documents 4 / 10 / 20 pages 5.7 / 6.9 / 16.3%, text 10 / 40 passages 32.9 / 46.9%;
+  `expQ/longdoc/length/cap32_sensitivity.json`), so they decide nothing; arm L decides only from cells re-run through
+  `scripts/longdoc/eval_mnt.sbatch` at `MNT=512`, all four files of a contrast at the same cap. A read restricted to the
+  questions no file caps is reported as a sensitivity read, never as a decision.
 - **Dilution D (arm U, a NEW metric):** D = (eighth − plain at the long size) − (eighth − plain at the short size), same
   statistics. D ≥ +3 pt with the CI above 0, at both seeds → the decoder reads many `<MEM>`s worse than few, and the
   most-attended eighth recovers that share. Picking: `RAW=route1` − `RAW=gold` at the long size ≤ −3 pt with the CI
