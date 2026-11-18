@@ -1,0 +1,87 @@
+== verifier 2026-11-18_1630  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 99da1d79-4f00-424b-823e-0e6db2814d61  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+296 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 298	191393     L    -        ended     closed     eval_mm  base     base_qwen35_4b text_hotpotqa_1500 all      ckpt       40       451584     0        0             none       brief        0         n (+89 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "expQ/longdoc/audit*/**", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+11 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc"}
+  ↳ expQ/longdoc/audit_191146/audit.json (+86 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_em.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_text_n40_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_text_n40_s42_em.json
+  ↳ 1	{ (+37 lines)
+Checking the claims' numbers against the result files now (length tables done; next the audit, build log and calculator control).
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_text_n40_s42_match.json
+  ↳ 1	{ (+37 lines)
+→ Grep: {"pattern": "191518", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread", "output_mode": "content", "head_limit": 15}
+  ↳ campaign_spread/VERIFY.md:16:[Omitted long matching line] (+16 lines)
+→ Grep: {"pattern": "E_|out_of_range|oor|health", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516.out", "output_mode": "content", "head_limit": 60}
+  ↳ 1:FACTORS kind=audit arm=A only=E_ limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516.out
+  ↳ 1	FACTORS kind=audit arm=A only=E_ limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+54 lines)
+→ Grep: {"pattern": "1398|1,398|out.of.range|488", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log", "output_mode": "content", "head_limit": 20}
+  ↳ 102:  ↳ ('E_mixed_cml1024', 'longdocurl_m10') 1407 mems p50/max 977 4611 base prompt p50/max 7877 36912 oor 1398 answer-in-raw 521 (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log
+  ↳ 85	→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search argv quot 2>&1 | head -8; expmon gripe --open --search dry-run argument 2>&1 | head -8 (+38 lines)
+→ Grep: {"pattern": "^\\| |health|finetune_max", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147.out", "output_mode": "content", "head_limit": 40}
+  ↳ 303:  "finetune_max_mem": 488, (+21 lines)
+Audit counts match; now checking the build log, the calculator control and the transcription-port figures.
+→ Grep: {"pattern": "Apache|licen|650|text-evidence|text evidence|usable|387|1407", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out", "output_mode": "content", "head_limit": 30}
+  ↳ 7:21:47:04 usable: 1407 questions on 387 docs; pages/mixed take 1407; text-evidence 650 (+5 lines)
+→ Grep: {"pattern": "1687|\\.169|self.pair|183538", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content", "glob": "*.md", "head_limit": 20}
+  ↳ campaign_longdoc/VERIFY.md:12:[Omitted long matching line] (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-17_2200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+26 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out
+  ↳ File content (262.2KB) exceeds maximum allowed size (256KB). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file. To
+→ Grep: {"pattern": "wrote .*longdoc_text|wrote .*needle|t4k|license|LICENSE", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out", "output_mode": "content", "-o": true, "head_limit": 20}
+  ↳ 17:wrote /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_text (+4 lines)
+→ Grep: {"pattern": "wrote .*longdoc_text_1500.{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_long_191515.out", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 17:wrote /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_text_1500: 2246 rows {'longdocurl_t4k': 637, 'longdocurl_t8k': 610, 'longdocurl_t16k': 588, 'longdocurl_t32k': 411}
+→ Grep: {"pattern": "Apache|licen", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc", "output_mode": "content", "-i": true, "head_limit": 10}
+  ↳ scripts/longdoc/longdoc_build.py:3:Source: LongDocURL (dengchao/LongDocURL, Apache-2.0): 2,325 questions on 396 PDFs of 40-150 pages, evidence pages (+2 lines)
+→ Grep: {"pattern": "resource:.*longdoc_(pages|text|mixed)", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 5}
+  ↳ 1310:[Omitted long matching line]
+Text 40-vs-10 numbers next: checking the older-file variant and the code age of the uncompressed 10-passage file.
+→ Grep: {"pattern": "188615|-0\\.024|0\\.053|1442", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log", "output_mode": "content", "head_limit": 10}
+  ↳ No matches found
+→ Grep: {"pattern": "mm_docqa_base_k10_text_hotpotqa_1500|mm_docqa_base_k40_xd30_text_hotpotqa_1500", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content", "head_limit": 10}
+  ↳ No matches found
+→ Grep: {"pattern": "older R10|R10|n40|text 40", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log", "output_mode": "content", "head_limit": 20}
+  ↳ 45:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R40=expQ/longdoc/l_r42/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json; U40=expQ/base_qwen35_4b/eval/mm_docqa_base_k40_xd30_tex (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log
+  ↳ 30	  ↳ FACTORS kind=audit arm=A only=E_ limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+58 lines) (+54 lines)
+→ Grep: {"pattern": "--only|E_text|docs_p4_mems_total|pass_", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/audit_inputs.py", "output_mode": "content", "-n": true, "head_limit": 20}
+  ↳ 45:# Arm E sets (2026-11-17), run only with --only E_: TOPK 1000 = every doc of the row; CML 1024 = the length the (+5 lines)
+Most claims check out. Last spot-check: the arm E out-of-range counts, which the wake computed by hand from the audit rows (the audit's own column reads "nan").
+→ Grep: {"pattern": "\"v\": \"E_text_cml1024\".*\"src\": \"longdocurl_t4k\", \"n_mem\": ([0-9]{1,2}|[1-3][0-9]{2}|4[0-7][0-9]|48[0-8]),", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/rows.jsonl", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ Grep: {"pattern": "\"v\": \"E_pages_cml1024\".*\"src\": \"longdocurl_p10\", \"n_mem\": ([0-9]{1,2}|[1-3][0-9]{2}|4[0-7][0-9]|48[0-8]),", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/rows.jsonl", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ Grep: {"pattern": "\"v\": \"E_text_cml1024\".*\"src\": \"longdocurl_t4k\", \"n_mem\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/rows.jsonl", "output_mode": "count"}
+  ↳ expQ/longdoc/audit_191516/rows.jsonl:637 (+2 lines)
+→ Grep: {"pattern": "\"v\": \"E_pages_cml1024\".*\"src\": \"longdocurl_p10\", \"n_mem\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/rows.jsonl", "output_mode": "count"}
+  ↳ expQ/longdoc/audit_191516/rows.jsonl:1407 (+2 lines)
+→ Grep: {"pattern": "\"v\": \"E_mixed_cml1024\".*\"src\": \"longdocurl_m[24]0\", \"n_mem\": ([0-9]{1,2}|[1-3][0-9]{2}|4[0-7][0-9]|48[0-8]),", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/rows.jsonl", "output_mode": "count"}
+  ↳ No matches found (+2 lines)
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of range: 10-/20-page docs 1,500/1,500…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7632 turns=39 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "audit_191147.out:303-333 gives finetune_C256 max 488 and spa…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169 gives 360/360 pages byte-identical and 70.5% …"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "build_long_191515.out has every number. Line 7: 1,407 Q on 3…"}, {"claim": "Arm E input check PASS (job 191516, every row, CML 1,024): c…", "status": "provisional", "reason": "audit_191516.out:48-54 matches: cut 0.0000 and parity 1.0000…"}, "… +13 more"], "summary": "Every cited number matches its file: the audit tables, the l…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of range: 10-/20-page docs 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, whole docs 198/500; 4-page 0/1,500. Every arm E bucket is out of range too (job 191516 rows: pages 1,407/1,407; text 637/637, 610/610, 588/588, 411/411; mixed 1,398/1,407 at 10 pages, all at 20/40).","status":"supported","reason":"audit_191147.out:303-333 gives finetune_C256 max 488 and span 4,017. It also gives out-of-range docs_p10/p20 1.0000, text_n40 .9987, text_n20 .0233, longdoc_k20 .3960 and docs_p4 0.0000. For arm E, audit_191516's own out-of-range column reads 'nan', so the wake computed these counts by hand from rows.jsonl. I re-checked them there: none of the 637 t4k rows, 1,407 p10 rows or m20/m40 rows has <=488 <MEM>s, and the tick log (line 102) shows m10 'oor 1398'. Caveat: 'never' is the maximum of a 2,000-row sample."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169 gives 360/360 pages byte-identical and 70.5% = 70.5%. That is within the law's ±2 pt of the legacy 71% (architecture_review.md:105). The check came before 191219/191220 used the port."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 rows (t4k 637 / t8k 610 / t16k 588 / t32k 411; 650 text-evidence questions), needles text 300 / pages 225 / mixed 225.","status":"supported","reason":"build_long_191515.out has every number. Line 7: 1,407 Q on 387 docs, text-evidence 650. Lines 11/14: pages and mixed 4,221 (1,407 per bucket). Line 17: text 2,246 = 637/610/588/411. Lines 20/23/26: needles 300/225/225. The licence comes from longdoc_build.py:3, and the ledger resource: note exists (EXPERIMENTS.md:1310). Building the sets is not soundness: the closed-book and needle checks have not run yet."},{"claim":"Arm E input check PASS (job 191516, every row, CML 1,024): cut 0 and parity 1.0000 on text (2,246), pages (4,221), mixed (4,221) and the three needle sets; the CML 256 control cuts 235 / 2,246 text rows (10.5%), as it should. Its health number is null by design (--only E_ skips the 4-page variant; health passed in 191147).","status":"provisional","reason":"audit_191516.out:48-54 matches: cut 0.0000 and parity 1.0000 on all six E variants, and E_text_cml256 cuts 0.1046 (235). But audit.json records health pass_=false (docs_p4_mems_total null). The E_ variants and the --only path were added to audit_inputs.py (lines 45, 251) after 191147, so the law's health check never ran on the code that produced these numbers. Also, parity is 1.0000 even on the CML 256 control: one row builder serves both modes, so parity cannot fail here. That is the same limit that keeps
+== rc=0

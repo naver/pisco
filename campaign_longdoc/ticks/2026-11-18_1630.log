@@ -1,0 +1,123 @@
+== campaign longdoc wake 2026-11-18_1630  reasons=gate,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794987001 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.1 idle_h=14.7 min_util=- alert=1 unpushed=0 cron=4 daemon=1 disk_gb=7814 sig=260cc69f same=22 behind=0 upstream=0 upfiles=0 upmine=0 upsib=2 uplaw=0 push_rc=0 next=wake-when_job:191516_max_10h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191516 (ended)   (NEXT was: wake-when job:191516 max 10h)
+== session 54f53480-dd5a-4611-bd8b-0cc04d25c379  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Bash: cat /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/54f53480-dd5a-4611-bd8b-0cc04d25c379/tool-results/bijvorfc8.txt | sed -n 1,200p
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/54f53480-dd5a-4611-bd8b-0cc04d25c379/tool-results/bijvorfc8.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-18_1630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+130 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la; echo ---GATE; cat GATE; echo ---; wc -l CAMPAIGN.md STATE.md known_issues.md
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ total 99 (+19 lines)
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+136 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+340 lines)
+Reading the campaign state; the long-document build, its input check and the judge re-run have all finished, so I'm checking their results next.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat known_issues.md; echo ----; cat VERIFY.md | head -60; echo ---; cat DECISIONS.md
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+87 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff campaign_longdoc/campaign.conf; ls -la campaign_*/GATE; expmon help 2>&1 | grep -i -n gate | head -20
+  ↳ diff --git a/campaign_longdoc/campaign.conf b/campaign_longdoc/campaign.conf (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191392,191393,191515,191516,191517 -X -o JobID,JobName%20,State,ExitCode,Start,End,Elapsed,NodeList,MaxRSS 2>&1 | head; sacct -j 191392,191393,191517 -D -o JobID,State,ExitCode,Start,End,NodeL…
+  ↳ JobID                     JobName      State ExitCode               Start                 End    Elapsed        NodeList     MaxRSS  (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/ | head -50; cat expQ/longdoc/rejudge_191517.out 2>&1 | tail -30
+  ↳ total 449 (+37 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat scripts/longdoc/rejudge.sbatch; ls -la expQ/longdoc/l_r42/eval/ expQ/longdoc/rejudge/*; grep '"191517"' .expmon/runs.jsonl | head -3
+  ↳ #!/bin/bash (+50 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat expQ/longdoc/audit_191516.out; ls -la expQ/longdoc/audit_191516/
+  ↳ FACTORS kind=audit arm=A only=E_ limit=0 model=ft_mm_4b_184778 px=1003520 stride=8 (+58 lines)
+The new long-document test sets pass the input check (nothing cut, both modes see the same pages). Now reading the build statistics and the two finished 40-passage text cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -v -E '^\s*(render|page|  )' expQ/longdoc/build_long_191515.out | grep -v -i 'rendering\|fetch' | tail -40; ls eval_data/ | grep longdoc; for d in eval_data/longdoc_*; do [ -f $d/stats.json ] && {…
+  ↳ <persisted-output> (+37 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tr '\r' '\n' < expQ/longdoc/build_long_191515.out | grep -E '^[0-9]{2}:[0-9]{2}:[0-9]{2} |EXIT|rows|bucket' | tail -40; ls eval_data/ | grep longdoc
+  ↳ 21:42:33 extracting 396 pdfs from /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_src/hf/pdf_files.tar.gz (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/longdoc/l_r42/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json expQ/base_qwen35_4b/eval/mm_docqa_base_k40_xd30_text_hotpotqa_1500.json; do ls -la $f; python3 -c " ⏎ …
+  ↳ -rw-rw-r-- 1 hdejean hdejean 821073 Nov 18 01:45 expQ/longdoc/l_r42/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/longdoc/l_r42/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json expQ/base_qwen35_4b/eval/mm_docqa_base_k40_xd30_text_hotpotqa_1500.json; do python3 -c " ⏎ import json…
+  ↳ 1500 1500 mems_used 1075610 ['query_id', 'source', 'query', 'answers', 'prediction', 'em', 'f1', 'anls', 'match', 'mems_used', 'n_images', 'decoder_prompt_tokens', 'judge', 'judge_raw'] (+9 lines)
+Both 40-passage text cells are healthy (1,500 rows, all judged, slot count matches the input check exactly). Computing the length effect next.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -40 scripts/longdoc/length_effect.py | grep -E '^#|usage|argparse|add_argument' ; ls expQ/longdoc/length/; grep -n '191518' campaign_spread/STATE.md | head -8
+  ↳ import argparse, json, math, random, sys (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/spread/b_spread_s42/eval/ 2>&1; sacct -j 191518 -X -o JobID,State,End,NodeList 2>&1 | tail -1; python3 - <<'EOF' ⏎ import json,os ⏎ a='expQ/freeze/ref_s42/eval/mm_docqa_pisco_k10_px1003520_…
+  ↳ total 1584 (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R40=expQ/longdoc/l_r42/eval/mm_docqa_pisco_k40_px1003520_xd30_cml4096_text_hotpotqa_1500.json; U40=expQ/base_qwen35_4b/eval/mm_docqa_base_k40_xd30_text_hotpotqa_1500.json; R10a=expQ/freeze/ref_s42/eval…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 870307 2026-10-28_05:20 expQ/base_qwen35_4b/eval/mm_docqa_base_k10_text_hotpotqa_1500.json (+24 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '"191392"' .expmon/runs.jsonl | python3 -c "import sys,json; [print(json.loads(l).get('log') or json.loads(l).get('outdir')) for l in sys.stdin]"; L=$(ls -t expQ/longdoc/l_r42/*.log expQ/*/eval_mm…
+  ↳ /beegfs/scratch/user/hdejean/pisco/expQ/191392 (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -i -E 'judge.{0,40}(wall|min/|s/row|minutes)|rejudge.{0,60}(min|wall)|judge only.{0,60}min' EXPERIMENTS.md | tail -12
+  ↳ (Bash completed with no output)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E 'batch|max_new_tokens|def main|add_argument' scripts/judge_mm_docqa.py | head -30; ls expQ/*/eval/*.log 2>/dev/null | head -3; grep -l 'judge_mm_docqa.py' scripts/*.sh *.sh 2>/dev/null | hea…
+  ↳ 14:      [--judge_model Qwen/Qwen3-8B] [--batch_size 16] [--samples] (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py pisco/model.py scripts/judge_prompts.py scripts/paired_judge.py | cut -c1-8,33-; sed -n 1,200p eval_mm_4b.sh | grep -n -E 'LIMIT|…
+  ↳ b3d1cda1  eval_mm_4b.sh (+65 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191375,191376,191377,191378,191391,191392,191393,191516 -o JobID,State,Elapsed,MaxRSS,NodeList,ReqMem,Timelimit 2>&1 | grep -E 'batch|^1913[0-9]+ ' | head -30; du -sh eval_data/longdoc_pages_1…
+  ↳ 191375        COMPLETED   00:17:21                  homer-011        32G   01:00:00  (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E 'load_from_disk|load_dataset|IN_MEMORY|keep_in_memory|args.limit|\.select\(' scripts/eval_mm_docqa.py | head; grep -n -E 'load_from_disk|keep_in_memory' scripts/longdoc/audit_inputs.py | hea…
+  ↳ 650:        ds = datasets.load_from_disk(args.data_path)["train"] (+6 lines)
+Queuing this wake's work: the corrected judge re-run plus three small trial runs on the new long-document sets (to measure time and memory before costing the full grid).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in longdoc_pages_1500 longdoc_text_1500; do f=$(find eval_data/$s -name dataset_info.json | head -1); echo "== $s $f"; python3 -c "import json;d=json.load(open('$f'));print(list(d['features'].key…
+  ↳ == longdoc_pages_1500 eval_data/longdoc_pages_1500/train/dataset_info.json (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F="expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r42/eval/mm_docqa_pisco_k…
+  ↳ MISSING expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/longdoc/l_r42/eval/mm_docqa_p (+4 lines)
+The cause is clear: this shell is zsh, which does not split an unquoted variable into words, so all 8 paths went in as one argument. Relaunching with each path as its own argument.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=(${=$(cat /tmp/longdoc_rejudge_files.txt)}); echo "n=${#F[@]}"; for f in "${F[@]}"; do [ -f "$f" ] || echo MISSING $f; done; expmon launch --dry-run --exp longdoc --stage J --time 1:00:00 --mem 12G -…
+  ↳ n=12 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=(${=$(cat /tmp/longdoc_rejudge_files.txt)}); expmon launch --exp longdoc --stage J --time 1:00:00 --mem 12G --exclude='homer-[005-009]' scripts/longdoc/rejudge.sbatch dlen_docs_text "${F[@]}" 2>&1 | …
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/rejudge_191629.out (+4 lines)
+Judge re-run relaunched (12 result files: the 8 document files plus the 4 text files behind the new 40-passage number). Now setting up the three trial runs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'decoder_max_length' scripts/eval_mm_docqa.py | head -20
+  ↳ 18:--decoder_max_length is an error, not a silent trim: right truncation would cut the question. (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 526,570p scripts/eval_mm_docqa.py; sed -n 700,745p scripts/eval_mm_docqa.py
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 650,700p scripts/eval_mm_docqa.py | grep -n -E 'mixed|doc_images|pisco_text|isinstance|None' | head -20; sed -n 412,440p scripts/eval_mm_docqa.py | head -30
+  ↳ def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+90 lines)
+  ↳ 8:    model = base = proc = tok = None (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; mkdir -p expQ/longdoc/e_r42 && ln -sfn /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model expQ/longdoc/e_r42/model; ls -la expQ/longdoc/e_r42/; ED=/beegfs/scratch/user/hdejean/pisco/eval_dat…
+  ↳ total 1 (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ED=/beegfs/scratch/user/hdejean/pisco/eval_data;  ⏎ expmon launch --exp longdoc --stage E --time 1:30:00 --mem 13G --exclude='homer-[005-009]' --env PX=1003520 --env TOPK=1000 --env CML=1024 eval_mm_4b…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191634.out (+5 lines)
+Four jobs queued (cap reached). Recording verdicts, intents and the new data sets in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / judge_prompts.py bae44fa7 / pisco/model.py 994cff3d" ⏎ expmon verdict 191517 closed "launch fault, not a result:…
+  ↳ ⚠ the note states no n (cells / pairs / queries, e.g. n=12, 12/12, 12 of 12, 12 clips), p or control — a closing number without its denominator is not a result (law: Decision gates; VOID / superseded  (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '"191517"' .expmon/verdicts.jsonl; expmon note "resource: arm E long-document sets (job 191515, scripts/longdoc/longdoc_build.py md5 f14e4640, source LongDocURL Apache-2.0, 1,407 usable Q on 38…
+  ↳ 1 (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search argv quot 2>&1 | head -8; expmon gripe --open --search dry-run argument 2>&1 | head -8
+  ↳ == 9 open report(s) matching 'argv quot', every machine, newest first == (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 052cca8b "pisco/longdoc 2026-11-17: cost a real cell. A headless wake (zsh) passed 8 result files as \$F unquoted -> ONE argv element; dry-run showed them space-joined, the job FAIL…
+  ↳ logged as a +1 of 052cca8b (entry 68795c47) -> /home/hdejean/.claude/feedback/ncp.log
+Now adding the new symptom to the known-issues table.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la docs/longdoc_diagnosis.md expQ/longdoc/figures 2>&1; wc -l docs/longdoc_diagnosis.md 2>/dev/null; grep -n -i -E 'text|passag' docs/longdoc_diagnosis.md 2>/dev/null | head -20
+  ↳ ls: cannot access 'expQ/longdoc/figures': No such file or directory (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 66	Probe validity: the transcription port reproduced the legacy probe exactly (360 / 360 pages identical, word recall (+56 lines)
+Updating the results document. First computing what share of the new long-document questions lie outside the slot counts seen in training.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -c 600 expQ/longdoc/audit_191516/rows.jsonl; echo; timeout 30 python3 - <<'EOF' ⏎ import json, collections ⏎ c=collections.defaultdict(lambda:[0,0]); b=collections.defaultdict(lambda:[0,0,[]]) ⏎ f…
+  ↳ {"v": "E_text_cml1024", "i": 8, "qid": "summary2title_4120460_12_41_7__t4k", "src": "longdocurl_t4k", "n_mem": 583, "n_chunks": 6, "chunk_tok_max": 1102, "prompt": 777, "span": 4858, "base_prompt": 48 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 30 python3 - <<'EOF' ⏎ import json, collections ⏎ b=collections.defaultdict(list); inraw=collections.Counter(); n=collections.Counter() ⏎ for l in open('expQ/longdoc/audit_191516/rows.jsonl'): …
+  ↳ ('E_mixed_cml1024', 'longdocurl_m10') 1407 mems p50/max 977 4611 base prompt p50/max 7877 36912 oor 1398 answer-in-raw 521 (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ old3=s.splitlines()[2] ⏎ new3="Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-18 16:45 (arm L: text 40 v…
+  ↳ 3:Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-18 16:45 (arm L: text 40 vs 10 passages, seed 42, undecided; arm E: the long-document sets are built and pass the input chec (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon display --exp longdoc 2>&1 | tail -2; squeue -u hdejean -h -o '%i %T %r %P' | grep -E '19162|19163' 
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search display rows 2>&1 | head -6
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+Writing the campaign state file now (the full rewrite), then the wake condition.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "longdoc wake 2026-11-18 16:30 ⏎   - did: arm E build 191515 + input check 191516 verdict closed (cut 0, parity 1.0 on all E sets); text 40-passage cells 191392/191393 healthy, closed; re-j…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191629,191634,191635,191636 max 4h", "summary": "Long-document sets (arm E) built and input check passed: 1,407 questions on 387 LongDocURL PDFs at 10/20/40 pages, text at 4k-32k tokens; nothing cut, …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.3594 turns=52 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191629,191634,191635,191636 max 4h", "summary": "Long-document sets (arm E) built and input check passed: 1,407 questions on 387 LongDocURL PDFs at 10/20/40 pages, text …", "launched": ["191629 arm J project-prompt re-judge on copies of 12 result files (replaces failed 191517)", "191634 arm E plumbing: uncompressed, longdoc_pages_1500, LIMIT=300", "191635 arm E plumbing: uncompressed, longdoc_text_1500, LIMIT=300", "191636 arm E plumbing: R s42 (184778), longdoc_pages_1500, LIMIT=300"], "verdicts": [{"jobid": "191517", "verdict": "closed", "note": "launch fault: 8 files passed as one argv element (zsh); replaced by 191629"}, {"jobid": "191392", "verdict": "closed", "note": "healthy; R s42 text 40 passages judge .534, mems_used = audit 1,075,610"}, {"jobid": "191393", "verdict": "closed", "note": "healthy; uncompressed text 40 passages judge .707"}, {"jobid": "191515", "verdict": "closed", "note": "arm E build OK: 1,407 usable Q; pages/mixed 4,221 rows, text 2,246, needles 300/225/225"}, {"jobid": "191516", "verdict": "closed", "note": "arm E cut check PASS: cut 0, parity 1.0 on all E sets; CML 256 control cuts 10.5%"}], "gripes": ["+1 on 052cca8b: launch --dry-run joins argv with spaces, so a zsh-unsplit multi-file argument looked correct and the job…"]}
+== final:
+{"next":"wake-when","wake_when":"job:191629,191634,191635,191636 max 4h","summary":"Long-document sets (arm E) built and input check passed: 1,407 questions on 387 LongDocURL PDFs at 10/20/40 pages, text at 4k-32k tokens; nothing cut, both modes see the same pages. Text 40 vs 10 passages, seed 42, 1,500 pairs: the compressed-vs-uncompressed gap widens by 2.6 pt [-5.6, +0.3], undecided, and EM disagrees in sign (judge-sensitive candidate). The judge re-run failed on a launch fault (zsh passed 8 paths as one argument); it was relaunched with 12 files. Three LIMIT=300 trial runs on the new sets are running to measure wall time and memory before the model grid is costed. Cells 42/70, about 21/60 GPU-h used.","launched":["191629 arm J project-prompt re-judge on copies of 12 result files (replaces failed 191517)","191634 arm E plumbing: uncompressed, longdoc_pages_1500, LIMIT=300","191635 arm E plumbing: uncompressed, longdoc_text_1500, LIMIT=300","191636 arm E plumbing: R s42 (184778), longdoc_pages_1500, LIMIT=300"],"verdicts":[{"jobid":"191517","verdict":"closed","note":"launch fault: 8 files passed as one argv element (zsh); replaced by 191629"},{"jobid":"191392","verdict":"closed","note":"healthy; R s42 text 40 passages judge .534, mems_used = audit 1,075,610"},{"jobid":"191393","verdict":"closed","note":"healthy; uncompressed text 40 passages judge .707"},{"jobid":"191515","verdict":"closed","note":"arm E build OK: 1,407 usable Q; pages/mixed 4,221 rows, text 2,246, needles 300/225/225"},{"jobid":"191516","verdict":"closed","note":"arm E cut check PASS: cut 0, parity 1.0 on all E sets; CML 256 control cuts 10.5%"}],"gripes":["+1 on 052cca8b: launch --dry-run joins argv with spaces, so a zsh-unsplit multi-file argument looked correct and the job failed in 0 s (191517)"]}
+== rc=0 secs=528
+== verify: 5/17
