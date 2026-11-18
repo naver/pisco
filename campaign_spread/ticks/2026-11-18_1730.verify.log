@@ -1,0 +1,44 @@
+== verifier 2026-11-18_1730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session a9613b1a-eff2-474b-85f4-88367281d02b  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+232 lines)
+→ Glob: {"pattern": "expQ/spread/**/*.md"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/spread/pooled_pairs.tsv
+  ↳ 1	# Campaign spread: seed-pooled equality test (owner REQUEST 2026-11-18, option A). Columns: case, expect (pooled A-B, '-' none), A_s42, B_s42, A_s43, B_s43. A = spread, B = tail. (+7 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/pooled_20261118_1730"}
+  ↳ expQ/spread/pooled_20261118_1730/pooled.md
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks"}
+  ↳ expQ/spread/rerun_checks/photo_drift.md (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454"}
+  ↳ expQ/spread/audit_191454/audit.json (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/pooled_20261118_1730/pooled.md
+  ↳ 1	| case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control | (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/rerun_20261118.md
+  ↳ 1	# Re-run identity checks, 2026-11-18 (scripts/spread/compare_answers.py; A = recorded / older file, B = today's-code re-run) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+255 lines)
+→ Grep: {"pattern": "191378|191390|191377", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content"}
+  ↳ campaign_longdoc/STATE.md:75:  at either seed: Δ_len +0.5 [−1.8, +2.7], sign 144 / 138, p .77 (s42, 191378); +0.1 [−2.2, +2.5], 146 / 142, p .86 (+67 lines)
+→ Grep: {"pattern": "self-pair|selfpair|\\(2\\)", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content"}
+  ↳ 3:FEASIBILITY GATE: PASS  (1) re-derivation PASS  (2) self-pair PASS  health 184778 docs PASS
+Checking the claims against the audit, pooled-test and re-run files; most numbers match so far. Now checking the remaining confidence intervals and the photo pair's run details.
+→ Grep: {"pattern": "self", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json", "output_mode": "content", "head_limit": 10}
+  ↳ 14189: "selfpair": { (+1 lines)
+→ Grep: {"pattern": "\\+\\.006|\\+0\\.006|\\[\\+\\.000, \\+\\.045\\]|178 ?/ ?144|\\+\\.087|\\[\\+\\.068|\\[\\+\\.025, \\+\\.072\\]|\\[−\\.011, \\+\\.033\\]|\\[-\\.011", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode…
+  ↳ 25:| documents, infographics only | full | 500 | — | .480 / .480 | .430 / .430 | +.050 (+.006, +.094) | +.050 (+.008, +.094) | 80/55 · 76/51 | — | .726 | 6.5 | better at both seeds by the bars, but a  (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.json
+  ↳ 14185	    } (+207 lines)
+→ Grep: {"pattern": "191531|191532|191495|191496", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md", "output_mode": "content"}
+  ↳ 12:- Reference R re-evaluated on today's eval launcher (md5 b3d1cda1), 1,500 questions each, every row judged, 0 unparseable: documents .610 (s42, job 191495) / .615 (s43, job 191496), the same answer (+4 lines)
+→ Grep: {"pattern": "191531|191532", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "^### |\\| ALL \\| ALL", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "offset": 10}
+  ↳ 224:### full_docs_s43 — role gate, budget full, seed 43, set docs (+37 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 6…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2861 turns=19 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit.md section (1) re-derives all 8 cases to the third dec…"}, {"claim": "Seed-pooled \"equal\" test (owner, option A) controls PASS aga…", "status": "supported", "reason": "pooled_20261118_1730/pooled.md, control row: +0.084 [+0.065,…"}, {"claim": "Arm B closed. ONE chunk (ten HotpotQA passages as one ~1,380…", "status": "provisional", "reason": "The numbers match the grid and verdicts: judge .6107/.3507 a…"}, {"claim": "Tail production loses going from ten chunks to one at both s…", "status": "supported", "reason": "The tail CIs are in the 191456 and 191526 verdicts, and the …"}, "… +11 more"], "summary": "Every number in STATE.md matches the grid, the verdicts or t…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit.md section (1) re-derives all 8 cases to the third decimal (e.g. red_docs_s42 +0.093, full_photos_s42 −0.009). audit.json 'selfpair' lists 39 files, each with diff 0.0 and 0 discordant pairs. audit.md row 57 shows the 184778 document file: 1500 rows, 1500 judged, 0 unparseable, 646,042 slots. The grid's probe for 191454 reads feasibility=PASS, files=39, and the verdict is closed."},{"claim":"Seed-pooled \"equal\" test (owner, option A) controls PASS again at 17:45: reduced-budget documents +.084 [+.065, +.103] (expected +.084), every self-pair 0.000.","status":"supported","reason":"pooled_20261118_1730/pooled.md, control row: +0.084 [+0.065, +0.103], 'self-pair 0.000, expect +0.084 ok'. Every other row also shows 'self-pair 0.000 ok'. This matches the law's tolerance of ±.003."},{"claim":"Arm B closed. ONE chunk (ten HotpotQA passages as one ~1,380-token chunk, 173 slots per question, uncompressed .752): spread better at both seeds, s42 .611 vs .351 = +.260 [+.233, +.289], McNemar 488 / 98 (191457 − 191456); s43 .616 vs .369 = +.247 [+.219, +.275], 477 / 106 (191528 − 191526); n 1,500 each; EM +.151 / +.152. The project-prompt check runs in 191665 (arm J gate still open for this case).","status":"provisional","reason":"The numbers match the grid and verdicts: judge .6107/.3507 and .616/.3687, CIs and McNemar counts in the 191457/191528 verdicts. EM .3607−.2093 = +.151 and .36−.208 = +.152. The 'better' bar (≥ +3 pt, CI above 0 at both seeds) is met, and the slot counts match (259,986 for both models). But this case decides an arm, and the instrument check that must pass first is not done: the project-prompt re-judge, job 191665, is still RUNNING. Also, EM differs from the rubric judge by about 11 pt (+.151 vs +.260), well outside the 2-pt agreement the instrument gate asks for (the sign is kept). Arm B's own gate also needs ten chunks inside ±2 pt at both seeds, which is not met. So the arm is 'closed' only for the one-chunk case. Note: tail production also had two more stage-2 training passes than spread (Arms table, arm E row). The reduced-budget pair 183814 vs 183538 at one chunk (+.217, audit red_text1_s42) supports that the layout is the cause, but that pair ran on an older code version."},{"claim":"Tail production loses going from ten chunks to one at both seeds: −.253 [−.281, −.225] (s42, 191456 − 191455), −.229 [−.255, −.200] (s43, 191526 − 191519). Spread loses nothing beyond 2 pt at either seed: +.006 [−.019, +.029] (s42, 191457 − 191518), +.023 [+.000, +.045], 178 / 144, p .066 (s43, 191528 − 191630).","status":"supported","reason":"The tail CIs are in the 191456 and 191526 verdicts, and the grid judge values give .3507−.6033 = −.253 and .3687−.5973 = −.229
+== rc=0
