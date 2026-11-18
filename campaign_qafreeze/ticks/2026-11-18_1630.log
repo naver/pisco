@@ -1,0 +1,104 @@
+== campaign qafreeze wake 2026-11-18_1630  reasons=gate,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794987001 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=20.3 idle_h=8.1 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=7814 sig=3f0317b9 same=16 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:191495,191496,191531,191532_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== wait condition met: job:191495,191496,191531,191532 (ended)   (NEXT was: wake-when job:191495,191496,191531,191532 max 4h)
+== session 6ae82445-91d9-48c2-823d-ee4e798ca002  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-18_1630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+88 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat GATE; echo ====; ls -la
+  ↳ Exit code 1 (+64 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; sed -n 1,400p CAMPAIGN.md | cut -c1-2000 | head -c 60000 | sed -n '/## Arms/,/## Patchable/p'
+  ↳ ## Arms — what varies, what is held constant (+111 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; sed -n '/## Budget and caps/,$p' CAMPAIGN.md | sed -n '/## Pre-authorised/,/## The wake owns/p'
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; cat STATE.md; echo =====GATE; cat -A GATE | head; ls -la
+  ↳ ## Pre-authorised actions (the agent may do these without asking) and their loop guards (+40 lines)
+  ↳ Exit code 1 (+75 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; ls -la; echo "--- GATE:"; cat -A GATE 2>&1 | head; echo "--- known_issues"; cat known_issues.md | cut -c1-400
+  ↳ total 76 (+46 lines)
+Checking how the two arm-Q trainings and four reference re-evals ended, then deciding next launches.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191495,191496,191531,191532,191527,191530 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,Partition -P; expmon ledger 40 2>&1 | tail -60 | cut -c1-600
+  ↳ JobID|State|ExitCode|Elapsed|Start|End|NodeList|Partition (+66 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -n -i -B2 -A4 'GATE' | head -60; cat campaign_qafreeze/VERIFY.md | head -60
+  ↳ 1-expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff campaign_qafreeze/campaign.conf; git log -3 --format='%h %ad %s' --date=iso -- campaign_qafreeze/NEXT; tail -30 campaign_qafreeze/ticks/2026-11-18_1630.log 2>/dev/null | cut -c1-300
+  ↳ diff --git a/campaign_qafreeze/campaign.conf b/campaign_qafreeze/campaign.conf (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/qafreeze/ expQ/qafreeze/ft_frozen_s42 expQ/qafreeze/ft_frozen_s43 expQ/qafreeze/ref_s42 expQ/qafreeze/ref_s42/eval expQ/qafreeze/ref_s43/eval 2>&1 | head -80
+  ↳ expQ/qafreeze/: (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ import json,glob,collections ⏎ for f in sorted(glob.glob('expQ/qafreeze/ref_s4*/eval/*.json')): ⏎     d=json.load(open(f)) ⏎     recs = d if isinstance(d,list) else d.get('records')…
+  ↳ expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json keys ['summary', 'records'] (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in sorted(glob.glob('expQ/qafreeze/ref_s4*/eval/*.json')): ⏎     d=json.load(open(f)); s=d['summary'] ⏎     print(f.split('/')[2], f.split('_')[-2:], {k:s[k…
+  ↳ ref_s42 ['1500', '1m.json'] {'em': 0.5073333333333333, 'em/slidevqa': 0.494, 'f1': 0.5991203620230745, 'f1/slidevqa': 0.6325488593786076, 'anls': 0.6161575668740203, 'anls/slidevqa': 0.589090905880486 (+19 lines)
+The four reference re-evals are healthy. Now reading the two arm-Q trainings' loss curves.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42 43; do echo "== s$s"; ls expQ/qafreeze/ft_frozen_s$s/model expQ/qafreeze/ft_frozen_s$s/model/*; python3 - "$s" <<'EOF' ⏎ import json,sys ⏎ s=sys.argv[1] ⏎ st=json.load(open(f'expQ/qafreeze/…
+  ↳ == s42 (+53 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=$(grep -l '"191495"' .expmon/*.jsonl logs/*.jsonl 2>/dev/null | head -1); echo "runs file: $R"; f=$(ls .expmon/runs.jsonl 2>/dev/null || echo $R); for j in 191494 191495 191531 191527; do grep "\"$j\…
+  ↳ (eval):1: no matches found: logs/*.jsonl (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | sed -n '/^  launch/,/^  [a-z]/p' | head -50; grep -n 'expmon launch' .expmon/campaign/qafreeze/hook.log 2>/dev/null | tail -8 | cut -c1-500
+  ↳ launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid>] [--stage <label>] [--force] [--env K=V]… [--ok-exit N] (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 68p .expmon/campaign/qafreeze/hook.log | cut -c1-1200; grep -c . .expmon/campaign/qafreeze/hook.log; head -30 expQ/freeze/check_module_move.sh | grep -E '^#SBATCH|^#'
+  ↳ 2026-11-17 20:02:41	full	Bash	allow		expmon note -j 191493 "qafreeze Qs plumbing check intent: check_module_move.sh init_s42 -> ft_frozen_s42_smoke/model, afterok 191493, CPU gpu-be. PASS = every comp (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/qafreeze/ft_qafreeze.sbatch expQ/freeze/check_module_move.sh | cut -c1-8,33-; echo…
+  ↳ b3d1cda1  eval_mm_4b.sh (+37 lines)
+Code is unchanged since last wake. Launching the first chain: weight-movement check on each trained model, then its documents eval only if the check succeeds.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp qafreeze --stage check --parent 191527 --exclude 'homer-[005-009]' --time 0:20:00 --dry-run expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s4…
+  ↳ would submit: sbatch --exclude homer-[005-009] --time 0:20:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s42 /beegfs/scratch/user/hdejean/pisco/expQ/qafreez (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "qafreeze arm Q health intent (wake 16:30): check_module_move.sh init_s4x -> ft_frozen_s4x/model for s42 (train 191527) and s43 (191530), CPU gpu-be, --time 0:20 (191494 ran 0:44). PASS = e…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp qafreeze --stage eval --parent 191527 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 --dependency afterok:191625 --dry-run eval_mm_4b.sh expQ/qafreeze/ft_f…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:40:00 --dependency afterok:191625 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s42/model pisco  eval_data/mm_docqa_1500_1m (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp qafreeze --stage eval --parent 191527 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 --dependency afterok:191625 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s42/…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191626.out
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp qafreeze --stage check --parent 191530 --exclude 'homer-[005-009]' --time 0:20:00 expQ/freeze/check_module_move.sh /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s43 /beegfs/…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191627.out
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; PX=1003520 expmon launch --exp qafreeze --stage eval --parent 191530 --partition gpu-be --exclude 'homer-[005-009]' --time 0:40:00 --dependency afterok:191627 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s43/…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191628.out (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -n -A6 '^  probe\|^  verdict' | head -30
+  ↳ 62:  verdict [<jobid> <v> [note]] | [<label>]  set/list STRUCTURED run disposition (open|closed|best| (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42 43; do j=$([ $s = 42 ] && echo 191527 || echo 191530); python3 - $s <<'EOF' > /tmp/qaf_ev_$s.txt ⏎ import json,sys ⏎ s=sys.argv[1] ⏎ st=json.load(open(f'expQ/qafreeze/ft_frozen_s{s}/checkpo…
+  ↳ probe recorded: 191527 @100 (epoch=0.229 eval_loss=0.4129)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for d in expQ/ft_mm_4b_184778 expQ/ft_mm_4b_184780 expQ/freeze/ft_frozen_s42 expQ/freeze/ft_frozen_s43; do c=$(ls -d $d/checkpoint-* 2>/dev/null | sort -V | tail -1); echo "== $d ($c)"; [ -n "$c" ] && …
+  ↳ == expQ/ft_mm_4b_184778 (expQ/ft_mm_4b_184778/checkpoint-437) (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 191527 191530; do echo "== $j"; f=$(ls ft_qafreeze_$j.out 2>/dev/null || expmon logs $j 1 2>&1 | head -1); grep -nE 'froze|Compressor trainable|Total trainable|train_runtime|Traceback|Error|na…
+  ↳ == 191527 (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "s42 vs 184778:"; diff expQ/ft_mm_4b_184778/training_config.yaml expQ/qafreeze/ft_frozen_s42/training_config.yaml; echo "s43 vs 184780:"; diff expQ/ft_mm_4b_184780/training_config.yaml expQ/qafree…
+  ↳ s42 vs 184778: (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sleep 45; tail -12 check_move_freeze_191627.out; squeue -u hdejean -o '%.8i %.20j %.8T %.10M %.9P %R' | grep -E '1916'
+  ↳ FACTORS kind=check_module_move init=qafreeze trained=ft_frozen_s43 (+16 lines)
+Both weight checks pass (compressor and connector unchanged 0.0%, decoder LoRA moved 66.9%); the two document evals are running. Recording verdicts and notes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 191495 closed "healthy (COMPLETED 0:0, homer-017, 27:13, one attempt; 1,500 rows, judge on all, unparseable 0, image_max_pixels 1003520, mems_used 646,042, no exceeds error). R 184778…
+  ↳ verdict recorded: 191495 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict qafreeze 2>&1 | tail -14 | cut -c1-160
+  ↳ JOBID      VERDICT    WHEN             NOTE (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search 'submissions per wake' 2>&1 | head -8; expmon gripe --open --search 'cap chain' 2>&1 | head -8; expmon gripe --open --search 'pace hold' 2>&1 | head -5
+  ↳ == 3 open report(s) matching 'submissions per wake', every machine, newest first == (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 65252f7b "pisco/qafreeze 2026-11-18: a train campaign's fixed eval protocol after two trainings = 16 cells of 17-30 min (8 Q evals, 4 reference re-runs, 2 baseline re-runs, 2 CPU we…
+  ↳ logged as a +1 of 65252f7b (entry 663f0427) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "efficiency brief (pisco/qafreeze 2026-11-18 16:30): 'SPEED: for 9.8 h nothing of this loop was running' blames the loop, but the wait it named (wake-when job:191495,...) was met…
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 188606 188615; do grep "\"jobid\": \"$j\"" .expmon/runs.jsonl | python3 -c 'import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print(d["jobid"], d["launcher"], d["argv"], d.get("env"),…
+  ↳ 188606 eval_mm_4b.sh ['expQ/freeze/ref_s42/model', 'pisco', '', 'eval_data/text_mrqa_ood_1500'] None {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '0:27:00'} (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/freeze/ref_s42/eval/ | grep -E 'mrqa|hotpot'; for j in 188606 188615; do f=$(ls *_$j.out 2>/dev/null | head -1); echo "== $j $f"; grep -m3 -E '^FACTORS|^ENV|PX=|CML|TOPK' $f | cut -c1-400; done
+  ↳ mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+5 lines)
+Launches are done for this wake. Writing up state for the next wake.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40 | cut -c1-400
+  ↳ **Settled** (+13 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; tail -3 known_issues.md | cut -c1-200; wc -l known_issues.md
+  ↳ | `gpu-be` evals PENDING `Priority` with start estimates ~3 days out while `gpucap free a100` shows free GPUs (2026-11-13: A1 s42 evals est. 11-16) | another user's higher-priority 1-GPU `gpu-be` jobs (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; cat >> known_issues.md <<'EOF' ⏎ | a `wake-when` condition was met hours ago (jobs ended 00:27) but the wake arrives much later (16:30), sensors show `paced=1`, and the brief's effici…
+  ↳ wake-when job:191626,191628 max 2h
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "qafreeze wake 16:30 ⏎   - did: read both arm Q trainings (191527/191530, 1 epoch = 28k rows each, COMPLETED) + 4 R re-evals (191495/191496/191531/191532, healthy, verdicts); launched weigh…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search 'display rows' 2>&1 | head -6
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '<tr' display_qafreeze.html; expmon gripe --same 43db294f "qafreeze 2026-11-18: same '0 table rows, 0 media files from 0 runs' line while grid qafreeze lists 14 runs" 2>&1 | tail -1
+  ↳ 17 (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191626,191628 max 2h", "summary": "Both trainings of the test arm finished cleanly, and the first evals are running. The test arm trains only a new decoder adapter on top of a frozen, already QA-train…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3948 turns=45 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191626,191628 max 2h", "summary": "Both trainings of the test arm finished cleanly, and the first evals are running. The test arm trains only a new decoder…", "launched": ["191625 check_module_move init_s42 -> ft_frozen_s42/model (CPU) — PASS", "191626 eval_mm_4b.sh Q documents s42 (afterok 191625)", "191627 check_module_move init_s43 -> ft_frozen_s43/model (CPU) — PASS", "191628 eval_mm_4b.sh Q documents s43 (afterok 191627)"], "verdicts": [{"jobid": "191495", "verdict": "closed", "note": "healthy; R 184778 documents .610 on today's code (n=1,500)"}, {"jobid": "191496", "verdict": "closed", "note": "healthy; R 184780 documents .615 (n=1,500)"}, {"jobid": "191531", "verdict": "closed", "note": "healthy; R 184778 photos .679 (recorded .673)"}, {"jobid": "191532", "verdict": "closed", "note": "healthy; R 184780 photos .685"}, {"jobid": "191625", "verdict": "closed", "note": "health PASS: compressor+connector 0.0%, decoder lora_B 66.9% (s42)"}, {"jobid": "191627", "verdict": "closed", "note": "health PASS: compressor+connector 0.0%, decoder lora_B 66.9% (s43)"}], "gripes": ["+1 of 65252f7b: a 16-cell fixed eval protocol at CAMP_MAX_SUBMIT_PER_WAKE=4 costs 4 extra wakes; count a dependency chai…", "defect: efficiency brief blames the loop for 9.8 h idle when the wake was held by the weekly pace hold (paced=1); split …", "+1 of 43db294f: display --exp qafreeze prints '0 table rows' while the page has 17 rows and grid lists 14 runs"]}
+== final:
+{"next":"wake-when","wake_when":"job:191626,191628 max 2h","summary":"Both trainings of the test arm finished cleanly, and the first evals are running. The test arm trains only a new decoder adapter on top of a frozen, already QA-trained compressor. Each seed ran 1 epoch (28k rows) and exited with code 0.\n- **Frozen parts stayed frozen.** After the full epoch, every compressor and connector weight changed 0.0% at both seeds. The decoder adapter moved 66.9% (checks 191625 / 191627).\n- **Training loss is promising, but it is not the gate.** Held-out loss at the end of the epoch was .400 / .371, against .414 / .375 for the reference model and .435 / .413 for the earlier never-QA frozen run. This fits the prediction that the test arm ties the reference.\n- **Reference scores reproduce on today's eval code.** Judge accuracy (Qwen3-8B grader, 1,500 questions per set): documents .610 / .615, same as recorded; photos .679 / .685, against .673 / .685 recorded. All four files are healthy.\n- **Launched this wake (cap of 4 reached).** Each frozen-weight check is chained to its documents eval, so the eval only runs if the check passes. The two documents evals (191626 / 191628) are running now.\n- **Still to run:** 12 eval cells at 4 per wake: test-arm photos and MRQA text, reference MRQA and HotpotQA, and the never-QA frozen run on documents. Then the paired gate.\n- **GPU budget:** about 20.3 of 55 GPU-hours spent.\n- **Lost time:** the wake was held about 16 h by the weekly pace hold, until the owner switched it off. Logged as a misattributed idle time.\n\nNothing needed from the owner.","launched":["191625 check_module_move init_s42 -> ft_frozen_s42/model (CPU) — PASS","191626 eval_mm_4b.sh Q documents s42 (afterok 191625)","191627 check_module_move init_s43 -> ft_frozen_s43/model (CPU) — PASS","191628 eval_mm_4b.sh Q documents s43 (afterok 191627)"],"verdicts":[{"jobid":"191495","verdict":"closed","note":"healthy; R 184778 documents .610 on today's code (n=1,500)"},{"jobid":"191496","verdict":"closed","note":"healthy; R 184780 documents .615 (n=1,500)"},{"jobid":"191531","verdict":"closed","note":"healthy; R 184778 photos .679 (recorded .673)"},{"jobid":"191532","verdict":"closed","note":"healthy; R 184780 photos .685"},{"jobid":"191625","verdict":"closed","note":"health PASS: compressor+connector 0.0%, decoder lora_B 66.9% (s42)"},{"jobid":"191627","verdict":"closed","note":"health PASS: compressor+connector 0.0%, decoder lora_B 66.9% (s43)"}],"gripes":["+1 of 65252f7b: a 16-cell fixed eval protocol at CAMP_MAX_SUBMIT_PER_WAKE=4 costs 4 extra wakes; count a dependency chain or an eval sweep as one submission","defect: efficiency brief blames the loop for 9.8 h idle when the wake was held by the weekly pace hold (paced=1); split pace-held idle from loop-chosen idle","+1 of 43db294f: display --exp qafreeze prints '0 table rows' while the page has 17 rows and grid lists 14 runs"]}
+== rc=0 secs=469
+== verify: 8/9

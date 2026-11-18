@@ -1,0 +1,73 @@
+== verifier 2026-11-18_1630  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session b16da50b-a343-4b2e-a93a-a4d14009e5a7  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+237 lines)
+→ Glob: {"pattern": "expQ/qafreeze/*"}
+→ Glob: {"pattern": "campaign_qafreeze/**"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze"}
+  ↳ campaign_qafreeze/QUESTION.md (+20 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze"}
+  ↳ expQ/qafreeze/init_s42/tokenizer.json (+100 lines)
+→ Grep: {"pattern": "froze|Compressor trainable|trainable params|train_runtime|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "froze|Compressor trainable|trainable params|train_runtime|eval_loss", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s43/train.log", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42/train.log
+  ↳ 1	[2026-11-17 23:08:34,685][httpx][INFO] - HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3.5-4B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect" (+34 lines)
+Checking each claim against its job logs. The training log has only download lines, so I'm looking for the job's SLURM output.
+→ Grep: {"pattern": "191527|191530", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1630.log", "output_mode": "content", "head_limit": 60}
+  ↳ 19:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191495,191496,191531,191532,191527,191530 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,Partition -P; expmon ledger 40 2>&1 | tail -6 (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-18_1630.log
+  ↳ 1	== campaign qafreeze wake 2026-11-18_1630  reasons=gate,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+103 lines)
+→ Grep: {"pattern": "froze|Compressor trainable|Total trainable|trainable params|train_runtime|'eval_loss'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191527.out", "output_mode": "content", "head_limit": 20}
+  ↳ 2:FACTORS kind=ft_mm arm=qa_frozen seed=42 smoke=0 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+24 lines)
+→ Grep: {"pattern": "froze|Compressor trainable|Total trainable|trainable params|train_runtime|'eval_loss'", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191530.out", "output_mode": "content", "head_limit": 20}
+  ↳ 2:FACTORS kind=ft_mm arm=qa_frozen seed=43 smoke=0 init=qafreeze_init_s43 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191625.out
+  ↳ 1	FACTORS kind=check_module_move init=qafreeze trained=ft_frozen_s42 (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/check_move_freeze_191627.out
+  ↳ 1	FACTORS kind=check_module_move init=qafreeze trained=ft_frozen_s43 (+10 lines)
+→ Grep: {"pattern": "changed|EXIT|FACTORS", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "check_move_*_19145[123].out", "output_mode": "content"}
+  ↳ check_move_freeze_191451.out:1:FACTORS kind=check_module_move init=ft_mm_4b_184778 trained=qafreeze (+29 lines)
+→ Glob: {"pattern": "*19145[0-3]*.out", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s43/QAFREEZE_PROVENANCE.txt
+  ↳ 1	built by job 191450 on homer-012.kr.europe.naverlabs.com 2026-11-17T18:36:06+09:00 (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/init_s42/QAFREEZE_PROVENANCE.txt
+  ↳ 1	built by job 191450 on homer-012.kr.europe.naverlabs.com 2026-11-17T18:34:30+09:00 (+3 lines)
+Training, weight-check and feasibility-gate claims all match their job logs so far. Now checking the build job's log and the R s43 / F loss curves.
+→ Grep: {"pattern": "md5|696|shape|dtype|assert|identical|PASS|FAIL", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*191450.out", "output_mode": "content", "head_limit": 40}
+  ↳ qafreeze_build_init_191450.out:4:  md5 OK   decoder_state.pt == stage-2 dca63864 (+9 lines)
+→ Grep: {"pattern": "\"loss\"|\"step\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42_smoke/checkpoint-20/trainer_state.json", "output_mode": "content"}
+  ↳ 16:      "loss": 0.5550546646118164, (+4 lines)
+→ Grep: {"pattern": "froze|Compressor trainable|Total trainable|train_runtime", "path": "/beegfs/scratch/user/hdejean/pisco/ft_qafreeze_191493.out", "output_mode": "content"}
+  ↳ 2:FACTORS kind=ft_mm arm=qa_frozen seed=42 smoke=20 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520 (+9 lines)
+→ Grep: {"pattern": "changed", "path": "/beegfs/scratch/user/hdejean/pisco/check_move_freeze_191494.out", "output_mode": "content"}
+  ↳ 2:decoder.lora_A                  68.94M entries  changed  30.1%  moved 0.0029 of its norm  RMS 0.01052  trained dtype torch.bfloat16 (+7 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.47135603427886963, (+4 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.5130845308303833, (+4 lines)
+→ Glob: {"pattern": "ft_frozen_s4[23]/checkpoint-*/trainer_state.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze"}
+  ↳ expQ/freeze/ft_frozen_s42/checkpoint-400/trainer_state.json (+3 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s43/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.4419252574443817, (+4 lines)
+→ Grep: {"pattern": "\"eval_loss\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/freeze/ft_frozen_s42/checkpoint-437/trainer_state.json", "output_mode": "content"}
+  ↳ 88:      "eval_loss": 0.4552224576473236, (+4 lines)
+→ Grep: {"pattern": "\"judge\"|\"n\"|\"n_records\"|unpars|image_max_pixels", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json", "output_mode": "content", "head_limit": 10}
+  ↳ 19:  "n": 1500, (+11 lines)
+→ Grep: {"pattern": "^  \"(n|judge|judge_unparseable|image_max_pixels)\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze", "glob": "ref_s4*/eval/*.json", "output_mode": "content"}
+  ↳ expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json:19:  "n": 1500, (+15 lines)
+→ Grep: {"pattern": "EXIT CODE|Traceback|nan", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "ft_qafreeze_1915{27,30}.out", "output_mode": "content", "head_limit": 10}
+  ↳ ft_qafreeze_191530.out:4705:=== EXIT CODE 0 === (+1 lines)
+→ Grep: {"pattern": "^[+-<>].*|freeze_compressor|model_name_or_path", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s43/training_config.yaml", "output_mode": "content"}
+  ↳ 38:  freeze_compressor: true (+1 lines)
+→ StructuredOutput: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); sam…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1965 turns=33 is_error=False denials=0
+== declared: {"claims": [{"claim": "The hybrid start model can be built from saved checkpoints, …", "status": "supported", "reason": "qafreeze_build_init_191450.out:4-15: 'md5 OK decoder_state.p…"}, {"claim": "Feasibility gate PASS (all three checks, every tensor compar…", "status": "supported", "reason": "check_move_freeze_191451.out: all compressor.*/connector.* 0…"}, {"claim": "Plumbing check PASS on the 20-step smoke, seed 42 (1,280 row…", "status": "supported", "reason": "ft_qafreeze_191493.out:112-114 'froze 506 compressor + conne…"}, {"claim": "Arm Q trained one full epoch at both seeds (28k rows each, C…", "status": "supported", "reason": "ft_qafreeze_191527.out:111-113 and 191530.out:112-114 show t…"}, "… +5 more"], "summary": "Every Settled bullet matches its backing job: build md5s and…"}
+== final:
+{"claims":[{"claim":"The hybrid start model can be built from saved checkpoints, no new code: init_s42 / init_s43 = R's compressor + connector + config byte-identical (md5), decoder = the stage-2 decoder byte-identical (md5 dca63864); same 696 decoder tensor names, shapes, dtypes as R — job 191450, closed.","status":"supported","reason":"qafreeze_build_init_191450.out:4-15: 'md5 OK decoder_state.pt == stage-2 dca63864', compressor/connector/config md5 == R (6a67c55f/4963a039/4a10d4ee s42; 19666dda/6f1c2e6c/4a10d4ee s43), 'keys R 696 swapped 696 only-one-side 0 shape/dtype mismatch 0' for both seeds; PROVENANCE files name 184778/184780 and pt_mm_5M_spread; verdict 191450 closed."},{"claim":"Feasibility gate PASS (all three checks, every tensor compared): R s42 → init_s42 compressor and connector rows changed 0.0%, decoder lora_B 68.6% (job 191451); stage-2 → init_s42 decoder rows 0.0%, compressor lora_B 73.8% (job 191452); seed 43 same picture, decoder lora_B 67.5% (job 191453).","status":"supported","reason":"check_move_freeze_191451.out: all compressor.*/connector.* 0.0%, decoder.lora_B 68.6% (>60%); 191452.out: all decoder.* 0.0%, compressor.lora_B 73.8% (>60%, known-positive control); 191453.out: compressor/connector 0.0%, decoder.lora_B 67.5%; check (3) is in the 191450 build log (0 shape/dtype mismatch). These are the law's gate thresholds; the verdicts are recorded."},{"claim":"Plumbing check PASS on the 20-step smoke, seed 42 (1,280 rows = .046 epoch; n = 1 smoke): froze 506 compressor + connector tensors, compressor trainable 0; loss step 10 .555 / step 20 .515 vs 188528 .594 / .584 (inside ±.10) — job 191493, closed; smoke weights: compressor / connector 0.0%, decoder lora_B 76.0% — job 191494, closed.","status":"supported","reason":"ft_qafreeze_191493.out:112-114 'froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0', total 155978240; smoke checkpoint-20 trainer_state loss 0.5551 @10 / 0.5150 @20 (within .10 of the law's .594/.584); check_move_freeze_191494.out compressor/connector 0.0%, decoder.lora_B 76.0%; both verdicts closed. A smoke checks plumbing only and is not a result, as the law says."},{"claim":"Arm Q trained one full epoch at both seeds (28k rows each, COMPLETED 0:0): log `froze 506 compressor + connector tensors`, `Compressor trainable parameters: 0`, trainable 155,978,240 = decoder only; 73.6 s/step (s42, 8:58:42) and 76.2 s/step (s43, 9:17:07) — jobs 191527, 191530 (no verdict yet: open until judged).","status":"supported","reason":"ft_qafreeze_191527.out:111-113 and 191530.out:112-114 show the freeze lines and trainable 155978240; both end '=== EXIT CODE 0 ==='; train_runtime 3.218e+04 / 437 steps = 73.6 s/step, 3.328e+04 / 437 = 76.2; grid rows 191527/191530 ended at epoch 1.0. This states that the training ran, not a score."},{"claim":"After the full epoch the frozen side did not move: every compressor and connector row changed 0.0%, decoder lora_B 66.9% at both seeds (F full runs 66.3-66.7%
+== rc=0
