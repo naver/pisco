@@ -1,0 +1,125 @@
+== campaign longdoc wake 2026-11-18_2200  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795006801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=5.5 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7679 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:191776,191777,191778_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191776,191777,191778 (ended)   (NEXT was: wake-when job:191776,191777,191778 max 6h)
+== session e7ca2f09-a025-405d-ac31-f6d41e0cd9a1  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/e7ca2f09-a025-405d-ac31-f6d41e0cd9a1/tool-results/bkbp6p2fd.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-18_2200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+139 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la
+  ↳ 351 CAMPAIGN.md (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+351 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+165 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ 1	# Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+38 lines)
+Woken because the three arm E cells ended (closed-book, text answer-cap check at 512, first mixed run). Reading their health and results now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191776,191777,191778 -D -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End,MaxRSS --parsable2; sacct -j 191776,191777,191778 -o JobID,State,MaxRSS,Elapsed --parsable2 | grep -v extern; ls…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End|MaxRSS (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/base_qwen35_4b/eval && python3 - <<'EOF' ⏎ import json,re ⏎ for f in ["mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json","mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_lim…
+  ↳ == mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json <class 'dict'> ['summary', 'records'] (+14 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,re,collections ⏎ def cap(p,th=600):  ⏎     p=p.rstrip() ⏎     return len(p)>=th and not re.search(r'[.!?)\]"\'*`|]$',p) ⏎ for f,lab in [("mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_text_1500_lim300.…
+  ↳ text256 n 300 cap>=600 19 0.063 cap>=1200 4 len p50/p90/max 241 786 1252 {'longdocurl_t16k': 6, 'longdocurl_t4k': 2, 'longdocurl_t32k': 9, 'longdocurl_t8k': 2} (+9 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,re ⏎ for f in ["mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_text_1500_lim300.json","mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_lim300.json","mm_docqa_base_k1000_px1003520_cml1024_…
+  ↳ 024_mnt256_longdoc_text_1500_lim300.json 28 0.093 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls .pixi/envs/default/bin/python 2>/dev/null; ls expQ/ft_mm_4b_184778/model/ | head; find expQ/ft_mm_4b_184778/model -maxdepth 2 -name tokenizer.json
+  ↳ .pixi/envs/default/bin/python (+9 lines)
+→ Bash: timeout 60 .pixi/envs/default/bin/python -I - <<'EOF' ⏎ import json,time ⏎ t=time.time() ⏎ from tokenizers import Tokenizer ⏎ tok=Tokenizer.from_file("expQ/ft_mm_4b_184778/model/tokenizer.json") ⏎ E="expQ/base_qwen35_4b/eval/" ⏎ for f,capn …
+  ↳ _cml1024_mnt256_longdoc_text_1500_lim300.json cap 256: n 300 at-cap(>= 254 tok) 33 = 0.110; max 256 (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ E="expQ/base_qwen35_4b/eval/" ⏎ cb=json.load(open(E+"mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json"))["records"] ⏎ print([r["query_id"] for r in cb[:3]]) ⏎ t=json.load(open(E+"mm_docqa_base_k100…
+  ↳ ['extract_fig2tab_4075591_6_35_1', 'free_gpt4o_4080557_81_100_17', 'free_gpt4o_4070480_28_46_9'] (+62 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/closedbook_pair.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/closedbook_pair.py (file state is current in your context — no need to Read it back)
+→ Bash: mkdir -p expQ/longdoc/soundness && E=expQ/base_qwen35_4b/eval; time python3 scripts/longdoc/closedbook_pair.py $E/mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json $E/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_li…
+  ↳ == expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_lim300.json  (300 rows, metric judge) (+22 lines)
+→ Bash: ls -d eval_data/longdoc_*; grep -E '"19177[678]"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print({k:d[k] for k in d if k in ('jobid','argv','env','sbatch','slurm','time','mem','launche…
+  ↳ eval_data/longdoc_closedbook (+20 lines)
+→ Bash: for s in needle_text needle_pages needle_mixed; do echo "== $s"; ls eval_data/longdoc_$s; cat eval_data/longdoc_$s/stats.json 2>/dev/null | head -c 800; echo; done; python3 - <<'EOF' ⏎ import json,collections ⏎ rows=[json.loads(l) for l in …
+  ↳ == needle_text (+162 lines)
+Needle sets are uncompressed-only checks (exact answer planted at 10/50/90% depth). Checking code fingerprints and the exact launch rows before submitting.
+→ Bash: md5sum eval_mm_4b.sh scripts/longdoc/eval_mnt.sbatch scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/judge_prompts.py pisco/model.py | awk '{print substr($1,1,8), $2}'; ls -la expQ/longdoc/e_r42/ expQ/longdoc/l_r43/ ; ls expQ/lon…
+  ↳ b3d1cda1 eval_mm_4b.sh (+33 lines)
+→ Bash: S=/beegfs/scratch/user/hdejean/pisco/eval_data; for spec in "needle_text 1:10:00 4G" "needle_pages 1:35:00 5G" "needle_mixed 2:15:00 6G"; do set -- ${=spec}; echo "=== $1"; expmon launch --exp longdoc --stage E --dry-run --time $2 --mem $3 …
+  ↳ === needle_text (+23 lines)
+→ Bash: S=/beegfs/scratch/user/hdejean/pisco/eval_data; for spec in "needle_text 1:10:00 4G" "needle_pages 1:35:00 5G" "needle_mixed 2:15:00 6G"; do set -- ${=spec}; echo "=== $1"; expmon launch --exp longdoc --stage E --time $2 --mem $3 --exclude=…
+  ↳ === needle_text (+19 lines)
+Submitted: needles text / pages / mixed and the compressed mixed trial (argv checked, 4 arguments each). Now recording verdicts for the three finished cells.
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_lim300.json'))['summary'];print(d['judge_unparseable'], d['judge_prompt'])"; sacct -j 191776,191777,191778 …
+  ↳ 0 rubric (+1 lines)
+→ Bash: expmon verdict 191776 closed "healthy: COMPLETED 0:0 30:07 homer-011, one attempt; closed-book (uncompressed, no document, cap 512) 1,407 rows = every arm E question, judge on all, unparseable 0, no exceeds error; judge .164, EM .090; 5/1,4…
+  ↳ verdict recorded: 191776 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Bash: expmon note -j 191877 "longdoc arm E intent: soundness check 3 (needle) text, uncompressed, cap 512, 300 rows (25 docs x 4k/8k/16k/32k x depth 10/50/90%), exact scoring; bar >= 90% per length else that bucket is dropped. scripts/longdoc/eva…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: for j in 191776:0.164 191777:0.5833 191778:0.6533; do expmon probe ${j%%:*} judge=${j##*:} 2>&1 | tail -1; done; python3 - <<'EOF' ⏎ import json,collections ⏎ E="expQ/base_qwen35_4b/eval/" ⏎ for f in ["mm_docqa_base_k1000_px1003520_cml1024_…
+  ↳ probe recorded: 191776 (judge=0.164)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+6 lines)
+Bucket lengths are as built (text ~4.5k / 8.4k / 16.6k / 32.7k tokens), so the flat uncompressed score across lengths is real. Updating the known-issues row on the answer cap and the deliverable doc.
+→ Bash: wc -l docs/longdoc_diagnosis.md && grep -n -iE 'closed-book|arm E|cap|soundness|needle' docs/longdoc_diagnosis.md | head -40
+  ↳ 164 docs/longdoc_diagnosis.md (+20 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 100	[−1.7, +3.3] and match +1.5, and the project prompt gives −1.5 [−4.6, +1.5]: the scorers disagree in sign, so this (+29 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md" ⏎ s=open(p).read() ⏎ old3=s.split("\n")[2] ⏎ new3="Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-18 22:10 (arm E soundness, first read on the 300-row trials: the …
+  ↳ 127:**Arm E soundness check 1 — is the document needed? (first read on the 300 trial rows; the full uncompressed cells decide)**
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 - <<'EOF' ⏎ p="known_issues.md" ⏎ s=open(p).read() ⏎ old="before trusting an uncompressed reference on a new set, count its answers that reach the cap, per set: at 256 tokens…
+  ↳ 1
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+13 lines)
+→ Bash: expmon gripe --open --search "leaves open" 2>&1 | head -12; expmon gripe --open --search "report argv" 2>&1 | head -8
+  ↳ == 13 open report(s) matching 'leaves open', every machine, newest first == (+19 lines)
+Recording two small tooling gripes, then rewriting STATE.md.
+→ Bash: expmon gripe --same b496ac4c "pisco longdoc 2026-11-18: health verdicts ('healthy: COMPLETED 0:0 ...') of plumbing cells fill the Settled list as findings, 41 bullets, the real findings buried; suggest: only arm-level verdicts (expmon verdi…
+  ↳ logged as a +1 of b496ac4c (entry d4f8a2ff) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/longdoc/audit_191147/audit.json')) ⏎ print(list(d.keys())[:20]) ⏎ o=d.get('out_of_range_share') or {} ⏎ print(o) ⏎ " 2>&1 | head; grep -A3 'Training never' .expmon/campaign/longdoc/VERIFY.md…
+  ↳ ['meta', 'variants', 'stages', 'health'] (+14 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ c=collections.defaultdict(lambda:[0,0]) ⏎ for l in open("expQ/longdoc/audit_191516/rows.jsonl"): ⏎     r=json.loads(l); c[r["v"]][1]+=1; c[r["v"]][0]+= r["n_mem"]>488 ⏎ for v,(a,n) in c.items():…
+  ↳ E_text_cml1024 2246 / 2246 (+6 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ c=collections.defaultdict(lambda:{"above_488_mems":0,"n":0}) ⏎ for l in open("expQ/longdoc/audit_191516/rows.jsonl"): ⏎     r=json.loads(l); c[r["v"]]["n"]+=1; c[r["v"]]["above_488_mems"]+= r["n…
+  ↳ ok
+Now rewriting STATE.md.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "longdoc wake 22:00 ⏎   - did: read closed-book 191776 / text cap 512 191777 / mixed trial 191778 (healthy, closed); cap 512 confirmed by exact tokenizer count (2.7%); wrote closedbook_pair.py; launched needles text/pages/mixed …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+The three finished checks were healthy, and the document is clearly needed to answer. I submitted four more checks; the campaign now waits for them.
+
+## Done
+- **Three checks finished cleanly.** Each ran once with no errors and every row was scored by the judge:
+  - "closed-book" (the uncompressed model gets only the question, no document): 1,407 questions;
+  - uncompressed text at a 512-token answer limit: 300 rows;
+  - the first mixed run (some pages given as text, others as images): 300 rows.
+- **The 512-token answer limit stays.** Only 8 of 300 uncompressed text answers (2.7%) hit it, under the 5% bar. I now count this with the real tokenizer instead of by characters. The character count was wrong both ways: 8.3% vs 11.0% real at 256 tokens, and 6.3% vs 2.7% real at 512. The campaign rules and known-issues file now require the tokenizer count.
+- **The answers come from the document, not from the model's memory.** This is a first read on 300 trial rows; the full uncompressed runs will decide it. The bar is +20 points over closed-book, and every length passes with a wide margin:
+
+| set | lengths | questions per length | uncompressed with the document (judge ↑) | closed-book (judge ↑) | difference (points ↑) |
+|---|---|---|---|---|---|
+| pages | 10 / 20 / 40 pages | 100 | .71 / .71 / .73 | .19 | +52 / +52 / +54 |
+| text | ~4k / 8k / 16k / 32k tokens | 75 | .587 / .587 / .587 / .573 | .253 | +33 / +33 / +33 / +32 |
+| mixed | 10 / 20 / 40 items | 100 | .63 / .66 / .67 | .19 | +44 / +47 / +48 |
+
+- **The uncompressed model does not get worse as text gets longer**, from ~4k to ~32k tokens. The inputs really differ by length: only 5 of 75 questions get the same answer at every length.
+- I fixed the claim the read-only verifier had flagged. The count of long-document rows beyond anything seen in training is now saved in `expQ/longdoc/audit_191516/out_of_range.json`.
+- I also wrote a small pairing script, `scripts/longdoc/closedbook_pair.py`, and updated `docs/longdoc_diagnosis.md` and `STATE.md`.
+
+## Running now (4 new submissions, the per-wake maximum)
+- **Planted-fact checks, uncompressed, for text, pages and mixed:** a fact is placed at 10%, 50% or 90% of the way through a real document. A length where the model finds fewer than 90% of them is dropped from the set.
+- **The first compressed-model run on mixed documents (300 rows):** it measures the last missing run time needed for the cost estimate.
+
+## Next
+- Read the four results.
+- Launch the second-seed runs still missing for the length test: 20 pages and 40 text passages.
+- Then send you one question with the measured cost of the full long-document runs. My rough estimate is about 75 GPU-hours, against about 30 left in the budget. The campaign rules forbid trimming the runs to fit, so this goes to you.
+
+Nothing needed from you now. The campaign wakes again when the four jobs finish, or in 6 hours at most.
+→ StructuredOutput: {"next": "wake-when", "summary": "Read closed-book 191776, text cap-512 check 191777 and mixed uncompressed trial 191778: all healthy, verdicts closed. Cap 512 confirmed by exact tokenizer count (text 8/300 = 2.7% < 5%); the character heuri…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.6646 turns=40 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Read closed-book 191776, text cap-512 check 191777 and mixed uncompressed trial 191778: all healthy, verdicts closed. Cap 512 confirmed by exact tokenizer count (text 8/300 = 2.7% < 5%); the character heuristic was wrong both ways, so law and known_issues now require the token count. Soundness check 1 (first read on 300 trial rows): with document minus closed-book is +52/+52/+54 pt on pages, +33/+…", "launched": ["191877", "191878", "191879", "191887"], "verdicts": [{"jobid": "191776", "verdict": "closed", "note": "healthy; closed-book 1,407 rows judge .164; soundness check 1 first read passes every bucket"}, {"jobid": "191777", "verdict": "closed", "note": "healthy; uncompressed text cap 512 judge .583; 8/300 = 2.7% at the cap by tokenizer count, cap 512 stays"}, {"jobid": "191778", "verdict": "closed", "note": "healthy; first mixed run uncompressed 300 rows judge .653; prompt max 89,311 tokens fits one GPU; 43:47 wall"}], "gripes": ["+1 b496ac4c: health verdicts of plumbing cells fill the campaign report's Settled list", "gap: campaign report Open lines show only env for pending eval cells, so different cells read identically; print positional args and the intent note"], "wake_when": "job:191877,191878,191879,191887 max 6h"}
+== final:
+{"next":"wake-when","summary":"Read closed-book 191776, text cap-512 check 191777 and mixed uncompressed trial 191778: all healthy, verdicts closed. Cap 512 confirmed by exact tokenizer count (text 8/300 = 2.7% < 5%); the character heuristic was wrong both ways, so law and known_issues now require the token count. Soundness check 1 (first read on 300 trial rows): with document minus closed-book is +52/+52/+54 pt on pages, +33/+33/+33/+32 on text, +44/+47/+48 on mixed, all above the 20-pt bar; closed-book .164 on 1,407 Q. Uncompressed text flat with length (.587 to .573 from 4k to 32k). Wrote closedbook_pair.py, backed the verifier-flagged out-of-range claim with audit_191516/out_of_range.json, rewrote the arm E parts of docs/longdoc_diagnosis.md and STATE.md. Launched needle checks text/pages/mixed and the first R s42 mixed trial. Next wake: read them, launch R s43 20 pages + text 40 s43, then one BLOCKED question with the model-grid cost (~75 GPU-h vs ~30 left).","launched":["191877","191878","191879","191887"],"verdicts":[{"jobid":"191776","verdict":"closed","note":"healthy; closed-book 1,407 rows judge .164; soundness check 1 first read passes every bucket"},{"jobid":"191777","verdict":"closed","note":"healthy; uncompressed text cap 512 judge .583; 8/300 = 2.7% at the cap by tokenizer count, cap 512 stays"},{"jobid":"191778","verdict":"closed","note":"healthy; first mixed run uncompressed 300 rows judge .653; prompt max 89,311 tokens fits one GPU; 43:47 wall"}],"gripes":["+1 b496ac4c: health verdicts of plumbing cells fill the campaign report's Settled list","gap: campaign report Open lines show only env for pending eval cells, so different cells read identically; print positional args and the intent note"],"wake_when":"job:191877,191878,191879,191887 max 6h"}
+== rc=0 secs=434
+== verify: 3/16

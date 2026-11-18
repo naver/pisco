@@ -88,6 +88,9 @@ Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1
   cap changed; the shared launcher is never edited). Cells pair only at the same cap; the 32- and 256-token cells are
   plumbing only. If the uncompressed text answers still reach the cap on ≥ 5% of the 300 rows at 512 (191777), the cap
   becomes 1,024 for every arm E cell and the closed-book cell re-runs at it, before any other soundness cell.
+  [2026-11-18 22:10, measured: "reach the cap" is counted with the tokenizer (answer ≥ cap − 2 tokens), never by
+  characters. 191777: 8 / 300 = 2.7% → the cap stays 512. The character heuristic was wrong both ways (256: 8.3% vs
+  11.0% exact; 512: 6.3% vs 2.7%).]
 - closed-book (soundness check 1) runs once on `eval_data/longdoc_closedbook` (every question once, no document; base
   mode `TOPK=0`): without a document the prompt is the same in every set and bucket, so each bucket's closed-book score
   is that file restricted to the bucket's questions (paired on the question id before the last `__`).
