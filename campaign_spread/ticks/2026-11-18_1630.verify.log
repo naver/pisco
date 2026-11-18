@@ -1,0 +1,49 @@
+== verifier 2026-11-18_1630  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session ed25fa91-32d3-45fd-b9cf-c82e8e01b3e7  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+217 lines)
+→ Glob: {"pattern": "expQ/spread/**/*.md"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/VERIFY.md
+  ↳ 1	# VERIFY — campaign spread — 2026-11-17_2230   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+19 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/pooled_20261118/pooled.md
+  ↳ 1	| case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control | (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/spread/pooled_pairs.tsv
+  ↳ 1	# Campaign spread: seed-pooled equality test (owner REQUEST 2026-11-18, option A). Columns: case, expect (pooled A-B, '-' none), A_s42, B_s42, A_s43, B_s43. A = spread, B = tail. (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+59 lines)
+I'm checking the campaign's claims against the audit tables and pooled-test files. So far the arm A numbers and the pooled table match; next I'm reading the audit slices and the job health records.
+→ Grep: {"pattern": "infovqa|mpdocvqa|slides|full_mrqa_long|red_docs_s4|full_docs_s4", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "head_limit": 80}
+  ↳ 9:| red_docs_s42 | +0.093 | +0.093 | [+0.069, +0.115] | 238/99, 2.4e-14 | yes | (+26 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 538	| n_images | 4 | 1500 | 0.478 | 0.464 | +0.014 | [-0.011, +0.040] | 210/189 | 0.317 | 0.34 | 0.40 | 0.809 | 3.7 | yes | (+189 lines)
+→ Grep: {"pattern": "\\+\\.006|0\\.006|223|68 judge|191531|191532|191495|191496|homer-018", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode": "content"}
+  ↳ 23:| documents, multi-page (MP-DocVQA) | full | 500 | — | .666 / .678 | .702 / .682 | −.036 (−.080, +.006) | −.004 (−.050, +.040) | 52/70 · 68/70 | .926 | 6.2 | not resolvable here | (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/photo_drift.md
+  ↳ 1	| pair | n | answers differ | judge A | judge B | judge flips (A-only/B-only) | A | B | (+5 lines)
+→ Grep: {"pattern": "223|68 judge|\\.679", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md", "output_mode": "content"}
+  ↳ 13:- Reference R re-evaluated on today's eval launcher (md5 b3d1cda1), 1,500 questions each, every row judged, 0 unparseable: documents .610 (s42, job 191495) / .615 (s43, job 191496), equal to the re (+2 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks"}
+  ↳ expQ/spread/rerun_checks/photo_drift.md
+→ Grep: {"pattern": "223 ?/|68 (judge )?flips", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "{campaign_spread/**,docs/spread_cases.md,campaign_qafreeze/**,EXPERIMENTS.md}", "output_mode": "content"}
+  ↳ EXPERIMENTS.md:505:- 2026-11-04 16:38 [job 184801] rate round, stage-1 glance 16:40: train loss (mean of 150 steps before) r8|r16|r32 at step 2200 = 1.109|1.149|1.341; at 5000 r8 1.127 vs r16 1.154 (+ (+6 lines)
+→ Grep: {"pattern": "223 ?/ ?1,500|68 judge flips|191531", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true}
+  ↳ 1260:191531 (+7 lines)
+→ Grep: {"pattern": ".{0,300}223/1,500.{0,300}", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true}
+  ↳ 1284:[Omitted long matching line]
+I'm on the last few checks: tracing the photo re-run counts in the ledger, then the health records for the seed-43 jobs.
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1284	- 2026-11-18 16:35 [job 191631] spread stage G intent: tail production 174908 (s42) PHOTOS on today's code, PX=1003520 (= checkpoint's own budget; inert on photos: mems_used 79,322 at 451,584 and
+→ Grep: {"pattern": ".{0,200}(191495|191496).{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ 1233:  - did: launched arm Q 20-step smoke s42 (191493, gpu) + chained module-move check (191494), R documents re-evals s42/s43 (191495/191496, gpu-be); cap 4 reached (+7 lines)
+→ Grep: {"pattern": "pooled", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py", "output_mode": "content", "head_limit": 20}
+  ↳ 186:def pooled(cells, boot): (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py
+  ↳ 186	def pooled(cells, boot): (+29 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly (documents +.093 / +.075 reduced budget, photos +.023 / +.021, full budget documents +.011 / +.02…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2059 turns=21 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit_191454/audit.md:3 says FEASIBILITY GATE: PASS. Lines 9…"}, {"claim": "Owner decision executed (REQUEST 2026-11-18, option A): \"equ…", "status": "supported", "reason": "slice_pairs.py:186-197 implements the rule (pooled CI inside…"}, {"claim": "Arm B, ONE chunk: spread better at both seeds — s42 .611 vs …", "status": "provisional", "reason": "The numbers check out. Grid judge .6107−.3507=+.260 and .616…"}, {"claim": "Tail production loses on one chunk vs ten at both seeds: −.2…", "status": "provisional", "reason": "The tail half is backed. Grid .3507−.6033=−.253 and .3687−.5…"}, "… +12 more"], "summary": "The arm A gate, the new seed-pooled test and its controls, t…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly (documents +.093 / +.075 reduced budget, photos +.023 / +.021, full budget documents +.011 / +.024, photos −.009 / +.010); 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit_191454/audit.md:3 says FEASIBILITY GATE: PASS. Lines 9-16 show all 8 differences equal to the expected values. Line 57 shows 184778 docs with 1500 rows, 1500 judged, 0 unparseable and 646,042 mems. The grid probe for 191454 reads selfpair=1, files=39, and the verdict is closed."},{"claim":"Owner decision executed (REQUEST 2026-11-18, option A): \"equal\" = the 95% CI of the per-question spread − tail difference averaged over seeds 42 and 43 inside ±2 pt AND each seed inside ±2 pt. Code: scripts/spread/slice_pairs.py --pooled <tsv> (+40 lines, stdlib), spec scripts/spread/pooled_pairs.tsv. Controls PASS: reduced-budget documents pooled +.084 [+.065, +.103] (expect +.084; seeds +.093 / +.075), every self-pair 0.000 (n 1,500 each). Law updated (CAMPAIGN.md gates). Option B waits for the checkpoint before arm E.","status":"supported","reason":"slice_pairs.py:186-197 implements the rule (pooled CI inside ±EQ_BAND and every per-seed estimate inside it). pooled.md:3 shows red_docs_CONTROL +0.084 [+0.065, +0.103] with 'expect +0.084 ok', and every row has self-pair 0.000. The gate text is in the law. Caveats: the +.084 control is the mean of the two seed means by construction, so it tests the plumbing, not the CI. The self-pair (line 208) pairs only the spread side with itself."},{"claim":"Arm B, ONE chunk: spread better at both seeds — s42 .611 vs .351 = +.260 [+.233, +.289], McNemar 488 / 98 (191457 − 191456); s43 .616 vs .369 = +.247 [+.219, +.275], 477 / 106 (191528 − 191526); p < .001 each; n 1,500 each; pooled +.254 [+.227, +.279]. EM same sign (s42 +.151, s43 +.152). All four cells healthy. The project-prompt judge check (arm J) is still to run.","status":"provisional","reason":"The numbers check out. Grid judge .6107−.3507=+.260 and .616−.3687=+.247; 488−98=390/1500 and 477−106=371/1500. EM is .3607−.2093=+.151 and .36−.208=+.152. Verdict notes confirm health and CIs, and pooled.md:6 gives +0.254 [+0.227, +0.279]. The per-seed 'better' bar is met. But the arm-J gate (case keeps its sign AND stays within 2 pt under the project prompt and EM) is not done. EM already sits ~11 pt below the judge difference (+.151 vs +.260), so on a literal reading of the J bar the case could be judge-sensitive. It cannot sit in Settled yet."},{"claim":"Tail production loses on one chunk vs ten at both seeds: −.253 [−.281, −.225] (s42, 191456 − 191455), −.229 [−.255, −.200] (s43, 191526 − 191519); spread does not: +.006 [−.019, +.029] (s42, 191457 − 191518).","status":"provisional","reason":"The tail half is backed. Grid .3507−.6033=−.253 and .3687−.5973=−.229, with the
+== rc=0

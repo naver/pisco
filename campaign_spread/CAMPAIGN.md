@@ -68,23 +68,30 @@ original command exactly (a flag left at its default is not a factor, but a chan
   `scripts/paired_judge.py`, `pisco/model.py` (2026-11-17: 50abc167 / dfe32aa0 / 02bc8748 / a3cc13b2 / 994cff3d —
   campaign_longdoc/STATE.md:103, campaign_freeze/STATE.md:29; `eval_mm_4b.sh` is b3d1cda1 since 17:11 = requeue markers
   + an off-by-default DENSE env, same python call). Two cells pair only when they ran on the same code.
-  A pair across code eras or node images is REPORTED, never decided, until one side is re-run on today's code: the code
-  date does not move text answers (188518 = 185601, 1,500 / 1,500) but homer-008 moves image answers
-  (campaign_probes/CAMPAIGN.md:70-89); launch with `--exclude=homer-[005-009]`.
+  A pair across code eras or node images is REPORTED, never decided, until one side is re-run on today's code: text
+  answers usually hold (188518 = 185601, 1,500 / 1,500) but not always (184778 ten HotpotQA chunks, 188615 homer-016
+  11-11 vs 191518 homer-011 11-17: 58 / 1,500 differ, 19 judge flips), and homer-008 moves image answers
+  (campaign_probes/CAMPAIGN.md:70-89); launch with `--exclude=homer-[005-009]`. `PX` is inert on photos (every
+  `mm_naturalqa_1500` file has 79,322 slots at 451,584 and 1,003,520 px), so the recorded tail-451k vs spread-1M photo
+  files differ in code date only.
 - Before using a probe env on a model, mode or set it was never used with, read `main()` of `scripts/eval_mm_docqa.py`
   and confirm the flag reaches that branch. This campaign adds NO eval flag (two live siblings depend on those md5s).
 
 ## Decision gates
 Every difference is PAIRED per question, same seed. Noise band CAMP_NOISE_PT = 1.2 pt: below it nothing is a result;
 a tie triggers a seed replicate; above it once still needs a replicate to be "adopted". Case verdicts (the same bars as
-campaign_longdoc/CAMPAIGN.md:83): **better** = ≥ +3 pt with the 95% CI above 0 at both seeds; **equal** = CI inside
-±2 pt at both seeds; **worse** = ≤ −3 pt with the CI below 0 at both seeds. Decide arms as cells complete.
+campaign_longdoc/CAMPAIGN.md:83): **better** = ≥ +3 pt with the 95% CI above 0 at both seeds; **equal** = the
+seed-pooled test below (owner, 2026-11-18); **worse** = ≤ −3 pt with the CI below 0 at both seeds. Decide arms as cells complete.
 - A slice decides nothing with fewer than 300 questions or fewer than 40 discordant pairs (McNemar b + c); it is
   reported with its discordant count and called "not resolvable here", never "equal".
-- Measured by arm A (191454, 23 recorded pairs) and arm B s42: one seed's 95% CI on 1,500 Q is .044-.050 wide on
-  documents, .041-.056 on text, .037-.041 on photos (at the band: "equal" only if the difference is ~0), so "equal"
-  (CI inside ±2 pt) cannot be reached on documents or text. Until the owner answers
-  BLOCKED.md, a case that would need "equal" is reported "not resolvable here (CI width w)", never "equal".
+- Measured by arm A (191454, 23 recorded pairs) and arm B s42: one seed's 95% CI on 1,500 Q is .044-.053 wide on
+  documents, .041-.056 on text, .036-.041 on photos, too wide for "equal" per seed. **Owner, 2026-11-18 (REQUEST,
+  option A): "equal" = the 95% paired-bootstrap CI of the per-question difference AVERAGED over seeds 42 and 43 lies
+  inside ±2 pt, AND each seed's own difference lies inside ±2 pt** (`scripts/spread/slice_pairs.py --pooled
+  <tsv>`, stdlib). Its controls re-run on every use and must pass, else the run decides nothing: reduced-budget
+  documents pooled +.084 recovered within ±.003 (2026-11-18: +.084 [+.065, +.103]) and every self-pair 0.000.
+  better / worse keep the per-seed bars. Option B (a second disjoint 1,500-Q document set) is decided by the owner
+  at the checkpoint before arm E. A pooled width above .040 still leaves a case "not resolvable here (width w)".
 - Photo re-runs drift across code dates even on el9_8 nodes: 184778 photos 184783 (homer-011, 11-09) vs 188602
   (homer-016, 11-11) differ on 233/1,500 answers, 85 judge flips, .677 vs .673; 184780's homer-008 photo file equals its
   re-run 1,500/1,500; documents re-ran identical. A photo pair across code dates is reported, never decided.

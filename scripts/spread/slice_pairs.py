@@ -180,14 +180,54 @@ def inventory(path, summ, recs, widx, nodes, git):
             "end": att[-1][3] if att else "?"}
 
 
+EQ_BAND = 0.02
+
+
+def pooled(cells, boot):
+    """Seed-pooled paired test (owner REQUEST 2026-11-18, option A). cells = [(A_path, B_path), ...] one per seed.
+    Per shared question: A-B averaged over seeds; 95% paired-bootstrap CI over questions. equal = that CI inside
+    +-EQ_BAND AND every seed's own A-B inside +-EQ_BAND; better / worse stay per-seed (gates unchanged)."""
+    recs = [(load(a)[1], load(b)[1]) for a, b in cells]
+    ids = sorted(set.intersection(*(set(i for i in A if i in B and "judge" in A[i] and "judge" in B[i]) for A, B in recs)))
+    per_seed = [stats([(fnum(A[i]["judge"]), fnum(B[i]["judge"])) for i in ids])[2] for A, B in recs]
+    d = [(sum(fnum(A[i]["judge"]) - fnum(B[i]["judge"]) for A, B in recs) / len(recs), 0.0) for i in ids]
+    _, _, m, se, n = stats(d)
+    lo, hi = bootstrap_ci(d, boot)
+    eq = -EQ_BAND < lo and hi < EQ_BAND and all(abs(x) < EQ_BAND for x in per_seed)
+    return {"n": n, "per_seed": per_seed, "pooled": m, "se": se, "ci": [lo, hi], "width": hi - lo, "equal": eq}
+
+
+def pooled_main(spec, out, boot):
+    """spec TSV: case, expect (pooled A-B within +-TOL, '-' none), A_s42, B_s42, A_s43, B_s43; controls: expect, self-pair 0."""
+    L = ["| case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control |", "|---|---|---|---|---|---|---|---|"]
+    ok = True
+    for line in open(os.path.join(ROOT, spec)):
+        if line.startswith("#") or not line.strip():
+            continue
+        c, exp, a1, b1, a2, b2 = line.rstrip("\n").split("\t")[:6]
+        r, z = pooled([(a1, b1), (a2, b2)], boot), pooled([(a1, a1), (a2, a2)], 200)
+        ctl = z["pooled"] == 0.0 and (exp == "-" or abs(r["pooled"] - float(exp)) <= TOL)
+        ok &= ctl
+        L.append(f"| {c} | {r['n']} | {' / '.join(f'{x:+.3f}' for x in r['per_seed'])} | {r['pooled']:+.3f} | [{r['ci'][0]:+.3f}, "
+                 f"{r['ci'][1]:+.3f}] | {r['width']:.3f} | {'EQUAL' if r['equal'] else 'no'} | self-pair {z['pooled']:.3f}"
+                 f"{'' if exp == '-' else f', expect {float(exp):+.3f}'} {'ok' if ctl else 'FAIL'} |")
+    os.makedirs(os.path.join(ROOT, out), exist_ok=True)
+    open(os.path.join(ROOT, out, "pooled.md"), "w").write("\n".join(L) + "\n")
+    print("\n".join(L) + f"\nRESULT pooled_controls={'PASS' if ok else 'FAIL'}")
+    return 0 if ok else 3
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--pooled", help="TSV of seed pairs: run ONLY the seed-pooled test (see pooled_main)")
     ap.add_argument("--spec", default="scripts/spread/audit_pairs.tsv")
     ap.add_argument("--out", default="expQ/spread/audit")
     ap.add_argument("--boot", type=int, default=2000)
     ap.add_argument("--slice_boot", type=int, default=1000)
     ap.add_argument("--no_inventory", action="store_true", help="skip log grep / sacct (fast local test)")
     args = ap.parse_args()
+    if args.pooled:
+        return pooled_main(args.pooled, args.out, args.boot)
     os.makedirs(os.path.join(ROOT, args.out), exist_ok=True)
 
     spec = []

@@ -1,0 +1,140 @@
+== campaign spread wake 2026-11-18_1630  reasons=gate,request,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794987001 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.2 idle_h=16.3 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=7814 sig=3f0317b9 same=32 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191518,191519,191526,191528_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/hook.log
+== wait condition met: job:191518,191519,191526,191528 (ended)   (NEXT was: wake-when job:191518,191519,191526,191528 max 8h)
+== session 5efb9998-f70b-4146-b8e4-a2590c28077d  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md
+  ↳ # Wake brief — campaign spread — 2026-11-18_1630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+124 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_spread && ls -la && wc -l CAMPAIGN.md STATE.md known_issues.md && cat REQUEST && echo ---GATE && cat GATE
+  ↳ total 86 (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+314 lines)
+→ Bash: cat STATE.md && echo ---KI && cat known_issues.md && echo ---VERIFY && cat VERIFY.md && echo ---DECISIONS && cat DECISIONS.md
+  ↳ # STATE — campaign spread   (rewritten WHOLESALE by every LLM wake; never append) (+137 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -60
+  ↳ - next: 20-step smoke of arm Q s42 + module-move check, reference re-runs documents s42/s43 (submission cap 4 reached this wake) (+59 lines)
+Reading the campaign brief done; now checking the four finished text-eval jobs and their result files.
+→ Bash: sacct -j 191518,191519,191526,191528 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End -P 2>&1; ls -la --time-style=full-iso expQ/spread/b_spread_s42/eval/ expQ/spread/b_tail_s43/eval/ expQ/spread/b_spread_s43/eval/ 2>&1
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End (+26 lines)
+→ Bash: ls -la scripts/spread/ expQ/spread/ && md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/judge_prompts.py scripts/spread/* | awk '{print substr($1,1,8), $2}'
+  ↳ expQ/spread/: (+28 lines)
+→ Bash: cat scripts/spread/slice_pairs.py
+  ↳ """Campaign spread, arm A: case audit + slice power over RECORDED judged eval files (stdlib only, no model). (+312 lines)
+→ Bash: cat scripts/paired_judge.py | head -80 && cat scripts/spread/compare_answers.py && cat scripts/spread/case_audit.sbatch && head -5 scripts/spread/audit_pairs.tsv && grep -c . scripts/spread/audit_pairs.tsv
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+137 lines)
+→ Bash: grep -vE '^\s*#|^\s*$' campaign_spread/campaign.conf | head -50; git diff campaign_spread/campaign.conf | head -30
+  ↳ CAMP_LABEL='spread'            # the expmon --exp label every campaign run carries (grid/sweep/verdict key) (+53 lines)
+→ Bash: grep -v '^#' scripts/spread/audit_pairs.tsv | cut -f1-8 | column -t -s$'\t' | cut -c1-260
+  ↳ red_docs_s42              gate      reduced   42  docs              +0.093  expQ/ft_mm_4b_183814/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json               expQ/ft_mm_4b_183538/eval/mm_docqa_pi (+22 lines)
+Adding the owner-approved seed-pooled "equal" test to the audit script, then pairing the four finished text cells.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: sed -i 's/pooled(\[(a1, a1), (a2, a2)\], 0 or 200)/pooled([(a1, a1), (a2, a2)], 200)/' scripts/spread/slice_pairs.py && grep -n 'a1, a1' scripts/spread/slice_pairs.py && git diff --stat scripts/spread/slice_pairs.py
+  ↳ 209:        r, z = pooled([(a1, b1), (a2, b2)], boot), pooled([(a1, a1), (a2, a2)], 200) (+3 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/spread/slice_pairs.py' ⏎ s=open(p).read() ⏎ old='''    """spec TSV: case, expect (pooled A-B to recover within +-TOL, '-' none), A_s42, B_s42, A_s43, B_s43. ⏎     Controls every run: each row's expect re-deriv…
+  ↳ scripts/spread/slice_pairs.py | 40 ++++++++++++++++++++++++++++++++++++++++ (+2 lines)
+Now the pooled spec with the known-positive control (reduced documents) plus the full-budget and arm B cases.
+→ Bash: ls expQ/freeze/ref_s43/eval/ 2>/dev/null | grep -i hotpot; ls expQ/freeze/ref_s42/eval/ | grep -i hotpot; ls expQ/ft_mm_4b_184780/eval/ | grep -iE 'hotpot|mrqa'; ls expQ/ft_mm_4b_176242/eval/ | grep -iE 'hotpot|mrqa'; ls expQ/ft_mm_4b_17490…
+  ↳ mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+13 lines)
+→ Bash: E=expQ/spread; D=mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; T=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; printf '%s\n' \ ⏎ "# Campaign spread: seed-pooled equality test (owner REQUEST 2026-11-18, option A). Columns: case, expect (p…
+  ↳ | case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control | (+8 lines)
+Controls pass (known positive +.084 recovered, self-pair 0.000). Now per-seed paired tests for the new arm B cells and the text re-run identity check.
+→ Bash: E=expQ/spread; T=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; echo "== one chunk s43 (spread 184780 - tail 176242)"; python3 scripts/paired_judge.py $E/b_spread_s43/eval/${T}_g10.json $E/b_tail_s43/eval/${T}_g10.json --names spread tail |…
+  ↳ == one chunk s43 (spread 184780 - tail 176242) (+27 lines)
+→ Bash: E=expQ/spread; T=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; for f in $E/b_spread_s42/eval/${T}.json $E/b_tail_s43/eval/${T}.json $E/b_tail_s43/eval/${T}_g10.json $E/b_spread_s43/eval/${T}_g10.json $E/b_tail_s42/eval/${T}.json $E/b_sprea…
+  ↳ spread/b_spread_s42/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json 1500 1500 0 rubric 265880 0.6047 0.3387 0.4447 0.4405 (+13 lines)
+All four cells are healthy. Arm B's one-chunk gate now passes at both seeds. Checking which today's-code reference files exist before choosing this wake's launches.
+→ Bash: ls -la --time-style=+%m-%d_%H:%M expQ/qafreeze/ref_s42/eval/ expQ/qafreeze/ref_s43/eval/ 2>&1 | grep -v '^total'; sacct -j 191495,191496,191531,191532 -X -n -o JobID,State,Elapsed,NodeList -P; grep -nE 'ref_s4|R re-eval|docs.*photos' campai…
+  ↳ expQ/qafreeze/ref_s42/eval/: (+22 lines)
+→ Bash: Q=expQ/qafreeze; python3 scripts/spread/compare_answers.py "184778 docs recorded vs qafreeze 191495" expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json $Q/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json "18…
+  ↳ | pair | n | answers differ | judge A | judge B | judge flips (A-only/B-only)  (+10 lines)
+Found an unlisted difference: the recorded tail photo files ran at 451,584 pixels while the spread photo files ran at 1,003,520. Checking every photo file in the audit.
+→ Bash: for f in $(grep -v '^#' scripts/spread/audit_pairs.tsv | cut -f7,8,9 | tr '\t' '\n' | grep -v '^-$' | sort -u); do python3 -c " ⏎ import json,sys;s=json.load(open(sys.argv[1]))['summary'];print(s.get('image_max_pixels'), sys.argv[1].replace…
+  ↳ 1003520 base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json (+22 lines)
+→ Bash: for f in ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json ft_mm_4b_174908/eval/mm_docqa_pisco_mm_naturalqa_1500.json ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json ft_mm_4b_176242/eval/mm_docqa_pisc…
+  ↳ 79322 expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+5 lines)
+Photos are stored below both pixel budgets (79,322 slots in every photo file), so that pixel difference is inert. Now getting the exact launch command and measured memory/walls for this wake's cells.
+→ Bash: grep -E '"jobid": ?"?191528' .expmon/runs.jsonl | tail -1 | python3 -c "import json,sys;r=json.loads(sys.stdin.read());print({k:r[k] for k in r if k in ('cmd','argv','launcher','args','env','sbatch','factors','command','slurm')})"; sacct -j…
+  ↳ {'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/spread/b_spread_s43/model', 'pisco', '', 'eval_data/text_hotpotqa_1500_g10'], 'slurm': {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '1:15: (+14 lines)
+→ Bash: sacct -j 176244,174911,176245,174910,188597,188598,184782,184784 -X -n -o JobID,Elapsed,NodeList -P -S 2026-09-01; gpucap free a100 2>/dev/null | tail -4
+  ↳ 174910|00:28:51|homer-019 (+11 lines)
+→ Bash: expmon launch --help 2>&1 | head -40; ls expQ/spread/b_tail_s42/eval/ expQ/spread/b_tail_s43/eval/; readlink expQ/spread/b_tail_s42/model expQ/spread/b_tail_s43/model expQ/spread/b_spread_s43/model
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+22 lines)
+→ Bash: expmon launch --dry-run --exp spread --stage B --parent 191454 --env CML=4096 --env TOPK=10 --time 1:15:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 8G eval_mm_4b.sh expQ/spread/b_spread_s43/model pisco '' eval_data/text_hotpotqa…
+  ↳ Exit code 1 (+6 lines)
+→ Bash: for spec in "b_tail_s42 eval_data/mm_naturalqa_1500 1:00:00" "b_tail_s43 eval_data/mm_naturalqa_1500 1:00:00" "b_tail_s43 eval_data/mm_docqa_1500_1m 1:30:00"; do set -- ${=spec}; expmon launch --dry-run --exp spread --stage G --parent 19145…
+  ↳ would submit: sbatch --time 1:00:00 --partition gpu-be --exclude homer-[005-009] --mem 8G eval_mm_4b.sh expQ/spread/b_tail_s42/model pisco  eval_data/mm_naturalqa_1500 (+14 lines)
+Dry-runs look right. Submitting the four cells (cap 4).
+→ Bash: expmon launch --exp spread --stage B --parent 191454 --env CML=4096 --env TOPK=10 --time 1:15:00 --partition gpu-be --exclude 'homer-[005-009]' --mem 8G eval_mm_4b.sh expQ/spread/b_spread_s43/model pisco '' eval_data/text_hotpotqa_1500 2>&1…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191630/   (unless the script sets a named run dir) (+8 lines)
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / pisco/model.py 994cff3d"; \ ⏎ expmon note -j 191630 "spread arm B intent: spread 184780 TEN chunks s43 on today's code (text…
+  ↳ expmon note: 83 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+Recording health verdicts and scores for the four finished cells.
+→ Bash: E=expQ/spread; T=mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500; for p in "191518 $E/b_spread_s42/eval/${T}.json" "191519 $E/b_tail_s43/eval/${T}.json" "191526 $E/b_tail_s43/eval/${T}_g10.json" "191528 $E/b_spread_s43/eval/${T}_g10.json"; do…
+  ↳ probe recorded: 191518 (n=1500 judge=0.6046666666666667 em=0.33866666666666667)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+15 lines)
+All four new cells started at once. Now applying the owner's decision to the law (seed-pooled "equal") and recording the new text re-run finding.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -n 'inside ±2 pt at ten chunks\|CI inside ±2 pt at both seeds' campaign_spread/CAMPAIGN.md | cut -c1-200; rm campaign_spread/REQUEST campaign_spread/BLOCKED.md && echo removed; cat docs/spread_cases.md | head -80; wc -l docs/spread_cas…
+  ↳ 51:| B. long chunks at full budget | `eval_mm_4b.sh expQ/spread/<cell>/model pisco "" <set>` with `TOPK=10 CML=4096` on `text_hotpotqa_1500` and `text_hotpotqa_1500_g10` | layout (184778 / 184780 vs 1 (+70 lines)
+→ Bash: sed -n 60,67p docs/spread_cases.md | cut -c1-400
+  ↳ | hypothesis | probe or arm | n | number | gate | verdict | what it would change | (+7 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md' ⏎ s=open(p).read() ⏎ def rep(old,new): ⏎     global s ⏎     assert old in s, old[:60] ⏎     s=s.replace(old,new) ⏎ rep("""Rewritten whenever an arm decides. Last rewrite 2026-11-17 22:45, after a…
+  ↳ 47:| documents 1,500 Q | .044–.053 | 3.3–3.6 | .43–.52 | .28–.33 | one seed cann
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md' ⏎ s=open(p).read() ⏎ old='one seed cannot show "equal"; seed-pooled width .038 can, if the difference is under ~0.2 pt... in practice only when it is ~0 |' ⏎ new='one seed cannot show "equal"; se…
+  ↳ ok
+→ Bash: cat >> campaign_spread/known_issues.md <<'EOF' ⏎ | a TEXT re-run of the same model on the same set (two code dates, two el9_8 nodes) moves some answers (184778 ten HotpotQA chunks: 58/1,500, 19 judge flips, .603 vs .605) | text answers are …
+  ↳ | `expmon display --exp spread` writes 0 table rows while the grid has judged ce (+16 lines)
+Writing the new STATE.md now (arm B one chunk decided at both seeds; four re-run cells in flight).
+→ Bash: grep -E '\| ft_mm_4b_(174908|184778|184780)/eval/mm_docqa_pisco_px1003520_mm_docqa' expQ/spread/audit_191454/audit.md | awk -F'|' '{print $2,$9,$10,$13}'
+  ↳ ft_mm_4b_174908/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json   179300   homer-012 (homer-012)   24b7a2c+dirty  (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon display --exp spread 2>&1 | tail -2; expmon note --did "spread wake 16:30: owner REQUEST executed (seed-pooled 'equal' test in slice_pairs.py --pooled; controls PASS: reduced docs +.084, self-pairs 0); arm B s43 + ten-chunk s42 paire…
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_spread.html   (0 table rows, 0 media files from 0 runs) (+1 lines)
+→ Bash: expmon gripe --open --search "display rows" 2>&1 | head -5; expmon gripe --same 43db294f "still 0 table rows on 2026-11-18 with 8 judged cells whose judge/em/n are recorded as probes (expmon probe --from-json): display could fall back to th…
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+18 lines)
+The owner's decision is applied, and the long-text test is decided at both seeds: when ten HotpotQA passages are compressed as one chunk, the spread layout beats the tail layout by about 25 points.
+
+## Done this wake
+- **Owner's answer applied.** You chose the seed-pooled test for "equal" (option A). "Equal" now means the 95% interval of the spread − tail difference, averaged over the two training seeds, lies within ±2 points. Each seed's own difference must also lie within ±2 points. The test is a new mode of the audit script, `scripts/spread/slice_pairs.py --pooled` (40 added lines). Its checks pass: the known reduced-budget document gain comes back at +.084 (expected +.084), and any file compared with itself gives 0.000. The campaign rules are updated, the request file is deleted and the open question is closed. Option B (a second set of 1,500 document questions) waits for the checkpoint before the retraining arm.
+- **Long text as one chunk.** Accuracy is the share of correct answers as scored by the judge model, on 1,500 questions per seed. The input is about 173 compressed slots per question, at 8 tokens per slot. The uncompressed model scores .752.
+
+| input | seed | spread ↑ | tail ↑ | spread − tail (95% CI) |
+|---|---|---|---|---|
+| one chunk | 42 | .611 | .351 | +.260 (+.233, +.289) |
+| one chunk | 43 | .616 | .369 | +.247 (+.219, +.275) |
+| ten chunks | 42 | .605 | .603 | +.001 (−.021, +.025) |
+| ten chunks | 43 | waiting for a re-run on today's code | .597 | — |
+
+- **The tail layout fails on one long chunk; spread does not.** Going from ten chunks to one costs tail −.253 at seed 42 and −.229 at seed 43. It costs spread nothing (+.006 at seed 42).
+- **Two new facts about the evaluation:**
+  - Text answers can change when the same model is re-run on newer code: 58 of 1,500 answers changed, but the score barely moved (.603 vs .605). So text comparisons now also need both sides run on today's code.
+  - The old tail photo results used a smaller image-size limit than the spread ones. This makes no difference: every photo already fits under both limits and gets the same 79,322 slots.
+
+## Running now
+All four jobs started at once, with no queue wait:
+- Spread model, ten chunks, seed 43, on today's code. This closes the long-text test.
+- Tail model on photos (seeds 42 and 43) and on documents (seed 43), re-run on today's code. These make the main photo and document comparisons decidable. Until then, on the older results, photos would count as "equal" (+.001) and documents are neither equal nor better (+.017).
+
+## Next
+- When the four jobs end: run the pooled test on ten chunks, which closes the long-text test, and on photos and documents.
+- Then write the judge-prompt check script: re-score the same answers with a second judge prompt and confirm the one-chunk result keeps its sign.
+
+One caveat for the checkpoint before retraining: even with both seeds pooled, 1,500 questions can call documents or text "equal" only when the true difference is about 0.1 point or less. That is the case for option B.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Owner REQUEST executed: seed-pooled 'equal' test added to scripts/spread/slice_pairs.py --pooled (controls PASS: reduced docs +.084 recovered, self-pairs 0.000), law updated, BLOCKED.md + REQUEST removed. A…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.0651 turns=45 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Owner REQUEST executed: seed-pooled 'equal' test added to scripts/spread/slice_pairs.py --pooled (controls PASS: reduced docs +.084 recovered, self-pairs 0.000), law updated, BLOCKED.md + REQUEST removed. Arm B: one chunk spread better at both seeds (+.260 [+.233,+.289] s42, +.247 [+.219,+.275] s43, p<.001); ten chunks s42 on today's code +.001 [-.021,+.025]. New: text answers moved 58/1,500 across code dates; PX inert on photos (79,322 slots). Launched 4 cells: spread ten-chunk s43 re-run + tail photos s42/s43 and tail docs s43 on today's code.", "launched": ["191630", "191631", "191632", "191633"], "verdicts": [{"jobid": "191518", "verdict": "closed", "note": "healthy; spread 184778 ten chunks s42 today's code .605; vs tail +.001 [-.021,+.025]"}, {"jobid": "191519", "verdict": "closed", "note": "healthy; tail 176242 ten chunks s43 .597"}, {"jobid": "191526", "verdict": "closed", "note": "healthy; tail 176242 one chunk s43 .369"}, {"jobid": "191528", "verdict": "closed", "note": "healthy; spread 184780 one chunk s43 .616; +.247 vs tail -> one chunk better at both seeds"}], "gripes": ["+1 43db294f: display --exp spread still 0 table rows with 8 judged cells recorded as probes"], "wake_when": "job:191630,191631,191632,191633 max 3h"}
+== final:
+{"next":"wake-when","summary":"Owner REQUEST executed: seed-pooled 'equal' test added to scripts/spread/slice_pairs.py --pooled (controls PASS: reduced docs +.084 recovered, self-pairs 0.000), law updated, BLOCKED.md + REQUEST removed. Arm B: one chunk spread better at both seeds (+.260 [+.233,+.289] s42, +.247 [+.219,+.275] s43, p<.001); ten chunks s42 on today's code +.001 [-.021,+.025]. New: text answers moved 58/1,500 across code dates; PX inert on photos (79,322 slots). Launched 4 cells: spread ten-chunk s43 re-run + tail photos s42/s43 and tail docs s43 on today's code.","launched":["191630","191631","191632","191633"],"verdicts":[{"jobid":"191518","verdict":"closed","note":"healthy; spread 184778 ten chunks s42 today's code .605; vs tail +.001 [-.021,+.025]"},{"jobid":"191519","verdict":"closed","note":"healthy; tail 176242 ten chunks s43 .597"},{"jobid":"191526","verdict":"closed","note":"healthy; tail 176242 one chunk s43 .369"},{"jobid":"191528","verdict":"closed","note":"healthy; spread 184780 one chunk s43 .616; +.247 vs tail -> one chunk better at both seeds"}],"gripes":["+1 43db294f: display --exp spread still 0 table rows with 8 judged cells recorded as probes"],"wake_when":"job:191630,191631,191632,191633 max 3h"}
+== rc=0 secs=494
+== verify: 8/16
