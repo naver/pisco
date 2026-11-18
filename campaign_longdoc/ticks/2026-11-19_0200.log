@@ -1,0 +1,97 @@
+== campaign longdoc wake 2026-11-19_0200  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795021202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=6.0 idle_h=3.2 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7601 sig=260cc69f same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 85083597-aef2-47cd-a4ef-d7f704f3c8ea  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/85083597-aef2-47cd-a4ef-d7f704f3c8ea/tool-results/bymdx72cm.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-19_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+141 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la
+  ↳ 354 CAMPAIGN.md (+17 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+354 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+179 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ 1	# Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+38 lines)
+Checking the four ended jobs (three needle checks and the first compressed mixed run) for health and results.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191877,191878,191879,191887 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End,MaxRSS -P; sacct -j 191877,191878,191879,191887 -o JobID,State,ExitCode,Elapsed,MaxRSS -P | grep batch; ls -…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End|MaxRSS (+12 lines)
+→ Bash: sacct -j 191877,191878,191879,191887 -D -X -o JobID,State,NodeList -P | sort | uniq -c | head; python3 - <<'EOF' ⏎ import json ⏎ for f in ["expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_needle_text.json"]: ⏎ …
+  ↳ 1 191877|COMPLETED|homer-016 (+8 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections,re ⏎ B="expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_needle_" ⏎ for s in ["text","pages","mixed"]: ⏎     d=json.load(open(B+s+".json")); r=d["records"] ⏎     print…
+  ↳ text n 300 judge on all True unparseable 0 prompt max 33504 (+19 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,re,collections ⏎ B="expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_needle_" ⏎ for s in ["text","pages","mixed"]: ⏎     r=json.load(open(B+s+".json"))["records"] ⏎     multi=sum(…
+  ↳ text preds with >1 distinct long number: 0 / 300 (+11 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ f="expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json" ⏎ r=json.load(open(f))["records"] ⏎ mu=sum(x["mems_used"] for x in r); print("mems_used total",mu,"de…
+  ↳ mems_used total 715709 decoder prompt max 11739 (+53 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -i longdoc; ls expQ/longdoc/e_r42/eval/ expQ/longdoc/soundness expQ/longdoc/length; head -40 scripts/paired_judge.py | grep -E "argparse|add_argument|usage" ; python3 scripts/paired_judge.py -h 2>&1 | hea…
+  ↳ mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json (+50 lines)
+All four jobs are healthy. The needle checks pass. Now I'm pairing the compressed mixed run with the uncompressed one on the same 300 rows.
+→ Bash: R=expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json; U=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json; python3 scripts/paired_judge.py …
+  ↳ judge: R_s42 = expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json (+15 lines)
+→ Bash: timeout 60 .pixi/envs/default/bin/python -I - <<'EOF' ⏎ import json ⏎ from tokenizers import Tokenizer ⏎ t=Tokenizer.from_file("expQ/ft_mm_4b_184778/model/tokenizer.json") ⏎ fs={"R_mixed":"expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003…
+  ↳ R_mixed 300 at cap 4 max 512 median 64 (+3 lines)
+→ Bash: timeout 60 .pixi/envs/default/bin/python -I - <<'EOF' ⏎ import json ⏎ from tokenizers import Tokenizer ⏎ t=Tokenizer.from_file("expQ/ft_mm_4b_184778/model/tokenizer.json") ⏎ print("padding",t.padding,"trunc",t.truncation) ⏎ t.no_padding(); …
+  ↳ padding {'length': None, 'pad_to_multiple_of': 64, 'pad_id': 248044, 'pad_token': '<|endoftext|>', 'pad_type_id': 0, 'direction': 'left'} trunc {'max_length': 1024, 'stride': 0, 'strategy': 'longest_f (+9 lines)
+→ Bash: grep -c '"exp": *"longdoc"' .expmon/runs.jsonl; python3 - <<'EOF' ⏎ import json ⏎ n=0; ids=[] ⏎ for l in open(".expmon/runs.jsonl"): ⏎     try: j=json.loads(l) ⏎     except: continue ⏎     if j.get("exp")=="longdoc": n+=1; ids.append(str(j.…
+  ↳ 54 (+10 lines)
+→ Bash: sed -n 1280,1292p EXPERIMENTS.md | cut -c1-400; find expQ -path '*184780*' -name '*hotpot*' 2>/dev/null | head; find expQ -maxdepth 4 -name '*k10*cml4096*text_hotpotqa_1500*.json' 2>/dev/null | head -20
+  ↳ - did: conf edit + expmon answer db44bc + GATE; hand-off d58256 to the tooling chat (+32 lines)
+→ Bash: grep -E '"jobid": *"?(191377|191392|191390|191669|191778|191887)"?' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     j=json.loads(l); print(j['jobid'], j['launcher'], j['argv'], j['env'], j['slurm'], j.get('st…
+  ↳ 191377 eval_mm_4b.sh ['expQ/longdoc/l_r42/model', 'pisco', '', '/beegfs/scratch/user/hdejean/pisco/eval_data/mm_docqa_1500_1m'] {'DML': '2823', 'PX': '1003520', 'TOPK': '20', 'XD': '16'} {'partition': (+18 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/judge_prompts.py pisco/model.py scripts/longdoc/eval_mnt.sbatch scripts/paired_judge.py | cut -c1-8,33-; grep -E "job 19137[67]\]|job 191392\]" EXPERIMENTS.md |…
+  ↳ b3d1cda1  eval_mm_4b.sh (+12 lines)
+→ Bash: git log --oneline -5 -- eval_mm_4b.sh; git diff HEAD --stat -- eval_mm_4b.sh; grep -n "b3d1cda1" EXPERIMENTS.md | head -5 | cut -c1-400
+  ↳ 5955890 freeze_part setting, probe arms E/G in the eval, requeue resume in eval_mm_4b.sh, freeze result in docs (+6 lines)
+→ Bash: sacct -j 191670,191777,191673,191674,191636,191634,191635 -X -o JobID,Elapsed,NodeList -P
+  ↳ JobID|Elapsed|NodeList (+7 lines)
+→ Bash: grep -nE "add_argument\(\"--(limit|offset|start|shard|skip|num_shards|row)" scripts/eval_mm_docqa.py | head; grep -nE "resume|RESUME" eval_mm_4b.sh | head -8; sacct -j $(python3 -c " ⏎ import json ⏎ ids=[str(json.loads(l)['jobid']) for l in…
+  ↳ 569:    ap.add_argument("--limit", type=int, default=None) (+2 lines)
+→ Bash: ls expQ/longdoc/l_r43/eval/; expmon launch --exp longdoc --stage L -p gpu-be --exclude='homer-[005-009]' --time 4:27:00 --mem 7G --env DML=2823 --env PX=1003520 --env TOPK=20 --env XD=16 --dry-run eval_mm_4b.sh expQ/longdoc/l_r43/model pisc…
+  ↳ mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json (+5 lines)
+Launching the two seed-43 length cells (20-page documents, 40 text passages) that the plan calls for.
+→ Bash: expmon launch --exp longdoc --stage L -p gpu-be --exclude='homer-[005-009]' --time 4:27:00 --mem 7G --env DML=2823 --env PX=1003520 --env TOPK=20 --env XD=16 eval_mm_4b.sh expQ/longdoc/l_r43/model pisco "" /beegfs/scratch/user/hdejean/pisco…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_192007.out (+9 lines)
+→ Bash: MD="md5 eval_mm_4b.sh b3d1cda1 (= 50abc167 + requeue resume only; R documents reproduced 1,500/1,500 on it, 191495/191496) / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / judge_prompts.py bae44fa7 / pisco/model.py 994cff3d" ⏎ exp…
+  ↳ expmon note: 110 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+2 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 - <<'EOF' ⏎ p="known_issues.md"; s=open(p).read() ⏎ old="count `len(ids) >= cap - 2`): the character heuristic (>= 600 chars, no final punctuation) undercounts at 256 (text 8…
+  ↳ 1
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && wc -l docs/longdoc_diagnosis.md && grep -n "^#\|needle\|Needle\|cap\b" docs/longdoc_diagnosis.md | head -40
+  ↳ 181 docs/longdoc_diagnosis.md (+23 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 100	[−1.7, +3.3] and match +1.5, and the project prompt gives −1.5 [−4.6, +1.5]: the scorers disagree in sign, so this (+44 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md"; s=open(p).read() ⏎ reps=[ ⏎ ("Last rewrite 2026-11-18 22:10 (arm E soundness, first read on the 300-row trials: the document is needed — uncompressed with the document beats closed-book by …
+  ↳ done
+→ Bash: python3 - <<'EOF' ⏎ def m(s): ⏎     p=list(map(int,s.split(":"))); return p[0]+p[1]/60 ⏎ w={"U pages":(m("31:01")*1.099,4221),"U text":(m("23:26"),2246),"U mixed":(m("43:47"),4221), ⏎    "R pages":(m("31:05"),4221),"R text":(m("30:22"),2246…
+  ↳ U pages 7.99 h per cell x 1 (+8 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "longdoc E correction: the Qwen3.5 tokenizer.json pads to a multiple of 64 (and truncates at 1,024), so the 22:00 'exact' cap counts were rounded up. Padding off: uncompressed text at 512 7/300 = 2.3% (not 8/300), mixed 7/300, c…
+  ↳ == 0 open report(s) matching 'per-bucket', every machine, newest first == (+6 lines)
+→ Bash: expmon gripe --same af99bb93 "longdoc 2026-11-19: again paired_judge.py + a hand bootstrap per length bucket for R vs uncompressed mixed (191887 vs 191778); and the grid RESULT cannot show per-bucket metrics (needle match per length = the s…
+  ↳ logged as a +1 of af99bb93 (entry d52ab411) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: rm campaign_longdoc/ALERT && expmon campaign report longdoc --section leaves 2>&1 | head -60 | cut -c1-300
+  ↳ **Settled** (+11 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: ls -la expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json expQ/spread/b_spread_s43/eval/mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json 2>&1 | cut -c1-200; squeue -j 192007,192008 -h -o "%i %T %R"; expmon display --…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 812724 Nov 10 14:09 expQ/ft_mm_4b_184780/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+4 lines)
+→ Bash: scontrol show reservation 2>&1 | head -20; sinfo -p gpu-be -h -o "%n %t %C %E" | head -20
+  ↳ No reservations in the system (+15 lines)
+→ Bash: expmon note --did "longdoc wake 02:00: verdicts 191877-191879 (needles PASS every bucket, 97-100%) and 191887 (R s42 mixed healthy, mems = audit); corrected cap counts (tokenizer padding: 512 text 2.3%); launched arm L s43 20 pages 192007 +…
+  ↳ wake-when job:192007,192008 max 8h
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:192007,192008 max 8h", "summary": "The long-document test sets are sound. Running the full comparison on them needs about 50 more GPU-hours and 16 more cells than the campaign has left, so the questio…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.0944 turns=43 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:192007,192008 max 8h", "summary": "The long-document test sets are sound. Running the full comparison on them needs about 50 more GPU-hours and 16 more cells than the campaign has left, so the question is now with the owner in BLOCKED.md.\n\nResults this wake (300-row trials, which decide nothing):\n- Needle check (a 6-digit code hidden at 10 / 50 / 90% depth of a real document): the uncompressed decoder finds it in 97–100% of rows at…", "launched": ["192007", "192008"], "verdicts": [{"jobid": "191877", "verdict": "closed", "note": "healthy; needle text, code found 75/75 at every length, 4k-32k tokens"}, {"jobid": "191878", "verdict": "closed", "note": "healthy; needle pages, code found 100 / 97.3 / 98.7% at 10/20/40 pages"}, {"jobid": "191879", "verdict": "closed", "note": "healthy; needle mixed, code found 100 / 100 / 98.7%"}, {"jobid": "191887", "verdict": "closed", "note": "healthy; R s42 mixed 300 rows, slot count = audit prediction; judge .497, 15.7 pt below uncompressed (plumbing)"}], "blocked": "BLOCKED.md: approve about +50 GPU-hours (60 → 110) and +16 cells (70 → 86) to run the full model cells on the long-document sets (recommended option 1 of 4)", "gripes": ["+1 af99bb93: paired compare per length bucket still done by hand with paired_judge.py and a hand bootstrap", "gap: grid and results show no per-bucket summary keys (needle match per length), so a per-bucket gate is read by hand"]}
+== final:
+{"next":"wake-when","wake_when":"job:192007,192008 max 8h","summary":"The long-document test sets are sound. Running the full comparison on them needs about 50 more GPU-hours and 16 more cells than the campaign has left, so the question is now with the owner in BLOCKED.md.\n\nResults this wake (300-row trials, which decide nothing):\n- Needle check (a 6-digit code hidden at 10 / 50 / 90% depth of a real document): the uncompressed decoder finds it in 97–100% of rows at every length. That covers text up to 33.5k tokens, 40 pages and mixed prompts up to 68.7k tokens; the bar is 90%. So every length bucket stays in the test.\n- First compressed mixed run (model R, seed 42): it used exactly the number of compressed slots the audit predicted (300/300 rows). It scores −15.7 pt below the uncompressed decoder (CI −22.0 to −9.3), and the gap grows from −12 to −21 pt between 10 and 40 items.\n- Correction: the tokenizer file pads lengths to a multiple of 64, so last wake's counts of answers hitting the length cap were too high. The real figure is 2.3% of text answers at the 512-token cap, not 2.7%. The 512 cap stays, and the law, known issues, report and ledger are fixed.\n\nLaunched: the seed-43 length cells (20-page documents, 40 text passages), which finish the length comparison already measured at seed 42.\n\nOwner question (BLOCKED.md): the full comparison costs about 73 GPU-hours in 13 cells. Splitting the long cells by length bucket, so a preemption loses only one bucket, makes it 26 cells. About 32 GPU-hours and 14 cells are left. Recommendation: raise the caps to 110 GPU-hours and 86 cells, and run all of it.","launched":["192007","192008"],"verdicts":[{"jobid":"191877","verdict":"closed","note":"healthy; needle text, code found 75/75 at every length, 4k-32k tokens"},{"jobid":"191878","verdict":"closed","note":"healthy; needle pages, code found 100 / 97.3 / 98.7% at 10/20/40 pages"},{"jobid":"191879","verdict":"closed","note":"healthy; needle mixed, code found 100 / 100 / 98.7%"},{"jobid":"191887","verdict":"closed","note":"healthy; R s42 mixed 300 rows, slot count = audit prediction; judge .497, 15.7 pt below uncompressed (plumbing)"}],"blocked":"BLOCKED.md: approve about +50 GPU-hours (60 → 110) and +16 cells (70 → 86) to run the full model cells on the long-document sets (recommended option 1 of 4)","gripes":["+1 af99bb93: paired compare per length bucket still done by hand with paired_judge.py and a hand bootstrap","gap: grid and results show no per-bucket summary keys (needle match per length), so a per-bucket gate is read by hand"]}
+== rc=0 secs=544
+== verify: 3/21
