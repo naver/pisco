@@ -1,0 +1,9 @@
+== campaign qafreeze wake 2026-11-18_1830  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794994202 live=191677:RUNNING,191678:RUNNING running=2 pending=0 problems=0 problems_other=0 new=0 gpuh24=23.0 idle_h=0.0 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=a4b76386 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=1 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session 21cb641f-5b76-4816-aa34-299e8ebcc23e  model claude-opus-5-5  tools 52
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== rc=1 secs=11
