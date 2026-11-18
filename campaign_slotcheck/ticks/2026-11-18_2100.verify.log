@@ -1,0 +1,49 @@
+== verifier 2026-11-18_2100  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session 5e120e0a-a3da-4631-b412-e6eee140dd41  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+217 lines)
+→ Glob: {"pattern": "expQ/slotcheck/**/*"}
+→ Glob: {"pattern": "scripts/slotcheck/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+6 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/slotcheck"}
+  ↳ scripts/slotcheck/audit_ft_rows.py (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191672.out
+  ↳ 1	FACTORS kind=probe arm=P2a n_pages=120 n_batch4=30 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+42 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663.out
+  ↳ 1	FACTORS kind=audit arm=C n_control=50 topk_docs=4 sets=docpages_20k_1m_teacher,natural_8k_teacher (+54 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_probe_191671.out
+  ↳ 1	FACTORS kind=probe arm=P2a n_pages=6 n_batch4=2 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_probe.py
+  ↳ 1	"""Campaign slotcheck, arm P (check 2a): does left padding of the compressor input change the <MEM> vectors? (+151 lines)
+Checking the remaining claims: the claims about job 191663 and job 191672 match their output files. Now looking at the queued padding jobs' launchers and the transformers code line the wake cites.
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/eval_pad.sbatch
+  ↳ 1	#!/bin/bash (+78 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_split.sbatch
+  ↳ 1	#!/bin/bash (+21 lines)
+→ Grep: {"pattern": "1,910|1910|0 / 20,000|not inert|NOT inert", "path": "/beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md", "output_mode": "content"}
+  ↳ 11:| 2a | does left padding change the `<MEM>` vectors? | **decided: not inert** (120 pages): pads move the slots on both batch paths; why is being split (job 191781) | (+4 lines)
+→ Glob: {"pattern": "modeling_qwen3_5.py", "path": "/beegfs/scratch/user/hdejean/pisco/.pixi/envs/default/lib/python3.12/site-packages/transformers/models/qwen3_5"}
+  ↳ Directory does not exist: /beegfs/scratch/user/hdejean/pisco/.pixi/envs/default/lib/python3.12/site-packages/transformers/models/qwen3_5. Note: your current working directory is /beegfs/scratch/user/h
+→ Glob: {"pattern": "*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py", "path": "/beegfs/scratch/user/hdejean/pisco/.pixi/envs/default/lib"}
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py
+→ Read: /beegfs/scratch/user/hdejean/pisco/.pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py
+  ↳ 188	        hidden_states = hidden_states * F.silu(gate.to(torch.float32)) (+19 lines)
+→ Grep: {"pattern": "191663", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content"}
+  ↳ campaign_slotcheck/STATE.md:8:  not say which page holds the answer. Job 191663 (CPU audit, 56 s, verdict closed). Table: `docs/slot_checks.md`. (+28 lines)
+→ Grep: {"pattern": "17:45|every gold position", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content"}
+  ↳ campaign_slotcheck/CAMPAIGN.md:68:  Definition (fixed 2026-11-18 17:45, before the count was read): a row "loses its gold page" when EVERY gold position (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/VERIFY.md
+  ↳ 1	# VERIFY — campaign slotcheck — 2026-11-18_1730   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+16 lines)
+Every claim is checked; writing up the verdicts now.
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9703 turns=21 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collato…", "status": "supported", "reason": "expQ/slotcheck/audit_ft_191663/summary.txt and the .out file…"}, {"claim": "Check 2a (arm P, padding probe) is NOT inert, n = 120 pages …", "status": "supported", "reason": "From pad_probe_191672.out SUMMARY lines: repeat cos_med_medi…"}, {"claim": "Why 2a moves the slots (job 191781, 40 pages, PENDING): spli…", "status": "provisional", "reason": "The grid shows 191781 P2a_split PENDING with no result. The …"}, {"claim": "Check 2b (does training-style padding change judge accuracy?…", "status": "provisional", "reason": "This is a plan with nothing measured. The grid has 191782 P2…"}, "… +1 more"], "summary": "Both settled results hold up against their output files. Che…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside it: 1,910 / 20,000 document rows (9.55%; all Docmatix, 19.1% of its 10,000) lose one of their two source pages; the record does not say which page holds the answer. Job 191663 (CPU audit, 56 s, verdict closed). Table: docs/slot_checks.md.","status":"supported","reason":"expQ/slotcheck/audit_ft_191663/summary.txt and the .out file, trained rows: 0 dropped out of 20,000 document rows (chartqa 1,000 / docmatix 10,000 / docvqa 7,000 / infographic 2,000) and 0 out of 8,000 natural rows. Partial: 1,910 (9.55%), all Docmatix (19.10% of 10,000). The gate held: image rows complete 1.0, 50/50 sampled controls pass, planted [4,5] counted as dropped. Health passed: rows read = set size, sources sum to the total. The grid row and the verdict match. The law's bar is ≤ 2%, so 'closed, not a cause' follows. The definition was fixed before the count was read (prior verifier, from the tick log). Caveat: the zero is structural. Every 5-document Docmatix row has golds only at positions 0-4, so 'every gold ≥ 4' could not occur in this data. The open question (does the dropped page hold the answer, in up to 1,910 rows) is reported, not settled."},{"claim":"Check 2a (arm P, padding probe) is NOT inert, n = 120 pages (job 191672, verdict closed; controls pass: same input twice cos 1.0000 / max abs 0 on 120 / 120, another page median cos .739; <MEM> count identical at every width). One page alone + 17 / 63 left pads: median cos .934 / .934, worst slot .632, max abs 2.65 / 2.80 (floor 0). A question's 4 pages padded to 64 as in training (30 questions): median cos .9966, worst slot .637. The law's bar (median ≥ .9999) is missed on both paths, so check 2b runs. The 6-page plumbing run 191671 (closed) agreed.","status":"supported","reason":"From pad_probe_191672.out SUMMARY lines: repeat cos_med_median 1.0000 and maxabs_max 0.0 over 120 pages. Other-page control 0.7388, below .99. w17 0.9336 (min .6324, max abs 2.65). w63 0.9341 (min .6311, max abs 2.80). So the worst slot is .631, not .632, a trivial difference. batch4: 30 questions, 0.9966, min .6368. mems_same=True. The grid and verdict match. The law's gate (median ≥ .9999 at every width) is missed with both controls passing in the same cell, so 'not inert → run 2b' is what the law prescribes. 191671 (6 pages: .930 / .941) agrees, as plumbing only. Caveats: the gating single-page figures come from 1-row batches, where installed transformers skips pad zeroing (modeling_qwen3_5.py:198 checks shape[0] > 1). The batch4 path has no repeat control of its own. So the size of the effect under eval or training conditions is not established, only that the inert test fails."},{"claim":"Why 2a moves the slots (job 191781, 40 pages, PENDING): splits the 1-row path (pads not zeroed in Qwen3.5's linea
+== rc=0

@@ -1,0 +1,175 @@
+== campaign slotcheck wake 2026-11-18_2100  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795003201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.1 idle_h=3.3 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7736 sig=260cc69f same=3 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session a4bc5fe1-9e6b-4a41-82c4-d75e534cb4cb  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-18_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+69 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+92 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+317 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat STATE.md; echo =====; cat known_issues.md | head -80; ls -la; cat VERIFY.md 2>/dev/null | head -50
+  ↳ Exit code 1 (+54 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat known_issues.md; echo '-----'; ls -la; echo '-----'; cat VERIFY.md 2>/dev/null
+  ↳ # Known issues — campaign slotcheck   (symptom → verdict → action; check here BEFORE diagnosing) (+68 lines)
+Checking how the 120-page padding probe (job 191672) ended, then planning the next padding cell.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191672 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End,MaxRSS -P; sacct -j 191672 -o JobID,State,ExitCode,Elapsed,MaxRSS -P; ls -la expQ/slotcheck/; cat ALERT 2>/dev/null; cat campaign…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End|MaxRSS (+15 lines)
+→ Bash: cat expQ/slotcheck/pad_probe_191672.out; ls -la expQ/slotcheck/pad_probe_191672/
+  ↳ FACTORS kind=probe arm=P2a n_pages=120 n_batch4=30 widths=0,17,63 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+45 lines)
+→ Bash: cat scripts/slotcheck/pad_probe.py; ls scripts/slotcheck/; cat scripts/slotcheck/pad_probe.sbatch
+  ↳ """Campaign slotcheck, arm P (check 2a): does left padding of the compressor input change the <MEM> vectors? (+175 lines)
+→ Bash: grep -n "def compress\b\|def compress(\|spread\|position_ids\|padding_side\|def compressor_spread" pisco/model.py | head -80
+  ↳ 188:        #   (2409.14364): memory tokens packed next to each other hurt; spread ids help up to ~15x. The ids (+26 lines)
+→ Bash: sed -n 280,380p pisco/model.py; echo '-----'; sed -n 900,1012p pisco/model.py
+  ↳ def mem_spread_position_ids( (+214 lines)
+→ Bash: F=$(ls .pixi/envs/default/lib/python3*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py); echo $F; grep -n "def apply_mask_to_padding_states\|apply_mask_to_padding_states(\|def get_rope_index\|attention_mask.shape\[0\]\|causal_…
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py (+66 lines)
+Reading the shared eval launcher so I can build the padded-eval wrapper (check 2b) without touching shared files.
+→ Bash: cat eval_mm_4b.sh; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py | cut -c1-8,33-
+  ↳ #!/bin/bash (+93 lines)
+→ Bash: grep -n "def make_collator\|pad_to_multiple_of\|def main\|make_collator(\|^if __name__\|batch_size\|collate_compressor" scripts/eval_mm_docqa.py | head -40; sed -n 70,110p scripts/eval_mm_docqa.py
+  ↳ 42:from pisco.mm_utils import (MMChunkBatch, collate_compressor, image_span_text, image_to_span, merge_size_of,  # noqa: E402 (+50 lines)
+→ Bash: sed -n 205,250p pisco/mm_utils.py; grep -n "pad_to_multiple_of" pisco/mm_collator.py | head; sed -n 561,600p scripts/eval_mm_docqa.py
+  ↳ out.n_mems.append(int(n_mems[0])) (+93 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ rows=[json.loads(l) for l in open('.expmon/runs.jsonl') if l.strip()] ⏎ print(len(rows)); print(list(rows[-1].keys())) ⏎ hits=[r for r in rows if '184778' in json.dumps(r) and 'mm_docqa_1500_1m' in json.dum…
+  ↳ 1104 (+6 lines)
+→ Bash: sacct -j 191495,188597,191626,191378 -X -o JobID,State,ExitCode,Elapsed,NodeList,Start -P; sacct -j 191495,191378 -o JobID,MaxRSS -P | grep batch; grep -c . campaign_longdoc/STATE.md >/dev/null; python3 - <<'EOF' ⏎ import json ⏎ rows=[json.…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start (+11 lines)
+→ Bash: F=.pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py; grep -n "_update_linear_attn_mask\|linear_attn_mask" $F | head; n=$(grep -n "def _update_linear_attn_mask" $F | cut -d: -f1); sed -n "${n},$(…
+  ↳ 1267:        linear_attn_mask = self._update_linear_attn_mask(attention_mask, past_key_values) (+45 lines)
+→ Bash: ls -la expQ/ft_mm_4b_184778/eval/ | grep 1500_1m | head; python3 - <<'EOF' ⏎ import json ⏎ d=json.load(open('/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json')) ⏎ print(type(d), lis…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 811538 Nov  9 06:01 mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+3 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ d=json.load(open('/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json')) ⏎ print(json.dumps(d['records'][0])[:700]); print({k:v for k,v in d['summary'…
+  ↳ {"query_id": "presentation-140726083339-phpapp01_95__global-sustainable-energy-current-trends-and-future-prospects-12-1024.jpgquery_number_2", "source": "slidevqa", "query": "Which renewable energy wa (+41 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,statistics as st ⏎ d=json.load(open('expQ/slotcheck/pad_probe_191672/pad_probe.json')) ⏎ b=d['batch4'] ⏎ for x in b[:30]: print(x['row'],x['chunks'],x['longest'],x['extra_pad'],round(x['cos_med'],4),round(x['…
+  ↳ 0 4 867 29 0.9958 0.685 1.66 0.275 (+29 lines)
+Writing a new probe that separates the 1-row padding path (pads leak) from the 2-row path (pads masked), with an fp32 pass to tell rounding from a real effect.
+→ Bash: python3 -c " ⏎ import json;c=json.load(open('expQ/ft_mm_4b_184778/model/config.json'));print({k:c.get(k) for k in ['attn_implementation','torch_dtype','compressor_mem_layout','mem_position_stride','compr_rate','image_compr_rate']})"; grep -…
+  ↳ {'attn_implementation': None, 'torch_dtype': None, 'compressor_mem_layout': 'spread', 'mem_position_stride': 8, 'compr_rate': 8, 'image_compr_rate': None} (+12 lines)
+→ Bash: F=.pixi/envs/default/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py; n=$(grep -n "def get_rope_index" $F | head -1 | cut -d: -f1); sed -n "$((n+30)),$((n+90))p" $F | grep -n "attention_mask\|position_ids\[\|cum…
+  ↳ 26:            if attention_mask is not None: (+5 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_split.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/pad_split.py (file state is current in your context — no need to Read it back)
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/slotcheck/pad_split.py' ⏎ s=open(p).read() ⏎ s=s.replace("attn={model.compressor.config._attn_implementation}","attn={getattr(model.compressor.config, '_attn_implementation', None)}") ⏎ open(p,'w').write(s) ⏎ …
+  ↳ bash-n OK (+1 lines)
+Now the padded-eval wrapper: it imports the shared eval unchanged and only sets the compressor padding to 64 (training's value) or leaves it off.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/eval_pad.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/eval_pad.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/compare_preds.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/compare_preds.py (file state is current in your context — no need to Read it back)
+→ Bash: cat > scripts/slotcheck/eval_pad.sbatch <<'EOF' ⏎ #!/bin/bash ⏎ #SBATCH -n 1 ⏎ #SBATCH -p gpu-be ⏎ #SBATCH --gres=gpu:1 ⏎ #SBATCH --cpus-per-task=4 ⏎ #SBATCH --mem=8G ⏎ #SBATCH --time=2:45:00 ⏎ #SBATCH --output=/beegfs/scratch/user/hdejean/…
+  ↳ bash-n OK (+15 lines)
+→ Bash: sed -n 272,292p scripts/eval_mm_docqa.py; sed -n 670,684p scripts/eval_mm_docqa.py; grep -n "def run_pisco\|run_pisco(\|def _compress_example\|compress_sliced(model, comp" scripts/eval_mm_docqa.py | head
+  ↳ imgs = [] if text_only else list(row.get("doc_images") or []) (+37 lines)
+The eval's document path pads through that collator, so the wrapper's one change reaches it. Checking the launch syntax, then dry-running.
+→ Bash: expmon launch --help 2>&1 | head -60
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+12 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage P2a_split --time 0:20:00 --mem 8G -p gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/pad_split.sbatch 40 2>&1 | tail -20; echo '-----'; expmon launch --dry-run --exp slotcheck --stage P2b…
+  ↳ would submit: sbatch --time 0:20:00 --mem 8G -p gpu-be --exclude homer-[005-009] scripts/slotcheck/pad_split.sbatch 40 (+9 lines)
+Nothing of this campaign is running, so no duplicate risk. Submitting the split probe and the wrapper check cell.
+→ Bash: expmon launch --exp slotcheck --stage P2a_split --time 0:20:00 --mem 8G -p gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/pad_split.sbatch 40 2>&1 | tail -4; expmon launch --exp slotcheck --stage P2b_smoke --env JUDGE=0 --time 0:50:00…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out (+9 lines)
+Now the two full padded-vs-unpadded evals (one per seed), each held until the check cell passes.
+→ Bash: for C in p2b_s42 p2b_s43; do expmon launch --exp slotcheck --stage P2b --dependency afterok:191782 --time 2:45:00 --mem 8G -p gpu-be --exclude 'homer-[005-009]' scripts/slotcheck/eval_pad.sbatch $C none,64 2>&1 | grep -E "Submitted|log:|REF…
+  ↳ Submitted batch job 191783 (+12 lines)
+All four submitted (cap reached). Recording intent notes with code checksums.
+→ Bash: M=$(md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/slotcheck/pad_split.py scripts/slotcheck/eval_pad.py scripts/slotcheck/eval_pad.sbatch scripts/slotcheck/compare_pred…
+  ↳ eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / model.py 994cff3d / pad_split.py e2143c71 / eval_pad.py cb7187b2 / eval_pad.sbatch 67241721 (+12 lines)
+Recording the finished padding probe: health, result and verdict.
+→ Bash: expmon probe 191672 arm=P2a pages=120 controls_ok=True mems_same=True floor_maxabs=0 inert=False w17_cos=0.933568 w17_maxabs=2.65 w63_cos=0.934078 w63_maxabs=2.80 batch4_q=30 batch4_cos=0.996605 batch4_cosmin=0.6368 other_cos=0.738780 2>&1 …
+  ↳ probe recorded: 191672 (arm=P2a pages=120 controls_ok=True mems_same=True floor_maxabs=0 inert=False w17_cos=0.933568 w17_maxabs=2.65 w63_cos=0.934078 w63_maxabs=2.80 batch4_q=30 batch4_cos=0.996605 b (+3 lines)
+Bookkeeping first (results page, state, next-wake condition), so nothing is lost if this wake times out. Reading the current results page.
+→ Bash: cat docs/slot_checks.md; squeue -u hdejean -o "%i %j %T %r %N" | grep -E "19178[1-4]"
+  ↳ # Slot checks — campaign slotcheck (2026-11) (+44 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ old_row="| 2a | does left padding change the `<MEM>` vectors? | running; the 6-page plumbing run shows a probe fault to remove first (1-row batches skip pad zeroing in Qwen3.5…
+  ↳ 11:| 2a | does left padding change the `<MEM>` vectors? | **decided: not inert** (120 pages): pads move the slots on both batch paths; why is being split (job 191781) | (+3 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+9 lines)
+Writing the state file now.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: echo "wake-when job:191781,191782 max 2h" > campaign_slotcheck/NEXT && cat campaign_slotcheck/NEXT; rm -f campaign_slotcheck/ALERT 2>&1; ls campaign_slotcheck/
+  ↳ wake-when job:191781,191782 max 2h (+10 lines)
+State saved. Now preparing check 4 (the 100-page overfit) so the next wake can launch it. Reading the stage-1 launcher, its recorded recipe and the recall tool.
+→ Bash: cat expQ/archq3/pt_mm_5M_spread/training_config.yaml; echo '-----'; sed -n 1,200p pt_mm_4b.sh | grep -v "^\s*$" | head -90
+  ↳ output_dir: ./outputs/run (+88 lines)
+→ Bash: ls -d data/mm_pretrain_pdfa_1m* ; ls data/mm_pretrain_pdfa_1m; cat data/mm_pretrain_pdfa_1m/dataset_info.json 2>/dev/null | head -40; cat data/mm_pretrain_pdfa_1m/*/dataset_info.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sy…
+  ↳ data/mm_pretrain_pdfa_1m (+68 lines)
+→ Bash: sed -n 60,200p scripts/longdoc/mem_recall.py | grep -n "add_argument\|def \|pick_rows\|json.dump\|recall" | head -40; grep -n "def pick_rows" -A30 scripts/probe_mem_recall.py | head -45
+  ↳ 11:def main(): (+43 lines)
+→ Bash: date; cd /beegfs/scratch/user/hdejean/pisco && grep -n "CAMP_WAKE_TIMEOUT\|TIMEOUT\|CAMP_MAX_SUBMIT\|CAMP_PATCH\|CAMP_COMMIT" campaign_slotcheck/campaign.conf | head; cat data/mm_pretrain_pdfa_1m/dataset_dict.json; ls data/mm_pretrain_pdfa_…
+  ↳ Wed Nov 18 09:10:41 PM KST 2026 (+16 lines)
+About 30 minutes left in this wake. Writing the page builder for check 4 now; the training launcher waits for the next wake.
+→ Bash: grep -n "row\[\|row.get" scripts/probe_mem_recall.py scripts/longdoc/mem_recall.py | head -20; grep -n "ae_target_max_tokens\|def _image_ae\|p_image_ae\|p_desc\|p_find" pisco/mm_collator.py | head -20; ls data/mm_pretrain_pdfa_1m_desc/; pyt…
+  ↳ scripts/probe_mem_recall.py:44:        gold = [int(g) for g in (row.get("gold_positions") or [])] (+27 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_dense100.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_dense100.py (file state is current in your context — no need to Read it back)
+Fixing one thing before it bites: the eval copy of each page must keep the original image bytes (re-encoding a JPEG would change pixels between training and measurement).
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/slotcheck/build_dense100.py' ⏎ s=open(p).read() ⏎ old='''        imgs = sel["image"] ⏎ ''' ⏎ new='''        raw = sel.cast_column("image", Image(decode=False))["image"]   # original bytes: no JPEG re-encode ⏎ …
+  ↳ compile OK (+2 lines)
+→ Bash: squeue -u hdejean -o "%i %j %T %r %N %M" | grep -E "19178[1-4]"; tail -5 expQ/slotcheck/pad_split_191781.out 2>/dev/null; tail -3 expQ/slotcheck/eval_pad_191782.out 2>/dev/null
+  ↳ Exit code 1 (+4 lines)
+Jobs still waiting for priority. Using the remaining time to look up how the stage-2 start model was launched, for the overfit launcher.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for l in open('/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     s=json.dumps(r) ⏎     if 'pt_mm_5M_spread' in s and r.get('launcher','').endswith('.sh'): ⏎         print(…
+  ↳ 184711 archq3 ft_mm_4b.sh ['/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model', '28000', '1', '64', 'hf_training.learning_rate=2e-5', '+model_config_overrides.image_max_pixels=10035 (+44 lines)
+The start model's own launch row is not in the run log, so the overfit launcher goes to the next wake. Checking whether the grid's missing result column is already a known tooling gripe.
+→ Bash: expmon gripe --open --search RESULT grid 2>&1 | head -12; grep -n "EXP_RESULT\|RESULT" .expmon.conf | head
+  ↳ == 78 open report(s) matching 'result grid', every machine, newest first == (+15 lines)
+→ Bash: expmon gripe --same 287192bc "slotcheck 191672 (probe launcher): the log ends with a one-line 'RESULT arm=P2a pages=120 ... inert=False w17_cos=...' (key=value), yet grid RESULT stays '-' until the wake re-types the same keys with expmon pr…
+  ↳ logged as a +1 of 287192bc (entry c2768ba2) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: timeout 60 expmon display --exp slotcheck 2>&1 | tail -3
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_slotcheck.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: expmon gripe --same 43db294f "slotcheck too (2026-11-18 21:20): 'expmon display --exp slotcheck' -> 0 table rows / 0 runs while 'expmon grid slotcheck' lists 7 cells (3 with verdicts + probes). The deliverable lives in docs/slot_checks.md m…
+  ↳ logged as a +1 of 43db294f (entry dc6e57ee) -> /home/hdejean/.claude/feedback/ncp.log
+Updating the state file with the check 4 preparation and the time-budget conflict I found.
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_slotcheck/STATE.md' ⏎ s=open(p).read() ⏎ old="| O. overfit capacity (check 4) | not started | write `build_dense100.py` (100 + 100 held-out dense pages of `data/mm_pretrain_pdfa_1m`) and `pt_overfit.sbatch`; …
+  ↳ 65
+→ Bash: cat >> campaign_slotcheck/known_issues.md <<'EOF' ⏎ | a finished slotcheck cell's log ends with `RESULT arm=… key=value …` but `expmon grid slotcheck` shows RESULT `-` (191672, 2026-11-18) | expmon reads no RESULT line from a log (gripe +1 …
+  ↳ | a finished slotcheck cell's log ends with `RESULT arm=… key=value …` but `expm (+4 lines)
+→ Bash: expmon note --did "slotcheck wake 21:00: 2a full cell 191672 verdict closed (not inert, 120 pages); wrote pad_split.py, eval_pad.py wrapper (imports the shared eval, sets collator padding), compare_preds.py, build_dense100.py; launched spli…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+The padding check (2a) is decided: left pads change what a page's slots hold. So the next step, measuring what that padding costs in judge accuracy (check 2b), is now queued. No results from the new jobs yet, because all four are still waiting in the queue.
+
+## Done this wake
+- **Padding probe, 120 pages: not inert** (job 191672, recorded as closed). Cosine is the similarity between the slots of the padded page and the same page unpadded; the law's bar for "inert" is a median of at least .9999.
+
+  | how the page was compressed | n | median cosine ↑ | worst slot ↑ |
+  |---|---|---|---|
+  | same input twice (noise floor) | 120 pages | 1.0000 | 1.0000 |
+  | another page (a known difference) | 120 pages | .739 | .600 |
+  | one page alone + 17 or 63 left pads | 120 pages | .934 | .632 |
+  | a question's 4 pages, padded to 64 as in training | 30 questions | .9966 | .637 |
+
+- Under the law, this sends the campaign to check 2b.
+- `docs/slot_checks.md` now has the check 2a table.
+- New scripts, all in `scripts/slotcheck/`. No shared eval or judge file was touched.
+  - `pad_split.py`: separates the two padding cases.
+  - `eval_pad.py`: imports the shared eval unchanged and only sets the compressor padding to 64 or none.
+  - `compare_preds.py`: compares two result files question by question.
+  - `build_dense100.py`: builds the pages for check 4.
+
+## Running now (all 4 waiting for a GPU slot)
+- **Why the pads move the slots** (job 191781, 40 pages). My reading of the installed transformers code is that a batch of one row does not zero the pads in Qwen3.5's linear-attention layers. I have not tested that yet. The job tests it in two ways:
+  - It forces the zeroing on for one-row batches.
+  - It repeats everything in fp32, to tell rounding error from a real change.
+- **Wrapper check** (job 191782, 300 questions). The plain shared eval and the wrapper with padding off must give identical answers. If they don't, the job exits with an error and the two full evals never start.
+- **Full evals** (jobs 191783 for seed 42, 191784 for seed 43). Each runs the 1,500 document questions with padding off, then padded to 64, on one machine, scores both with the judge, and pairs them question by question.
+  - A gain of at least 3 points at both seeds would mean the eval's missing padding costs accuracy. That would go to the main pisco chats as a hand-off.
+
+## Next
+- The next wake starts when the split probe and the wrapper check finish, or in 2 hours at most.
+- Then I launch the page builder for check 4, the 100-page overfit, and write its training launcher.
+- **Time-budget conflict in check 4:** the stage-2 recipe trains on 64 samples per step. At that size, 1,000 steps is about 12 GPU-hours, but the hard rules allow at most 2 GPU-hours per training. 2 GPU-hours is about 165 steps, or about 106 passes over the 100 pages. I will set the step count from the speed measured in a 20-step test run, and stop at whichever comes first: the loss flattens, 1,000 steps, or 2 GPU-hours.
+
+Budget: 7 of 32 cells used, about 0.3 of 30 GPU-hours.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Check 2a (padding) decided NOT inert on 120 pages (job 191672): one page + left pads median cos .934, 4-page batch padded to 64 median .9966 vs bar .9999; controls pass. Wrote scripts/slotcheck/pad_split.py…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.3408 turns=57 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Check 2a (padding) decided NOT inert on 120 pages (job 191672): one page + left pads median cos .934, 4-page batch padded to 64 median .9966 vs bar .9999; controls pass. Wrote scripts/slotcheck/pad_split.py (1-row leak vs masked path, forced-zeroing cause test, fp32 rounding test), eval_pad.py wrapper (imports shared eval, sets collator pad_to_multiple_of), compare_preds.py, build_dense100.py (arm O builder, not launched). Launched split probe 191781, wrapper plumbing 191782 (invariant plain == wrapper-None, LIMIT 300), and full 2b pairs 191783 (s42) / 191784 (s43) afterok 191782. docs/slot_checks.md and STATE.md rewritten; stale quota ALERT cleared; 2 gripe +1s.", "launched": ["191781", "191782", "191783", "191784"], "verdicts": [{"jobid": "191671", "verdict": "closed", "note": "plumbing OK, decides nothing"}, {"jobid": "191672", "verdict": "closed", "note": "check 2a NOT inert: 120 pages, 1-row +17/63 pads median cos .934, 4-page pad-to-64 .9966 (bar .9999); 2b runs"}], "gripes": ["+1 287192bc: grid RESULT stays '-' although the cell log ends with a RESULT key=value line (191672)", "+1 43db294f: expmon display --exp slotcheck writes 0 table rows while grid lists 7 cells"], "wake_when": "job:191781,191782 max 2h"}
+== final:
+{"next":"wake-when","summary":"Check 2a (padding) decided NOT inert on 120 pages (job 191672): one page + left pads median cos .934, 4-page batch padded to 64 median .9966 vs bar .9999; controls pass. Wrote scripts/slotcheck/pad_split.py (1-row leak vs masked path, forced-zeroing cause test, fp32 rounding test), eval_pad.py wrapper (imports shared eval, sets collator pad_to_multiple_of), compare_preds.py, build_dense100.py (arm O builder, not launched). Launched split probe 191781, wrapper plumbing 191782 (invariant plain == wrapper-None, LIMIT 300), and full 2b pairs 191783 (s42) / 191784 (s43) afterok 191782. docs/slot_checks.md and STATE.md rewritten; stale quota ALERT cleared; 2 gripe +1s.","launched":["191781","191782","191783","191784"],"verdicts":[{"jobid":"191671","verdict":"closed","note":"plumbing OK, decides nothing"},{"jobid":"191672","verdict":"closed","note":"check 2a NOT inert: 120 pages, 1-row +17/63 pads median cos .934, 4-page pad-to-64 .9966 (bar .9999); 2b runs"}],"gripes":["+1 287192bc: grid RESULT stays '-' although the cell log ends with a RESULT key=value line (191672)","+1 43db294f: expmon display --exp slotcheck writes 0 table rows while grid lists 7 cells"],"wake_when":"job:191781,191782 max 2h"}
+== rc=0 secs=757
+== verify: 3/5
