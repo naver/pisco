@@ -5,12 +5,13 @@ In plain words: the frozen-compressor test passed, so caching `<MEM>`s is safe; 
 
 **What passed (2026-11-18, n = 1,500 questions per set, paired judge accuracy, seed 42 / seed 43).**
 The QA-trained compressor + connector of the reference finetunes 184778 / 184780 stayed frozen. A fresh decoder LoRA
-was trained on the same 28k rows. The result ties the reference on every gating set at both seeds:
+was trained on the same 28k rows. The result ties the reference on every set at both seeds:
 | set | frozen − reference, s42 (pt, 95% CI) | s43 (pt, 95% CI) |
 |---|---|---|
 | documents ↑ | +0.5 [−0.6, +1.6] | −0.1 [−1.1, +0.9] |
 | photos ↑ | −0.3 [−1.5, +0.9] | −0.5 [−1.7, +0.7] |
 | MRQA text ↑ | +1.1 [−0.1, +2.3] | +0.3 [−0.8, +1.5] |
+| HotpotQA ↑ (reported, not gating) | −0.5 [−1.9, +0.9] | +0.9 [−0.5, +2.1] |
 The instrument sees an effect of this size: the same frozen setup on a compressor that never had QA training scores
 3.3 pt lower on documents at both seeds (p .003). The `<MEM>`-cache build went to the pisco chats as an engineering
 hand-off (1ebc7c). Nothing is switched on.

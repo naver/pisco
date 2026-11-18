@@ -1,0 +1,6 @@
+judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json
+       R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json
+source             n     Q42     R42     diff      SE            95% CI  A-only  B-only    p McN
+ALL             1500   0.600   0.605   -0.005   0.007 [-0.019, +0.009]      50      57    0.562
+hotpot_bridge   1197   0.566   0.570   -0.004   0.008 [-0.019, +0.011]      44      49    0.679
+hotpot_comparison   303   0.736   0.743   -0.007   0.012 [-0.030, +0.017]       6       8    0.791

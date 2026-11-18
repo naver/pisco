@@ -1,0 +1,65 @@
+== campaign qafreeze wake 2026-11-18_2130  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795005027 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=24.5 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7731 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:191766,191767,191768,191769_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== wait condition met: job:191766,191767,191768,191769 (ended)   (NEXT was: wake-when job:191766,191767,191768,191769 max 4h)
+== session 10360410-f269-4e40-9c57-a2a77be43131  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-18_2130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+164 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+64 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && sed -n 1,400p CAMPAIGN.md | cut -c1-2000 | head -c 40000 | tail -c 30000
+  ↳ / its init / the image-processor path (`expQ/ft_mm_4b_184778/model/config.json:11-12,24`), and R's config travels with R's connector. (+253 lines)
+→ Bash: cat STATE.md && echo ====== && ls -la && cat VERIFY.md 2>/dev/null | head -50
+  ↳ Exit code 1 (+115 lines)
+→ Bash: ls -la; ls pairs; cat known_issues.md | tail -15 | cut -c1-400
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && for j in 191766 191767 191768 191769; do expmon lineage $j 2>&1 | head -30; echo "-----"; done
+  ↳ total 88 (+42 lines)
+  ↳ lineage of 191766: (+27 lines)
+Checking the four HotpotQA eval cells that just ended (exit state, logs, result files).
+→ Bash: sacct -j 191766,191767,191768,191769 -X --format=JobID,State,ExitCode,Elapsed,NodeList,Restarts -P; for j in 191766 191767 191768 191769; do echo "== $j"; ls -la expQ/$j 2>/dev/null | head; done
+  ↳ sacct: error: Invalid field requested: "Restarts" (+4 lines)
+→ Bash: sacct -j 191766,191767,191768,191769 -X --format=JobID,State,ExitCode,Elapsed,NodeList -P; expmon logs 191766 40 2>&1 | tail -45
+  ↳ JobID|State|ExitCode|Elapsed|NodeList (+47 lines)
+→ Bash: for j in 191767 191768 191769; do echo "== $j"; grep -E "^wrote|judge   |unparseable|EXIT CODE|exceeds|Traceback|Error" eval_mm_4b_$j.out | head; done; grep -c "exceeds" eval_mm_4b_191766.out
+  ↳ == 191767 (+15 lines)
+→ Bash: ls -la expQ/qafreeze/{ft_frozen_s42,ft_frozen_s43,ref_s42,ref_s43}/eval/*hotpot* && python3 -I -c " ⏎ import json,sys ⏎ for p in ['expQ/qafreeze/ft_frozen_s42','expQ/qafreeze/ft_frozen_s43','expQ/qafreeze/ref_s42','expQ/qafreeze/ref_s43']: …
+  ↳ -rw-rw-r-- 1 hdejean hdejean 813673 Nov 18 21:26 expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+22 lines)
+→ Bash: cat campaign_qafreeze/pairs/mrqa_QminusR_s42.txt; python3 -I scripts/paired_judge.py --help 2>&1 | head -20
+  ↳ judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+22 lines)
+→ Bash: F=mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json; for s in 42 43; do python3 -I scripts/paired_judge.py --names Q$s R$s expQ/qafreeze/ft_frozen_s$s/eval/$F expQ/qafreeze/ref_s$s/eval/$F > campaign_qafreeze/pairs/hotpot_QminusR…
+  ↳ judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+21 lines)
+HotpotQA results are in and healthy; now reading the verifier's notes before recording verdicts.
+→ Bash: cut -c1-900 campaign_qafreeze/VERIFY.md; expmon ledger 12 2>&1 | grep -i qafreeze | cut -c1-300
+  ↳ # VERIFY — campaign qafreeze — 2026-11-18_2100   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+21 lines)
+Verifier found nothing to fix. Recording the four HotpotQA verdicts and probes.
+→ Bash: expmon probe 191766 --step 1.0 judge=0.6000 && expmon probe 191767 --step 1.0 judge=0.6000 && expmon probe 191768 --step 1.0 judge=0.6047 && expmon probe 191769 --step 1.0 judge=0.5913 && \ ⏎ expmon verdict 191766 closed "healthy: COMPLETED…
+  ↳ probe recorded: 191766 @1.0 (judge=0.6000)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+8 lines)
+→ Bash: expmon display --exp qafreeze 2>&1 | tail -5; expmon campaign report --section leaves 2>&1 | head -60
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_qafreeze.html   (0 table rows, 0 media files from 0 runs) (+11 lines)
+→ Bash: expmon gripe --open --search "display" 2>&1 | head -20; echo ---; expmon gripe --open --search "0 table rows" 2>&1 | head
+  ↳ == 60 open report(s) matching 'display', every machine, newest first == (+30 lines)
+→ Bash: grep -c "<tr" display_qafreeze.html; grep -o "191766" display_qafreeze.html | head -2
+  ↳ 29 (+2 lines)
+→ Bash: expmon gripe --same be8057a1 "qafreeze 2026-11-18 21:30: display --exp qafreeze again prints '0 table rows, 0 media files from 0 runs' while the HTML has 29 <tr> rows incl. the 4 newest cells; the summary line counts something other than wh…
+  ↳ logged as a +1 of be8057a1 (entry 0ae42bba) -> /home/hdejean/.claude/feedback/ncp.log
+Now rewriting BLOCKED.md (add the HotpotQA row) and STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && python3 -I - <<'EOF' ⏎ p='BLOCKED.md' ⏎ s=open(p).read() ⏎ old="| MRQA text ↑ | +1.1 [−0.1, +2.3] | +0.3 [−0.8, +1.5] |\n" ⏎ new=old+"| HotpotQA ↑ (reported, not gating) | −0.5 [−1.…
+  ↳ 8:was trained on the same 28k rows. The result ties the reference on every set at both seeds: (+1 lines)
+Now the STATE.md rewrite; reading the truncated middle part first so nothing is lost.
+→ Bash: sed -n '/## Training health/,/## Owned jobs/p' STATE.md
+  ↳ ## Training health — held-out eval_loss by epoch (lower is better; 1 epoch = 28k rows) (+32 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ health_start=s.index('## Training health') ⏎ owned_start=s.index('## Owned jobs') ⏎ middle=s[health_start:owned_start] ⏎ head = '''# STATE — campaign qafreeze   (rewritten WHOLESALE b…
+  ↳ 133 (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe --open --search "TOPK factors" 2>&1 | head -6; grep -E "191766|191661" .expmon/runs.jsonl 2>/dev/null | cut -c1-400 | head -4
+  ↳ == 2 open report(s) matching 'topk factors', every machine, newest first == (+7 lines)
+Writing NEXT and finishing.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && echo "waiting-owner" > NEXT && cat NEXT && head -3 BLOCKED.md
+  ↳ waiting-owner (+3 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Test of keeping the QA-trained compressor frozen (campaign qafreeze): finished and passed; now waiting for the owner. All four HotpotQA eval cells finished cleanly (exit 0; 1,500 rows each, every row ju…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4162 turns=25 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Test of keeping the QA-trained compressor frozen (campaign qafreeze): finished and passed; now waiting for the owner. All four HotpotQA eval cells finished cleanly (exit 0; 1,500 rows each, every row judged, 0 unparseable; same eval-code md5 on both sides). HotpotQA is reported, not gating. Frozen model minus reference, judge accuracy, paired, n = 1,500: seed 42 −0.5 pt [−1.9, +0.9], p .562; seed …", "launched": [], "verdicts": [{"jobid": "191766", "verdict": "closed", "note": "healthy; Q s42 HotpotQA .600; Q-R -0.5 pt [-1.9,+0.9] p .562"}, {"jobid": "191767", "verdict": "closed", "note": "healthy; Q s43 HotpotQA .600; Q-R +0.9 pt [-0.5,+2.1] p .223"}, {"jobid": "191768", "verdict": "closed", "note": "healthy; R s42 HotpotQA on today's code .605 (recorded .603)"}, {"jobid": "191769", "verdict": "closed", "note": "healthy; R s43 HotpotQA on today's code .591 (recorded .593)"}], "blocked": "Owner checkpoint (BLOCKED.md): run arm H (decoder LoRA lr 2e-5 -> 1e-4, seeds 42/43, ~22 GPU-h of the +25 the law reserves) or close the campaign. Recommendation: yes.", "gripes": ["+1 on be8057a1: display --exp qafreeze prints '0 table rows, 0 media files from 0 runs' while the HTML has 29 rows"]}
+== final:
+{"next":"waiting-owner","summary":"Test of keeping the QA-trained compressor frozen (campaign qafreeze): finished and passed; now waiting for the owner. All four HotpotQA eval cells finished cleanly (exit 0; 1,500 rows each, every row judged, 0 unparseable; same eval-code md5 on both sides). HotpotQA is reported, not gating. Frozen model minus reference, judge accuracy, paired, n = 1,500: seed 42 −0.5 pt [−1.9, +0.9], p .562; seed 43 +0.9 pt [−0.5, +2.1], p .223. That is a tie, like the three gating sets (documents, photos, MRQA text). The reference re-run on today's code matches its recorded HotpotQA scores (.605 / .591 vs .603 / .593). Recorded 4 probes, 4 verdicts (closed) and a ledger note. Saved the pair tables in pairs/hotpot_QminusR_s4x.txt. Added the HotpotQA row to the owner question. Rewrote STATE.md with the complete 4-set × 2-seed table and refreshed the display page. The verifier had nothing to fix: the loss line stays marked provisional, now with its caveats. No campaign job is queued. The one open item is the owner's decision in BLOCKED.md: run the decoder LoRA lr 1e-4 arm (~22 GPU-h; recommended yes) or close the campaign.","launched":[],"verdicts":[{"jobid":"191766","verdict":"closed","note":"healthy; Q s42 HotpotQA .600; Q-R -0.5 pt [-1.9,+0.9] p .562"},{"jobid":"191767","verdict":"closed","note":"healthy; Q s43 HotpotQA .600; Q-R +0.9 pt [-0.5,+2.1] p .223"},{"jobid":"191768","verdict":"closed","note":"healthy; R s42 HotpotQA on today's code .605 (recorded .603)"},{"jobid":"191769","verdict":"closed","note":"healthy; R s43 HotpotQA on today's code .591 (recorded .593)"}],"blocked":"Owner checkpoint (BLOCKED.md): run arm H (decoder LoRA lr 2e-5 -> 1e-4, seeds 42/43, ~22 GPU-h of the +25 the law reserves) or close the campaign. Recommendation: yes.","gripes":["+1 on be8057a1: display --exp qafreeze prints '0 table rows, 0 media files from 0 runs' while the HTML has 29 rows"]}
+== rc=0 secs=180
+== verify: 13/15

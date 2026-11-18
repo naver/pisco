@@ -1,0 +1,6 @@
+judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json
+       R43 = expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json
+source             n     Q43     R43     diff      SE            95% CI  A-only  B-only    p McN
+ALL             1500   0.600   0.591   +0.009   0.007 [-0.005, +0.021]      55      42    0.223
+hotpot_bridge   1197   0.574   0.565   +0.009   0.008 [-0.006, +0.023]      46      35    0.266
+hotpot_comparison   303   0.703   0.696   +0.007   0.013 [-0.020, +0.033]       9       7    0.804
