@@ -1,0 +1,700 @@
+{
+ "label": "longdoc",
+ "dir": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc",
+ "generated": "2026-11-18 17:07",
+ "mission": "Successor of campaign 'longchunk' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.md). Open at hand-off: pt_text_4b_long.sh \u2014 job 189693 CANCELLED, no verdict. (REPORT.md is not written yet; REPORT.json carries the same Settled list. 189693 belongs to longchunk and was stopped by the owner on 2026-11-16: never verdict it or relaunch it here.)",
+ "window": [
+  "2026-11-17",
+  "2026-11-18"
+ ],
+ "until": "2027-02-14",
+ "over": false,
+ "ticks": 81,
+ "wakes": 13,
+ "wakes_bad": 0,
+ "gpu_h": 20.9,
+ "card_h": 0,
+ "idle_max_h": 14.7,
+ "idle_flag": true,
+ "settled": [
+  {
+   "jobid": "191517",
+   "verdict": "closed",
+   "arm": "kind=rejudge arm=J name=docs_p10_p20 prompt=project judge=Qwen/Qwen3-8B n_files=1",
+   "note": "launch fault, not a result: FAILED exit 2 in 0 s, log 'missing <8 paths joined>': the wake's zsh passed the 8 files as ONE argv element (unquoted $VAR is not word-split in zsh). Replaced by 191629 (12 files, argv checked = 13 elements)",
+   "text": "launch fault, not a result: FAILED exit 2 in 0 s, log 'missing <8 paths joined>': the wake's zsh passed the 8 files as ONE argv element (unquoted $VAR is not word-split in zsh). Replaced by 191629 (12 files, argv checked = 13 elements) \u2014 job 191517, closed",
+   "jobs": [
+    "191517"
+   ]
+  },
+  {
+   "jobid": "191516",
+   "verdict": "closed",
+   "arm": "audit.sbatch",
+   "note": "arm E cut check PASS: cut 0 / parity 1.0000 on E_text_cml1024 (2,246), E_pages_cml1024 (4,221), E_mixed_cml1024 (4,221) and the 3 needle sets; the CML 256 control fails as it should (235 / 2,246 = 10.5% cut). Health null by design (--only E_ skips docs_p4; health passed in 191147)",
+   "text": "arm E cut check PASS: cut 0 / parity 1.0000 on E_text_cml1024 (2,246), E_pages_cml1024 (4,221), E_mixed_cml1024 (4,221) and the 3 needle sets; the CML 256 control fails as it should (235 / 2,246 = 10.5% cut). Health null by design (--only E_ skips docs_p4; health passed in 191147) \u2014 job 191516, closed",
+   "jobs": [
+    "191516"
+   ]
+  },
+  {
+   "jobid": "191515",
+   "verdict": "closed",
+   "arm": "kind=build_long arm=E sets=all max_q=1500 suffix=none source=LongDocURL px=1003520 piece=1000",
+   "note": "arm E build OK: COMPLETED 0:0 31 min; LongDocURL 2,325 Q / 396 PDFs -> 1,407 usable Q on 387 PDFs; pages 4,221 rows (1,407 x p10/p20/p40), mixed 4,221 (m10/m20/m40), text 2,246 (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225",
+   "text": "arm E build OK: COMPLETED 0:0 31 min; LongDocURL 2,325 Q / 396 PDFs -> 1,407 usable Q on 387 PDFs; pages 4,221 rows (1,407 x p10/p20/p40), mixed 4,221 (m10/m20/m40), text 2,246 (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225 \u2014 job 191515, closed",
+   "jobs": [
+    "191515"
+   ]
+  },
+  {
+   "jobid": "191393",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=40 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 DML=8571 TOPK=40 XD=30",
+   "note": "healthy: COMPLETED 0:0 homer-019 26:57, one attempt; 1,500 rows, judge on all, unparseable 0. Uncompressed text 40 passages: judge .707 (10 passages .752)",
+   "text": "healthy: COMPLETED 0:0 homer-019 26:57, one attempt; 1,500 rows, judge on all, unparseable 0. Uncompressed text 40 passages: judge .707 (10 passages .752) \u2014 job 191393, closed",
+   "jobs": [
+    "191393"
+   ]
+  },
+  {
+   "jobid": "191392",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=40 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 CML=4096 DML=1545 PX=1003520 TOPK=40 XD=30",
+   "note": "healthy: COMPLETED 0:0 attempt 4 on homer-016 (01:04-01:45; 3 preemptions), file written 01:45:58 by that attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,075,610 = audit 1,075,610. R s42 text 40 passages: judge .534 (10 passages .605)",
+   "text": "healthy: COMPLETED 0:0 attempt 4 on homer-016 (01:04-01:45; 3 preemptions), file written 01:45:58 by that attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,075,610 = audit 1,075,610. R s42 text 40 passages: judge .534 (10 passages .605) \u2014 job 191392, closed",
+   "jobs": [
+    "191392"
+   ]
+  },
+  {
+   "jobid": "191378",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "note": "healthy (COMPLETED 0:0, homer-017, 50:42, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; re-read from the result file 2026-11-17 22:00). Docs 10 vs 4 pages s42: R .607 vs .610, delta_len +0.5 [-1.8,+2.7] sign 144/138 p .77; EM +1.6",
+   "text": "healthy (COMPLETED 0:0, homer-017, 50:42, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; re-read from the result file 2026-11-17 22:00). Docs 10 vs 4 pages s42: R .607 vs .610, delta_len +0.5 [-1.8,+2.7] sign 144/138 p .77; EM +1.6 \u2014 job 191378, closed",
+   "jobs": [
+    "191378"
+   ]
+  },
+  {
+   "jobid": "191391",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=text_hotpotqa_1500 limit=300 image_rate=ckpt topk=40 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 CML=4096 DML=1545 PX=1003520 TOPK=40 XD=30",
+   "note": "plumbing OK: 300 rows, judge on all, unparseable 0, no exceeds error, mems per row 577-962 inside the audit range (p50 713, max 1,035); never decides",
+   "text": "plumbing OK: 300 rows, judge on all, unparseable 0, no exceeds error, mems per row 577-962 inside the audit range (p50 713, max 1,035); never decides \u2014 job 191391, closed",
+   "jobs": [
+    "191391"
+   ]
+  },
+  {
+   "jobid": "191390",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "note": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; homer-017, one attempt). Docs 10 vs 4 pages s43: delta_len +0.1 [-2.2, +2.5] sign 146/142 p .86; EM +0.9, match -0.2. With s42 (+0.5 [-1.8, +2.7]): CI inside +-3 at both seeds -> provisional: no length loss at 10 pages (project-prompt re-judge not run)",
+   "text": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; homer-017, one attempt). Docs 10 vs 4 pages s43: delta_len +0.1 [-2.2, +2.5] sign 146/142 p .86; EM +0.9, match -0.2. With s42 (+0.5 [-1.8, +2.7]): CI inside +-3 at both seeds -> provisional: no length loss at 10 pages (project-prompt re-judge not run) \u2014 job 191390, closed",
+   "jobs": [
+    "191390"
+   ]
+  },
+  {
+   "jobid": "191377",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=2823 PX=1003520 TOPK=20 XD=16",
+   "note": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 3,229,884 = audit; homer-017). Docs 20 vs 4 pages s42: R .599 vs .610, uncompressed .754 vs .809; delta_len +4.3 [+1.8, +6.9] sign 197/146 p .007; EM +7.7, match +4.6: the gap SHRINKS at 20 pages because uncompressed drops more. One seed; s43 not run (owner: arm E first)",
+   "text": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 3,229,884 = audit; homer-017). Docs 20 vs 4 pages s42: R .599 vs .610, uncompressed .754 vs .809; delta_len +4.3 [+1.8, +6.9] sign 197/146 p .007; EM +7.7, match +4.6: the gap SHRINKS at 20 pages because uncompressed drops more. One seed; s43 not run (owner: arm E first) \u2014 job 191377, closed",
+   "jobs": [
+    "191377"
+   ]
+  },
+  {
+   "jobid": "191376",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=19564 PX=1003520 TOPK=20 XD=16",
+   "note": "healthy (1,500 rows, judge on all, unparseable 0; homer-011, 1:16). Uncompressed 20 pages .754 (vs .809 at 4, .801 at 10)",
+   "text": "healthy (1,500 rows, judge on all, unparseable 0; homer-011, 1:16). Uncompressed 20 pages .754 (vs .809 at 4, .801 at 10) \u2014 job 191376, closed",
+   "jobs": [
+    "191376"
+   ]
+  },
+  {
+   "jobid": "191375",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=19564 PX=1003520 TOPK=20 XD=16",
+   "note": "plumbing OK, never decides: uncompressed 20-page documents (XD=16 TOPK=20 PX=1003520), LIMIT=300: COMPLETED exit 0 homer-011 in 17:21 (one attempt), 300 rows, judge on 300, unparseable 0, judge .733 (300 Q only). The 19.5k-token prompt fits one A100; full cells 191376/191377 started afterok",
+   "text": "plumbing OK, never decides: uncompressed 20-page documents (XD=16 TOPK=20 PX=1003520), LIMIT=300: COMPLETED exit 0 homer-011 in 17:21 (one attempt), 300 rows, judge on 300, unparseable 0, judge .733 (300 Q only). The 19.5k-token prompt fits one A100; full cells 191376/191377 started afterok \u2014 job 191375, closed",
+   "jobs": [
+    "191375"
+   ]
+  },
+  {
+   "jobid": "191308",
+   "verdict": "closed",
+   "arm": "ae_nll.sbatch",
+   "note": "stage-2 AE probe (same 500 held-out MS MARCO docs, nats/token, lower better, d = L1024 - C256, stage-2 models pt_mm_cml256 vs pt_mm_cml1024): s256 .0290 vs .0284, d +.0006 [-.0008,+.0019], sign 247/253 p .82 -> gate (CI above 0, p<.05) NOT met: stage 2 does not erode L1024's short-chunk TEXT detail more than C256's -> the page loss is specific to image pages. Controls: wrong256 2.50/2.44 (far worse), self-pair 0; l1024 -.0149 [-.0167,-.0133] 432/68. First attempt COMPLETED 15:30 on homer-017; the requeued attempt exited 3 'refusing to overwrite' (benign). One stage-2 model per chain: no seed repeat (provisional)",
+   "text": "stage-2 AE probe (same 500 held-out MS MARCO docs, nats/token, lower better, d = L1024 - C256, stage-2 models pt_mm_cml256 vs pt_mm_cml1024): s256 .0290 vs .0284, d +.0006 [-.0008,+.0019], sign 247/253 p .82 -> gate (CI above 0, p<.05) NOT met: stage 2 does not erode L1024's short-chunk TEXT detail more than C256's -> the page loss is specific to image pages. Controls: wrong256 2.50/2.44 (far worse), self-pair 0; l1024 -.0149 [-.0167,-.0133] 432/68. First attempt COMPLETED 15:30 on homer-017; the requeued attempt exited 3 'refusing to overwrite' (benign). One stage-2 model per chain: no seed repeat (provisional) \u2014 job 191308, closed",
+   "jobs": [
+    "191308"
+   ]
+  },
+  {
+   "jobid": "191307",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43)",
+   "text": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43) \u2014 jobs 191221, 191305, 191306, 191307 (4 cells), closed",
+   "jobs": [
+    "191307",
+    "191306",
+    "191305",
+    "191221"
+   ]
+  },
+  {
+   "jobid": "191220",
+   "verdict": "closed",
+   "arm": "mem_recall.sbatch",
+   "note": "transcription probe, 500 gold pages paired per page vs uncompressed reference 191170: L1024 stage-2 <MEM>s rebuild .566 of a page's words vs C256 .647, B-A -8.0 pt [-10.6,-5.5], sign 147/322 p 4e-16; infovqa -8.9, mpdocvqa -11.0, slidevqa -4.3 (CI touches 0); answer string in rebuild 228 vs 253 of 500. Gate (>= 3 pt fewer, sign p<.05) MET: L1024's page <MEM>s hold fewer words",
+   "text": "transcription probe, 500 gold pages paired per page vs uncompressed reference 191170: L1024 stage-2 <MEM>s rebuild .566 of a page's words vs C256 .647, B-A -8.0 pt [-10.6,-5.5], sign 147/322 p 4e-16; infovqa -8.9, mpdocvqa -11.0, slidevqa -4.3 (CI touches 0); answer string in rebuild 228 vs 253 of 500. Gate (>= 3 pt fewer, sign p<.05) MET: L1024's page <MEM>s hold fewer words \u2014 job 191220, closed",
+   "jobs": [
+    "191220"
+   ]
+  },
+  {
+   "jobid": "191219",
+   "verdict": "closed",
+   "arm": "mem_recall.sbatch",
+   "note": "transcription probe C256 stage-2, 501 gold pages (500 scored), word recall .647; paired with 191220",
+   "text": "transcription probe C256 stage-2, 501 gold pages (500 scored), word recall .647; paired with 191220 \u2014 job 191219, closed",
+   "jobs": [
+    "191219"
+   ]
+  },
+  {
+   "jobid": "191218",
+   "verdict": "closed",
+   "arm": "ae_nll.sbatch",
+   "note": "stage-1 AE probe, 500 held-out MS MARCO docs, nats/token (lower better), d = L1024 - C256: s256 0.0126 vs 0.0144, d -0.0018 [-0.0031,-0.0006], sign 271/229 p .067 (both at ceiling: L1024 NOT worse at 256); l1024 -0.0934 [-0.0988,-0.0884] 500/0; l1024_4x256 -0.0281, 486/14; wrong256 control 2.71/2.58 (far worse), self-pair 0. Gate 'better at 1024 AND worse at 256' FAILS on its second half -> stage 1 did not lose short-chunk detail; the page deficit enters after stage 1",
+   "text": "stage-1 AE probe, 500 held-out MS MARCO docs, nats/token (lower better), d = L1024 - C256: s256 0.0126 vs 0.0144, d -0.0018 [-0.0031,-0.0006], sign 271/229 p .067 (both at ceiling: L1024 NOT worse at 256); l1024 -0.0934 [-0.0988,-0.0884] 500/0; l1024_4x256 -0.0281, 486/14; wrong256 control 2.71/2.58 (far worse), self-pair 0. Gate 'better at 1024 AND worse at 256' FAILS on its second half -> stage 1 did not lose short-chunk detail; the page deficit enters after stage 1 \u2014 job 191218, closed",
+   "jobs": [
+    "191218"
+   ]
+  },
+  {
+   "jobid": "191170",
+   "verdict": "closed",
+   "arm": "mem_recall.sbatch",
+   "note": "transcription reference: uncompressed Qwen3.5-4B, 501 gold pages of mm_docqa_1500_1m at 1,003,520 px; 1:45:10, MaxRSS 9.2 GB, homer-017; used as ref by 191219/191220",
+   "text": "transcription reference: uncompressed Qwen3.5-4B, 501 gold pages of mm_docqa_1500_1m at 1,003,520 px; 1:45:10, MaxRSS 9.2 GB, homer-017; used as ref by 191219/191220 \u2014 job 191170, closed",
+   "jobs": [
+    "191170"
+   ]
+  },
+  {
+   "jobid": "191169",
+   "verdict": "closed",
+   "arm": "mem_recall.sbatch",
+   "note": "port validation PASS: 360/360 pages byte-identical to the legacy probe, word recall 70.5% = 70.5% (gate +-2 pt); homer-017, 1:26 wall, MaxRSS 7.7 GB",
+   "text": "port validation PASS: 360/360 pages byte-identical to the legacy probe, word recall 70.5% = 70.5% (gate +-2 pt); homer-017, 1:26 wall, MaxRSS 7.7 GB \u2014 job 191169, closed",
+   "jobs": [
+    "191169"
+   ]
+  },
+  {
+   "jobid": "191172",
+   "verdict": "closed",
+   "arm": "ae_nll.sbatch",
+   "note": "plumbing PASS: stage-1 autoencoding probe runs on both stage-1 text models (stride 8; 'loaded trainable state \u2026 All keys matched'), 20 held-out MS MARCO docs (rows 1,000,000-1,000,043) x 4 conditions, exit 0, 4:01 wall, MaxRSS 5.7 GB, homer-017. Control works: previous document's <MEM>s give 2.58 / 2.70 nats/token vs 0.011 with the document's own (C256 / L1024). Decides nothing (n=20)",
+   "text": "plumbing PASS: stage-1 autoencoding probe runs on both stage-1 text models (stride 8; 'loaded trainable state \u2026 All keys matched'), 20 held-out MS MARCO docs (rows 1,000,000-1,000,043) x 4 conditions, exit 0, 4:01 wall, MaxRSS 5.7 GB, homer-017. Control works: previous document's <MEM>s give 2.58 / 2.70 nats/token vs 0.011 with the document's own (C256 / L1024). Decides nothing (n=20) \u2014 job 191172, closed",
+   "jobs": [
+    "191172"
+   ]
+  },
+  {
+   "jobid": "191171",
+   "verdict": "closed",
+   "arm": "mem_recall.sbatch",
+   "note": "plumbing PASS: the stride-aware transcription port runs on a stride-8 stage-2 model (longchunk pt_mm_cml256): 20 / 20 pages rebuilt as coherent page text (97 <MEM>s per page, stride 8 recorded), exit 0, homer-017; decides nothing",
+   "text": "plumbing PASS: the stride-aware transcription port runs on a stride-8 stage-2 model (longchunk pt_mm_cml256): 20 / 20 pages rebuilt as coherent page text (97 <MEM>s per page, stride 8 recorded), exit 0, homer-017; decides nothing \u2014 job 191171, closed",
+   "jobs": [
+    "191171"
+   ]
+  },
+  {
+   "jobid": "191168",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520 RAW=route1",
+   "note": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed)",
+   "text": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed) \u2014 jobs 191165-191168 (4 cells), closed",
+   "jobs": [
+    "191168",
+    "191167",
+    "191166",
+    "191165"
+   ]
+  },
+  {
+   "jobid": "191155",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1 PX=1003520",
+   "note": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading",
+   "text": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading \u2014 jobs 191152-191155 (4 cells), closed",
+   "jobs": [
+    "191155",
+    "191154",
+    "191153",
+    "191152"
+   ]
+  },
+  {
+   "jobid": "191151",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "note": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .483; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id",
+   "text": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .483; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id \u2014 job 191151, closed",
+   "jobs": [
+    "191151"
+   ]
+  },
+  {
+   "jobid": "191150",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "note": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .530; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id",
+   "text": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .530; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id \u2014 job 191150, closed",
+   "jobs": [
+    "191150"
+   ]
+  },
+  {
+   "jobid": "191149",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "note": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .465; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id",
+   "text": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .465; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id \u2014 job 191149, closed",
+   "jobs": [
+    "191149"
+   ]
+  },
+  {
+   "jobid": "191148",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "note": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .528; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id",
+   "text": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .528; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id \u2014 job 191148, closed",
+   "jobs": [
+    "191148"
+   ]
+  },
+  {
+   "jobid": "191147",
+   "verdict": "closed",
+   "arm": "audit.sbatch",
+   "note": "arm A full audit PASS: health docs_p4 <MEM> total 646,042 = expected; 0 errors on 20,000 eval rows (14 variants) + 8,000 training rows; truncation cut 0/1,500 and parity 1,500/1,500 on every gating variant (docs 4/10/20 pages, text 10/20/40 passages); the CML=256 controls fail as they should (g10 924/1,500, MRQA 275/1,500 cut), so the check can fail; text gold-only 16/1,500 'cut' = answer only in distractor passages (text_trunc 0), by design not truncation. Out-of-range vs finetune max (488 <MEM>, span 4,017): docs 10/20 pages 1,500/1,500, text 20/40 passages 35/1,500 and 1,498/1,500, longdoc k20 198/500. 7:10 wall, homer-017",
+   "text": "arm A full audit PASS: health docs_p4 <MEM> total 646,042 = expected; 0 errors on 20,000 eval rows (14 variants) + 8,000 training rows; truncation cut 0/1,500 and parity 1,500/1,500 on every gating variant (docs 4/10/20 pages, text 10/20/40 passages); the CML=256 controls fail as they should (g10 924/1,500, MRQA 275/1,500 cut), so the check can fail; text gold-only 16/1,500 'cut' = answer only in distractor passages (text_trunc 0), by design not truncation. Out-of-range vs finetune max (488 <MEM>, span 4,017): docs 10/20 pages 1,500/1,500, text 20/40 passages 35/1,500 and 1,498/1,500, longdoc k20 198/500. 7:10 wall, homer-017 \u2014 job 191147, closed",
+   "jobs": [
+    "191147"
+   ]
+  },
+  {
+   "jobid": "191146",
+   "verdict": "closed",
+   "arm": "audit.sbatch",
+   "note": "plumbing smoke of the arm-A audit (12 rows per variant): runs clean, counts match recorded files 12/12; never gates",
+   "text": "plumbing smoke of the arm-A audit (12 rows per variant): runs clean, counts match recorded files 12/12; never gates \u2014 job 191146, closed",
+   "jobs": [
+    "191146"
+   ]
+  },
+  {
+   "jobid": "191145",
+   "verdict": "closed",
+   "arm": "audit.sbatch",
+   "note": "cancelled before start: asked 16 CPUs, no allowed gpu-be node had 16 idle; resubmitted as 191146",
+   "text": "cancelled before start: asked 16 CPUs, no allowed gpu-be node had 16 idle; resubmitted as 191146 \u2014 job 191145, closed",
+   "jobs": [
+    "191145"
+   ]
+  }
+ ],
+ "open": [
+  {
+   "jobid": "191629",
+   "state": "COMPLETED",
+   "arm": "rejudge.sbatch",
+   "text": "rejudge.sbatch \u2014 job 191629 COMPLETED, no verdict"
+  },
+  {
+   "jobid": "191634",
+   "state": "COMPLETED",
+   "arm": "CML=1024 PX=1003520 TOPK=1000",
+   "text": "CML=1024 PX=1003520 TOPK=1000 \u2014 job 191634 COMPLETED, no verdict"
+  },
+  {
+   "jobid": "191635",
+   "state": "COMPLETED",
+   "arm": "CML=1024 PX=1003520 TOPK=1000",
+   "text": "CML=1024 PX=1003520 TOPK=1000 \u2014 job 191635 COMPLETED, no verdict"
+  },
+  {
+   "jobid": "191636",
+   "state": "COMPLETED",
+   "arm": "CML=1024 DML=5612 PX=1003520 TOPK=1000",
+   "text": "CML=1024 DML=5612 PX=1003520 TOPK=1000 \u2014 job 191636 COMPLETED, no verdict"
+  }
+ ],
+ "findings": [
+  "launch fault, not a result: FAILED exit 2 in 0 s, log 'missing <8 paths joined>': the wake's zsh passed the 8 files as ONE argv element (unquoted $VAR is not word-split in zsh). Replaced by 191629 (12 files, argv checked = 13 elements) (job 191517, closed)",
+  "arm E cut check PASS: cut 0 / parity 1.0000 on E_text_cml1024 (2,246), E_pages_cml1024 (4,221), E_mixed_cml1024 (4,221) and the 3 needle sets; the CML 256 control fails as it should (235 / 2,246 = 10.5% cut). Health null by design (--only E_ skips docs_p4; health passed in 191147) (job 191516, closed)",
+  "arm E build OK: COMPLETED 0:0 31 min; LongDocURL 2,325 Q / 396 PDFs -> 1,407 usable Q on 387 PDFs; pages 4,221 rows (1,407 x p10/p20/p40), mixed 4,221 (m10/m20/m40), text 2,246 (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225 (job 191515, closed)",
+  "healthy: COMPLETED 0:0 homer-019 26:57, one attempt; 1,500 rows, judge on all, unparseable 0. Uncompressed text 40 passages: judge .707 (10 passages .752) (job 191393, closed)",
+  "healthy: COMPLETED 0:0 attempt 4 on homer-016 (01:04-01:45; 3 preemptions), file written 01:45:58 by that attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,075,610 = audit 1,075,610. R s42 text 40 passages: judge .534 (10 passages .605) (job 191392, closed)"
+ ],
+ "wrong": [
+  "The campaign idled 14.7 h of its 40.2 h window (36%) \u2014 with work outstanding, that is the main operational fact.",
+  "Alert raised: last push FAILED (push_rc=, behind ) \u2014 git -C /beegfs/scratc|2026-11-17.",
+  "Alert raised: commit(s) unpushed for >h \u2014 push or it didn't happen (git -|2026-11-17.",
+  "1 tick(s) could not push the campaign state.",
+  "2 run(s) ended FAILED/TIMEOUT/NODE_FAIL: 191308 191517."
+ ],
+ "arms": [
+  {
+   "arm": "audit.sbatch",
+   "jobid": "191145",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "cancelled before start: asked 16 CPUs, no allowed gpu-be node had 16 idle; resubmitted as 191146"
+  },
+  {
+   "arm": "audit.sbatch",
+   "jobid": "191146",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "plumbing smoke of the arm-A audit (12 rows per variant): runs clean, counts match recorded files 12/12; never gates"
+  },
+  {
+   "arm": "audit.sbatch",
+   "jobid": "191147",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm A full audit PASS: health docs_p4 <MEM> total 646,042 = expected; 0 errors on 20,000 eval rows (14 variants) + 8,000 training rows; truncation cut 0/1,500 and parity 1,500/1,500 on every gating variant (docs 4/10/20 pages, text 10/20/40 passages); the CML=256 controls fail as they should (g10 924/1,500, MRQA 275/1,500 cut), so the check can fail; text gold-only 16/1,500 'cut' = answer only in distractor passages (text_trunc 0), by design not truncation. Out-of-range vs finetune max (488 <MEM>, span 4,017): docs 10/20 pages 1,500/1,500, text 20/40 passages 35/1,500 and 1,498/1,500, longdoc k20 198/500. 7:10 wall, homer-017"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "jobid": "191148",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .528; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "jobid": "191149",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .465; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "jobid": "191150",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .530; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1",
+   "jobid": "191151",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "off-regime: ran at PX=451584 (the wake omitted --env PX=1003520; the plain pairs are px1003520), so it does not pair with the plain cell; complete and healthy (n=1,500, judge on every row, unparseable 0, homer-017), judge .483; kept as a second-pixel-budget read; relaunched at PX=1003520 as the next job id"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1 PX=1003520",
+   "jobid": "191152",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1 PX=1003520",
+   "jobid": "191153",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1 PX=1003520",
+   "jobid": "191154",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=1 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 GOLD=1 PX=1003520",
+   "jobid": "191155",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "gold-only locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, homer-017); L1024-C256 = -6.7 [-8.9,-4.5] McN 106/207 (s42) and -4.9 [-7.1,-2.5] 113/186 (s43): deficit does not shrink with gold only -> not multi-page reading"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520 RAW=route1",
+   "jobid": "191165",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520 RAW=route1",
+   "jobid": "191166",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520 RAW=route1",
+   "jobid": "191167",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=route1 answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520 RAW=route1",
+   "jobid": "191168",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "picked-page-raw locate half decided: healthy (n=1,500, judge every row, unparseable 0, px 1003520, n_raw 1 on every row, mems_used sum ~483.5k = .748 of the plain 646,042 as 3 of 4 pages stay compressed; homer-017/011; md5 unchanged 50abc167/dfe32aa0/02bc8748/994cff3d). L1024-C256 = +0.1 [-0.8,+1.1] McN 29/27 (s42; .827 vs .825) and -0.1 [-1.1,+0.9] 29/31 (s43; .823 vs .824); route hit 98.5% for all four. Inside +-2 pt at both seeds, while gold-only stayed -6.7/-4.9 -> the long-chunk deficit sits IN THE COMPRESSED PAGE (prediction confirmed)"
+  },
+  {
+   "arm": "mem_recall.sbatch",
+   "jobid": "191169",
+   "state": "COMPLETED",
+   "gpu_h": 1.4,
+   "verdict": "closed",
+   "headline": "port validation PASS: 360/360 pages byte-identical to the legacy probe, word recall 70.5% = 70.5% (gate +-2 pt); homer-017, 1:26 wall, MaxRSS 7.7 GB"
+  },
+  {
+   "arm": "mem_recall.sbatch",
+   "jobid": "191170",
+   "state": "COMPLETED",
+   "gpu_h": 1.8,
+   "verdict": "closed",
+   "headline": "transcription reference: uncompressed Qwen3.5-4B, 501 gold pages of mm_docqa_1500_1m at 1,003,520 px; 1:45:10, MaxRSS 9.2 GB, homer-017; used as ref by 191219/191220"
+  },
+  {
+   "arm": "mem_recall.sbatch",
+   "jobid": "191171",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "plumbing PASS: the stride-aware transcription port runs on a stride-8 stage-2 model (longchunk pt_mm_cml256): 20 / 20 pages rebuilt as coherent page text (97 <MEM>s per page, stride 8 recorded), exit 0, homer-017; decides nothing"
+  },
+  {
+   "arm": "ae_nll.sbatch",
+   "jobid": "191172",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "plumbing PASS: stage-1 autoencoding probe runs on both stage-1 text models (stride 8; 'loaded trainable state \u2026 All keys matched'), 20 held-out MS MARCO docs (rows 1,000,000-1,000,043) x 4 conditions, exit 0, 4:01 wall, MaxRSS 5.7 GB, homer-017. Control works: previous document's <MEM>s give 2.58 / 2.70 nats/token vs 0.011 with the document's own (C256 / L1024). Decides nothing (n=20)"
+  },
+  {
+   "arm": "ae_nll.sbatch",
+   "jobid": "191218",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "stage-1 AE probe, 500 held-out MS MARCO docs, nats/token (lower better), d = L1024 - C256: s256 0.0126 vs 0.0144, d -0.0018 [-0.0031,-0.0006], sign 271/229 p .067 (both at ceiling: L1024 NOT worse at 256); l1024 -0.0934 [-0.0988,-0.0884] 500/0; l1024_4x256 -0.0281, 486/14; wrong256 control 2.71/2.58 (far worse), self-pair 0. Gate 'better at 1024 AND worse at 256' FAILS on its second half -> stage 1 did not lose short-chunk detail; the page deficit enters after stage 1"
+  },
+  {
+   "arm": "mem_recall.sbatch",
+   "jobid": "191219",
+   "state": "COMPLETED",
+   "gpu_h": 1.9,
+   "verdict": "closed",
+   "headline": "transcription probe C256 stage-2, 501 gold pages (500 scored), word recall .647; paired with 191220"
+  },
+  {
+   "arm": "mem_recall.sbatch",
+   "jobid": "191220",
+   "state": "COMPLETED",
+   "gpu_h": 2.2,
+   "verdict": "closed",
+   "headline": "transcription probe, 500 gold pages paired per page vs uncompressed reference 191170: L1024 stage-2 <MEM>s rebuild .566 of a page's words vs C256 .647, B-A -8.0 pt [-10.6,-5.5], sign 147/322 p 4e-16; infovqa -8.9, mpdocvqa -11.0, slidevqa -4.3 (CI touches 0); answer string in rebuild 228 vs 253 of 500. Gate (>= 3 pt fewer, sign p<.05) MET: L1024's page <MEM>s hold fewer words"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191221",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191305",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_c256_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191306",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=t_l1024_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191307",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "arm T ten short text chunks (text_hotpotqa_1500, TOPK=10, CML=4096), 1,500 Q, judge on every row, unparseable 0; paired L1024 - C256: s42 +2.3 [+0.3,+4.4] McN 136/101 (191305 .603 vs 191221 .579), s43 -0.6 [-2.7,+1.3] 121/130 (191307 .589 vs 191306 .595); vs the same pair on ONE ~1.3k-token chunk (g10, 190270/190273 vs 188707/188710: -1.1 [-3.2,+1.2] / -3.3 [-5.4,-1.1]) the difference-in-difference is +3.4 [+0.5,+6.1] sign 228/179 p .017 (s42), +2.7 [-0.3,+5.5] 223/178 p .028 (s43)"
+  },
+  {
+   "arm": "ae_nll.sbatch",
+   "jobid": "191308",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "stage-2 AE probe (same 500 held-out MS MARCO docs, nats/token, lower better, d = L1024 - C256, stage-2 models pt_mm_cml256 vs pt_mm_cml1024): s256 .0290 vs .0284, d +.0006 [-.0008,+.0019], sign 247/253 p .82 -> gate (CI above 0, p<.05) NOT met: stage 2 does not erode L1024's short-chunk TEXT detail more than C256's -> the page loss is specific to image pages. Controls: wrong256 2.50/2.44 (far worse), self-pair 0; l1024 -.0149 [-.0167,-.0133] 432/68. First attempt COMPLETED 15:30 on homer-017; the requeued attempt exited 3 'refusing to overwrite' (benign). One stage-2 model per chain: no seed repeat (provisional)"
+  },
+  {
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=mm_docqa_1500_1m limit=300 image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=19564 PX=1003520 TOPK=20 XD=16",
+   "jobid": "191375",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "plumbing OK, never decides: uncompressed 20-page documents (XD=16 TOPK=20 PX=1003520), LIMIT=300: COMPLETED exit 0 homer-011 in 17:21 (one attempt), 300 rows, judge on 300, unparseable 0, judge .733 (300 Q only). The 19.5k-token prompt fits one A100; full cells 191376/191377 started afterok"
+  },
+  {
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=19564 PX=1003520 TOPK=20 XD=16",
+   "jobid": "191376",
+   "state": "COMPLETED",
+   "gpu_h": 1.3,
+   "verdict": "closed",
+   "headline": "healthy (1,500 rows, judge on all, unparseable 0; homer-011, 1:16). Uncompressed 20 pages .754 (vs .809 at 4, .801 at 10)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=2823 PX=1003520 TOPK=20 XD=16",
+   "jobid": "191377",
+   "state": "COMPLETED",
+   "gpu_h": 1.5,
+   "verdict": "closed",
+   "headline": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 3,229,884 = audit; homer-017). Docs 20 vs 4 pages s42: R .599 vs .610, uncompressed .754 vs .809; delta_len +4.3 [+1.8, +6.9] sign 197/146 p .007; EM +7.7, match +4.6: the gap SHRINKS at 20 pages because uncompressed drops more. One seed; s43 not run (owner: arm E first)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "jobid": "191378",
+   "state": "COMPLETED",
+   "gpu_h": 0.8,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 50:42, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; re-read from the result file 2026-11-17 22:00). Docs 10 vs 4 pages s42: R .607 vs .610, delta_len +0.5 [-1.8,+2.7] sign 144/138 p .77; EM +1.6"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "jobid": "191390",
+   "state": "COMPLETED",
+   "gpu_h": 0.8,
+   "verdict": "closed",
+   "headline": "healthy (1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = audit; homer-017, one attempt). Docs 10 vs 4 pages s43: delta_len +0.1 [-2.2, +2.5] sign 146/142 p .86; EM +0.9, match -0.2. With s42 (+0.5 [-1.8, +2.7]): CI inside +-3 at both seeds -> provisional: no length loss at 10 pages (project-prompt re-judge not run)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=text_hotpotqa_1500 limit=300 image_rate=ckpt topk=40 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 CML=4096 DML=1545 PX=1003520 TOPK=40 XD=30",
+   "jobid": "191391",
+   "state": "COMPLETED",
+   "gpu_h": 0.2,
+   "verdict": "closed",
+   "headline": "plumbing OK: 300 rows, judge on all, unparseable 0, no exceeds error, mems per row 577-962 inside the audit range (p50 713, max 1,035); never decides"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=l_r42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=40 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 CML=4096 DML=1545 PX=1003520 TOPK=40 XD=30",
+   "jobid": "191392",
+   "state": "COMPLETED",
+   "gpu_h": 0.7,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 attempt 4 on homer-016 (01:04-01:45; 3 preemptions), file written 01:45:58 by that attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,075,610 = audit 1,075,610. R s42 text 40 passages: judge .534 (10 passages .605)"
+  },
+  {
+   "arm": "kind=eval_mm mode=base ckpt=base_qwen35_4b data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=40 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=30 rank=none drop=0 keep_ranked=0 DML=8571 TOPK=40 XD=30",
+   "jobid": "191393",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-019 26:57, one attempt; 1,500 rows, judge on all, unparseable 0. Uncompressed text 40 passages: judge .707 (10 passages .752)"
+  },
+  {
+   "arm": "kind=build_long arm=E sets=all max_q=1500 suffix=none source=LongDocURL px=1003520 piece=1000",
+   "jobid": "191515",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm E build OK: COMPLETED 0:0 31 min; LongDocURL 2,325 Q / 396 PDFs -> 1,407 usable Q on 387 PDFs; pages 4,221 rows (1,407 x p10/p20/p40), mixed 4,221 (m10/m20/m40), text 2,246 (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225"
+  },
+  {
+   "arm": "audit.sbatch",
+   "jobid": "191516",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm E cut check PASS: cut 0 / parity 1.0000 on E_text_cml1024 (2,246), E_pages_cml1024 (4,221), E_mixed_cml1024 (4,221) and the 3 needle sets; the CML 256 control fails as it should (235 / 2,246 = 10.5% cut). Health null by design (--only E_ skips docs_p4; health passed in 191147)"
+  },
+  {
+   "arm": "kind=rejudge arm=J name=docs_p10_p20 prompt=project judge=Qwen/Qwen3-8B n_files=1",
+   "jobid": "191517",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "launch fault, not a result: FAILED exit 2 in 0 s, log 'missing <8 paths joined>': the wake's zsh passed the 8 files as ONE argv element (unquoted $VAR is not word-split in zsh). Replaced by 191629 (12 files, argv checked = 13 elements)"
+  },
+  {
+   "arm": "rejudge.sbatch",
+   "jobid": "191629",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "CML=1024 PX=1003520 TOPK=1000",
+   "jobid": "191634",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "CML=1024 PX=1003520 TOPK=1000",
+   "jobid": "191635",
+   "state": "COMPLETED",
+   "gpu_h": 0.2,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "CML=1024 DML=5612 PX=1003520 TOPK=1000",
+   "jobid": "191636",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "-",
+   "headline": "-"
+  }
+ ],
+ "artifacts": [],
+ "ledger_entries": 86
+}

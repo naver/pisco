@@ -1,0 +1,161 @@
+== campaign longdoc wake 2026-11-18_1730  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794990601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.3 idle_h=0.5 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=260cc69f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:191629,191634,191635,191636_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191629,191634,191635,191636 (ended)   (NEXT was: wake-when job:191629,191634,191635,191636 max 4h)
+== session a05d5e4c-4465-4193-8a7a-3fba00919380  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+24 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a05d5e4c-4465-4193-8a7a-3fba00919380/tool-results/btib3s666.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-18_1730   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+130 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat CAMPAIGN.md
+  ↳ <persisted-output> (+30 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/a05d5e4c-4465-4193-8a7a-3fba00919380/tool-results/bw8rbdvay.txt
+  ↳ 1	  340 CAMPAIGN.md (+344 lines)
+→ Bash: cat STATE.md && echo ======= && cat known_issues.md
+  ↳ Exit code 1 (+109 lines)
+Reading campaign state; the four jobs I was waiting on have ended. Checking their results next.
+→ Bash: sed -n 55,100p STATE.md; echo "-----KI"; cat known_issues.md
+  ↳ McNemar 136 / 101 (s42; 191305 .603 vs 191221 .579), −0.6 [−2.7, +1.3] 121 / 130 (s43; 191307 .589 vs 191306 (+83 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191629,191634,191635,191636 -D -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,MaxRSS -P; sacct -j 191629,191634,191635,191636 -o JobID,State,ExitCode,Elapsed,MaxRSS -P | grep batch; l…
+  ↳ JobID|State|ExitCode|Elapsed|Start|End|NodeList|MaxRSS (+31 lines)
+→ Bash: tail -40 expQ/longdoc/rejudge_191629.out; cat scripts/longdoc/rejudge.sbatch | head -60
+  ↳ [judge] b_spread_s42__mm_docqa_pisco_k10_cml4096_text_hotpotqa_1500.json 496/1500 (+76 lines)
+→ Bash: ls expQ/longdoc/length/; python3 -c " ⏎ import json ⏎ for n in ['dlen_docs_p10_s42_judge','dlen_docs_p10_s43_judge','dlen_docs_p20_s42_judge','dlen_text_n40_s42_judge']: ⏎     d=json.load(open(f'expQ/longdoc/length/{n}.json')) ⏎     print(n…
+  ↳ dlen_docs_p10_s42_em.json (+55 lines)
+→ Bash: R=expQ/longdoc/rejudge/dlen_docs_text; O=expQ/longdoc/length;  ⏎ for m in judge; do ⏎ python3 scripts/longdoc/length_effect.py +$R/l_r42__mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json -$R/base_qwen35_4b__mm_docqa_base_k10_px1003520…
+  ↳ + 0.6320  (rows 1500)  expQ/longdoc/rejudge/dlen_docs_text/l_r42__mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json (+31 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ fs={'base_pages':'expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json', ⏎ 'base_text':'expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_lo…
+  ↳ == base_pages 300 judged 300 (+8 lines)
+Re-judge done: the 10-page document result holds under both judges. Now checking a red flag: on the new long-document set the uncompressed model scores far below the compressed one.
+→ Bash: python3 - <<'EOF' ⏎ import json,collections,statistics as st ⏎ b=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json'))['records'] ⏎ r=json.load(open('expQ/longdoc/e_r42/eval/mm_docq…
+  ↳ longdocurl_p10 100 prompt_tok p50/max 9738.0 9923 n_images p50/max 10.0 10 pred len base p50/max 113.0 193 R 12.5 161 (+25 lines)
+→ Bash: grep -n "max_new_tokens\|answer_style\|def gen_base\|brief" scripts/eval_mm_docqa.py | head -50
+  ↳ 51:# --answer_style expand: copy the evidence first, then answer (RLComp's "re-expansion", tested without RL). (+22 lines)
+→ Bash: sed -n 526,560p scripts/eval_mm_docqa.py; grep -n "max_new_tokens\|MNT" eval_mm_4b.sh | head
+  ↳ def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+36 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ b=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json'))['records'] ⏎ r=json.load(open('expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1…
+  ↳ base pages overall long>=90ch 0.73  cut-heuristic 0.67 (+16 lines)
+→ Bash: sed -n 30,38p campaign_qafreeze/CAMPAIGN.md | cut -c1-400; grep -n "md5\|b3d1cda1\|50abc167" campaign_spread/CAMPAIGN.md | head -5 | cut -c1-300; squeue -u hdejean -o "%i %j %T %M" | head; ls campaign_*/NEXT 2>/dev/null; for c in qafreeze s…
+  ↳ Evals of each finetuned model, judge chained (`--dependency afterok`), on `gpu-be --exclude=homer-[005-009]` (homer-008 (+30 lines)
+Sibling campaigns have evals running right now, so the law forbids patching the shared eval launcher this wake. Reading it to build a campaign-owned variant instead.
+→ Bash: cat eval_mm_4b.sh; ls scripts/longdoc/
+  ↳ #!/bin/bash (+105 lines)
+→ Bash: ls expQ/longdoc/ | head -40; ls expQ/longdoc/audit* 2>/dev/null | head; grep -n "rows\|jsonl\|per_row\|mems" scripts/longdoc/audit_inputs.py | head -30
+  ↳ ae (+67 lines)
+→ Bash: ls -la expQ/longdoc/audit_191516/; python3 - <<'EOF' ⏎ import json,collections ⏎ rows=[json.loads(l) for l in open('expQ/longdoc/audit_191516/rows.jsonl')] ⏎ print(len(rows), rows[0].keys()) ⏎ vs=collections.Counter(r.get('variant') for r i…
+  ↳ total 4547 (+9 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ rows=[json.loads(l) for l in open('expQ/longdoc/audit_191516/rows.jsonl')] ⏎ print(collections.Counter(r['v'] for r in rows)) ⏎ r=json.load(open('expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1…
+  ↳ Exit code 1 (+5 lines)
+→ Bash: for j in 191634 191635 191636; do f=eval_mm_4b_$j.out; echo "$j exceeds=$(grep -c 'exceeds' $f) traceback=$(grep -c Traceback $f) $(grep -m1 'GPU 0' $f) | $(grep -m1 -i 'max_memory\|peak' $f)"; done; sacct -j 191634,191635,191636 -X -o JobI…
+  ↳ 191634 exceeds=0 traceback=0 GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-4be8ab4b-492d-eef4-9f63-6c3b4a007425) |  (+7 lines)
+All three plumbing cells are healthy: 300 rows each, judged, no errors, slot counts equal the audit on 300/300 rows. Recording verdicts, then writing the wrapper.
+→ Bash: expmon verdict 191629 closed "healthy: COMPLETED 0:0 5m46 homer-017, one attempt; 12 copies x 1,500 rows, judge_prompt project on all, unparseable 0. Arm J judge-sensitivity (project prompt vs rubric vs EM, Delta_len, 1,500 pairs): docs 10 …
+  ↳ verdict recorded: 191629 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mnt.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mnt.sbatch (file state is current in your context — no need to Read it back)
+Testing the text substitution locally (a few-millisecond sed, no compute):
+→ Bash: T=$(mktemp -d /tmp/mntXXXX) && sed -e 's/^STYLEARG=""; MNT=32; /STYLEARG=""; MNT=${MNT:?}; SUF="${SUF}_mnt${MNT}"; /' -e 's/^echo "FACTORS kind=eval_mm mode=/echo "FACTORS kind=eval_mm max_new_tokens=$MNT mode=/' eval_mm_4b.sh > $T/d.sh && …
+  ↳ PreToolUse:Bash hook error: campaign guard: hard rule 2: never `rm -r` an output dir — rename it VOID_<name>. Do not look for another spelling: note it in STATE.md (BLOCKED.md if it stops the plan) an
+The guard refused that command because of the `rm -r` on a temp dir. Re-running without it; the temp dir stays in /tmp.
+→ Bash: T=$(mktemp -d /tmp/mntXXXX) && sed -e 's/^STYLEARG=""; MNT=32; /STYLEARG=""; MNT=${MNT:?}; SUF="${SUF}_mnt${MNT}"; /' -e 's/^echo "FACTORS kind=eval_mm mode=/echo "FACTORS kind=eval_mm max_new_tokens=$MNT mode=/' eval_mm_4b.sh > $T/d.sh && …
+  ↳ 51c51 (+10 lines)
+→ Bash: T=$(ls -d /tmp/mnt* | tail -1); grep -cF 'STYLEARG=""; MNT=${MNT:?}; SUF="${SUF}_mnt${MNT}"; ' $T/d.sh; sed -i 's/n1=$(grep -c '"'"'^STYLEARG=""; MNT=${MNT:?}; SUF="${SUF}_mnt${MNT}"; '"'"' "$DER")/n1=$(grep -cF '"'"'STYLEARG=""; MNT=${MNT:…
+  ↳ 1 (+4 lines)
+Substitution verified (exactly two lines change, syntax OK). Copying the exact launch env of the earlier plumbing cells:
+→ Bash: for j in 191634 191635 191636; do grep "\"$j\"" .expmon/runs.jsonl | python3 -c "import json,sys; d=json.loads(sys.stdin.readline()); print(d.get('jobid'), d.get('argv'), d.get('env'), d.get('sbatch') or d.get('slurm'))"; done; ls expQ/base…
+  ↳ 191634 ['expQ/longdoc/e_r42/model', 'base', '300', '/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pages_1500'] {'CML': '1024', 'PX': '1003520', 'TOPK': '1000'} {'partition': 'gpu-be', 'exclude' (+2 lines)
+→ Bash: expmon launch --exp longdoc --stage E --dry-run --time 1:15:00 --mem 8G --exclude='homer-[005-009]' -p gpu-be --env MNT=256 --env PX=1003520 --env TOPK=1000 --env CML=1024 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base 300 /b…
+  ↳ would submit: sbatch --time 1:15:00 --mem 8G --exclude=homer-[005-009] -p gpu-be scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_ (+4 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/judge_prompts.py pisco/model.py scripts/longdoc/eval_mnt.sbatch | awk '{print substr($1,1,8), $2}';  ⏎ expmon launch --exp longdoc --stage E --time 1:15:00 --me…
+  ↳ b3d1cda1 eval_mm_4b.sh (+11 lines)
+→ Bash: squeue -j 191669,191670 -o "%i %T %M %R"; cat expQ/longdoc/eval_mnt_191669.out 2>/dev/null | head -20
+  ↳ JOBID STATE TIME NODELIST(REASON) (+9 lines)
+Wrapper works (substitution passed, factors show the 256-token cap). Launching the two compressed cells.
+→ Bash: expmon launch --exp longdoc --stage E --time 1:20:00 --mem 8G --exclude='homer-[005-009]' -p gpu-be --env MNT=256 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model pisco …
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191673/   (unless the script sets a named run dir) (+1 lines)
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 (wrapped, derived copy logged) / eval_mnt.sbatch 1c874b32 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / judge_prompts.py bae44fa7 / pisco/model.py 994cff3d" ⏎ expmon note -j 191669 "intent: arm E a…
+  ↳ expmon note: 94 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+4 lines)
+Now the ledger notes and gripe check.
+→ Bash: expmon note "provisional: arm J judge check (project prompt re-judge 191629, 1,500 pairs each): docs 10 vs 4 pages no-loss holds under rubric, project and EM at s42 (+0.5/+0.6/+1.6) and s43 (+0.1/-0.3/+0.9; all CIs inside +-3); docs 20 vs 4…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+14 lines)
+→ Bash: expmon gripe --same c0b20b25 "pisco/longdoc 2026-11-18: mktemp -d /tmp + sed self-test of a wrapper passed, but the cleanup 'rm -r \$T' of that same mktemp dir refused the WHOLE command as hard rule 2 (output dir). Suggestion: allow rm -r o…
+  ↳ logged as a +1 of c0b20b25 (entry 477a6a7c) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Now tightening the law's arm E cell spec with the measured answer-cap evidence.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 69	| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run (+19 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && cat >> known_issues.md <<'EOF' ⏎ | on a new eval set the UNCOMPRESSED decoder scores far below the compressed model (LongDocURL pages, 300 rows: .34 vs R .52; 191634 vs 191636, 2026-…
+  ↳ | verifier ALERT: STATE.md says "verdict closed" for an ended cell whose grid VERDICT is `-` (191378, 2026-11-17) | the  (+1 lines)
+Now the deliverable document. Reading its current state:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && wc -l docs/longdoc_diagnosis.md && cat docs/longdoc_diagnosis.md
+  ↳ 140 docs/longdoc_diagnosis.md (+140 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+3 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md has been updated successfully.
+Now updating the bottleneck rows and length tables with the second-judge numbers, via a small stdlib script with exact-match checks:
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ reps=[ ⏎ # evaluation row: add judge-sensitivity row after it ⏎ ("| provisional: not this cause (gate passed; parity only partly independent) | 0 |\n", ⏎  "| provisional:…
+  ↳ ok
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ anchor="## 3. Input audit: what the decoder sees in training vs in evaluation" ⏎ assert s.count(anchor)==1 ⏎ add='''**Arm E trial runs (LongDocURL, one coherent PDF per q…
+  ↳ ok
+→ Bash: timeout 60 expmon display --exp longdoc 2>&1 | tail -2; timeout 60 expmon campaign report --section leaves 2>&1 | head -40
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+14 lines)
+Checking now whether a closed-book run (no document, `TOPK=0`) reaches the code path cleanly, so the next wake can launch it directly:
+→ Bash: grep -n "topk_docs\|args.topk" scripts/eval_mm_docqa.py | head -20; grep -n "def _build_chat_prompt" -A 14 scripts/eval_mm_docqa.py | head -20
+  ↳ 90:        topk_docs=topk, query_dependent=query_dependent, pad_to_multiple_of=None, chunk_docs=chunk_docs, (+23 lines)
+Writing STATE.md wholesale:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && sed -n 100,145p STATE.md | head -5 >/dev/null; grep -n "^## " STATE.md
+  ↳ 9:## This wake (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+2 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Writing NEXT, then a final ledger summary line.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && echo "wake-when job:191669,191670,191673,191674 max 3h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && expmon note --did "longdoc wake 17:30: re-judge 191629 + E trial runs 191634-191636 hea…
+  ↳ wake-when job:191669,191670,191673,191674 max 3h (+6 lines)
+→ Bash: for j in 191670 191673 191674; do echo "== $j"; grep -v "^\s*$" expQ/longdoc/eval_mnt_$j.out | grep -iv "warn" | tail -3 | cut -c1-200; done
+  ↳ == 191670 (+11 lines)
+The four new runs are all generating answers. The big finding this wake is that, on the new long-document set, the uncompressed reference was being cut short by the 32-token limit on answer length. Its score measured that limit, not how well it reads the document. I'm re-running the same rows with a 256-token limit.
+
+## Done
+- **Second judge check, finished:**
+  - **10 pages vs 4 (documents):** no length loss, at both seeds. This holds under the standard judge prompt, the alternative Yes/No prompt and exact match. Every confidence interval stays within ±3 pt (1,500 question pairs per seed).
+  - **20 pages vs 4:** the compressed model holds up better than the uncompressed one under all three scorers, by +4.3 to +7.7 pt. Only one seed has been run so far.
+  - **40 passages vs 10 (text):** the result depends on the scorer (−2.6, −1.5, +0.8), so it stays undecided.
+- **Trial runs on the new long-document set (300 rows each): healthy.** No errors, every row judged, and the compressed model's slot counts match the input audit on 300 of 300 rows.
+- **The finding:** on these rows the uncompressed model scored *below* the compressed one (.34 vs .52).
+  - It answers in full sentences, and the 32-token limit cuts 61–74% of its answers before the answer itself.
+  - The compressed model is trained to answer briefly; only 8–17% of its answers are cut.
+  - On the standard document test set this hits only 4% of uncompressed answers, so recorded results are barely affected.
+- **Fix:** a small campaign-owned wrapper, `scripts/longdoc/eval_mnt.sbatch`. It runs a copy of the shared eval launcher with only the answer limit changed, and writes to new file names.
+  - I did not edit the shared launcher. Other campaigns' evals were running, and the campaign rules forbid patching it then.
+  - I added this rule to the campaign rules (CAMPAIGN.md): every run on the long-document set uses the 256-token limit.
+
+## Running now
+Four reruns of the same 300 rows at the 256-token limit (submission cap of 4 reached):
+- uncompressed, pages
+- uncompressed, text
+- compressed model, pages
+- compressed model, text (first compressed run on the long text set)
+
+## Next
+1. When the four runs end: check how many uncompressed answers still hit the 256-token limit (the rule is under 5%).
+2. Launch the set checks: no-document runs and hidden-fact tests, plus a trial on the mixed text-and-image set.
+3. Cost the full set of model runs from the measured run times. My rough estimate is ~50 GPU-hours against ~35 left (24 of 70 runs left). That would mean one budget question for you.
+
+## Side notes
+- The command guard refused a cleanup `rm -r` of a temp folder in /tmp, which it treats as deleting an output folder. I left the folder there and added my report to an existing complaint about the guard.
+- The campaign's results web page shows 0 table rows; I did not look into it.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Re-judge 191629 and arm E trial runs 191634/191635/191636 all healthy, verdicts closed. Arm J: 10-vs-4-page no-loss holds under rubric, project prompt and EM at both seeds; 20 pages positive under all three…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.7290 turns=52 is_error=False denials=1
+== declared: {"next": "wake-when", "summary": "Re-judge 191629 and arm E trial runs 191634/191635/191636 all healthy, verdicts closed. Arm J: 10-vs-4-page no-loss holds under rubric, project prompt and EM at both seeds; 20 pages positive under all three (one seed); text 40 passages judge-sensitive. Finding: on LongDocURL the shared 32-token answer cap cuts 61-74% of uncompressed answers (R 8-17%), so uncompressed .34 < R .52 on 300 page rows m…", "launched": ["191669", "191670", "191673", "191674"], "verdicts": [{"jobid": "191629", "verdict": "closed", "note": "healthy re-judge, 12 x 1,500 rows; project-prompt Delta_len recorded"}, {"jobid": "191634", "verdict": "closed", "note": "plumbing healthy; uncompressed pages answers cut by 32-token cap on 61-74%"}, {"jobid": "191635", "verdict": "closed", "note": "plumbing healthy; uncompressed text 47-64% cut by cap"}, {"jobid": "191636", "verdict": "closed", "note": "plumbing healthy; mems_used = audit 300/300; R .54/.55/.46"}], "gripes": ["+1 c0b20b25: guard refused whole command for rm -r of a mktemp /tmp dir", "wish: expmon launch --derive-from <launcher> --sub to record derived launchers"], "wake_when": "job:191669,191670,191673,191674 max 3h"}
+== final:
+{"next":"wake-when","summary":"Re-judge 191629 and arm E trial runs 191634/191635/191636 all healthy, verdicts closed. Arm J: 10-vs-4-page no-loss holds under rubric, project prompt and EM at both seeds; 20 pages positive under all three (one seed); text 40 passages judge-sensitive. Finding: on LongDocURL the shared 32-token answer cap cuts 61-74% of uncompressed answers (R 8-17%), so uncompressed .34 < R .52 on 300 page rows measures the cap. Wrote scripts/longdoc/eval_mnt.sbatch (runtime copy of eval_mm_4b.sh with only MNT changed, new _mnt file names; shared launcher untouched because sibling evals were running). Re-ran the same 300 rows at MNT=256 (4 cells). CAMPAIGN.md tightened (arm E cells at MNT=256), known_issues row added, docs/longdoc_diagnosis.md and STATE.md rewritten.","launched":["191669","191670","191673","191674"],"verdicts":[{"jobid":"191629","verdict":"closed","note":"healthy re-judge, 12 x 1,500 rows; project-prompt Delta_len recorded"},{"jobid":"191634","verdict":"closed","note":"plumbing healthy; uncompressed pages answers cut by 32-token cap on 61-74%"},{"jobid":"191635","verdict":"closed","note":"plumbing healthy; uncompressed text 47-64% cut by cap"},{"jobid":"191636","verdict":"closed","note":"plumbing healthy; mems_used = audit 300/300; R .54/.55/.46"}],"gripes":["+1 c0b20b25: guard refused whole command for rm -r of a mktemp /tmp dir","wish: expmon launch --derive-from <launcher> --sub to record derived launchers"],"wake_when":"job:191669,191670,191673,191674 max 3h"}
+== rc=0 secs=646
+== verify: 4/17

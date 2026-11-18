@@ -1,0 +1,59 @@
+== verifier 2026-11-18_1730  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session b02a0a48-5d6b-489c-bb93-d9a0c33b1058  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+293 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 295	- Code md5 at launch of 191669-191674: eval_mm_4b.sh b3d1cda1 (wrapped), eval_mnt.sbatch 1c874b32, eval_mm_docqa.py (+121 lines)
+→ Grep: {"pattern": "191518", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content"}
+  ↳ campaign_longdoc/STATE.md:84:  191393 .707, R10 191518 .605, U10 .752): Δ_len −2.6 [−5.6, +0.3], p .084; project −1.5 [−4.6, +1.5], p .35; EM +0.8. (+5 lines)
+→ Glob: {"pattern": "expQ/longdoc/audit_*/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Glob: {"pattern": "expQ/longdoc/length/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-18_1630   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+25 lines)
+→ Grep: {"pattern": "58/1,500", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.verify.log", "output_mode": "content", "-o": true}
+  ↳ No matches found
+I'm checking the cited numbers against the result files. Next: who ran the 10-passage text baseline (job 191518) and what it is.
+→ Grep: {"pattern": "191518|b_spread_s42", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md", "output_mode": "content", "head_limit": 15}
+  ↳ 13:- Tail production loses going from ten chunks to one at both seeds: −.253 [−.281, −.225] (s42, 191456 − 191455), −.229 [−.255, −.200] (s43, 191526 − 191519). Spread loses nothing beyond 2 pt at eit (+2 lines)
+→ Grep: {"pattern": "l_r42|l_r43|e_r42|R = |R is", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md", "output_mode": "content", "head_limit": 20}
+  ↳ 51:- R = `expQ/ft_mm_4b_184778/model` (s42), repeated on `expQ/ft_mm_4b_184780/model` (s43);
+→ Grep: {"pattern": "b_spread_s42|184778", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md", "output_mode": "content", "head_limit": 10}
+  ↳ 37:tail reduced `183538|183539`; spread full `184778|184780`; tail production `174908|176242`; stage-2 models (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.verify.log
+  ↳ 25	  ↳ 1	{ (+37 lines) (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_project.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_text_n40_s42_project.json
+  ↳ 1	{ (+37 lines)
+→ Grep: {"pattern": "\"mean\"|ci95|\"pos\"|\"neg\"|sign_p|\"n\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s43_project.json", "output_mode": "content", "-A": 2}
+  ↳ 3: "n": 1500, (+10 lines)
+→ Grep: {"pattern": "\"mean\"|ci95|\"pos\"|\"neg\"|sign_p|\"n\":", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s42_project.json", "output_mode": "content", "-A": 2}
+  ↳ 3: "n": 1500, (+10 lines)
+→ Grep: {"pattern": "SlideVQA|slidevqa|0\\.61|61%|cut share|capped", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1730.log", "output_mode": "content", "head_limit": 30}
+  ↳ No matches found
+→ Grep: {"pattern": "cap", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1730.log", "output_mode": "content", "head_limit": 40}
+  ↳ 73:Wrapper works (substitution passed, factors show the 256-token cap). Launching the two compressed cells. (+4 lines)
+I'm still checking the answer-cap numbers in the wake's log. After that I write the verdict per claim.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1730.log
+  ↳ 1	== campaign longdoc wake 2026-11-18_1730  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+74 lines)
+→ Grep: {"pattern": "oor \\d+", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log", "output_mode": "content", "-o": true}
+  ↳ 102:oor 1398
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-18_1630.log
+  ↳ 100	  ↳ {"v": "E_text_cml1024", "i": 8, "qid": "summary2title_4120460_12_41_7__t4k", "src": "longdocurl_t4k", "n_mem": 583, "n_chunks": 6, "chunk_tok_max": 1102, "prompt": 777, "span": 4858, "base_pro (+5 lines)
+→ Grep: {"pattern": "out of range|out-of-range|1,398|1398", "path": "/beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md", "output_mode": "content"}
+  ↳ 126:| what | n | `<MEM>` slots per prompt p50 / p99 / max ↓ | decoder prompt tokens p50 / max | position span p50 / p99 / max | uncompressed prompt max (tokens) | out of range |
+→ Grep: {"pattern": "4%|SlideVQA 11|reach the cap|cap on", "path": "/beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md", "output_mode": "content"}
+  ↳ 15:[Omitted long matching line] (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 104	**Arm E trial runs (LongDocURL, one coherent PDF per question; 300 rows per set = 100 questions × 3 page sizes, or 75 × 4 text sizes; trial runs prove the path, they decide nothing)** (+44 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 526	def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+39 lines)
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documen…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3265 turns=26 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (a count, not y…", "status": "supported", "reason": "Verdict 191147 gives max 488, span 4,017 and the counts 1,50…"}, {"claim": "The transcription-probe port is validated (job 191169): 360/…", "status": "supported", "reason": "Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%.…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdict 191515 matches every number: 1,407 Q on 387 PDFs, 4,…"}, {"claim": "provisional: arm E input check PASS (job 191516, every row, …", "status": "provisional", "reason": "Verdict 191516 matches: cut 0, parity 1.0000, control 235/2,…"}, "… +13 more"], "summary": "Every cited number matches its source: the verdicts, the gri…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (a count, not yet a cause; job 191147): finetune rows reach at most 488 <MEM>s and a position span of 4,017 (2,000 sampled rows). Out of that range: 10- and 20-page documents 1,500/1,500, 40 text passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500; 4-page documents 0/1,500. Every arm E bucket is out of range too (job 191516).","status":"supported","reason":"Verdict 191147 gives max 488, span 4,017 and the counts 1,500/1,500, 35 and 1,498/1,500, 198/500. docs/longdoc_diagnosis.md:131-143 gives docs_p4 0%. For arm E it gives pages 100%, text 100% and mixed 99.4%/100%/100%. The arm E shares were counted by the wake on the frontend from audit_191516/rows.jsonl, because the audit's own column reads nan. The claim is labelled a count, not a cause."},{"claim":"The transcription-probe port is validated (job 191169): 360/360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%. That is within the law's ±2 pt of the legacy 71% (architecture_review.md:105). The check came before 191219/191220 used the port."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 rows (t4k 637/t8k 610/t16k 588/t32k 411), needles text 300/pages 225/mixed 225.","status":"supported","reason":"Verdict 191515 matches every number: 1,407 Q on 387 PDFs, 4,221/4,221, 2,246 = 637/610/588/411, needles 300/225/225. The claim says only that the sets exist. Soundness checks 1 and 3 (closed-book, needles) have not run, and the claim does not say they have."},{"claim":"provisional: arm E input check PASS (job 191516, every row, CML 1,024): cut 0 and parity 1.0000 on text (2,246), pages (4,221), mixed (4,221) and the three needle sets; the CML 256 control cuts 235/2,246 text rows (10.5%). Health field false only because --only E_ skips the 4-page variant.","status":"provisional","reason":"Verdict 191516 matches: cut 0, parity 1.0000, control 235/2,246. Two limits remain. Health reads false on audit code that changed after 191147. Parity uses one row builder for both modes, so it cannot fail. The wake itself marks the claim provisional."},{"claim":"provisional: the evaluation feeds the long inputs it claims on the gating sets (arm A, gate passed; job 191147): truncation cut 0/1,500 and pisco/base parity 1,500/1,500 on every gating variant; health 646,042 = 646,042; the CML 256 controls fail as they should (924/1,500 and 275/1,500).","status":"provisional","reason":"Verdict 191147 matches: cut 0/1,500, parity 1,500/1,500, health 646,042 = expected, controls 924 and 275. The wake states the limits: on documents the cut check can fail only on prompt length, and parity uses one row builder. It is labelled provisional."},{"claim":"provisional: arm J — the length-effect calculator recovers the tail model's one-chunk minu
+== rc=0
