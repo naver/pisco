@@ -1,0 +1,9 @@
+== campaign slotcheck wake 2026-11-19_0600  reasons=problems  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795035601 live=192003:PENDING running=0 pending=1 problems=1 problems_other=0 new=0 gpuh24=6.9 idle_h=0.2 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7514 sig=a832decd same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:192003,192010_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session cce5a74a-645d-4549-9651-13f495e71bbc  model claude-opus-5-5  tools 52
+You've hit your 5-hour limit · resets 7am (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 7am (Asia/Seoul)
+== rc=1 secs=10
