@@ -1,0 +1,10 @@
+judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json
+       R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json
+source             n     Q42     R42     diff      SE            95% CI  A-only  B-only    p McN
+ALL             1500   0.726   0.715   +0.011   0.006 [-0.001, +0.023]      47      30    0.068
+mrqa_BioASQ      250   0.924   0.900   +0.024   0.013 [+0.000, +0.048]       8       2    0.109
+mrqa_DROP        250   0.596   0.572   +0.024   0.015 [-0.004, +0.052]      10       4    0.180
+mrqa_DuoRC       250   0.624   0.592   +0.032   0.017 [+0.000, +0.068]      13       5    0.096
+mrqa_RACE        250   0.520   0.536   -0.016   0.019 [-0.052, +0.020]       9      13    0.523
+mrqa_RelationExtraction   250   0.840   0.840   +0.000   0.008 [-0.016, +0.016]       2       2    1.000
+mrqa_TextbookQA   250   0.852   0.848   +0.004   0.012 [-0.020, +0.028]       5       4    1.000

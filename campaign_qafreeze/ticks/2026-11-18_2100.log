@@ -1,0 +1,89 @@
+== campaign qafreeze wake 2026-11-18_2100  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795003201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=22.9 idle_h=2.1 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7736 sig=260cc69f same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=2 uplaw=0 push_rc=1 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session 3f22255e-4b02-467e-a840-a1ab8033b34d  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-18_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+92 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat CAMPAIGN.md && echo ===== && cat STATE.md && echo ==== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+64 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && sed -n 1,200p CAMPAIGN.md | cut -c1-2000 | head -c 40000 | tail -c 30000
+  ↳ # CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+199 lines)
+→ Bash: cat STATE.md; echo =====; ls -la; 
+  ↳ Exit code 1 (+109 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; ls -la; ls pairs; cat known_issues.md | head -80
+  ↳ total 84 (+54 lines)
+Brief update: the 18:00 wake hit the usage limit mid-run after launching four reference evals; all eight eval cells have now ended. I'm reading their results to see whether the gate can be decided.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; ls -la ticks; tail -30 ticks/2026-11-18_1800.log 2>/dev/null | cut -c1-400; cat pairs/photos_QminusR_s42.txt pairs/photos_QminusR_s43.txt
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon ledger 40 2>&1 | grep -i qafreeze | tail -20 | cut -c1-600
+  ↳ total 165 (+62 lines)
+  ↳ - 2026-11-18 16:37 qafreeze wake 16:30 (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191659,191660,191661,191662,191675,191676,191677,191678 -X -o JobID,State,ExitCode,Elapsed,NodeList,Restarts%3 2>&1; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scr…
+  ↳ sacct: error: Invalid field requested: "Restarts" (+55 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191659,191660,191661,191662,191675,191676,191677,191678 -X -o JobID,State,ExitCode,Elapsed,NodeList 2>&1; find expQ/qafreeze/f_s42/eval expQ/qafreeze/f_s43/eval -maxdepth 2 | head; for j in 19…
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+102 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for d in expQ/qafreeze/ref_s42 expQ/qafreeze/ref_s43 expQ/qafreeze/f_s42 expQ/qafreeze/f_s43; do echo "== $d"; for f in $d/eval/.done/*; do echo "$f: $(head -c 300 $f | tr '\n' ' ')"; done; done
+  ↳ == expQ/qafreeze/ref_s42 (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json,glob ⏎ fs=sorted(glob.glob('expQ/qafreeze/*/eval/*.json')) ⏎ for f in fs: ⏎     d=json.load(open(f)) ⏎     if isinstance(d,dict): ⏎         keys=list(d.keys()) ⏎     …
+  ↳ expQ/qafreeze/f_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json keys ['summary', 'records'] n 1500 judged 1500 acc 0.582 px None node None (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json ⏎ for f in ['expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json','expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_cml4096_text_mr…
+  ↳ expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+15 lines)
+All eight eval cells finished healthy (1,500 rows each, every row judged, 0 unparseable). Now running the paired tests for MRQA text and the Q vs F control to read the gate.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 191675,191676,191677 -D -o JobID,State,ExitCode,Start,End,Elapsed,NodeList 2>&1 | grep -v '\.ext'; for s in 42 43; do python3 scripts/paired_judge.py expQ/qafreeze/ft_frozen_s$s/eval/mm_docqa_…
+  ↳ JobID             State ExitCode               Start                 End    Elapsed        NodeList  (+78 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_qafreeze/ticks/2026-11-18_2100.log | cut -c1-300; git status -sb | head -3; git log --oneline -3; git rev-parse --abbrev-ref @{u} 2>&1; git log --oneline @{u}..HEAD 2>&1 | head; git log --…
+  ↳ == campaign qafreeze wake 2026-11-18_2100  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+39 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json ⏎ want={'188615','188617','191661','191675','191659'} ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except Exception: continue ⏎     if str(…
+  ↳ 188615 {'exp': 'freeze', 'stage': 'eval-ref', 'parent': '184778', 'launcher': 'eval_mm_4b.sh', 'argv': ['expQ/freeze/ref_s42/model', 'pisco', '', 'eval_data/text_hotpotqa_1500'], 'env': None, 'time':  (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls eval_mm_4b_188615.out eval_mm_4b_188617.out 2>&1; grep -m3 -E "FACTORS|TOPK|CML|topk" eval_mm_4b_188615.out 2>/dev/null | cut -c1-400; grep -m1 -E "^real|Elapsed" eval_mm_4b_188615.out; sacct -j 188…
+  ↳ eval_mm_4b_188615.out (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp qafreeze --stage eval --parent 191527 --partition gpu-be --exclude 'homer-[005-009]' --time 0:29:00 --env TOPK=10 --env PX=1003520 --env CML=4096 eval_mm_4b.sh expQ/qafree…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:29:00 eval_mm_4b.sh expQ/qafreeze/ft_frozen_s42/model pisco  eval_data/text_hotpotqa_1500 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "qafreeze intent: HotpotQA (reported, not gating) for Q s42/s43 + R ref_s42/ref_s43 on today's launcher (md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | grep -iE "verdict|probe |handoff|display|campaign report" | head -20
+  ↳ jobid|name|state|elapsed|outdir  (for handoff / scripting) (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon help 2>&1 | sed -n '/^  verdict/,/^  [a-z]/p' | head -12; expmon help 2>&1 | sed -n '/^  handoff/,/^  [a-z]/p' | head -14
+  ↳ verdict [<jobid> <v> [note]] | [<label>]  set/list STRUCTURED run disposition (open|closed|best| (+6 lines)
+Recording verdicts: both arm Q trainings as validated, the eight eval cells as closed with their health numbers.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco ⏎ expmon verdict 191527 best "arm Q VALIDATED s42: QA-trained compressor+connector frozen, decoder LoRA only, 1 epoch 28k rows. Q-R judge, n=1500 paired: documents +0.5 [-0.6,+1.6] p.470; photos -0.3 [-…
+  ↳ verdict recorded: 191527 -> best   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict qafreeze 2>&1 | grep -E "19165|19166|19167|19152|19153" | cut -c1-160
+  ↳ 191527     best       2026-11-18 21:03 arm Q VALIDATED s42: QA-trained compressor+connector frozen, decoder LoRA only, 1 epoch 28k rows. Q-R judge, n=1500 paire (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 95,112p docs/training_plan.md; echo '-----'; grep -n -A8 -i "Decisions pending" HANDOFF.md | head -30; echo '-----'; cat campaign_qafreeze/QUESTION.md; echo '-----'; cat campaign_qafreeze/DECISI…
+  ↳ |---|---|---|---|---|---| (+75 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon handoff list --all 2>&1 | grep -iE "cache|qafreeze" | head; expmon help 2>&1 | grep -iE "handoff add.*detail|--detail|--from" | head -5
+  ↳ [5b6e55] .claude:chat -> pisco (its chats) · 3d ago · done 26h ago: Armed as campaign_qafreeze on 2026-11-17 (owner's 'yes go' in the pisco chat): law campaign_qafreeze/CAMPAIGN.md, preflight PASS, pi (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon handoff add --to pisco "build the <MEM> cache: compress once, store, train the decoder on stored vectors" --detail "campaign qafreeze arm Q PASSED its gate (2026-11-18): R's QA-trained compresso…
+  ↳ hand-off 1ebc7c filed: pisco:qafreeze -> pisco (its chats): build the <MEM> cache: compress once, store, train the decoder on stored vectors (+1 lines)
+Hand-off filed for the `<MEM>` cache. Now the ledger entry for the gate, then the live page.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note --did "qafreeze gate read: arm Q (R's QA-trained compressor+connector frozen, decoder LoRA only) VALIDATED at s42+s43" --saw "Q-R n=1500 paired, s42/s43: docs +0.5/-0.1, photos -0.3/-0.5, M…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "display rows" 2>&1 | head -12; expmon gripe --open --search "verdict judged" 2>&1 | head -6; grep -c . display_qafreeze.html; grep -oE "<h[12][^>]*>[^<]*" display_qafreeze…
+  ↳ == 15 open report(s) matching 'display rows', every machine, newest first == (+22 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -o "<tr" display_qafreeze.html | wc -l; ls -la display_qafreeze.html
+  ↳ 29 (+1 lines)
+The live page has 29 table rows even though the command reports 0 (a known expmon defect). Filing the two small tool gripes, then writing the owner question and state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same be8057a1 "qafreeze 2026-11-18 21:04: prints '0 table rows, 0 media files from 0 runs' while display_qafreeze.html has 29 <tr> rows; the summary line counts something else than what …
+  ↳ logged as a +1 of be8057a1 (entry 80e3b289) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Now writing the owner question (whether to run the higher-learning-rate arm).
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; tail -c 200 known_issues.md | od -c | tail -3; cat >> known_issues.md <<'EOF' ⏎ | a wake ends rc=1 "You've hit your 5-hour limit" AFTER it launched jobs (2026-11-18 18:00: 4 reference…
+  ↳ 0000260   s   /   `       f   o   l   l   o   w       t   h   i   s     (+4 lines)
+Writing the new STATE.md (gate result, table, what runs, the owner question).
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 88,95p docs/training_plan.md | cut -c1-300
+  ↳ **Gate 0: FAILED (campaign freeze, 2026-11-14; law and record in `campaign_freeze/`).** Setup: the reference (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze; python3 -I - <<'EOF' ⏎ p='STATE.md'; s=open(p).read() ⏎ old_f="| — | recorded −0.9 / −1.3 | — | — | recorded −3.0 / −2.8 |" ⏎ new_f="| — | recorded −0.9 / −1.3 | — | recorded −2.3 / −…
+  ↳ ok (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 191766,191767,191768,191769 -o "%i %T %M %N" 2>&1; echo 'wake-when job:191766,191767,191768,191769 max 4h' > campaign_qafreeze/NEXT; cat campaign_qafreeze/NEXT
+  ↳ JOBID STATE TIME NODELIST (+5 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191766,191767,191768,191769 max 4h", "summary": "Arm Q passed: a compressor that already had one QA finetune can stay frozen while only the decoder trains. Measure is paired judge accuracy, frozen mod…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.3313 turns=37 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191766,191767,191768,191769 max 4h", "summary": "Arm Q passed: a compressor that already had one QA finetune can stay frozen while only the decoder trains. Measure is pa…", "launched": ["191766", "191767", "191768", "191769"], "verdicts": [{"jobid": "191527", "verdict": "best", "note": "arm Q VALIDATED s42: docs +0.5, photos -0.3, MRQA +1.1 pt vs R, n=1500 each"}, {"jobid": "191530", "verdict": "best", "note": "arm Q VALIDATED s43: docs -0.1, photos -0.5, MRQA +0.3 pt vs R, n=1500 each"}, {"jobid": "191659", "verdict": "closed", "note": "healthy Q s42 photos .677"}, {"jobid": "191660", "verdict": "closed", "note": "healthy Q s43 photos .679"}, {"jobid": "191661", "verdict": "closed", "note": "healthy Q s42 MRQA .726"}, {"jobid": "191662", "verdict": "closed", "note": "healthy Q s43 MRQA .727"}, "… +4 more"], "blocked": "Owner checkpoint (BLOCKED.md): run arm H, which raises the decoder LoRA learning rate to 1e-4 on the passing frozen setu…", "gripes": ["+1 be8057a1: display --exp qafreeze reports 0 table rows while the HTML has 29 <tr>", "wish: verdict note n-detector should accept '<N> judged' / '<N> rows' as the denominator"]}
+== final:
+{"next":"wake-when","wake_when":"job:191766,191767,191768,191769 max 4h","summary":"Arm Q passed: a compressor that already had one QA finetune can stay frozen while only the decoder trains. Measure is paired judge accuracy, frozen model minus reference, n = 1,500 questions per set, seed 42 / seed 43:\n- documents: +0.5 / −0.1 pt\n- photos: −0.3 / −0.5 pt\n- MRQA text: +1.1 / +0.3 pt\nNo 95% CI lies wholly below 0. The instrument can see an effect of this size: the earlier frozen compressor that never had QA training scores 3.3 pt lower on documents (p .003 at both seeds). The no-op control (reference paired with itself) gives 0.000.\n\nThe four reference re-runs launched by the 18:00 wake were adopted. That wake was cut off by the 5-hour usage limit. All four are healthy, and they reproduce the recorded scores on today's eval code.\n\nDone this wake:\n- Recorded verdicts: both arm Q trainings → best; ten eval cells → closed.\n- Filed the engineering hand-off to build the <MEM> cache (1ebc7c, to the pisco chats). Nothing is switched on.\n- Launched the four HotpotQA cells (reported only, not gating).\n- Wrote the owner checkpoint question in BLOCKED.md: run the decoder LoRA lr 1e-4 arm (~22 GPU-h, recommended yes) or close.\n- Rewrote STATE.md, adding proposed text for docs/training_plan.md and HANDOFF.md.\n- Added a known_issues row, refreshed the display, deleted the ALERT. The push failure in the ALERT had already cleared: git is in sync.\n\nNext wake pairs HotpotQA and then waits for the owner.","launched":["191766","191767","191768","191769"],"verdicts":[{"jobid":"191527","verdict":"best","note":"arm Q VALIDATED s42: docs +0.5, photos -0.3, MRQA +1.1 pt vs R, n=1500 each"},{"jobid":"191530","verdict":"best","note":"arm Q VALIDATED s43: docs -0.1, photos -0.5, MRQA +0.3 pt vs R, n=1500 each"},{"jobid":"191659","verdict":"closed","note":"healthy Q s42 photos .677"},{"jobid":"191660","verdict":"closed","note":"healthy Q s43 photos .679"},{"jobid":"191661","verdict":"closed","note":"healthy Q s42 MRQA .726"},{"jobid":"191662","verdict":"closed","note":"healthy Q s43 MRQA .727"},{"jobid":"191675","verdict":"closed","note":"healthy R s42 MRQA .715 today's code"},{"jobid":"191676","verdict":"closed","note":"healthy R s43 MRQA .724 today's code"},{"jobid":"191677","verdict":"closed","note":"healthy F s42 documents .582, identical to recorded"},{"jobid":"191678","verdict":"closed","note":"healthy F s43 documents .580"}],"blocked":"Owner checkpoint (BLOCKED.md): run arm H, which raises the decoder LoRA learning rate to 1e-4 on the passing frozen setup (2 seeds, ~22 GPU-h), or close the campaign. Recommendation: yes.","gripes":["+1 be8057a1: display --exp qafreeze reports 0 table rows while the HTML has 29 <tr>","wish: verdict note n-detector should accept '<N> judged' / '<N> rows' as the denominator"]}
+== rc=0 secs=373
+== verify: 13/14
