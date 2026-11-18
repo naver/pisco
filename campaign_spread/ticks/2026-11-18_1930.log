@@ -1,0 +1,10 @@
+== campaign spread wake 2026-11-18_1930  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794997801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=7.0 idle_h=0.4 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7775 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=5 uplaw=0 push_rc=0 next=wake-when_job:191665,191666,191667,191668_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/hook.log
+== wait condition met: job:191665,191666,191667,191668 (ended)   (NEXT was: wake-when job:191665,191666,191667,191668 max 6h)
+== session f9c6ebdc-f365-4216-92b0-f82444121f6d  model claude-opus-5-5  tools 52
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== rc=1 secs=12
