@@ -1,0 +1,65 @@
+== verifier 2026-11-19_0200  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session 31daad9f-6999-4ca8-9add-83d844e229f4  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+256 lines)
+→ Glob: {"pattern": "expQ/spread/**/*.md"}
+→ Glob: {"pattern": "expQ/spread/mech/**/*.json"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/pooled_20261118_1730/pooled.md
+  ↳ 1	| case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control | (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+255 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled.md
+  ↳ 1	metric: judge (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_em.md
+  ↳ 1	metric: em (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_anls.md
+  ↳ 1	metric: anls (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_judge_rubric.md
+  ↳ 1	metric: judge_rubric (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/did_20261118_2100/did.md
+  ↳ 1	metric: judge (+9 lines)
+→ Grep: {"pattern": "mrqa|MRQA", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge", "glob": "*.md", "output_mode": "content"}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/build_mm_eval.py
+  ↳ 1	"""Build the multimodal document-QA EVAL set (same row schema as the finetune set). (+19 lines)
+I'm checking the claims' numbers against the result files; the audit, pooled and growth-test tables match so far. Next: the MRQA, re-run and slot-probe files.
+→ Glob: {"pattern": "expQ/spread/*"}
+→ Grep: {"pattern": "MRQA|mrqa|3\\.43|judged-right|223|191531|191495|191496", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode": "content"}
+  ↳ 3:Rewritten whenever an arm decides. Last rewrite 2026-11-19 02:15, after the MRQA tail re-runs (today's code) and arm D (+8 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_20261118.md
+  ↳ File does not exist. Note: your current working directory is /beegfs/scratch/user/hdejean/pisco.
+→ Grep: {"pattern": "rerun_20261118", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread", "output_mode": "content", "head_limit": 10}
+  ↳ campaign_spread/VERIFY.md:15:[Omitted long matching line] (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/rerun_20261118.md
+  ↳ 1	# Re-run identity checks, 2026-11-18 (scripts/spread/compare_answers.py; A = recorded / older file, B = today's-code re-run) (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/VERIFY.md
+  ↳ 1	# VERIFY — campaign spread — 2026-11-18_2100   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+23 lines)
+→ Glob: {"pattern": "*_191785/probe_*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/mech"}
+  ↳ expQ/spread/mech/s2_spread_full_191785/probe_mixer.json (+7 lines)
+→ Grep: {"pattern": "191675|191676", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md", "output_mode": "content"}
+  ↳ 12:  - MRQA text +1.1 pt [−0.1, +2.3], p .068 (s42, 191661 vs 191675); +0.3 pt [−0.8, +1.5], p .661 (s43, 191662 vs 191676). (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/mech/s2_spread_full_191785/probe_connector.json
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/mech/s2_tail_full_191785/probe_connector.json
+  ↳ 1	{ (+498 lines)
+  ↳ 1	{ (+498 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/mech/s2_spread_full_191785/probe_mixer.json
+  ↳ 1	{ (+36 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/mech/s2_tail_full_191785/probe_mixer.json
+  ↳ 1	{ (+36 lines)
+Arm D's slot-probe numbers match the JSON files. Next: checking which node the spread photo re-runs ran on, then the remaining claims.
+→ Grep: {"pattern": "19153[12]|19149[56]|homer", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STATE.md", "output_mode": "content"}
+  ↳ 10:  - documents +0.5 pt [−0.6, +1.6], McNemar p .470 (s42, 191626 vs 191495); −0.1 pt [−1.1, +0.9], p .896 (s43, 191628 vs 191496). (+7 lines)
+→ Grep: {"pattern": "\"19153[12]\".*homer-0\\d\\d|19153[12].*node", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread", "output_mode": "content", "head_limit": 5}
+  ↳ No matches found
+→ Grep: {"pattern": "19153[12]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_1730.log", "output_mode": "content", "head_limit": 8}
+  ↳ 17:→ Bash: head -60 scripts/spread/slice_pairs.py; grep -n "argparse\|add_argument\|def " scripts/spread/slice_pairs.py | head -40; cat scripts/spread/compare_answers.py | head -40; grep -rn "191531\| (+1 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 6…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7898 turns=29 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit.md:3 says 'FEASIBILITY GATE: PASS'. audit.md:9-16 re-d…"}, {"claim": "Seed-pooled \"equal\" test controls PASS (17:45 on the rubric …", "status": "supported", "reason": "pooled_20261118_1730/pooled.md:3 gives red_docs_CONTROL +0.0…"}, {"claim": "Tail production loses going from ten HotpotQA chunks to one …", "status": "supported", "reason": "Grid judge values: .3507−.6033 = −.253 and .3687−.5973 = −.2…"}, {"claim": "TEN HotpotQA chunks (today's code, n 1,500 per seed) are jud…", "status": "supported", "reason": "These rows match: pooled_judge_rubric.md:6 (+.001/−.004, −.0…"}, "… +14 more"], "summary": "Every number in STATE.md matches its source: the grid, the v…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit.md:3 says 'FEASIBILITY GATE: PASS'. audit.md:9-16 re-derives all 8 rows exactly (red_docs +.093/+.075, red_photos +.023/+.021, full_docs +.011/+.024). Grid probe 191454 gives selfpair=1, files=39. audit.md:57 shows 1500 rows, 1500 judged, 0 unparseable, 646,042 slots."},{"claim":"Seed-pooled \"equal\" test controls PASS (17:45 on the rubric files): reduced-budget documents +.084 [+.065, +.103] (expected +.084), every self-pair 0.000. The 21:10 runs on the arm J copies carry self-pairs only: no project-prompt copy of the reduced files exists, so the +.084 row cannot be added there; re-pairing the copies' rubric verdicts reproduced pooled.md exactly.","status":"supported","reason":"pooled_20261118_1730/pooled.md:3 gives red_docs_CONTROL +0.084 [+0.065, +0.103], 'self-pair 0.000, expect +0.084 ok'. rejudge pooled_judge_rubric.md:5-8 equals pooled.md:4-7 row for row. Consequence the bullet does not draw: by the law ('controls re-run on every use ... else the run decides nothing'), the project, EM and ANLS tables decide nothing on their own."},{"claim":"Tail production loses going from ten HotpotQA chunks to one at both seeds: −.253 [−.281, −.225] (s42, 191456 − 191455), −.229 [−.255, −.200] (s43, 191526 − 191519). Spread does not: +.006 [−.019, +.029] (s42, 191457 − 191518), +.023 [+.000, +.045], 178 / 144, p .066 (s43, 191528 − 191630).","status":"supported","reason":"Grid judge values: .3507−.6033 = −.253 and .3687−.5973 = −.229. Spread: .6107−.6047 = +.006 and .616−.5933 = +.023. The CIs are in verdicts 191456/191526 and docs/spread_cases.md. n 1,500 paired per seed, same code. The tail loss clears the 'worse' bar (≤ −3 pt, CI below 0) at both seeds. 'Spread does not' means no loss, not 'equal' (s43 is +.023)."},{"claim":"TEN HotpotQA chunks (today's code, n 1,500 per seed) are judge-sensitive (arm J, job 191665): rubric +.001 [−.021, +.025] / −.004 [−.027, +.019], pooled −.001 [−.0203, +.018]; project prompt pooled −.003 [−.022, +.016]; EM −.027 [−.047, −.007] (p .010) / −.020 [−.039, +.000] (p .058), pooled −.023 [−.039, −.007]; ANLS pooled −.030 [−.045, −.014]. Spread's answers are longer (3.43 vs 3.01 words s42, 3.91 vs 3.35 s43) with 42 / 24 more judged-right-but-EM-0 answers.","status":"supported","reason":"These rows match: pooled_judge_rubric.md:6 (+.001/−.004, −.001 [−.020,+.018]), pooled.md:6 project (−.003 [−.022,+.016]), pooled_em.md:6 (−.027/−.020, −.023 [−.039,−.007]) and pooled_anls.md:6 (−.030 [−.045,−.014]). s42 changes sign (rubric +.001 vs EM −.027) and is 2.8 pt apart, so arm J's rule gives 'judge-sensitive'. The word counts are descriptive only; their causal reading is the separate provisional bullet."},{"claim":"Full-budget PHOTOS (stage G = the l
+== rc=0

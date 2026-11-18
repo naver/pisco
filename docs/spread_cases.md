@@ -1,7 +1,7 @@
 # Spread vs tail `<MEM>` layout — where each wins (campaign spread)
 
-Rewritten whenever an arm decides. Last rewrite 2026-11-18 21:30, after arm C (many pages) and arm J (judge
-prompt / EM check) decided. Tables: audit of the recorded files `expQ/spread/audit_191454/audit.md`; seed-pooled test
+Rewritten whenever an arm decides. Last rewrite 2026-11-19 02:15, after the MRQA tail re-runs (today's code) and arm D
+(what the slots hold) decided; every arm before the owner checkpoint is now read. Tables: audit of the recorded files `expQ/spread/audit_191454/audit.md`; seed-pooled test
 `expQ/spread/pooled_20261118_1730/pooled.md` (spec `scripts/spread/pooled_pairs.tsv`); arm J per metric
 `expQ/spread/rejudge/pooled_20261118_2100/pooled*.md` (spec `scripts/spread/rejudge_pairs.tsv`); arm C growth test
 `expQ/spread/did_20261118_2100/did*.md` (spec `scripts/spread/did_pairs.tsv`, `scripts/spread/did_pairs.py`). Metric everywhere: judge accuracy ↑ (Qwen3-8B rubric judge, 1 = correct), paired on
@@ -20,10 +20,10 @@ files on commit 24b7a2c; documents re-run 0 / 1,500 answers different, three tim
 
 | case | budget | n | slots per question | spread ↑ s42 / s43 | tail ↑ s42 / s43 | difference s42 (95% CI) | difference s43 (95% CI) | b/c s42 · s43 | seed-pooled (95% CI) | uncompressed ↑ | power (pt) | verdict |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| HotpotQA, 10 passages as ONE chunk (~1,380 tokens) | full | 1,500 | 173 | .611 / .616 | .351 / .369 | **+.260 (+.233, +.289)** | **+.247 (+.219, +.275)** | 488/98 · 477/106 | +.254 (+.227, +.279) | .752 | 4.2 | **better** at both seeds (p < .001 each); EM +.151 / +.152 |
-| HotpotQA, 10 passages as 10 chunks | full | 1,500 | 177 | .605 / .593 | .603 / .597 | +.001 (−.021, +.025) | −.004 (−.027, +.019) | 156/154 · 154/160 | −.001 (−.0203, +.018) | .752 | 3.4 | no difference under either judge prompt; "equal" NOT certified (band edge). **Judge-sensitive**: EM pooled −.023 (−.039, −.007), tail ahead — spread answers are 0.4–0.6 words longer |
+| HotpotQA, 10 passages as ONE chunk (~1,380 tokens) | full | 1,500 | 173 | .611 / .616 | .351 / .369 | **+.260 (+.233, +.289)** | **+.247 (+.219, +.275)** | 488/98 · 477/106 | +.254 (+.227, +.279) | .752 | 4.2 | **better** at both seeds (p < .001 each) under the rubric judge, the project prompt and EM (+.151 / +.152). provisional until the owner rules: the law's arm J rule also asks the size to agree within 2 pt, and EM is 10 pt smaller |
+| HotpotQA, 10 passages as 10 chunks | full | 1,500 | 177 | .605 / .593 | .603 / .597 | +.001 (−.021, +.025) | −.004 (−.027, +.019) | 156/154 · 154/160 | −.001 (−.0203, +.018) | .752 | 3.4 | no difference under either judge prompt; "equal" NOT certified (band edge). **Judge-sensitive**: EM pooled −.023 (−.039, −.007), tail ahead. provisional explanation (untested): spread answers are 0.4–0.6 words longer |
 | documents, 4 pages | full | 1,500 | 431 (108 per page) | .610 / .615 | .599 / .591 | +.011 (−.014, +.035) | +.024 (−.002, +.048) | 177/161 · 193/157 | +.017 (−.002, +.036) | .809 | 3.4 | not resolvable here (width .038): neither equal nor better. Leans spread under every metric (project prompt pooled +.024 (+.006, +.042), EM +.012) but below the +3 pt bar |
-| documents, infographics only | full | 500 | — | .480 / .480 | .430 / .430 | +.050 (+.004, +.096) | +.050 (+.008, +.096) | 80/55 · 76/51 | — | .726 | 6.5 | better at both seeds by the bars, but a post-hoc pick among 3 sources on the same 500 questions in both seeds → needs one repeat on new infographic questions |
+| documents, infographics only | full | 500 | — | .480 / .480 | .430 / .430 | +.050 (+.004, +.096) | +.050 (+.008, +.096) | 80/55 · 76/51 | — | .726 | 6.5 | better at both seeds by the bars, but a post-hoc pick among 3 sources on the same 500 questions in both seeds. A repeat on NEW questions cannot reach the 300-question floor: the source (VisRAG InfoVQA test) has 718 questions and this set uses 500, so 218 are left (`scripts/build_mm_eval.py:5`) |
 | documents, multi-page (MP-DocVQA) | full | 500 | — | .666 / .678 | .702 / .682 | −.036 (−.080, +.008) | −.004 (−.050, +.042) | 52/70 · 68/70 | — | .926 | 6.2 | not resolvable here |
 | documents, slides | full | 500 | — | .684 / .686 | .666 / .660 | +.018 (−.018, +.054) | +.026 (−.010, +.062) | 45/36 · 49/36 | — | .774 | 5.0 | not resolvable here |
 | photos | full | 1,500 | 53 | .679 / .685 | .687 / .675 | −.007 (−.027, +.011) | +.010 (−.011, +.030) | 105/116 · 125/110 | +.001 (−.014, +.018) | .717 | 2.8 | **equal** under the rubric judge and EM; under the project prompt s42 −.023 (−.043, −.004), pooled −.006 (−.022, +.010) → equal not certified there |
@@ -31,7 +31,8 @@ files on commit 24b7a2c; documents re-run 0 / 1,500 answers different, three tim
 | documents, 20 pages (16 distractor pages) | full | 1,500 | 2,153 | .599 / not run | .579 (191668) / not run | +.019 (−.006, +.043) | — | 181/152 | — | .754 | 3.4 | one seed; no growth vs 4 pages (arm C) |
 | documents, infographics only, 10 / 20 pages | full | 500 | — | .458 / .476 (10 p); .454 (20 p s42) | .430 / .406; .398 | +.028 (−.014, +.070) 10 p | +.070 (+.030, +.114) 10 p | 64/50 · 76/41 | — | — | 5.9 | same 500 questions as the 4-page row, so NOT a repeat; 20 p s42 +.056 (+.016, +.096) |
 | documents, MP-DocVQA only, 10 / 20 pages | full | 500 | — | .676 / .676; .648 | .712 / .680; .690 | −.036 (−.078, +.006) 10 p | −.004 (−.050, +.042) 10 p | 56/74 · 66/68 | — | — | 6.4 | not resolvable; leans tail at s42 (20 p −.042 (−.088, +.002)) |
-| MRQA, one long passage (~900 tokens) | full | 1,500 | 53 | .715 / .724 (today's code, qafreeze 191675 / 191676) | .631 (recorded, older code) / — | +.087 (+.063, +.112) old pair | — | 245/114 | — | .807 | 3.4 | tail re-runs on today's code running (191779 / 191780) |
+| MRQA, one long passage (one chunk, CML 4096) | full | 1,500 | 53 (DuoRC 99, TextbookQA 92, RelationExtraction 6) | .715 / .724 (qafreeze 191675 / 191676) | .631 / .626 (191779 / 191780) | **+.084 (+.060, +.109)** | **+.098 (+.075, +.122)** | 239/113 · 249/102 | — | .807 | 3.4 | **better** at both seeds (p < .001 each), same code both sides, slot counts equal (80,003); EM +.057 / +.074, ANLS +.076 / +.078, project prompt +.070 (+.046, +.095) / +.103 (+.079, +.128) (job 192006) |
+| MRQA by passage length (post hoc) | full | 343 / 429 / 568 / 160 | > 100 / ≤ 30 / 31–60 / 61–100 | — | — | > 100 slots +.187 (+.131, +.245); ≤ 30 +.082 (+.040, +.124); 31–60 +.007 (−.030, +.044) | > 100 +.230 (+.169, +.289); ≤ 30 +.065 (+.026, +.107); 31–60 +.048 (+.011, +.085) | > 100: 87/23 · 100/21 | — | — | — | provisional (slice chosen after seeing the data): the gain is largest on the longest passages (DuoRC, TextbookQA), but the shortest (RelationExtraction, 6 slots) also favour spread, so it is not length alone; 61–100 slots (n 160) not resolvable |
 | documents, 4 pages | reduced | 1,500 | 431 | .599 / .618 | .507 / .543 | +.093 (+.069, +.115) | +.075 (+.051, +.099) | 238/99 · 220/107 | +.084 (+.065, +.103) | .809 | 3.4 | **better** (recorded verdict; the pooled test's control) |
 | photos | reduced | 1,500 | 53 | .671 / .671 | .648 / .649 | +.023 (+.002, +.043) | +.021 (+.002, +.039) | 139/105 · 114/82 | — | .717 | 2.9 | +2 pt, CI > 0 at both seeds, below the 3-pt bar |
 | MRQA, one long passage | reduced | 1,500 | 53 | .694 | .639 | +.055 (+.031, +.077) | — | 201/119 | — | .807 | 3.3 | one seed |
@@ -55,6 +56,13 @@ resolution of the test.
 | photos 1,500 Q | .036–.041 | .031 | .61 / .60 | .24 / .24 | "equal" reachable when the difference is under ~.5 pt — reached (+.001) |
 | text 1,500 Q, ten chunks | .046–.048 | .038 | .50 / .49 | .29 / .30 | a −.001 difference missed "equal" by .03 pt: this set cannot certify a tie |
 | text 1,500 Q, one chunk | .052–.056 | .052 | — | — | resolves the +25 pt easily |
+| MRQA 1,500 Q, one passage | .047–.049 | — | .55 / .56 | .21 / .21 | resolves the +8–10 pt easily |
+
+**No second document set exists in the same sources.** The three VisRAG test sets behind `mm_docqa_1500_1m` hold 556
+(slides), 718 (infographics) and 591 (MP-DocVQA) questions (`scripts/build_mm_eval.py:5`); the gating set uses 500 of
+each, so 56 + 218 + 91 = 365 questions are left. The law's "new items" for documents (`mm_docqa_retr10_1m`,
+`mm_docqa_retr4_1m`, `mm_docqa_longdoc_1m`) reuse the gating questions 1,500 / 1,500 (500 / 500): new pages, not new
+questions. A disjoint 1,500-question document set (option B) needs another source.
 
 **Arm J — the same difference under four scorings** (job 191665 re-judged COPIES of the 16 today's-code files with the
 project Yes/No prompt; the copies' rubric verdicts and answers equal the sources 16 / 16; re-pairing the copies'
@@ -66,6 +74,7 @@ rubric verdicts reproduces the rubric table exactly). Spread − tail, s42 / s43
 | HotpotQA ten chunks | +.001 / −.004; −.001 (−.020, +.018) | −.001 / −.006; −.003 (−.022, +.016) | −.027 (p .010) / −.020 (p .058); −.023 (−.039, −.007) | −.030 (−.045, −.014) | **judge-sensitive**: both judges see no difference, string metrics favour tail. Spread answers are longer (3.43 vs 3.01 words s42, 3.91 vs 3.35 s43) and have 42 / 24 more judged-right-but-EM-0 answers |
 | documents 4 pages | +.011 / +.024; +.017 (−.002, +.036) | +.019 / +.029 (+.005, +.053); +.024 (+.006, +.042) | +.001 / +.022; +.012 (−.007, +.031) | +.029 (+.012, +.046) | same sign and within 2 pt under every scoring; small lean to spread, never ≥ +3 pt at both seeds |
 | photos | −.007 / +.010; +.001 (−.014, +.018) | −.023 (−.043, −.004) / +.010; −.006 (−.022, +.010) | −.009 / +.004; −.003 (−.017, +.012) | +.001 (−.012, +.014) | equal under rubric, EM and ANLS; not certified under the project prompt (s42 −2.3 pt). Signs flip between seeds under every scoring: no layout effect |
+| MRQA one passage | +.084 / +.098 | +.070 / +.103 (job 192006; the copies' rubric verdicts reproduce +.084 / +.098) | +.057 / +.074 | +.076 / +.078 | **better under every scoring**; the two judges agree within 1.4 pt, EM is 2.4–2.7 pt below the rubric judge (the same size gap as one chunk) |
 
 **Seed-pooled "equal" test** (owner decision 2026-11-18): per question, spread − tail averaged over seeds 42 and 43;
 "equal" = its 95% CI inside ±2 pt AND each seed's own difference inside ±2 pt. Controls on every run: the
@@ -86,10 +95,31 @@ pages), same seed; control = arm B's one-chunk vs ten-chunk growth, recovered +.
 spread layout pay more.** The 20-page s43 pair was not run (the gate is decided by s42 and both 10-page seeds).
 
 ## 3. Mechanism table
-Arm D running (job 191785, `scripts/spread/mech_probes.sbatch`): text ownership and answer loss of the four stage-2
-models (full budget: spread one pass `pt_mm_5M_spread` vs tail three passes `pt_mm_v4kd_4b`; reduced pair
-`pt_mm_spread` / `pt_mm_base_from1M` as the control that must reproduce ownership .977 / .799 and answer loss on pages
-1.138 / 1.334).
+Arm D (job 191785, `scripts/spread/mech_probes.sbatch` running `expQ/archq2/probe_mixer.py` e2463c57 and
+`probe_connector.py` ff63deeb unchanged; homer-011, 56:54). Stage-2 models only (the decoder is each model's own).
+Ownership = share of a chunk's `<MEM>`s whose nearest text is their OWN chunk rather than another (3,053 test slots).
+Answer loss = mean answer NLL in nats, 40 held-out rows per set (lower is better); between models it is an unpaired
+mean (the probe keeps no per-row values), so read it as mechanism evidence, never as accuracy (law: ~.02-.03 judge).
+
+| stage-2 model | budget | layout | text ownership ↑ | cos to own / other chunk | answer loss ↓ pages | text | photos |
+|---|---|---|---|---|---|---|---|
+| `archq3/pt_mm_spread` | reduced | spread | .977 | .511 / .112 | 1.138 | 1.812 | 1.765 |
+| `archq3/pt_mm_base_from1M` | reduced | tail | .799 | .350 / .165 | 1.334 | 1.927 | 1.802 |
+| `archq3/pt_mm_5M_spread` | full, one stage-2 pass | spread | .972 | .495 / .116 | 1.102 | 1.844 | 1.736 |
+| `pt_mm_v4kd_4b` | full, three stage-2 passes | tail | .763 | .332 / .176 | 1.226 | 1.788 | 1.813 |
+| **spread − tail, reduced** | | | +.178 | | −.196 | −.115 | −.037 |
+| **spread − tail, full** | | | **+.208** | | **−.124** | **+.056** | **−.077** |
+
+Controls: the reduced pair reproduces the recorded values (ownership .977 / .799, answer loss pages 1.138 / 1.334,
+text 1.812 / 1.927, photos 1.765 / 1.802, architecture_review.md:273-277) to the third decimal; another chunk's text
+is far less similar than the own chunk's (cos .11-.18 vs .33-.51); each model against itself 0.000. In all four models a
+refit linear map gives the same loss as the MLP connector (±.012), as found before (docs/connector_probe.md).
+**Reading (gate: the advantage shrinks inside ±2 pt → the extra stage-2 data buys what the layout bought).** It does
+not shrink on ownership (+.178 → +.208) or photos (−.037 → −.077); it shrinks on pages (−.196 → −.124) but stays; on
+text it reverses (the three-pass tail model has the lower text answer loss). So the full-budget accuracy tie is not a
+tie of what the slots hold: spread slots stay tied to their own chunk, and the tail model's three stage-2 passes buy
+it a lower text loss instead. Page transcription (`scripts/longdoc/mem_recall.py`) was not run (≈ 2 GPU-h per model
+on 500 pages; left out of the checkpoint question).
 
 ## 4. Hypothesis table
 
@@ -103,5 +133,6 @@ models (full budget: spread one pass `pt_mm_5M_spread` vs tail three passes `pt_
 | The tail models gained most on multi-page documents | same pairs, per source | 500 × 2 seeds | tail gain MP-DocVQA +.162 / +.090, slides +.076 / +.040, infographics +.040 / +.014 | — | consistent with (provisional; no between-source test) | arm C (many pages) and arm E target MP-DocVQA |
 | Spread is better on infographics at full budget | stage G per source, today's code | 500 × 2 seeds | +.050 / +.050, CI > 0 both, 135 / 127 discordant | better bar | post-hoc pick among 3 sources → one repeat on new infographic questions | a per-source claim the gating mean hides |
 | Spread pays at many pages | arm C, 4 / 10 / 20 pages | 1,500 × 2 seeds (20 p: s42) | growth vs 4 pages −.004 / −.007 (10 p), +.009 (20 p s42) | (spread − tail at 20 p) − (at 4 p) ≥ +3 pt, CI > 0, both seeds | **refuted** (arm C closed) | the document plateau is not a length effect of the layout; MP-DocVQA leans tail, infographics spread, at every size |
-| Spread is better on one long text passage at full budget | MRQA long | 1,500 × 2 seeds | spread today's code .715 / .724; tail re-runs running | better bar, both seeds | open: 191779 / 191780 | confirms arm B on natural text |
-| The gating eval cannot show "equal" | arithmetic on the CIs | 23 pairs + arm B + stage G | one seed's CI width .044–.053 documents, .046–.056 text, .036–.041 photos; pooled .031–.038 | — | **confirmed** | option B at the checkpoint |
+| Spread is better on one long text passage at full budget | MRQA one passage, today's code both sides | 1,500 × 2 seeds | +.084 (+.060, +.109) / +.098 (+.075, +.122); EM +.057 / +.074 | better bar, both seeds | **better** under the rubric judge, the project prompt (+.070 / +.103), EM and ANLS | confirms arm B on natural text; largest on passages > 100 slots (+.19 / +.23, post hoc) |
+| The extra stage-2 data of the tail models bought what the layout bought (the slots now hold the same) | arm D, four stage-2 models | 3,053 slots; 40 rows × 3 sets | ownership advantage +.178 → +.208; page loss −.196 → −.124; text loss −.115 → +.056 | advantage inside ±2 pt at full budget | **refuted** for ownership, pages and photos; text loss reverses | the tie on the gating sets is an accuracy tie, not a representation tie; arm E tests whether one tail pass ties too |
+| The gating eval cannot show "equal" | arithmetic on the CIs | 23 pairs + arm B + stage G | one seed's CI width .044–.053 documents, .046–.056 text, .036–.041 photos; pooled .031–.038 | — | **confirmed**; and no second disjoint document set exists in the same sources (365 questions left) | arm E can show "the gain carries at ≥ 3 pt" but not certify "equal" (owner checkpoint, campaign_spread/BLOCKED.md) |

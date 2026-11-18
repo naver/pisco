@@ -1,0 +1,200 @@
+== campaign spread wake 2026-11-19_0200  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795021202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=6.3 idle_h=3.5 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7601 sig=260cc69f same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/hook.log
+== session 814be617-246f-4ee0-942d-d950c1144e46  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md
+  ↳ # Wake brief — campaign spread — 2026-11-19_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+97 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_spread && wc -l CAMPAIGN.md STATE.md known_issues.md && cat STATE.md
+  ↳ 324 CAMPAIGN.md (+77 lines)
+→ Bash: cat CAMPAIGN.md
+  ↳ <persisted-output> (+26 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/814be617-246f-4ee0-942d-d950c1144e46/tool-results/bd07pejcw.txt
+  ↳ 1	# CAMPAIGN spread — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+324 lines)
+→ Bash: cat known_issues.md; ls; cat ticks/2026-11-18_2330.log | tail -5; expmon ledger 40 | grep -i spread | tail -30
+  ↳ # Known issues — campaign spread   (symptom → verdict → action; check here BEFORE diagnosing) (+52 lines)
+Reading the finished MRQA tail re-runs and the slot-mechanism probes (arm D) that ended while the account was on its usage limit.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -X -D -j 191779,191780,191785 -o JobID,State,ExitCode,Elapsed,NodeList,Start,End,MaxRSS 2>/dev/null; sacct -j 191779,191780,191785 -o JobID,State,MaxRSS -n | grep -v "^ *$" | head; ls -la --tim…
+  ↳ JobID             State ExitCode    Elapsed        NodeList               Start                 End     MaxRSS  (+16 lines)
+→ Bash: for f in expQ/spread/b_tail_s4{2,3}/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json; do python3 -c " ⏎ import json,sys ⏎ d=json.load(open('$f')) ⏎ print(type(d), list(d.keys())[:10] if isinstance(d,dict) else len(d)) ⏎ s=d.get…
+  ↳ <class 'dict'> ['summary', 'records'] (+21 lines)
+→ Bash: grep -rn "191675\|191676" campaign_spread/STATE.md scripts/spread/*.tsv 2>/dev/null | head; ls scripts/spread/; find expQ/qafreeze -name "*mrqa*" -newer campaign_spread/CAMPAIGN.md 2>/dev/null | head
+  ↳ campaign_spread/STATE.md:26:- MRQA one long passage (~900 tokens, 53 slots per question): spread on today's code .715 / .724 (qafreeze 191675 / 191676, read-only); tail re-runs on today's code 191779  (+13 lines)
+→ Bash: expmon runs 2>/dev/null | grep -E "19167[56]" ; grep -rln "191675" expQ/qafreeze 2>/dev/null | head -3; find expQ -name "*mrqa_ood_1500*.json" -newermt "2026-11-18" 2>/dev/null | grep -v "\.done" | head
+  ↳ 191675     ended     -           qafreeze       dd7b35f+dirty  eval_mm_4b.sh    kind=eval_mm mode=pisco ckpt=ref_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged= (+10 lines)
+→ Bash: ls -la expQ/qafreeze/ref_s42/model expQ/qafreeze/ref_s43/model expQ/spread/b_tail_s42/model expQ/spread/b_tail_s43/model; ls -la --time-style=full-iso expQ/qafreeze/ref_s4?/eval/*mrqa*; head -5 scripts/spread/pooled_pairs.tsv; wc -l scripts…
+  ↳ lrwxrwxrwx 1 hdejean hdejean 61 Nov 17 18:35 expQ/qafreeze/ref_s42/model -> /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model (+15 lines)
+→ Bash: md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/judge_prompts.py | cut -c1-8,33-; git log --since=2026-11-17 --format="%h %ci %s" -- eval_mm_4b.sh scripts/eval_mm_docqa.…
+  ↳ b3d1cda1  eval_mm_4b.sh (+14 lines)
+Pairing the MRQA results now: spread vs tail on the same 1,500 questions, per seed and pooled.
+→ Bash: sed -n 1,30p scripts/paired_judge.py | head -30; sed -n '/def pooled_main/,/^def /p' scripts/spread/slice_pairs.py | head -60
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+51 lines)
+→ Bash: S42=expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json; T42=expQ/spread/b_tail_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json; S43=expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_cml40…
+  ↳ == judge s42 (+43 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ fs={'S42':'expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json','T42':'expQ/spread/b_tail_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json','S43'…
+  ↳ Exit code 1 (+14 lines)
+MRQA is clean (1,500 rows each, all judged, slot counts equal). Now reading the slot-mechanism probes.
+→ Bash: ls -la expQ/spread/mech/*/; tail -60 expQ/spread/mech_191785.out
+  ↳ expQ/spread/mech/s2_spread_full_191785/: (+86 lines)
+→ Bash: for d in s2_spread_red s2_tail_red s2_spread_full s2_tail_full; do echo "=== $d"; cat expQ/spread/mech/${d}_191785/probe_mixer.json; echo; python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/spread/mech/${d}_191785/probe_connector.json')) ⏎…
+  ↳ === s2_spread_red (+167 lines)
+Controls of the slot probes pass exactly (reduced pair: ownership .977 / .799, page answer loss 1.138 / 1.334). Checking whether per-row losses are stored so I can pair the two full-budget models.
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/spread/mech/s2_spread_full_191785/probe_connector.json')) ⏎ print(d['ckpt'], d['ref_ckpt'], d['n_rows']) ⏎ v=d['doc_pages']; print(list(v.keys())) ⏎ n=v['nll']; print(type(n), list(n.items…
+  ↳ expQ/archq3/pt_mm_5M_spread/model expQ/pt_mm_v4kd_4b/model 40 (+2 lines)
+→ Bash: ls eval_data/ | head -50; for s in mm_docqa_retr10_1m mm_docqa_longdoc_1m mm_docqa_1500_1m; do ls eval_data/$s 2>/dev/null | head -5; cat eval_data/$s/*.json 2>/dev/null | head -c 600; echo; done
+  ↳ longbench_multifieldqa_en (+54 lines)
+→ Bash: ls expQ/*/eval/*retr10_1m*.json expQ/*/eval/*longdoc_1m*.json expQ/*/eval/*retr4_1m*.json 2>/dev/null | head -20
+  ↳ expQ/base_qwen35_4b/eval/mm_docqa_base_k10_px1003520_mm_docqa_retr10_1m.json (+19 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,collections ⏎ base=json.load(open('expQ/ft_mm_4b_174908/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json'))['records'] ⏎ B={r['query_id'] for r in base}; Bq={r['query'] for r in base} ⏎ for f in ['expQ/ft_…
+  ↳ mm_docqa_pisco_k10_px1003520_mm_docqa_retr10_1m.json 1500 {'slidevqa': 500, 'infovqa': 500, 'mpdocvqa': 500} overlap {'slidevqa': 500, 'infovqa': 500, 'mpdocvqa': 500} True 10 (+3 lines)
+→ Bash: grep -n "add_argument\|infovqa\|def \|seed\|sample" scripts/build_mm_eval.py | head -50; echo ----; cat scripts/spread/rejudge.sbatch | head -60; echo ----; cat scripts/spread/rejudge_pairs.tsv | head -5
+  ↳ 5:  slidevqa 556 Q / 1284 slides · infovqa 718 Q / 459 pages · mpdocvqa 591 Q / 741 pages · (+58 lines)
+→ Bash: sed -n 1,32p scripts/build_mm_eval.py; sed -n 98,130p scripts/build_mm_eval.py
+  ↳ """Build the multimodal document-QA EVAL set (same row schema as the finetune set). (+64 lines)
+→ Bash: sacct -j 191665 -o JobID,Elapsed,MaxRSS -n | head -3; expmon runs --running 2>&1 | tail -3; squeue -u hdejean -h -o "%i %j %T" | head; F="expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json expQ/spread/b_tail…
+  ↳ 191665         00:07:27             (+9 lines)
+→ Bash: expmon launch --exp spread --stage J --parent 191454 --dry-run --time 0:23:00 '--exclude=homer-[005-009]' scripts/spread/rejudge.sbatch mrqa4 expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json expQ/spread/b_…
+  ↳ would submit: sbatch --time 0:23:00 --exclude=homer-[005-009] scripts/spread/rejudge.sbatch mrqa4 expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json expQ/spread/b_tail (+3 lines)
+→ Bash: expmon launch --exp spread --stage J --parent 191454 --time 0:23:00 '--exclude=homer-[005-009]' scripts/spread/rejudge.sbatch mrqa4 expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json expQ/spread/b_tail_s42/e…
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=0:23:00 (+5 lines)
+Now recording the results: verdicts for the MRQA cells and arm D, plus notes.
+→ Bash: expmon note -j 192006 "spread arm J intent: project-prompt re-judge of COPIES of the 4 MRQA files (spread 184778/184780 via qafreeze 191675/191676 read-only, tail 174908/176242 = 191779/191780) -> expQ/spread/rejudge/mrqa4/; originals untou…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -i mrqa; python3 - <<'EOF' ⏎ import json,random ⏎ def R(f): return {r['query_id']:r for r in json.load(open(f))['records']} ⏎ P={42:('expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_…
+  ↳ mm_docqa_base_px1003520_expand_text_mrqa_ood_1500.json (+10 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json')) ⏎ s=d['summary']; print(s['n'], s.get('judge'), s.get('judge_prompt'), s.get('em'), s.get('topk_docs')) ⏎ R=d['record…
+  ↳ Exit code 1 (+5 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ R=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_text_mrqa_ood_1500.json'))['records'] ⏎ A=json.load(open('expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json'))…
+  ↳ ids equal True unparseable 0 (+81 lines)
+→ Bash: sed -n 80,107p docs/spread_cases.md; cat campaign_spread/DECISIONS.md | head -40; cat campaign_spread/VERIFY.md | head -5
+  ↳ - `PX` is inert on photos: every `mm_naturalqa_1500` file has 79,322 slots at 451,584 and at 1,003,520 px. (+66 lines)
+→ Bash: diff expQ/qwen35_4b_pt_5M_143228/training_config.yaml expQ/archq3/pt_text_5M_spread/training_config.yaml; ls expQ/qwen35_4b_pt_5M_143228/model expQ/archq3/pt_text_5M_spread/model; sacct -X -D -j 184777,184778,184780 -o JobID,State,Elapsed,N…
+  ↳ 45a46,47 (+22 lines)
+→ Bash: expmon runs --exp spread 2>/dev/null | awk 'NR>1{print $1}' | grep -E '^[0-9]+$' | tr '\n' ',' | sed 's/,$//' > /tmp/spread_ids.txt; cat /tmp/spread_ids.txt; echo; sacct -X -j $(cat /tmp/spread_ids.txt) -o JobID,ElapsedRaw,AllocTRES%60,Stat…
+  ↳ sacct: fatal: Bad job/step specified: -o (+1 lines)
+→ Bash: expmon runs --exp spread 2>&1 | head -5; expmon efficiency 2>&1 | head -20
+  ↳ expmon runs: unknown argument '--exp' (+21 lines)
+→ Bash: IDS=$(expmon runs spread 2>/dev/null | awk 'NR>1 && $1 ~ /^[0-9]+$/ {print $1}' | sort -u | tr '\n' ',' | sed 's/,$//'); echo "$IDS" | tr ',' '\n' | wc -l; sacct -X -j "$IDS" -o JobID,ElapsedRaw,AllocTRES%80 -n -P | awk -F'|' '{g=0; if(matc…
+  ↳ 20 (+1 lines)
+→ Bash: for s in 42 43; do python3 scripts/paired_judge.py expQ/qafreeze/ref_s$s/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json expQ/spread/b_tail_s$s/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json --metric anls --name…
+  ↳ ALL             1500   0.562   0.487   +0.076   0.011 [+0.054, +0.097]       -       -        - (+2 lines)
+→ Bash: squeue -j 192006 -h -o "%T %r %P %b"; gpucap free a100 2>&1 | tail -4
+  ↳ PENDING ReqNodeNotAvail, UnavailableNodes:homer-[006-007,009-014,016-020] gpu-be gres/gpu:1 (+4 lines)
+→ Bash: scontrol show res 2>&1 | head -20; date
+  ↳ No reservations in the system (+1 lines)
+Re-judge job is queued (scheduler shows a transient node-availability reason; no reservation exists). Rewriting the deliverable `docs/spread_cases.md` now.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md'; s=open(p).read() ⏎ rep=[ ⏎ ("Rewritten whenever an arm decides. Last rewrite 2026-11-18 21:30, after arm C (many pages) and arm J (judge\nprompt / EM check) decided.", ⏎  "Rewritten whenever an …
+  ↳ 3:Rewritten whenever an arm decides. Last rewrite 2026-11-19 02:15, after the MRQA tail re-runs (today's code) and arm D (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md'; s=open(p).read() ⏎ a="| text 1,500 Q, one chunk | .052–.056 | .052 | — | — | resolves the +25 pt easily |" ⏎ assert a in s ⏎ s=s.replace(a, a+""" ⏎ | MRQA 1,500 Q, one passage | .047–.049 | — | …
+  ↳ 138
+→ Bash: python3 -c " ⏎ import json ⏎ for s in (42,43): ⏎     A={r['query_id']:r['judge'] for r in json.load(open(f'expQ/qafreeze/ref_s{s}/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json'))['records']} ⏎     T={r['query_id']:r['judge']…
+  ↳ 42 0.555 0.21 (+1 lines)
+Numbers verified. Recording the arm D verdict and the notes.
+→ Bash: expmon verdict 191785 closed "healthy: COMPLETED 0:0 56:54 homer-011, one attempt, MaxRSS 4.5 GB; 4 models x probe_mixer + probe_connector, all 8 JSONs written. Control PASS: reduced pair reproduces ownership .977/.799 and answer loss pages…
+  ↳ verdict recorded: 191785 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+Now preparing the owner checkpoint. Looking at the recorded launch commands of the spread chain (stage 2 and the two finetunes) so arm E can copy them exactly.
+→ Bash: expmon lineage 184777 2>&1 | head -40
+  ↳ lineage of 184777: (+39 lines)
+→ Bash: grep -E '"(184777|184778|184780)"' .expmon/runs.jsonl 2>/dev/null | head -3 | cut -c1-1500; ls .expmon/ | head -30
+  ↳ {"ts": "2026-11-04 00:52", "jobid": "184777", "launcher": "pt_mm_4b.sh", "argv": ["160000", "8", "8", "merger", "/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_text_5M_spread/model", "+model_config (+28 lines)
+→ Bash: grep -nE "^#SBATCH|OUT|output_dir|\\\$1|\\\$2|\\\$3|\\\$4|\\\$5|shift|RUN_DIR|SLURM_JOB_ID" pt_mm_4b.sh | head -40; echo ----; grep -nE "^#SBATCH|OUT|output_dir|\\\$1|\\\$2|\\\$3|\\\$4|shift|RUN_DIR|SLURM_JOB_ID" ft_mm_4b.sh | head -30; git…
+  ↳ 2:#SBATCH -n 1 (+30 lines)
+→ Bash: git log --format="%h %ci %s" 24b7a2c..HEAD -- pt_mm_4b.sh ft_mm_4b.sh pisco/ | head; git diff --stat 24b7a2c HEAD -- pt_mm_4b.sh ft_mm_4b.sh pisco/ | tail -8; git status --short pisco/ pt_mm_4b.sh ft_mm_4b.sh
+  ↳ 5955890 2026-11-17 17:17:29 +0900 freeze_part setting, probe arms E/G in the eval, requeue resume in eval_mm_4b.sh, freeze result in docs (+7 lines)
+→ Bash: git diff 24b7a2c HEAD -- pisco/configs/finetune_mm.yaml pisco/train.py | head -70
+  ↳ diff --git a/pisco/configs/finetune_mm.yaml b/pisco/configs/finetune_mm.yaml (+60 lines)
+→ Bash: grep -n "connector_lr\|freeze_compressor\|freeze_part\|head_scales" expQ/ft_mm_4b_184778/training_config.yaml expQ/archq3/pt_mm_5M_spread/training_config.yaml | head; grep -n "freeze_compressor\|freeze_part\|head_scale" pisco/model.py | gre…
+  ↳ expQ/ft_mm_4b_184778/training_config.yaml:37:connector_lr: null (+3 lines)
+Writing the two arm E launchers now (no training starts; it waits for the owner), so a "yes" can go straight to a 20-step smoke. Reading the stage-2 launcher in full first.
+→ Bash: sed -n 11,80p pt_mm_4b.sh; echo ----; sed -n 11,60p ft_mm_4b.sh; echo ----; sed -n 1,60p scripts/slotcheck/pt_overfit.sbatch 2>/dev/null | head -60
+  ↳ # (+110 lines)
+→ Bash: grep -nE "training_dataset|output_dir|run.dir|model_name_or_path|max_steps|seed|samples" expQ/archq3/pt_mm_5M_spread/training_config.yaml expQ/ft_mm_4b_184778/training_config.yaml expQ/ft_mm_4b_184780/training_config.yaml; sacct -j 184777 -…
+  ↳ expQ/archq3/pt_mm_5M_spread/training_config.yaml:1:output_dir: ./outputs/run (+17 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/spread/pt_mm_tail5m.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/spread/pt_mm_tail5m.sbatch (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/spread/ft_tail5m.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/spread/ft_tail5m.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: bash -n scripts/spread/pt_mm_tail5m.sbatch && bash -n scripts/spread/ft_tail5m.sbatch && echo "bash -n OK"; md5sum scripts/spread/pt_mm_tail5m.sbatch scripts/spread/ft_tail5m.sbatch | cut -c1-8,33-; grep -n "max_steps\|seed:" expQ/archq3/pt…
+  ↳ bash -n OK (+9 lines)
+→ Bash: sinfo -p gpu-be -N -o "%N %T %G" 2>/dev/null | sort -u | head -25; squeue -u hdejean -h -o "%i %T %r %N" 
+  ↳ homer-005 allocated gpu:A100-SXM4-80GB:8(S:0-1) (+24 lines)
+Launchers pass `bash -n`. Now writing the owner checkpoint question (arm E) and a small rule question, as the law requires before any training.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_spread/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cat >> campaign_spread/known_issues.md <<'EOF' ⏎ | a "new evaluation data" set named for a repeat (`mm_docqa_retr10_1m`, `retr4_1m`, `longdoc_1m`) gives the same question ids as the gating set (1,500 / 1,500) | it adds pages, not questions:…
+  ↳ **Settled** (+11 lines)
+The MRQA re-judge is now running. Rewriting STATE.md while it finishes.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: squeue -j 192006 -h -o "%T %M %N"; sacct -X -j 192006 -o State,ExitCode,Elapsed -n; tail -5 expQ/spread/rejudge_192006.out; ls expQ/spread/rejudge/mrqa4/ 2>/dev/null
+  ↳ RUNNING 1:33 homer-019 (+10 lines)
+Re-judge is about 1/5 done (a few minutes left). Refreshing the campaign page meanwhile.
+→ Bash: timeout 100 expmon display --exp spread 2>&1 | tail -4
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_spread.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: expmon gripe --open --search "display" 2>&1 | head -8
+  ↳ == 60 open report(s) matching 'display', every machine, newest first == (+7 lines)
+→ Bash: grep -c "<tr" display_spread.html; grep -o "191785\|191779\|192006" display_spread.html | sort | uniq -c
+  ↳ 21 (+3 lines)
+→ Bash: expmon gripe --open --search "GPU-h used" 2>&1 | head -5; expmon gripe --open --search "runs --exp" 2>&1 | head -4; tail -2 expQ/spread/rejudge_192006.out
+  ↳ == 0 open report(s) matching 'gpu-h used', every machine, newest first == (+9 lines)
+→ Bash: expmon gripe -c gap "campaign GPU-hours used are not printed anywhere (brief has gpuh24 only): the wake summed sacct ElapsedRaw x gres/gpu over 'expmon runs spread' by hand to check the 30 / 95 GPU-h caps (8.5 h). Suggest: 'expmon campaign …
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log (+3 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/spread_cases.md'; s=open(p).read() ⏎ a="| — | **confirmed** | option B at the checkpoint |" ⏎ assert a in s ⏎ s=s.replace(a,"| — | **confirmed**; and no second disjoint document set exists in the same sources (36…
+  ↳ 138:| The gating eval cannot show "equal" | arithmetic on the CIs | 23 pairs + arm B + stage G | one seed's CI width .04
+Waiting about a minute for the last re-judge file, then pairing it.
+→ Bash: for i in 1 2 3 4 5 6 7 8 9 10 11 12; do S=$(sacct -X -j 192006 -o State -n | tr -d ' '); [[ "$S" != RUNNING ]] && break; tail -1 expQ/spread/rejudge_192006.out | grep -q "EXIT CODE" && break; timeout 10 tail -f /dev/null; done; sacct -X -j …
+  ↳ COMPLETED      0:0   00:02:23       homer-019  (+4 lines)
+→ Bash: D=expQ/spread/rejudge/mrqa4; B=mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json; grep -c "unparseable: 0" expQ/spread/rejudge_192006.out; for s in 42 43; do for m in judge judge_rubric; do echo "== s$s $m"; python3 scripts/paired_ju…
+  ↳ 4 (+12 lines)
+Project-prompt judge agrees: +.070 / +.103 (the copies' rubric verdicts reproduce +.084 / +.098 exactly). Recording and updating the three files.
+→ Bash: expmon verdict 192006 closed "healthy: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies x 1,500 rows, project prompt on all, unparseable 0 (4/4); copies' judge_rubric reproduce the rubric pairs exactly (+.084 / +.098). MRQA spread - tail…
+  ↳ verdict recorded: 192006 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+8 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_spread/STATE.md'; s=open(p).read() ⏎ a="- 191785: COMPLETED 0:0 56:54" ⏎ assert a in s ⏎ s=s.replace(a,"- 192006: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies × 1,500 rows, project prompt on every row,…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: echo "waiting-owner" > campaign_spread/NEXT && cat campaign_spread/NEXT && git status --short campaign_spread scripts/spread docs/spread_cases.md
+  ↳ waiting-owner (+8 lines)
+The spread campaign has finished every no-training step and now waits for your decision on one training run (arm E, ≈ 44 GPU-hours). `campaign_spread/BLOCKED.md` holds two questions.
+
+## Done this wake
+- **MRQA, one long passage per question (both sides on today's code, 1,500 questions per seed):**
+  - Spread − tail by judge accuracy (Qwen3-8B grading answers; higher is better):
+    - Main rubric prompt: +.084 (s42) / +.098 (s43).
+    - Second, project prompt: +.070 / +.103.
+    - Exact match: +.057 / +.074.
+  - Every confidence interval is above 0, so spread is better at both seeds under every scoring.
+  - The uncompressed decoder scores .807 on the same questions; the compressed input is 53 slots per question at 8 tokens per slot.
+  - The gain is largest on the longest passages (+.19 / +.23 above 100 slots). That split was chosen after seeing the data, so it stays provisional.
+- **What the slots hold (inference probe on the four stage-2 models):**
+  - The controls reproduced the recorded values exactly.
+  - At full budget, spread slots stay tied to their own text chunk: .972 against .763 for the tail model with three stage-2 passes.
+  - So the extra stage-2 data did not give tail what the layout gives spread. The tie on the main test sets is a tie in accuracy, not in what the slots contain.
+- **New finding: no second set of document questions exists in the same sources.**
+  - Only 365 unused questions remain (56 slides, 218 infographics, 91 MP-DocVQA).
+  - The sets the rules name as "new data" reuse the same 1,500 questions with different pages.
+  - So the infographics lead (+5 pt at both seeds, spotted after the fact) cannot be retested above the 300-question floor. It stays provisional.
+- I wrote the two arm E training launchers, one for stage 2 and one for the finetune. They pass a shell syntax check but have not run, because no training is allowed before your answer.
+- Updated `docs/spread_cases.md` (case table, scoring table, slot-probe table, hypotheses), STATE.md and known_issues.md.
+
+## Your decisions
+**1. Arm E: train tail with exactly the spread chain's recipe, one stage-2 pass, to test whether the small-budget gain survives at full budget?**
+
+| option | what runs | GPU-h |
+|---|---|---|
+| A (recommended) | stage 2 + seed-42 finetune + evals; seed 43 only if seed 42 shows ≥ +3 pt on documents | ≈ 44 (≈ 60 if seed 42 passes) |
+| B | both seeds at once | ≈ 60 |
+| C | no training; close with the case table | 0 |
+
+- Arm E can show "the gain carries over, by 3 pt or more".
+- It cannot prove "equal" on this document set: the intervals are .038–.053 wide.
+- I propose no fixes, because the one big effect (long text, +8 to +26 pt) needs no training.
+
+**2. Count a case as "better" when every scoring says better, even if the sizes differ?** Example: exact match is 10 pt smaller than the judges on one long HotpotQA chunk. A yes makes "spread is better on long text" settled instead of provisional. It changes no number and costs 0 GPU-hours. I recommend yes.
+
+Your decision: answer both questions in `campaign_spread/BLOCKED.md` (my recommendation: A, and yes).
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Read MRQA tail re-runs 191779/191780 (healthy): spread - tail +.084/+.098 rubric, +.070/+.103 project prompt (re-judge 192006), +.057/+.074 EM -> better at both seeds under every scoring. Arm D 191785 c…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=5.0634 turns=70 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Read MRQA tail re-runs 191779/191780 (healthy): spread - tail +.084/+.098 rubric, +.070/+.103 project prompt (re-judge 192006), +.057/+.074 EM -> better at both seeds under every scoring. Arm D 191785 closed: controls reproduce recorded values; full-budget ownership .972 vs .763, so the accuracy tie is not a representation tie. Found only 365 unused document questions left in the gating sources (i…", "launched": ["192006"], "verdicts": [{"jobid": "191779", "verdict": "closed", "note": "healthy; tail 174908 MRQA .631; spread - tail +.084 [+.060,+.109]"}, {"jobid": "191780", "verdict": "closed", "note": "healthy; tail 176242 MRQA .626; spread - tail +.098 [+.075,+.122]"}, {"jobid": "191785", "verdict": "closed", "note": "arm D: control PASS; ownership .972 vs .763 at full budget; advantage does not shrink (text loss reverses)"}, {"jobid": "192006", "verdict": "closed", "note": "MRQA project-prompt re-judge, unparseable 0; +.070/+.103"}], "blocked": "Owner checkpoint before arm E (training, ~44-60 GPU-h) and the arm J 2-pt size rule; both in campaign_spread/BLOCKED.md", "gripes": ["gap: campaign GPU-hours used are not printed anywhere; summed sacct by hand (suggest expmon campaign budget <label> + a BRIEF line)"]}
+== final:
+{"next":"waiting-owner","summary":"Read MRQA tail re-runs 191779/191780 (healthy): spread - tail +.084/+.098 rubric, +.070/+.103 project prompt (re-judge 192006), +.057/+.074 EM -> better at both seeds under every scoring. Arm D 191785 closed: controls reproduce recorded values; full-budget ownership .972 vs .763, so the accuracy tie is not a representation tie. Found only 365 unused document questions left in the gating sources (infographics repeat below the 300 floor; option B impossible from same sources). Wrote arm E launchers (bash -n OK, not run). Owner checkpoint in BLOCKED.md: arm E option A (~44 GPU-h, ~60 if seed 42 shows >= +3 pt) and the arm J size rule (recommend counting 'better under every scoring' as better). GPU-h used 8.6 of 95.","launched":["192006"],"verdicts":[{"jobid":"191779","verdict":"closed","note":"healthy; tail 174908 MRQA .631; spread - tail +.084 [+.060,+.109]"},{"jobid":"191780","verdict":"closed","note":"healthy; tail 176242 MRQA .626; spread - tail +.098 [+.075,+.122]"},{"jobid":"191785","verdict":"closed","note":"arm D: control PASS; ownership .972 vs .763 at full budget; advantage does not shrink (text loss reverses)"},{"jobid":"192006","verdict":"closed","note":"MRQA project-prompt re-judge, unparseable 0; +.070/+.103"}],"blocked":"Owner checkpoint before arm E (training, ~44-60 GPU-h) and the arm J 2-pt size rule; both in campaign_spread/BLOCKED.md","gripes":["gap: campaign GPU-hours used are not printed anywhere; summed sacct by hand (suggest expmon campaign budget <label> + a BRIEF line)"]}
+== rc=0 secs=910
+== verify: 8/18
