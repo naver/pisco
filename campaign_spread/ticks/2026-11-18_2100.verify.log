@@ -1,0 +1,62 @@
+== verifier 2026-11-18_2100  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+== session f94b5928-c444-4487-9bb3-16e5dc3ad89a  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign spread (+248 lines)
+→ Glob: {"pattern": "expQ/spread/{pooled_*,rejudge/pooled_*,did_*,rerun_checks}/*"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/pooled_20261118_1730/pooled.md
+  ↳ 1	| case | n | per seed A-B ↑ | pooled A-B ↑ | 95% CI | width | equal (±2 pt) | control | (+7 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled.md
+  ↳ 1	metric: judge (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_judge_rubric.md
+  ↳ 1	metric: judge_rubric (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_em.md
+  ↳ 1	metric: em (+8 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100/pooled_anls.md
+  ↳ 1	metric: anls (+8 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/did_20261118_2100"}
+  ↳ expQ/spread/did_20261118_2100/did.md (+1 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks"}
+  ↳ expQ/spread/rerun_checks/photo_drift.md (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/did_20261118_2100/did.md
+  ↳ 1	metric: judge (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/did_20261118_2100/did_em.md
+  ↳ 1	metric: em (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/rerun_20261118.md
+  ↳ 1	# Re-run identity checks, 2026-11-18 (scripts/spread/compare_answers.py; A = recorded / older file, B = today's-code re-run) (+11 lines)
+→ Grep: {"pattern": "infograph|InfoVQA|infovqa", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "-i": true}
+  ↳ 70:| source | infovqa | 500 | 0.466 | 0.390 | +0.076 | [+0.038, +0.114] | 72/34 | 0.000285 | 0.32 | 0.47 | 0.726 | 5.7 | yes | (+8 lines)
+→ Grep: {"pattern": "^#|mpdocvqa|slide", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md", "output_mode": "content", "-i": true}
+  ↳ 1:# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+44 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/audit_191454/audit.md
+  ↳ 1	# Arm A — case audit of the recorded spread vs tail files (judge accuracy, 1 = correct; A = spread, B = tail) (+61 lines)
+The pooled, re-judge, growth-test, re-run and audit tables all match. Now checking the per-seed scoring CIs and the answer-length analysis in the deliverable doc.
+→ Grep: {"pattern": "0?\\.243|0?\\.224, \\+0?\\.281|3\\.43|EM-0|judged-right|0?\\.715|0?\\.724|0?\\.042|0?\\.070", "path": "/beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md", "output_mode": "content"}
+  ↳ 25:| documents, 4 pages | full | 1,500 | 431 (108 per page) | .610 / .615 | .599 / .591 | +.011 (−.014, +.035) | +.024 (−.002, +.048) | 177/161 · 193/157 | +.017 (−.002, +.036) | .809 | 3.4 | not reso (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md
+  ↳ 14	pass) vs the production tail models 174908 / 176242 (three stage-2 passes) — NOT one variable. (+94 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/spread/rerun_checks/photo_drift.md
+  ↳ 1	| pair | n | answers differ | judge A | judge B | judge flips (A-only/B-only) | A | B | (+5 lines)
+→ Grep: {"pattern": "19153[12]|19167[56]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread", "output_mode": "content", "glob": "*.md"}
+  ↳ campaign_spread/known_issues.md:28:| a sibling's eval shows COMPLETED with Elapsed 00:00:00 in `sacct -X` although its output json is fresh (qafreeze 191675 / 191676, MRQA) | the job was requeued afte (+5 lines)
+→ Grep: {"pattern": "19153[12]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze", "output_mode": "content", "glob": "*.md"}
+  ↳ campaign_qafreeze/VERIFY.md:11:| photos −0.3 pt [−1.5, +0.9], p .741 (s42, 191659 vs 191531); −0.5 pt [−1.7, +0.7], p .434 (s43, 191660 vs 191532) | supported | photos_QminusR_s42.txt: −0.003 [−0.015, (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/VERIFY.md
+  ↳ 1	# VERIFY — campaign spread — 2026-11-18_1730   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+23 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge/pooled_20261118_2100"}
+  ↳ expQ/spread/rejudge/pooled_20261118_2100/pooled_judge_rubric.md (+3 lines)
+→ Grep: {"pattern": "243|0\\.127|0\\.126|0\\.047|3\\.43|3\\.01", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/spread/rejudge", "output_mode": "content", "glob": "*.{md,txt,tsv,log}"}
+  ↳ No matches found
+→ Grep: {"pattern": "\\.243|\\.127, |\\.126, |\\.047, |3\\.43|judged-right|EM-0|em0", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_2100.log", "output_mode": "content", "head_limit": 30}
+  ↳ 40:  ↳ B_one_chunk   judge s42  ALL             1500   0.639   0.367   +0.271   0.015 [+0.243, +0.301]     502      95    0.000 (+15 lines) (+1 lines)
+Most numbers check out; confirming the last per-seed CIs in the wake's log before writing the verdicts.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_2100.log
+  ↳ 30	→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py (+94 lines)
+I checked all 15 claims: 10 are supported, 5 are provisional, and none is unsupported. Of the provisional ones, two are downgrades of claims the wake had listed as settled.
+→ StructuredOutput: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 6…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4361 turns=27 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm A feasibility gate PASS (job 191454, CPU, closed): the 8…", "status": "supported", "reason": "audit.md:3 says 'FEASIBILITY GATE: PASS'. audit.md:9-16 re-d…"}, {"claim": "Seed-pooled \"equal\" test controls PASS (17:45, and again at …", "status": "supported", "reason": "pooled_20261118_1730/pooled.md:3, red_docs_CONTROL row: +0.0…"}, {"claim": "Arm B closed + arm J checked. ONE chunk ... spread − tail: r…", "status": "provisional", "reason": "The numbers are found. Rubric figures are in verdicts 191457…"}, {"claim": "Tail production loses going from ten chunks to one at both s…", "status": "supported", "reason": "Verdicts 191456 and 191526 give −.253 [−.281, −.225] and −.2…"}, "… +11 more"], "summary": "All the numbers in STATE.md match their sources: the grid, t…"}
+== final:
+{"claims":[{"claim":"Arm A feasibility gate PASS (job 191454, CPU, closed): the 8 recorded spread − tail judge differences re-derive exactly; 39 self-pairs 0.000; 184778's document file 1,500 rows, judge on all, 0 unparseable, mems_used 646,042.","status":"supported","reason":"audit.md:3 says 'FEASIBILITY GATE: PASS'. audit.md:9-16 re-derives all 8 differences ('ok yes', e.g. red_docs_s42 +0.093, full_docs_s43 +0.024). The grid probe for 191454 gives selfpair=1, files=39. audit.md:57 shows the 184778 document file at 1500 rows, 1500 judged, 0 unparseable, 646,042 slots. Verdict 191454 is 'closed'."},{"claim":"Seed-pooled \"equal\" test controls PASS (17:45, and again at 21:10 on the arm J copies: re-pairing the copies' rubric verdicts reproduces the rubric table to the third decimal): reduced-budget documents +.084 [+.065, +.103] (expected +.084), every self-pair 0.000.","status":"supported","reason":"pooled_20261118_1730/pooled.md:3, red_docs_CONTROL row: +0.084 [+0.065, +0.103], 'self-pair 0.000, expect +0.084 ok'. rejudge/pooled_20261118_2100/pooled_judge_rubric.md matches it on every row. Caveat: none of the four 21:10 tables carries the law's +.084 control row, only self-pairs. So the 21:10 'again' is a reproduction check, not the law's control. Decisions taken on the 21:10 EM/project/ANLS tables lack that known-positive control."},{"claim":"Arm B closed + arm J checked. ONE chunk ... spread − tail: rubric judge +.260 [+.233, +.289] (s42, 191457 − 191456, McNemar 488 / 98) / +.247 [+.219, +.275] (s43, 191528 − 191526, 477 / 106); project prompt +.271 [+.243, +.301] / +.253 [+.224, +.281]; EM +.151 [+.127, +.175] / +.152 [+.126, +.177] (job 191665). Better by the bar under every scoring. Arm J's literal rule fails on SIZE only.","status":"provisional","reason":"The numbers are found. Rubric figures are in verdicts 191457/191528. Project and EM per-seed and pooled values are in rejudge pooled.md:5 and pooled_em.md:5. The project s42 CI [+0.243, +0.301] is in tick log 2026-11-18_2100.log:40. The 'better' bar holds under every scoring. But arm J's gate as the law writes it ('keeps its sign and stays within 2 pt under rubric, project prompt and EM; otherwise judge-sensitive') fails: EM +.151 vs rubric +.260 is 11 pt apart. The law has no 'size only' exception, so the case stays judge-sensitive until the owner rules. The wake itself queues this 2-pt note for the owner checkpoint. The arm B conjunction (ten chunks inside ±2 pt) is also not met."},{"claim":"Tail production loses going from ten chunks to one at both seeds: −.253 [−.281, −.225] (s42, 191456 − 191455), −.229 [−.255, −.200] (s43, 191526 − 191519). Spread does not: +.006 [−.019, +.029] (s42, 191457 − 191518), +.023 [+.000, +.045], 178 / 144, p .066 (s43, 191528 − 191630).","status":"supported","reason":"Verdicts 191456 and 191526 give −.253 [−.281, −.225] and −.229 [−.255, −.200]. Grid judge values check out: .3507−.6033 and .3687−.5973. Spread: grid .6107−.6047 = +.006 and .616−.5933 = 
+== rc=0

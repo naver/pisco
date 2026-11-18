@@ -119,6 +119,9 @@ seed-pooled test below (owner, 2026-11-18); **worse** = ≤ −3 pt with the CI 
   a known-positive control it recovers — here: the reduced-budget +.093 (s42) / +.075 (s43) on documents out of the same
   code path, and 0.000 on a self-pair. Next to any threshold count, report the paired per-item test —
   navmem's count showed nothing where a paired sign test found the one real effect (98 closer / 59 farther, p=0.002; control p=0.22).
+  Registered 2026-11-18: arm C's growth test = per-question (spread − tail at N pages) − (spread − tail at 4 pages),
+  paired bootstrap over 1,500 questions per seed (`scripts/spread/did_pairs.py`); known-positive control = arm B's
+  one-chunk vs ten-chunk growth, which it must return as +.259 / +.251 (±.003), and 0.000 on a self-pair, every run.
 - A paired-NLL probe on tens of rows bounds an effect at ~.02-.03 judge accuracy, not at zero (EXPERIMENTS.md:475):
   arm D's NLL numbers are mechanism evidence, never an accuracy claim.
 - Headline claims in STATE.md and the ledger are prefixed `provisional:` until the next critic pass, or until the

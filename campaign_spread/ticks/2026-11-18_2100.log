@@ -1,0 +1,181 @@
+== campaign spread wake 2026-11-18_2100  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795003201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=7.0 idle_h=1.9 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7736 sig=260cc69f same=2 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/hook.log
+== session c74feaab-3a7d-4de6-9060-32202b45b22d  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/BRIEF.md
+  ↳ # Wake brief — campaign spread — 2026-11-18_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+90 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_spread && cat CAMPAIGN.md && echo ======== && cat STATE.md && echo ====== && cat known_issues.md | head -80
+  ↳ Exit code 1 (+98 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 40	Owner's standing rules: probe before training; one variable per arm; text, images and mixed documents for every claim; (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ 1	# STATE — campaign spread   (rewritten WHOLESALE by every LLM wake; never append) (+71 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 119	  a known-positive control it recovers — here: the reduced-budget +.093 (s42) / +.075 (s43) on documents out of the same (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_spread && cat known_issues.md; ls -la; cat /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_2100.log 2>/dev/null | tail -20
+  ↳ # Known issues — campaign spread   (symptom → verdict → action; check here BEFORE diagnosing) (+54 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ 178	  release it). The same question proposes up to 2 fixes (arm F), each with the hypothesis it tests, the evidence from (+59 lines)
+Reading the results of the four jobs that finished while the last wake was blocked by the usage limit (re-judge + three many-page tail cells), then I'll pair and record them.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 191665,191666,191667,191668 -X -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End 2>&1 | head; echo; expmon ledger 40 2>&1 | tail -30
+  ↳ JobID             State ExitCode    Elapsed        NodeList     MaxRSS               Start                 End  (+36 lines)
+→ Bash: ls scripts/spread/ expQ/spread/ expQ/spread/rejudge/gating16/ | head -80; ls -la --time-style=full-iso expQ/spread/b_tail_s42/eval/ expQ/spread/b_tail_s43/eval/
+  ↳ expQ/spread/: (+58 lines)
+→ Bash: head -60 scripts/spread/slice_pairs.py; echo ----; cat scripts/spread/pooled_pairs.tsv; echo ----; tail -30 expQ/spread/rejudge_191665.out; ls expQ/spread/pooled_20261118_1730/
+  ↳ """Campaign spread, arm A: case audit + slice power over RECORDED judged eval files (stdlib only, no model). (+99 lines)
+→ Bash: grep -n "add_argument\|def pooled\|def main\|metric\|\"judge\"\|'judge'" scripts/spread/slice_pairs.py | head -50; wc -l scripts/spread/slice_pairs.py; cat expQ/spread/pooled_20261118_1730/pooled.md | head -40
+  ↳ 172:    judged = sum(1 for r in recs.values() if "judge" in r) (+27 lines)
+→ Bash: sed -n 1,40p scripts/paired_judge.py; grep -n "add_argument" scripts/paired_judge.py; ls scripts/longdoc/ | head -40
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+62 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/spread/slice_pairs.py
+  ↳ 180	            "end": att[-1][3] if att else "?"} (+59 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="scripts/spread/slice_pairs.py" ⏎ s=open(p).read() ⏎ s=s.replace('''def pooled(cells, boot):''','''def pooled(cells, boot, metric="judge"):''') ⏎ s=s.replace('''    ids = sorted(set.intersection(*(set(i for i in A if i…
+  ↳ scripts/spread/slice_pairs.py | 19 +++++++++++-------- (+2 lines)
+→ Bash: G=expQ/spread/rejudge/gating16 && printf '# Campaign spread arm J: the 16 gating copies re-judged with the project prompt (job 191665). In the copies, judge = project prompt, judge_rubric = the original rubric verdict. A = spread, B = tail.…
+  ↳ # Campaign spread arm J: the 16 gating copies re-judged with the project prompt (job 191665). In the copies, judge = pro (+20 lines)
+Copies are intact (16/16 files, 1,500 rows each, rubric verdicts and answers identical to the sources). Now the pooled test under rubric (control), project prompt, EM and ANLS.
+→ Bash: OUT=expQ/spread/rejudge/pooled_20261118_2100 && for m in judge_rubric judge em anls; do echo "== $m"; timeout 120 python3 scripts/spread/slice_pairs.py --pooled scripts/spread/rejudge_pairs.tsv --out $OUT --metric $m 2>&1 | tail -6; done
+  ↳ == judge_rubric (+27 lines)
+→ Bash: G=expQ/spread/rejudge/gating16 && while IFS=$'\t' read c e a1 b1 a2 b2; do [[ $c == \#* ]] && continue; for m in judge em; do for s in 42 43; do if [ $s = 42 ]; then A=$a1 B=$b1; else A=$a2 B=$b2; fi; printf "%-13s %-5s s%s  " $c $m $s; tim…
+  ↳ B_one_chunk   judge s42  ALL             1500   0.639   0.367   +0.271   0.015 [+0.243, +0.301]     502      95    0.000 (+15 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,os ⏎ F={"tail10_s42":"expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json", ⏎ "tail10_s43":"expQ/spread/b_tail_s43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json", …
+  ↳ tail10_s42  rows 1500 judged 1500 unparse 0 judge 0.6 em 0.5093333333333333 mems 1614940 prompt rubric px 1003520 mtime 1794994013 (+12 lines)
+→ Bash: for j in 191666 191667 191668; do f=$(expmon logs $j --path 2>/dev/null || true); done; ls logs 2>/dev/null | head -2; grep -l "191666\|191667\|191668" -r --include=*.out --include=*.log . 2>/dev/null | grep -v expQ/spread/audit | head -5; …
+  ↳ build_doc1500_174616.log (+20 lines)
+→ Bash: grep -n -iE "19ac33|20 ?p|xd16|row L|\| L" campaign_longdoc/STATE.md | head -20; ls campaign_longdoc/; cat campaign_longdoc/NEXT 2>/dev/null
+  ↳ Exit code 1 (+15 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/spread/did_pairs.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/spread/did_pairs.py (file state is current in your context — no need to Read it back)
+→ Bash: cat > scripts/spread/did_pairs.tsv <<'EOF' ⏎ # Campaign spread arm C: DiD = (spread - tail at the big input) - (spread - tail at 4 pages), same seed, same questions. ⏎ # Columns: case, seed, S_big, T_big, S_small, T_small. Spread 10/20-page…
+  ↳ metric: judge (+35 lines)
+DiD controls pass (arm B's known +.259 / +.251 recovered exactly; self-pairs 0). Arm C: no growth of the layout gap with pages. Getting the plain per-seed pairs with CIs:
+→ Bash: for p in "expQ/longdoc/l_r42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json expQ/spread/b_tail_s42/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_1500_1m.json" "expQ/longdoc/l_r43/eval/mm_docqa_pisco_k10_px1003520_xd6_mm_docqa_…
+  ↳ ALL             1500   0.607   0.600   +0.007   0.012 [-0.017, +0.031]     170     160    0.620 (+18 lines)
+→ Bash: ls -la --time-style=full-iso expQ/qafreeze/ref_s42/eval/ expQ/qafreeze/ref_s43/eval/ 2>&1 | grep -i mrqa; ls expQ/ft_mm_4b_174908/eval/ expQ/ft_mm_4b_176242/eval/ 2>&1 | grep -i mrqa; grep -rn "mrqa" campaign_qafreeze/STATE.md | head -8
+  ↳ -rw-rw-r-- 1 hdejean hdejean 762591 2026-11-18 18:23:54.000000000 +0900 mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+5 lines)
+→ Bash: sacct -S 2026-11-18T17:50 -X -o JobID,JobName%30,State,Elapsed,NodeList,End 2>&1 | head -20; expmon runs 2>&1 | grep -iE "mrqa|1916[3-9]|1917" | head -20
+  ↳ JobID                               JobName      State    Elapsed        NodeList                 End  (+39 lines)
+→ Bash: expmon runs 2>&1 | grep -E "^19167[5-8]|^19176[6-8]|^191631 " | cut -c1-420; python3 - <<'EOF' ⏎ import json,os ⏎ for f in ["expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json","expQ/qafreeze/ref_s43/eval/mm…
+  ↳ 191631     ended     -           spread         5923159+dirty  eval_mm_4b.sh    kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merge (+11 lines)
+→ Bash: ls expQ/191631/ 2>/dev/null; cat expQ/191631/manifest* 2>/dev/null | head -40; sacct -j 188606,188613,191661,191662,185780,191675,191676 -o JobID,State,Elapsed,NodeList,MaxRSS 2>&1 | grep -v "^ *-" | head -30
+  ↳ (eval):1: no matches found: expQ/191631/manifest* (+15 lines)
+→ Bash: expmon logs 191675 30 2>&1 | tail -15; ls -la --time-style=full-iso expQ/qafreeze/ref_s42/eval/.done/ 2>/dev/null | head
+  ↳ ==> /beegfs/scratch/user/hdejean/pisco/eval_mm_4b_191675.out (last 30) <== (+14 lines)
+→ Bash: expmon lineage 191631 2>&1 | head -30; ls -la expQ/spread/b_tail_s42/ expQ/spread/b_tail_s43/
+  ↳ lineage of 191631: (+15 lines)
+→ Bash: head -30 eval_mm_4b_191631.out 2>/dev/null | grep -vE "^\s*$" | head -15; grep -rn "191631\|191666" .expmon/campaign/spread/*.log 2>/dev/null | head -3; grep -h "expmon launch" campaign_spread/ticks/*.log 2>/dev/null | grep -E "191631|19166…
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-0e3489bc-cab9-6444-3213-5437eda8cbed) (+30 lines)
+Launch form confirmed. Checking that the tail MRQA re-run would use the same eval settings as the spread file, then a dry run.
+→ Bash: grep -m2 -E "^\[eval\]|argv|python" eval_mm_4b_191675.out; python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open("expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json"))["summary"] ⏎ b=json.load(open("expQ/ft_mm_…
+  ↳ DIFF checkpoint expQ/qafreeze/ref_s42/model | expQ/ft_mm_4b_174908/model (+11 lines)
+Settings identical except the model; code md5s unchanged. Dry run:
+→ Bash: for c in b_tail_s42 b_tail_s43; do expmon launch --dry-run --exp spread --stage M --parent 191454 --time 0:52:00 --mem 9G --exclude='homer-[005-009]' --env PX=1003520 --env CML=4096 eval_mm_4b.sh expQ/spread/$c/model pisco "" eval_data/text…
+  ↳ would submit: sbatch --time 0:52:00 --mem 9G --exclude=homer-[005-009] eval_mm_4b.sh expQ/spread/b_tail_s42/model pisco  eval_data/text_mrqa_ood_1500 (+9 lines)
+Launching the two tail MRQA cells.
+→ Bash: for c in b_tail_s42 b_tail_s43; do expmon launch --exp spread --stage M --parent 191454 --time 0:52:00 --mem 9G --exclude='homer-[005-009]' --env PX=1003520 --env CML=4096 eval_mm_4b.sh expQ/spread/$c/model pisco "" eval_data/text_mrqa_ood_…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191779/   (unless the script sets a named run dir) (+5 lines)
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / paired_judge.py a3cc13b2 / pisco/model.py 994cff3d / judge_prompts.py bae44fa7" && expmon note -j 191779 "spread MRQA case intent: tail production 1749…
+  ↳ expmon note: 82 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+5 lines)
+Two MRQA tail cells queued. Now arm D (what the slots hold, no decoder question) — the last arm before the owner checkpoint. Reading the tools it reuses.
+→ Bash: sed -n 1,30p scripts/longdoc/mem_recall.py; echo ----; cat scripts/longdoc/mem_recall.sbatch; echo ----; sed -n 10,16p campaign_longdoc/STATE.md; ls expQ/longdoc/ | grep -i recall
+  ↳ """Stride-aware port of scripts/probe_mem_recall.py (campaign longdoc, arm T): are a page's words in its <MEM>s? (+78 lines)
+→ Bash: ls expQ/archq2/ | head -30; echo ----; cat expQ/archq2/probe_mixer.sh | head -50
+  ↳ check_connector_move.sh (+51 lines)
+→ Bash: sed -n 262,282p docs/architecture_review.md; echo ----; sed -n 1,40p expQ/archq2/probe_connector.sh | grep -vE "^#SBATCH" 
+  ↳ chunks. Consequences: the spread layout is the stage-1 base of every next chain. archq3b (coarse-to-fine slot order, (+33 lines)
+→ Bash: expmon runs 2>&1 | grep -E "kind=probe_(mixer|connector)" | cut -c1-260 | tail -25; ls expQ/archq2/ | grep -E "probe_mixer_" | tail -12
+  ↳ 183657     ended     -           archq3         24b7a2c+dirty  probe_mixer.sh   launcher=probe_mixer.sh kind=probe_mixer ckpt=qwen35_4b_pt_1M_143229_model n_rows=40 sets=text | p=gpu-be,C=gpu_a100,t=1 (+36 lines)
+→ Bash: expmon runs 2>&1 | grep -E "kind=probe_(mixer|connector)" | grep -E "v4kd|5M_spread|pt_mm_5M" | cut -c1-230; sacct -j 183828,183829,183831,183832,188338 -o JobID,State,Elapsed,NodeList,MaxRSS 2>&1 | grep -E "batch|^18"| grep -v "^ *-"; ls e…
+  ↳ 185783     ended     -           probes         e936195+dirty  probe_mixer.sh   launcher=probe_mixer.sh kind=probe_mixer ckpt=pt_text_5M_spread_checkpoint-24000 n_rows=40 sets=text | p=gpu,gpu-be,C=gp (+16 lines)
+→ Bash: sed -n 1,25p expQ/archq2/probe_mixer.py; grep -n "os.environ\|getenv" expQ/archq2/probe_mixer.py expQ/archq2/probe_connector.py; python3 -c " ⏎ import json ⏎ for f in ['expQ/archq2/probe_mixer_183829/probe_mixer.json','expQ/archq2/probe_mix…
+  ↳ """Premise probes for a chunk-level <MEM> mixer (docs/mem_tokens_review.md section 4). Diagnostic, no training. (+49 lines)
+Writing one wrapper job that runs the two existing mechanism probes (slot ownership and answer loss) on four stage-2 models, so arm D costs one submission instead of eight.
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/archq2/probe_connector_183828/probe_connector.json')); print(list(d.keys())) ⏎ for k,v in d.items(): ⏎     if isinstance(v,dict): print(k, [ (kk, round(vv,3)) for kk,vv in v.items() if isi…
+  ↳ ['ckpt', 'ref_ckpt', 'n_rows', 'W1', 'W2', 'end_to_end_linear_part', 'move_0.weight', 'move_2.weight', 'doc_pages', 'text', 'photos'] (+12 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/archq2/probe_connector_183828/probe_connector.json')) ⏎ for m in ('doc_pages','text','photos'): ⏎     v=d[m]; print(m, [(k, round(x,3) if isinstance(x,float) else x) for k,x in v.items() i…
+  ↳ doc_pages [('nll', {'as_is': {'mean': 1.1376877843091886, 'delta': 0.0, 'delta_se': 0.0, 'worse_frac': 0.0}, 'linear_fit': {'mean': 1.1498142462223768, 'delta': 0.012126461913188299, 'delta_se': 0.006 (+2 lines)
+Recorded keys match the law's numbers (answer loss 1.138 / 1.812 / 1.765, ownership .977). Writing the wrapper:
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/spread/mech_probes.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/spread/mech_probes.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: grep -n "OUT" expQ/archq2/probe_mixer.py expQ/archq2/probe_connector.py | head
+  ↳ expQ/archq2/probe_mixer.py:12:Env: CKPT, N_ROWS, OUT. (+7 lines)
+→ Bash: sed -i 's|    OUT=\$D/probe_\$P env CONDA_OVERRIDE_CUDA|    OUT=$D env CONDA_OVERRIDE_CUDA|; s|    ls "\$D"/probe_\$P\* 2>/dev/null|    ls "$D"/probe_$P.json 2>/dev/null|; s|# Only OUT changes: expQ/spread/mech/<name>_<jobid>/probe_{mixer,c…
+  ↳ 15:# Only OUT changes: expQ/spread/mech/<name>_<jobid>/ holds probe_mixer.json + probe_connector.json (never writes under expQ/archq2). (+11 lines)
+Dry run is clean. Submitting the arm D probe job (four stage-2 models: full-budget spread vs tail, plus the reduced-budget pair as a control that must reproduce the recorded numbers).
+→ Bash: expmon launch --exp spread --stage D --parent 191454 --time 3:20:00 --mem 8G --exclude='homer-[005-009]' scripts/spread/mech_probes.sbatch s2_spread_full=expQ/archq3/pt_mm_5M_spread/model s2_tail_full=expQ/pt_mm_v4kd_4b/model s2_spread_red=…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/191785/   (unless the script sets a named run dir)
+→ Bash: expmon note -j 191785 "spread arm D intent: scripts/spread/mech_probes.sbatch (de7a50c3) runs expQ/archq2/probe_mixer.py (e2463c57) + probe_connector.py (ff63deeb) UNCHANGED, N_ROWS 40, all sets, REF default = args of recorded 183828-183832…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+Three jobs queued. Now recording verdicts for the four finished jobs. First a quick count of unparseable judge answers in the re-judge log.
+→ Bash: grep -c "unparseable: 0" expQ/spread/rejudge_191665.out; grep "unparseable:" expQ/spread/rejudge_191665.out | sort | uniq -c; for j in 191666 191667 191668; do f=$(ls eval_mm_4b_$j.out 2>/dev/null); grep -c -i "exceeds" $f; done; expmon han…
+  ↳ 16 (+22 lines)
+→ Bash: expmon verdict 191665 closed "healthy: COMPLETED 0:0 7m27 homer-017, one attempt; 16 copies x 1,500 rows, project prompt on all, unparseable 0 (16/16); copies' rubric verdicts and answers = sources 16/16. Arm J (spread - tail, pooled over s…
+  ↳ verdict recorded: 191665 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+6 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ G="expQ/spread/rejudge/gating16/" ⏎ for s in ("42","43"): ⏎     for case,suf in (("ten",".json"),("one","_g10.json")): ⏎         out=[] ⏎         for lay in ("spread","tail"): ⏎             r=json.load(open…
+  ↳ s42 ten spread: words 3.43, judged right but EM 0: 399 | tail: words 3.01, judged right but EM 0: 357 (+3 lines)
+→ Bash: expmon handoff done 19ac33 "withdrawn by spread (2026-11-18 21:xx): arm C is decided without the s43 20-page spread cell. Its gate needs (spread-tail at 20 p) - (at 4 p) >= +3 pt at BOTH seeds; s42 gives +0.9 pt [-1.5,+3.1] (191668 vs longd…
+  ↳ hand-off 19ac33 closed; its sender reads the note on its next run (+2 lines)
+Now updating the deliverable page `docs/spread_cases.md`. Reading the current version first.
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/spread_cases.md
+  ↳ 1	# Spread vs tail `<MEM>` layout — where each wins (campaign spread) (+89 lines)
+Rewriting the deliverable with arms C and J decided.
+→ Bash: python3 - <<'EOF' ⏎ p="docs/spread_cases.md"; s=open(p).read() ⏎ s=s.replace("""Rewritten whenever an arm decides. Last rewrite 2026-11-18 17:50, after arm B closed (both seeds on today's code) and ⏎ the full-budget gating pairs were re-run…
+  ↳ 0 (+4 lines)
+Deliverable updated. Refreshing the campaign display page.
+→ Bash: timeout 90 expmon display --exp spread 2>&1 | tail -4
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_spread.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: expmon gripe --open --search "display" 2>&1 | head -8
+  ↳ == 60 open report(s) matching 'display', every machine, newest first == (+7 lines)
+→ Bash: grep -c "<tr" display_spread.html; expmon gripe --same 43db294f "spread 2026-11-18 21:30: display --exp spread again prints '0 table rows, 0 media files from 0 runs' with 20 grid cells, 16 holding judge probes recorded via expmon probe --fr…
+  ↳ 20 (+1 lines)
+Adding two new symptoms to known_issues.md, then rewriting STATE.md.
+→ Bash: cat >> campaign_spread/known_issues.md <<'EOF' ⏎ | a sibling's eval shows COMPLETED with Elapsed 00:00:00 in `sacct -X` although its output json is fresh (qafreeze 191675 / 191676, MRQA) | the job was requeued after finishing; the last atte…
+  ↳ **Settled** (+12 lines)
+Reading the verifier's full findings before rewriting STATE.md.
+→ Bash: cut -c1-900 campaign_spread/VERIFY.md | sed -n 1,40p
+  ↳ # VERIFY — campaign spread — 2026-11-18_1730   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+22 lines)
+→ Bash: grep "Arm C (many pages)" campaign_spread/VERIFY.md | sed 's/.*Caveat/Caveat/' | cut -c1-700; grep "Arm B closed" campaign_spread/VERIFY.md | sed 's/.*But this cas/But this cas/' | cut -c1-600; grep -n "infovqa" expQ/spread/audit_191454/aud…
+  ↳ Caveat for the future pairing: longdoc's sp | (+1 lines)
+→ Bash: python3 - <<'EOF' ⏎ import re ⏎ t=open("campaign_spread/VERIFY.md").read() ⏎ for key in ("Arm C (many pages)","Arm B closed"): ⏎     i=t.find(key); j=t.find("\n",i); line=t[i:j] ⏎     k=line.find("Caveat") if "Caveat" in line else line.find…
+  ↳ Caveat for the future pairing: longdoc's sp | (+9 lines)
+→ Bash: sed -i 's/| documents, infographics only | full | 500 | — | .480 \/ .480 | .430 \/ .430 | +.050 (+.006, +.094) | +.050 (+.008, +.094) |/| documents, infographics only | full | 500 | — | .480 \/ .480 | .430 \/ .430 | +.050 (+.004, +.096) | +…
+  ↳ 26:| documents, infographics only | full | 500 | — | .480 / .480 | .430 / .430 | +.050 (+.004, +.096) | +.050 (+.008, +.096) | 80/55 · 76/51 | — | .726 | 6.5 | better at both seeds by the bars, but a
+Now rewriting STATE.md wholesale.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Adding the growth test's control to the law's gate section (the law requires a new measure to name its n and a recovered known-positive control).
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_spread/CAMPAIGN.md has been updated successfully.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_spread/NEXT
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_spread/NEXT (file state is current in your context — no need to Read it back)
+→ Bash: expmon note --did "spread wake 21:00: read 191665-191668 (healthy, closed); arm J decided (one chunk better under every scoring; ten chunks judge-sensitive, EM favours tail by wording; docs lean spread +1-3 pt under every scoring; photos eq…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+10 lines)
+Two arms decided this wake, and three new jobs are queued. Nothing needed from you.
+
+**Decided**
+- **Scoring check (arm J).** The 16 gating answer files were re-scored with the project's Yes/No judge prompt, by exact string match (EM) and by ANLS (a fuzzy string-match score), and compared with the rubric judge.
+  - **One long text chunk:** spread still wins clearly under every scoring: about +25 to +27 points with either judge, +15 points by exact match.
+  - **Ten short text chunks:** both judges see no difference. Exact match favours tail by about 2 points. Spread's answers are about half a word longer, so this is a wording difference, not a reading one.
+  - **4-page documents:** spread leads by 1 to 3 points under every scoring. That is still below the +3-point bar at both seeds, so this case stays "not resolvable" with 1,500 questions × 2 seeds.
+  - **Photos:** equal under the rubric judge and exact match. Under the Yes/No prompt alone, one seed is −2.3 points, so "equal" is not certified under that prompt.
+- **More pages (arm C, closed).** Adding pages does not make spread pay more. Its lead over tail at 10 pages minus its lead at 4 pages is −0.4 / −0.7 points (two seeds); at 20 pages it is +0.9 points (seed 42). The bar was +3 points at both seeds, so it cannot pass. The test's control (the known one-chunk effect) came back exact.
+- **Infographics:** spread keeps leading at every size (+3 to +7 points). These are the same 500 questions each time, so it still needs one repeat on new questions before it counts.
+- I withdrew my request to the long-document loop for the 20-page seed-43 run, since arm C is decided without it.
+
+**Queued, waiting in the job queue**
+- Two tail-model runs on one long text passage (MRQA), on today's code. The spread side already exists from the frozen-QA campaign: .715 / .724.
+- One job with the two existing slot probes (arm D) on four stage-2 models: which slot holds which part of the text, and the answer loss. The reduced-budget pair is the control and must reproduce the recorded numbers (.977 / .799).
+
+**Next wake** (when those three jobs end, at most 6 hours): pair the MRQA results and read arm D. Then it writes your one decision question before arm E, the ~60 GPU-hour training run.
+
+**One point for that question:** the scoring check's rule says a deciding result must stay within 2 points across the three scorings. The one-chunk win fails that rule only on size: exact match gives a smaller number, but the same verdict. I report both readings and did not loosen the rule.
+
+Budget: 19 of ~50 runs, about 8.7 of 30 GPU-hours before your checkpoint. The full tables are in `docs/spread_cases.md`; the campaign state is in `campaign_spread/STATE.md`.
+→ StructuredOutput: {"next": "wake-when", "summary": "Read the 4 jobs that ended while the 19:30 wake was blocked by the usage limit (all healthy, closed). Arm J decided: one chunk better under rubric, project prompt and EM (size metric-dependent); ten chunks …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=4.5039 turns=67 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Read the 4 jobs that ended while the 19:30 wake was blocked by the usage limit (all healthy, closed). Arm J decided: one chunk better under rubric, project prompt and EM (size metric-dependent); ten chunks judge-sensitive (EM favours tail by answer wording); 4-page docs lean spread +1-3 pt under every scoring, still not resolvable; photos equal under rubric/EM, not certified under project prompt. …", "launched": ["191779", "191780", "191785"], "verdicts": [{"jobid": "191665", "verdict": "closed", "note": "healthy; arm J decided: one chunk better under every scoring, ten chunks judge-sensitive, docs lean spread, photos equal under rubric/EM only"}, {"jobid": "191666", "verdict": "closed", "note": "healthy; tail 10 pages s42 .600; spread-tail +.007; DiD vs 4 pages -.004"}, {"jobid": "191667", "verdict": "closed", "note": "healthy; tail 10 pages s43 .591; spread-tail +.017; DiD -.007"}, {"jobid": "191668", "verdict": "closed", "note": "healthy; tail 20 pages s42 .579; spread-tail +.019; DiD +.009 -> arm C gate cannot be met"}], "gripes": ["+1 on 43db294f: display --exp spread still writes 0 table rows / 0 runs with 20 grid cells holding judge probes"], "wake_when": "job:191779,191780,191785 max 6h"}
+== final:
+{"next":"wake-when","summary":"Read the 4 jobs that ended while the 19:30 wake was blocked by the usage limit (all healthy, closed). Arm J decided: one chunk better under rubric, project prompt and EM (size metric-dependent); ten chunks judge-sensitive (EM favours tail by answer wording); 4-page docs lean spread +1-3 pt under every scoring, still not resolvable; photos equal under rubric/EM, not certified under project prompt. Arm C closed: spread-tail gap does not grow with pages (DiD 10 p -.004/-.007, 20 p s42 +.009; control recovered). Launched MRQA tail re-runs 191779/191780 and arm D mechanism probes 191785; withdrew hand-off 19ac33. Deliverable docs/spread_cases.md, STATE.md, known_issues, law gate registration updated.","launched":["191779","191780","191785"],"verdicts":[{"jobid":"191665","verdict":"closed","note":"healthy; arm J decided: one chunk better under every scoring, ten chunks judge-sensitive, docs lean spread, photos equal under rubric/EM only"},{"jobid":"191666","verdict":"closed","note":"healthy; tail 10 pages s42 .600; spread-tail +.007; DiD vs 4 pages -.004"},{"jobid":"191667","verdict":"closed","note":"healthy; tail 10 pages s43 .591; spread-tail +.017; DiD -.007"},{"jobid":"191668","verdict":"closed","note":"healthy; tail 20 pages s42 .579; spread-tail +.019; DiD +.009 -> arm C gate cannot be met"}],"gripes":["+1 on 43db294f: display --exp spread still writes 0 table rows / 0 runs with 20 grid cells holding judge probes"],"wake_when":"job:191779,191780,191785 max 6h"}
+== rc=0 secs=771
+== verify: 10/15
