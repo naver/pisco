@@ -1,6 +1,6 @@
 # Long inputs: where is the bottleneck? (campaign longdoc)
 
-Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-18 17:50 (arm J: every length number re-scored with a second judge prompt; arm E: the first trial runs show the uncompressed reference is cut by the 32-token answer cap, re-run at 256 tokens queued).
+Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-18 21:20 (arm E: trial runs at a 256-token answer cap; the uncompressed reader now beats the compressed one by 16-17 pt on LongDocURL; text answers still hit the cap, so every arm E cell moves to 512 tokens; closed-book check queued).
 Question (owner): every attempt at long inputs loses accuracy — is the cause the evaluation, the training data,
 training itself, or how the decoder reads many `<MEM>` slots (one `<MEM>` = one compressed slot, 8 tokens each)?
 
@@ -11,8 +11,8 @@ on the far side of 0 at both seeds; "not this cause" needs the CI inside ±3 pt.
 | candidate | probe | n | number | gate | verdict | questions repaired |
 |---|---|---|---|---|---|---|
 | evaluation feeds less than it claims | input audit, CPU (job 191147) | 1,500 Q per variant × 14 variants (one set of 500) | truncation cut 0 / 1,500 and pisco-vs-uncompressed parity 1,500 / 1,500 on every gating variant; the cut check does fail when it should (CML 256 controls: 924 / 1,500 and 275 / 1,500). Limits: on documents the cut check can only fail on prompt length (pages are images, never cut); the audit's parity used one row builder for both modes, so it was re-checked on recorded runs: pages per question equal in both modes on 1,500 / 1,500 (4 pages), 1,500 / 1,500 (10 pages), 500 / 500 (whole documents) — count, not page identity | cut ≤ 1%, parity 100% | provisional: not this cause (gate passed; parity only partly independent) | 0 |
-| the judge decides the number (arm J) | every length number re-scored with the project (Yes/No) prompt on copies (job 191629) and with exact match | 1,500 pairs per number | Δ_len rubric / project / EM: documents 10 vs 4 pages +0.5 / +0.6 / +1.6 (s42), +0.1 / −0.3 / +0.9 (s43); 20 vs 4 pages +4.3 / +5.1 / +7.7 (s42); text 40 vs 10 passages −2.6 / −1.5 / +0.8 (s42). Calculator control: recovers the known −.169 within ±.005, self-pair 0 | a number keeps its sign and stays within 2 pt under the three scorers | provisional: 10 pages robust (the no-loss reading holds under all three, every CI inside ±3); 20 pages robust in direction, EM 3.4 pt larger; text 40 passages judge-sensitive (sign flips with EM) | — |
-| the uncompressed reference is capped (arm E) | count uncompressed answers that run into the 32-token answer cap (300 trial rows per set, jobs 191634 / 191635) | 300 rows per set | LongDocURL pages: 61 / 67 / 74% of answers cut mid-sentence at 10 / 20 / 40 pages (judge .16-.21 on cut rows, .58-.72 on finished); text 47-64%; R 8-17%. Gating documents set: 4% (SlideVQA 11%) | — (a measurement-setting check) | provisional: on LongDocURL the uncompressed score measures the cap → every arm E cell re-runs at a 256-token cap (jobs 191669-191674) | — |
+| the judge decides the number (arm J) | every length number re-scored with the project (Yes/No) prompt on copies (job 191629) and with exact match | 1,500 pairs per number | Δ_len rubric / project / EM: documents 10 vs 4 pages +0.5 / +0.6 / +1.6 (s42), +0.1 / −0.3 / +0.9 (s43); 20 vs 4 pages +4.3 / +5.1 / +7.7 (s42); text 40 vs 10 passages −2.6 / −1.5 / +0.8 (s42). Calculator control: recovers the known −.169 within ±.005, self-pair 0 | a number keeps its sign and stays within 2 pt under the three scorers | provisional: by the law's rule (same sign AND within 2 pt under all three) all three are judge-sensitive: 10 pages s43 flips sign (+0.1 / −0.3, every CI inside ±3, so the no-loss reading survives); 20 pages keeps its sign but EM is 3.4 pt larger; text 40 passages flips sign with EM | — |
+| the uncompressed reference is capped (arm E) | count uncompressed answers that run into the answer cap, same 300 trial rows per set at 32 and 256 tokens (jobs 191634 / 191635 vs 191669 / 191670) | 300 rows per set | 32 tokens: 61-74% of page answers and 47-64% of text answers cut mid-sentence. 256 tokens: pages 2.3% cut, judge .340 → .717 (+37.7 [+32.0, +43.0], 114 / 1); text 8.3% cut, .423 → .580 (+15.7 [+10.7, +20.7], 58 / 11). R barely moves (pages .517 → .547). Gating documents set at 32 tokens: 4% (SlideVQA 11%) | cut share < 5% of 300 rows | provisional: YES on LongDocURL — the shared 32-token cap made the uncompressed reader look worse than the compressed one. Every arm E cell now runs at 512 tokens (text still 8.3% at 256; 512 check: job 191777) | — |
 | training never shows long inputs | input audit (count only) | as above | 10- and 20-page documents: 100% of questions beyond the finetune range; 40 text passages: 99.9%; 20 passages: 2.3% | names a cause only with a paired effect from the reading or position probes | open (count, not yet a cause) | — |
 | long-chunk training (stage-1 chunk 1,024 vs 256) | gold page only / picked page raw on the C256 and L1024 finetunes; page transcription and text autoencoding on their earlier stages; ten short vs one long text chunk | 1,500 Q × 2 seeds (QA); 500 pages / 500 documents (probes) | gold page only (distractor pages removed, 1,003,520 px): L1024 − C256 −6.7 [−8.9, −4.5] McNemar 106 / 207 (s42), −4.9 [−7.1, −2.5] 113 / 186 (s43). Picked page raw: +0.1 [−0.8, +1.1] (s42), −0.1 [−1.1, +0.9] (s43); both models pick the answer page on 98.5%. Page transcription (stage 2): −8.0 pt [−10.6, −5.5] of the page's words, p 4e-16. Text autoencoding at 256 tokens: stage 1 −.0018 nats, stage 2 +.0006 [−.0008, +.0019] p .82 (L1024 not worse). Text QA: −1.1 / −3.3 on one ~1.3k-token chunk, +2.3 / −0.6 on ten short chunks | deficit ≤ −3 pt with the gold page alone AND inside ±2 pt with the picked page raw → in the compressed page; stage-2 text autoencoding worse (CI above 0) → general stage-2 loss, else image-specific | provisional: CLOSED. IN THE COMPRESSED IMAGE PAGE, entering in stage 2: L1024's page slots hold fewer words, its text slots do not. Not multi-page reading, not the page pick, not the decoder. Motivates (owner): keep the 256-token stage 1; a long-chunk stage 1 would need its stage 2 changed, checked by page transcription before any finetune | the whole 4-page deficit: ~93 (s42) / ~65 (s43) of 1,500 questions |
 | length on a fixed model | 4 / 10 / 20 pages, 10 / 20 / 40 passages | 1,500 Q per size | documents 10 vs 4 pages: Δ_len +0.5 [−1.8, +2.7] p .77 (s42), +0.1 [−2.2, +2.5] p .86 (s43). 20 vs 4 pages, s42: +4.3 [+1.8, +6.9], sign 197 / 146, p .007 (the uncompressed reader drops more). Text 40 vs 10 passages, s42: −2.6 [−5.6, +0.3], sign 199 / 236, p .084 (EM +0.8: the two metrics disagree in sign). These sets add distractor pages or passages from other documents: not one long document (arm E builds that) | Δ_len ≤ −3 pt (CI below 0) at both seeds = length loss; CI inside ±3 pt at both = none | provisional: no length loss at 10 pages (both seeds, holds under the second judge prompt and EM). 20 pages: open (one seed; gap shrinks under all three scorers). Text 40 passages: undecided at s42 and judge-sensitive | — |
@@ -102,20 +102,26 @@ number is judge-sensitive (arm J). R at 10 passages is the today's-code re-run o
 predictions identical to the older file 188615, which gives −2.4 [−5.3, +0.5]). Seed 43 not run yet (arm E first).
 
 **Arm E trial runs (LongDocURL, one coherent PDF per question; 300 rows per set = 100 questions × 3 page sizes, or 75 × 4 text sizes; trial runs prove the path, they decide nothing)**
-Rate 8 tokens per slot. Answer cap 32 tokens (the shared launcher's). "Cut" = answers that stop mid-sentence at the cap (≥ 90 characters, no final punctuation).
+Rate 8 tokens per slot. Model R s42. Answer cap 256 tokens, both readers, same rows (jobs 191669 / 191670 / 191673 / 191674).
+"Cut" = answers that stop at the cap (≥ 600 characters, no final punctuation).
 
-| input size | `<MEM>` slots per question p50 | compression (slots per page) | R s42 judge ↑ | uncompressed judge ↑ | uncompressed answers cut by the cap ↓ | R answers cut ↓ |
-|---|---|---|---|---|---|---|
-| 10 pages | 1,198 | ~120 | .54 | .41 | 61% | 8% |
-| 20 pages | 2,392 | ~120 | .55 | .34 | 67% | 11% |
-| 40 pages | 4,795 | ~120 | .46 | .27 | 74% | 17% |
-| text ~4k / 8k / 16k / 32k tokens | 540 / 1,046 / 2,055 / 4,079 | 8 tokens per slot | not run yet | .40 / .49 / .43 / .37 | 47 / 57 / 63 / 64% | — |
+| input size | `<MEM>` slots per question p50 | compression | R s42 judge ↑ | uncompressed judge ↑ | gap (pt) ↑ | uncompressed answers cut ↓ | R answers cut ↓ |
+|---|---|---|---|---|---|---|---|
+| 10 pages | 1,198 | ~120 slots per page | .58 | .71 | −13 | 2% | 1% |
+| 20 pages | 2,392 | ~120 slots per page | .56 | .71 | −15 | 1% | 1% |
+| 40 pages | 4,795 | ~120 slots per page | .50 | .73 | −23 | 4% | 2% |
+| all pages (300 rows) | — | — | .547 | .717 | −17.0 [−23.0, −11.0], 24 / 75 | 2.3% | 1.3% |
+| text ~4k tokens | 540 | 8 tokens per slot | .427 | .587 | −16 | 5% | 3% |
+| text ~8k | 1,046 | 8 tokens per slot | .400 | .587 | −19 | 5% | 4% |
+| text ~16k | 2,055 | 8 tokens per slot | .453 | .573 | −12 | 8% | 3% |
+| text ~32k | 4,079 | 8 tokens per slot | .387 | .573 | −19 | 15% | 5% |
+| all text (300 rows) | — | — | .417 | .580 | −16.3 [−21.7, −11.0], 15 / 64 | 8.3% | 3.7% |
 
-Reading: the uncompressed decoder scores BELOW the compressed one here, because it answers in full sentences and the
-32-token cap cuts two answers in three before the answer itself (judge .16-.21 on cut rows vs .58-.72 on finished
-ones). R is finetuned to answer briefly. So on this set the uncompressed number measures the cap, not the reading.
-The same 300 rows re-run at a 256-token cap for both modes (jobs 191669 / 191670 / 191673 / 191674) before any full
-cell. On the gating documents set only 4% of uncompressed answers hit the cap (SlideVQA 11%).
+Reading: with room to finish its answers, the uncompressed reader scores .72 on pages and .58 on text, well above R
+(the 32-token cap had it at .34 / .42, below R). The pages gap widens at 40 pages (−13 → −23 pt) while the uncompressed
+reader stays flat; 100 questions per size cannot decide it (a full cell can). Text answers (long lists) still reach
+256 tokens on 8% of rows, so every arm E cell now runs at 512. Next: closed-book (is the document needed at all?),
+the 512-token text check and the first mixed run (jobs 191776-191778).
 
 ## 3. Input audit: what the decoder sees in training vs in evaluation
 Job 191147, model R (expQ/ft_mm_4b_184778), images at 1,003,520 px, rate 8 tokens per slot, position stride 8.

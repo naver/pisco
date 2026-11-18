@@ -1,0 +1,53 @@
+== verifier 2026-11-18_2100  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session f0de0603-8e4e-4e02-85e3-5cd784199d99  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+286 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 288	| A audit | DECIDED (provisional); E re-run PASS (191516) | — | (+151 lines)
+→ Glob: {"pattern": "expQ/longdoc/audit_19114*/**"}
+→ Glob: {"pattern": "expQ/longdoc/length/*"}
+→ Glob: {"pattern": "expQ/longdoc/audit_191516/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+15 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/rows.jsonl (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/audit.json
+  ↳ 1	{ (+329 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_text_n40_s42_judge.json
+  ↳ 1	{ (+37 lines)
+Checking the audit and length-effect files that back the longdoc STATE claims; a few numbers are left to confirm.
+→ Grep: {"pattern": "out_of_range|oor|finetune_max", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "-A": 3}
+  ↳ 8:  "finetune_max_mem": 488, (+74 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p20_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Grep: {"pattern": "1687|1960", "path": "/beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "1687|self-pair|Apache", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/dlen_docs_p10_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Grep: {"pattern": "dfe32aa0|b3d1cda1|50abc167", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true}
+  ↳ 738:dfe32aa0 (+251 lines)
+→ Grep: {"pattern": "md5|same code|b3d1cda1", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content"}
+  ↳ 21:[Omitted long matching line]
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1218	  - saw: eval_mm_4b.sh md5 now b3d1cda1 vs recorded 50abc167 (uncommitted copy) -> R and F reference cells must be re-run before pairing (+13 lines)
+→ Grep: {"pattern": "^\\|? ?21", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content"}
+  ↳ No matches found
+→ Grep: {"pattern": "homer-00[5-9]", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content"}
+  ↳ No matches found
+Still checking: the backing numbers match so far. Now looking at the borrowed 10-passage text cell and the closed-book set.
+→ Grep: {"pattern": "191518", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1267:  - next: s43 cells 191519/191526/191528 + spread ten s42 re-run 191518 (today's code); then spread ten s43 re-run (+5 lines)
+→ StructuredOutput: {"claims": [{"claim": "Training never shows the decoder long inputs (job 191147): finetune max 488 <MEM>s / span 4,017; out of range 10- and 20-page 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500, 4-page…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2049 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "Training never shows the decoder long inputs (job 191147): f…", "status": "provisional", "reason": "Downgraded because it lacks the provisional prefix and one p…"}, {"claim": "The transcription-probe port is validated (job 191169): 360/…", "status": "supported", "reason": "Verdict 191169 reads '360/360 pages byte-identical to the le…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdict 191515 matches every count (2,325 Q / 396 PDFs → 1,4…"}, {"claim": "provisional: arm E input check PASS (job 191516, every row, …", "status": "provisional", "reason": "audit_191516/audit.json matches: cut_rate 0.0 and parity 1.0…"}, "… +9 more"], "summary": "Every number cited in STATE.md's settled and open bullets ma…"}
+== final:
+{"claims":[{"claim":"Training never shows the decoder long inputs (job 191147): finetune max 488 <MEM>s / span 4,017; out of range 10- and 20-page 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, whole documents 198/500, 4-page 0/1,500; every arm E bucket out of range too (job 191516).","status":"provisional","reason":"Downgraded because it lacks the provisional prefix and one part has no number behind it. The 191147 counts match expQ/longdoc/audit_191147/audit.json exactly: finetune_max_mem 488 and finetune_max_span 4017; out_of_range_share docs_p4 0.0, p10 1.0, p20 1.0, text_n20 .0233, text_n40 .9987, longdoc_k20 .396. But the 191516 part is not backed: audit_191516/audit.json has finetune_max_mem null and no out_of_range_share field. Only the p50s exist (t4k 540 slots, just above 488), so 'every bucket' is not a recorded count."},{"claim":"The transcription-probe port is validated (job 191169): 360/360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169 reads '360/360 pages byte-identical to the legacy probe, word recall 70.5% = 70.5%'. The law's target is 71% ± 2 pt (architecture_review.md:105), so it is met."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637/610/588/411), needles 300/225/225. Closed-book set 1,407 questions (job 191774).","status":"supported","reason":"Verdict 191515 matches every count (2,325 Q / 396 PDFs → 1,407 Q on 387 PDFs; 4,221 / 4,221 / 2,246 with t4k 637, t8k 610, t16k 588, t32k 411; needles 300/225/225). Verdict 191774 gives 1,407 questions with 0 mismatches. The Apache-2.0 licence is in EXPERIMENTS.md:1247. This is a description of the sets, not a result."},{"claim":"provisional: arm E input check PASS (job 191516, every row, CML 1,024): cut 0 and parity 1.0000 on text, pages, mixed and the three needle sets; the CML 256 control cuts 235/2,246 (10.5%).","status":"provisional","reason":"audit_191516/audit.json matches: cut_rate 0.0 and parity 1.0 on E_text (2,246), E_pages (4,221), E_mixed (4,221) and the three needle sets; E_text_cml256 has cut_pisco 235, rate .1046. Three limits keep it provisional. Parity cannot fail by construction, so it never shows both pass and fail. Pages have answer_in_raw 0, so the cut check can fail only on prompt length. The health field is false (docs_p4 skipped)."},{"claim":"provisional: the evaluation feeds the long inputs it claims on the gating sets (arm A, job 191147): cut 0/1,500 and parity 1,500/1,500 on every gating variant; health 646,042 = 646,042; CML 256 controls fail (924/1,500, 275/1,500).","status":"provisional","reason":"Verdict 191147 matches all the numbers. As the bullet itself says, parity uses one row builder for both modes, and on documents the check can fail only on prompt length. It is correctly kept provisional."},{"claim":"provisional: the shared 32-token answer cap made the uncompresse
+== rc=0

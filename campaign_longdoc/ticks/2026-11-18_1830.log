@@ -1,0 +1,10 @@
+== campaign longdoc wake 2026-11-18_1830  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1794994202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.2 idle_h=0.4 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7812 sig=260cc69f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:191669,191670,191673,191674_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:191669,191670,191673,191674 (ended)   (NEXT was: wake-when job:191669,191670,191673,191674 max 3h)
+== session 8a718c7c-e454-4f08-8f3f-de1459074763  model claude-opus-5-5  tools 52
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your 5-hour limit · resets 9pm (Asia/Seoul)
+== rc=1 secs=11

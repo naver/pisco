@@ -1,0 +1,128 @@
+== campaign longdoc wake 2026-11-18_2100  reasons=alert,idle  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795003201 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.2 idle_h=2.9 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7736 sig=260cc69f same=5 behind=0 upstream=0 upfiles=0 upmine=0 upsib=2 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 3b04da05-3af6-41f7-8f1a-d3f2f43709dd  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3b04da05-3af6-41f7-8f1a-d3f2f43709dd/tool-results/bfnf2nkrh.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-18_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+129 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la
+  ↳ 345 CAMPAIGN.md (+17 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+345 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+161 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ 1	# Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+38 lines)
+Reading the campaign's state; next, checking the four answer-cap jobs that ended while the 18:30 wake was blocked by the usage limit.
+→ Bash: cat ALERT; echo ----; grep -n -i "unsupported\|not backed\|UNSUPPORTED" VERIFY.md | head -20; echo; head -20 VERIFY.md
+  ↳ verifier 2026-11-17_2130: 1 claim(s) in STATE.md are not backed by the grid / verdicts — see VERIFY.md; downgrade them to provisional or back them before anything else (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -45 | cut -c1-400
+  ↳ - next: plumbing health + walls -> 6 soundness cells (closed-book x3, needles x3) + mixed plumbing -> cost the model grid (likely one BLOCKED question); re-read Delta_len under the project prompt (+44 lines)
+Now the four cap-check jobs: state, exit code, wall, memory and result files.
+→ Bash: sacct -j 191669,191670,191673,191674 -X -D -o JobID,State,ExitCode,Elapsed,NodeList,Start,End -P; sacct -j 191669,191670,191673,191674 -o JobID,MaxRSS -P | grep batch; ls -la expQ/base_qwen35_4b/eval/*mnt256* expQ/longdoc/e_r42/eval/*mnt256…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|Start|End (+12 lines)
+→ Bash: python3 -I -c " ⏎ import json,sys ⏎ f='expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt256_longdoc_pages_1500_lim300.json' ⏎ d=json.load(open(f)) ⏎ print(type(d), list(d.keys())[:20] if isinstance(d,dict) else len(d)) ⏎ fo…
+  ↳ <class 'dict'> ['summary', 'records'] (+21 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep longdoc; ls expQ/longdoc/e_r42/eval/; grep -n "unparse\|judge_unparseable" scripts/judge_mm_docqa.py | head -5; sed -n 1,40p scripts/longdoc/length_effect.py | head -50
+  ↳ mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json (+50 lines)
+→ Bash: mkdir -p /tmp/longdoc_w14 && cat > /tmp/longdoc_w14/health.py <<'EOF' ⏎ import json, sys, collections, re ⏎ B='/beegfs/scratch/user/hdejean/pisco/' ⏎ files = { ⏎  'U_pages_32': 'expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024…
+  ↳ audit variants: ['E_mixed_cml1024', 'E_needle_mixed', 'E_needle_pages', 'E_needle_text', 'E_pages_cml1024', 'E_text_cml1024', 'E_text_cml256'] (+55 lines)
+→ Bash: cat > /tmp/longdoc_w14/longest.py <<'EOF' ⏎ import json, re ⏎ B='/beegfs/scratch/user/hdejean/pisco/' ⏎ for f in ['expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_text_1500_lim300.json', ⏎           'expQ/base_…
+  ↳ == mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_text_1500_lim300.json (+62 lines)
+The text set still hits the 256-token cap on more than 5% of uncompressed answers. Checking the eval's flags before planning the next cells.
+→ Bash: grep -n "add_argument" scripts/eval_mm_docqa.py | cut -c1-170; echo; grep -n "topk\b\|topk_docs\|extra_distractors" scripts/eval_mm_docqa.py | sed -n 1,60p | cut -c1-170
+  ↳ 563:    ap.add_argument("--mode", choices=["pisco", "base", "pisco_text"], default="pisco") (+57 lines)
+→ Bash: sed -n 526,560p scripts/eval_mm_docqa.py; sed -n 690,725p scripts/eval_mm_docqa.py; cat scripts/longdoc/eval_mnt.sbatch | head -60
+  ↳ def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+102 lines)
+→ Bash: grep -n "TOPK\|LIMIT\|SUF=\|OUT=\|DML\|CML" eval_mm_4b.sh | cut -c1-220; md5sum eval_mm_4b.sh scripts/longdoc/eval_mnt.sbatch scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/judge_prompts.py pisco/model.py | awk '{print substr($1…
+  ↳ 12:#   expmon launch --exp mmpisco --stage eval --parent <jid> eval_mm_4b.sh <CKPT_MODEL_DIR> [MODE=pisco] [LIMIT] [DATA] [IMAGE_RATE] (+33 lines)
+Pages pass the cap check (about 2% cut at 256 tokens); text does not (about 8%). Looking at the set files to plan a closed-book run on unique questions only.
+→ Bash: ls -d eval_data/longdoc_* && ls eval_data/longdoc_pages_1500 && cat eval_data/longdoc_pages_1500/dataset_info.json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d.get('features'))[:1500])"; du -sh eval_…
+  ↳ eval_data/longdoc_mixed_1500 (+70 lines)
+→ Bash: sed -n 235,240p scripts/longdoc/longdoc_build.py; sed -n 282,300p scripts/longdoc/longdoc_build.py; cat eval_data/longdoc_pages_1500/stats.json | head -c 1500; echo; cat eval_data/longdoc_text_1500/stats.json | head -c 800; echo; ls eval_da…
+  ↳ def row(qid, src, query, ans, docs, imgs, gold): (+136 lines)
+→ Bash: grep -E '"(191515|191669|191670)"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print({k:d[k] for k in d if k in ('jobid','argv','env','sbatch','cmd','launcher','slurm','flags','extra')}) ⏎ …
+  ↳ {'jobid': '191515', 'launcher': 'scripts/longdoc/build_long.sbatch', 'argv': ['all', '1500'], 'slurm': {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '5:00:00'}, 'env': {}} (+14 lines)
+Writing a small builder for a closed-book set (each LongDocURL question once, no document), so one run covers the pages, mixed and text sets.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/build_closedbook.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/build_closedbook.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/build_closedbook.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/build_closedbook.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/longdoc/build_closedbook.py' ⏎ s=open(p).read() ⏎ s=s.replace('            seen_in[b].append(r["source"])\n','            seen_in[b].append(s)\n') ⏎ old=s[s.index('    per_set = {'):s.index('    feats = ')] ⏎ …
+  ↳ ok (+7 lines)
+→ Bash: sed -n 725,762p scripts/eval_mm_docqa.py; sed -n 640,660p scripts/eval_mm_docqa.py
+  ↳ system=EXPAND_SYSTEM_PROMPT if args.answer_style == "expand" else None) (+58 lines)
+Code paths check out for a closed-book run (top-k 0 gives an empty document). Checking CPU room and doing the dry-runs.
+→ Bash: sinfo -p gpu-be -h -o "%n %C %e" | grep -v "homer-00[5-9]" | sort -k2 | head -30; expmon runs --running 2>&1 | head; squeue -u hdejean -h -o "%i %j %T" ; ls expQ/base_qwen35_4b/eval/ | grep -i "closedbook\|mnt512"
+  ↳ homer-017 20/8/0/28 41273 (+20 lines)
+No campaign jobs are running (the four running evals belong to the sibling qafreeze campaign). Dry-running the four launches.
+→ Bash: expmon launch --exp longdoc --stage E --time 0:20:00 -p gpu-be --exclude='homer-[005-009]' --dry-run scripts/longdoc/build_closedbook.sbatch 2>&1 | tail -15; echo ======; expmon launch --exp longdoc --stage E --time 1:05:00 --mem 4G -p gpu-…
+  ↳ Exit code 1 (+5 lines)
+→ Bash: expmon launch --exp longdoc --stage E --time 1:05:00 --mem 4G -p gpu-be --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --dry-run scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base 300 /b…
+  ↳ would submit: sbatch --time 1:05:00 --mem 4G -p gpu-be --exclude=homer-[005-009] scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base 300 /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_ (+10 lines)
+Dry-runs look right. Launching the builder, then the closed-book cell chained on it, then the two cap/plumbing cells.
+→ Bash: expmon launch --exp longdoc --stage E --time 0:20:00 -p gpu-be --exclude='homer-[005-009]' scripts/longdoc/build_closedbook.sbatch 2>&1 | tail -4
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/build_closedbook_191774.out (+3 lines)
+→ Bash: expmon launch --exp longdoc --stage E --time 5:00:00 --mem 4G -p gpu-be --exclude='homer-[005-009]' --dependency afterok:191774 --env MNT=512 --env PX=1003520 --env TOPK=0 --dry-run scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model b…
+  ↳ would submit: sbatch --time 5:00:00 --mem 4G -p gpu-be --exclude=homer-[005-009] --dependency afterok:191774 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base  /beegfs/scratch/user/hdejean (+4 lines)
+→ Bash: expmon launch --exp longdoc --stage E --time 5:00:00 --mem 4G -p gpu-be --exclude='homer-[005-009]' --dependency afterok:191774 --env MNT=512 --env PX=1003520 --env TOPK=0 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base "" /be…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_191776.out (+1 lines)
+→ Bash: expmon launch --exp longdoc --stage E --time 1:05:00 --mem 4G -p gpu-be --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base 300 /beegfs/scra…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_191777.out (+12 lines)
+The closed-book cell already started, so the builder must have finished. Checking its output.
+→ Bash: sacct -j 191774 -X -o JobID,State,ExitCode,Elapsed,NodeList -P; tail -30 expQ/longdoc/build_closedbook_191774.out | cut -c1-300
+  ↳ JobID|State|ExitCode|Elapsed|NodeList (+24 lines)
+Builder done in 15 s: 1,407 unique questions, the 637 text questions are all among them, and no question text differs between sets. Now the paired 32- vs 256-token numbers for the record.
+→ Bash: E=expQ/base_qwen35_4b/eval; R=expQ/longdoc/e_r42/eval; for pair in "+$E/mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_pages_1500_lim300.json -$E/mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json" "+$E/mm_docqa_base…
+  ↳ == mm_docqa_base_k1000_px1003520_cml1024_mnt256_longdoc_pages_1500_lim300.json mm_docqa_base_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json (+19 lines)
+→ Bash: for j in 191669 191670 191673 191674; do f=expQ/longdoc/eval_mnt_$j.out; echo "$j $(grep -c 'exceeds' $f) exceeds, $(grep -ci 'traceback' $f) tracebacks, md5: $(grep -E 'eval_mm_4b.sh$|eval_mm_docqa.py$' $f | awk '{print substr($1,1,8)}' | …
+  ↳ 191669 0 exceeds, 0 tracebacks, md5: b3d1cda1 dfe32aa0  time_decode= (+4 lines)
+All four are healthy (one attempt each, 300 rows, judge on every row, no errors, compressed slot counts equal the audit's). Recording verdicts and intent notes.
+→ Bash: expmon verdict 191669 closed "plumbing healthy (300 rows, never decides): COMPLETED 0:0 31m01 homer-011 one attempt, MaxRSS 3.2 GB; judge on all 300, unparseable 0, no exceeds. Uncompressed pages at a 256-token answer cap: judge .717 (.71/.…
+→ Bash: M="md5 eval_mm_4b.sh b3d1cda1 (wrapped) / eval_mnt.sbatch 1c874b32 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py 02bc8748 / judge_prompts.py bae44fa7 / pisco/model.py 994cff3d"; expmon note "resource: eval_data/longdoc_closedbook (job 191…
+  ↳ verdict recorded: 191669 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: expmon probe 191669 judge=0.7167 >/dev/null && expmon probe 191670 judge=0.58 >/dev/null && expmon probe 191673 judge=0.5467 >/dev/null && expmon probe 191674 judge=0.4167 >/dev/null && expmon verdict 191774 closed "built eval_data/longdoc_…
+  ↳ verdict recorded: 191774 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+10 lines)
+Now tightening the law's answer-cap rule (one cap for every arm E cell) and updating the known-issues row.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && grep -n "MNT=256" CAMPAIGN.md | cut -c1-200
+  ↳ 69:| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run
+→ Bash: sed -i '69s/answer cap `MNT=256`, see below/answer cap `MNT=512`, see below/' CAMPAIGN.md && grep -c "MNT=512" CAMPAIGN.md && sed -n 1,60p ../docs/longdoc_diagnosis.md && wc -l ../docs/longdoc_diagnosis.md && grep -n "^#" ../docs/longdoc_di…
+  ↳ 2 (+69 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 71	## 2. Length curves (accuracy against input size) (+87 lines)
+Updating the results page: the answer-cap row, the arm E trial table, and the judge-sensitivity labels the verifier asked for.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ def rep(a,b): ⏎     global s ⏎     assert s.count(a)==1, a[:60] ⏎     s=s.replace(a,b) ⏎ rep("Last rewrite 2026-11-18 17:50 (arm…
+  ↳ 124:the 512-token text check and the first mixed run (jobs 191776-191778).
+→ Bash: expmon display --exp longdoc 2>&1 | tail -2; expmon campaign report --section leaves 2>&1 | head -60 | cut -c1-300
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+13 lines)
+→ Bash: expmon gripe --open --search display 2>&1 | head -12 | cut -c1-250
+  ↳ == 60 open report(s) matching 'display', every machine, newest first == (+11 lines)
+→ Bash: grep -c "<tr" display_longdoc.html; expmon gripe --same be8057a1 "longdoc 2026-11-18 21:20: same summary line '0 table rows … from 0 runs' while grid longdoc has 54 cells; check the HTML's <tr> count before trusting the summary" 2>&1 | tail…
+  ↳ 51 (+1 lines)
+Now rewriting STATE.md in full.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Checking that the closed-book cell is actually generating (not crashed on the empty documents).
+→ Bash: tail -5 expQ/longdoc/eval_mnt_191776.out | cut -c1-250; grep -m3 -E "output|OUTJ|\.json" expQ/longdoc/eval_mnt_191776.out | cut -c1-250; squeue -j 191776,191777,191778 -h -o "%i %T %M %R"
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+7 lines)
+→ Bash: grep -E "^\[eval\]|^\[base\]|^\[[0-9]+/|eval_mm_docqa.py --|output_path" expQ/longdoc/eval_mnt_191776.out | tail -4 | cut -c1-300
+  ↳ [20/1407] em=0.150 f1=0.179 anls=0.168 match=0.150  74s (+3 lines)
+Closed-book is running at about 2.4 s per question (about 1 hour for 1,407). Writing NEXT.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && echo "wake-when job:191776,191777,191778 max 6h" > NEXT && cat NEXT && git -C /beegfs/scratch/user/hdejean/pisco status --short campaign_longdoc scripts/longdoc docs/longdoc_diagnosi…
+  ↳ wake-when job:191776,191777,191778 max 6h (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "longdoc wake 21:00" --did "read the 256-token cap cells 191669/70/73/74 (healthy, closed); built closed-book set 191774; launched closed-book 191776, text cap 512 check 191777, first mix…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:191776,191777,191778 max 6h", "summary": "The shared 32-token answer limit made the uncompressed model look worse than the compressed one on the new long-document set (LongDocURL). With a 256-token li…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.7166 turns=52 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:191776,191777,191778 max 6h", "summary": "The shared 32-token answer limit made the uncompressed model look worse than the compressed one on the new long-document set (LongDocURL). With a 256-token limit, on the same 300 trial rows, it scores well above the compressed model: pages .717 vs .547, text .580 vs .417. Uncompressed text answers still hit the 256-token limit on 8.3% of rows, which is above the law's 5% bar. So the law now sets o…", "launched": ["191774", "191776", "191777", "191778"], "verdicts": [{"jobid": "191669", "verdict": "closed", "note": "uncompressed pages at 256 tokens, plumbing healthy: judge .717 vs .340 at 32 tokens; answers at the limit 2.3%"}, {"jobid": "191670", "verdict": "closed", "note": "uncompressed text at 256 tokens, plumbing healthy: judge .580 vs .423; answers at the limit 8.3%, so the limit goes to 512"}, {"jobid": "191673", "verdict": "closed", "note": "R s42 pages at 256 tokens, plumbing healthy: judge .547; slot count = audit on 300/300 rows; R minus uncompressed -17.0 pt"}, {"jobid": "191674", "verdict": "closed", "note": "R s42 text at 256 tokens, plumbing healthy: judge .417; slot count = audit on 300/300 rows; R minus uncompressed -16.3 pt"}, {"jobid": "191774", "verdict": "closed", "note": "closed-book set built: 1,407 questions, 0 mismatches"}], "gripes": ["+1 on be8057a1: expmon display prints '0 table rows from 0 runs' while the page has 51 rows"]}
+== final:
+{"next":"wake-when","wake_when":"job:191776,191777,191778 max 6h","summary":"The shared 32-token answer limit made the uncompressed model look worse than the compressed one on the new long-document set (LongDocURL). With a 256-token limit, on the same 300 trial rows, it scores well above the compressed model: pages .717 vs .547, text .580 vs .417. Uncompressed text answers still hit the 256-token limit on 8.3% of rows, which is above the law's 5% bar. So the law now sets one 512-token limit for every arm E cell. I built a closed-book set (each of the 1,407 questions once, no document; 0 mismatches between sets). I launched three cells: closed-book, which checks whether the document is needed at all; the 512-token check on text; and the first run of the mixed text-and-image set. I cleared the stale ALERT and applied the verifier's judge-sensitivity labels. Next wake: the three needle checks, R seed 43 at 20 pages (asked by campaign spread), then cost the model grid as one owner question. Nothing needed from the owner now.","launched":["191774","191776","191777","191778"],"verdicts":[{"jobid":"191669","verdict":"closed","note":"uncompressed pages at 256 tokens, plumbing healthy: judge .717 vs .340 at 32 tokens; answers at the limit 2.3%"},{"jobid":"191670","verdict":"closed","note":"uncompressed text at 256 tokens, plumbing healthy: judge .580 vs .423; answers at the limit 8.3%, so the limit goes to 512"},{"jobid":"191673","verdict":"closed","note":"R s42 pages at 256 tokens, plumbing healthy: judge .547; slot count = audit on 300/300 rows; R minus uncompressed -17.0 pt"},{"jobid":"191674","verdict":"closed","note":"R s42 text at 256 tokens, plumbing healthy: judge .417; slot count = audit on 300/300 rows; R minus uncompressed -16.3 pt"},{"jobid":"191774","verdict":"closed","note":"closed-book set built: 1,407 questions, 0 mismatches"}],"gripes":["+1 on be8057a1: expmon display prints '0 table rows from 0 runs' while the page has 51 rows"]}
+== rc=0 secs=612
+== verify: 3/13

@@ -66,7 +66,7 @@ quoted here — cite the card, not the PDF.
 | U. reading many `<MEM>`s | as L at the longest size, with ONE probe env per cell: `KEEPF=0.125 KEEPM=attn_global`, `RAW=gold`, `RAW=route1` | slots kept / gold item raw / picked item raw | as L | R plain at the same size, and the same probe at the short size (exists for documents: eighth .613, job 189057; route1 .820, job 188441; gold-only .632, job 188440) | dilution D and picking (below) | ~12 |
 | P. positions | eval flag `--mem_position_offset N` (to write, patchable IF; env `MPOS`): shifts the decoder position ids of the `<MEM>`s and of everything after them by N | position only: N = the 20-page (40-passage) span minus the short span, taken from arm A | R; 4-page documents and 10-passage text; slot count | R plain. `MPOS=0` must give byte-identical predictions | offset cost ≤ −3 pt with the CI below 0, at s42 and at s43 → positions past the trained range cost accuracy | ~5 |
 | T. why long-chunk training lost | `eval_mm_4b.sh` on the C256 / L1024 finetunes (symlinked): `GOLD=1` and `RAW=route1` on documents (PX=1003520); plain `text_hotpotqa_1500` (ten chunks, TOPK=10, CML=4096). `scripts/longdoc/mem_recall.py` (to write: a stride-aware port of `scripts/probe_mem_recall.py`, which is legacy-only per HANDOFF.md:138) on the two stage-2 models, 500 gold pages. `scripts/longdoc/ae_nll.py` (to write) on the two stage-1 models, 500 MS MARCO documents from row 1,000,000 on (never trained on), chunks of 256 and 1,024 tokens | stage-1 chunk length (the only difference between the chains) | recipes, rows, seeds, code md5 | C256 of the same seed with the same probe. Plain pairs exist (190270-190275 vs 188707-188712) | locate (below) | ~16 |
-| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run inside that job, the way `scripts/build_mm_eval.py` fetched its sources); cells = `scripts/longdoc/eval_mnt.sbatch` (= `eval_mm_4b.sh` as in arm L, answer cap `MNT=256`, see below) | the set (text / pages / mixed), the length bucket (reported per bucket from one cell), the model | rate 8, PX=1003520, judge; ONE CML per comparison, the same for both models compared | uncompressed on the same rows; closed-book (uncompressed, no document) on the same rows | set soundness and the long-document gaps (below) | build 3 + plumbing 3 + soundness 6 + model cells (costed first) |
+| E. a proper long-document yardstick (owner, 2026-11-17) | builders `scripts/longdoc/build_long_{text,pages,mixed}.py` + `build_long.sbatch` (to write; CPU, `-p gpu-be --gres=gpu:0`; downloads run inside that job, the way `scripts/build_mm_eval.py` fetched its sources); cells = `scripts/longdoc/eval_mnt.sbatch` (= `eval_mm_4b.sh` as in arm L, answer cap `MNT=512`, see below) | the set (text / pages / mixed), the length bucket (reported per bucket from one cell), the model | rate 8, PX=1003520, judge; ONE CML per comparison, the same for both models compared | uncompressed on the same rows; closed-book (uncompressed, no document) on the same rows | set soundness and the long-document gaps (below) | build 3 + plumbing 3 + soundness 6 + model cells (costed first) |
 Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1500`, `eval_data/longdoc_mixed_1500`
 (1,500 Q each where sources allow; else every usable question, with the smallest difference that n can show):
 - one coherent document per question (never independent passages glued together), answer needing the document;
@@ -80,11 +80,17 @@ Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1
 - a long text document reaches the compressor whole: split into consecutive CML-token pieces (pre-split in the set, or
   the collator's `chunk_docs` with `n_max_chunks` large enough). Without that the eval keeps only the first CML tokens
   (`pisco/mm_collator.py:457-462`). Arm A's cut check is re-run on every E set and must give 0%.
-- the answer cap (2026-11-18, plumbing 191634-191636, 300 rows each): the shared 32-token cap cut ~61-74% of the
-  uncompressed decoder's page answers mid-sentence (R: 8-17%), so uncompressed scored below R. Every arm E cell, every
-  model and mode, runs `scripts/longdoc/eval_mnt.sbatch` with `--env MNT=256` (a runtime copy of `eval_mm_4b.sh` with
-  only the cap changed; the shared launcher is never edited). Cells pair only at the same cap. If the uncompressed
-  answers still hit the cap on ≥ 5% of the 300 plumbing rows at 256, raise the cap again before any soundness cell.
+- the answer cap (2026-11-18): the shared 32-token cap cut ~61-74% of the uncompressed decoder's page answers
+  mid-sentence (191634-191636, 300 rows each), so uncompressed scored below R. At 256 tokens the uncompressed answers
+  still reach the cap on 7 / 300 page rows (2.3%) but 25 / 300 text rows (8.3%) (191669 / 191670; heuristic ≥ 600
+  characters, no final punctuation). So ONE cap serves every arm E cell, every set, model and mode, closed-book and
+  needles included: `MNT=512` through `scripts/longdoc/eval_mnt.sbatch` (a runtime copy of `eval_mm_4b.sh` with only the
+  cap changed; the shared launcher is never edited). Cells pair only at the same cap; the 32- and 256-token cells are
+  plumbing only. If the uncompressed text answers still reach the cap on ≥ 5% of the 300 rows at 512 (191777), the cap
+  becomes 1,024 for every arm E cell and the closed-book cell re-runs at it, before any other soundness cell.
+- closed-book (soundness check 1) runs once on `eval_data/longdoc_closedbook` (every question once, no document; base
+  mode `TOPK=0`): without a document the prompt is the same in every set and bucket, so each bucket's closed-book score
+  is that file restricted to the bucket's questions (paired on the question id before the last `__`).
 Model cells, in this order: R s42 then s43 (does the gap grow with length on real documents?); then the long-chunk
 question on text: the C256 and L1024 finetunes of the same seed, both at CML 1,024 (the length L1024 was trained on),
 paired, s42 and s43. A tie at CML 1,024 opens CML 256 for both as a second round, never in the same round.
