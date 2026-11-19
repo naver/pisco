@@ -1,0 +1,63 @@
+== verifier 2026-11-19_1800  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+== session fa11bea6-debc-457e-9643-90b87c80bdfa  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign qafreeze (+338 lines)
+→ Glob: {"pattern": "campaign_qafreeze/pairs/*"}
+→ Glob: {"pattern": "campaign_qafreeze/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs"}
+  ↳ campaign_qafreeze/pairs/docs_QminusR_s42.txt (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/photos_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/photos_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_naturalqa_1500.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/mrqa_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/mrqa_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_cml4096_text_mrqa_ood_1500.json (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/hotpot_QminusR_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/hotpot_QminusR_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_k10_px1003520_cml4096_text_hotpotqa_1500.json (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_noop_R42.txt
+  ↳ 1	judge: R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s42.txt
+  ↳ 1	judge: Q42 = expQ/qafreeze/ft_frozen_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_QminusF_s43.txt
+  ↳ 1	judge: Q43 = expQ/qafreeze/ft_frozen_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_RminusF_s42.txt
+  ↳ 1	judge: R42 = expQ/qafreeze/ref_s42/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/pairs/docs_RminusF_s43.txt
+  ↳ 1	judge: R43 = expQ/qafreeze/ref_s43/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/code_md5.txt
+  ↳ 1	# md5sum run by the qafreeze wake 2026-11-17 22:30 (login node, read-only); recorded reference values: eval_mm_4b.sh 50abc167, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py  (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/STATE.md
+  ↳ 1	# STATE — campaign freeze   (rewritten WHOLESALE by every LLM wake; never append) (+119 lines)
+→ Grep: {"pattern": "\\[−1, \\+2\\]|\\[-1, \\+2\\]|-1 to \\+2|−1 to \\+2|prediction", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze", "output_mode": "content", "glob": "*.md"}
+  ↳ campaign_qafreeze/CAMPAIGN.md:13:**Prediction, written before any cell (kept and marked if wrong):** Q − R on documents lands in [−1, +2] pt — A1 − F ≈ 0 says the connector cannot recover what the com (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+38 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s42/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+→ Grep: {"pattern": "bridge", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze", "output_mode": "content", "glob": "QUESTION.md"}
+  ↳ campaign_qafreeze/QUESTION.md:10:-.001/-.004/+.006); photos tie under F; text loss concentrates in hotpot_bridge (-3.0/-2.8/-3.6, CI<0 at all seeds) and
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/qafreeze/ft_frozen_s43/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+40 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+39 lines)
+→ Grep: {"pattern": "do as recommended|close the campaign|arm H", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-19_1800.log", "output_mode": "content", "head_limit": 20}
+  ↳ 19:Owner's answer arrived: close the campaign, no higher-learning-rate arm. I'm doing the close-out now (final report, retro, stand-down). (+6 lines)
+→ Grep: {"pattern": "REQUEST", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/ticks/2026-11-19_1800.log", "output_mode": "content", "head_limit": 15, "-n": true}
+  ↳ 33:→ Bash: expmon note "qafreeze CLOSED by the owner (REQUEST 2026-11-19 17:05, pisco chat: \"do as recommended\" = close here): arm H (decoder LoRA lr 1e-4, 2 seeds, ~22 GPU-h) NOT run; owner's reaso (+6 lines)
+→ StructuredOutput: {"claims": [{"claim": "TL;DR: Answer: yes — arm Q passed its gate at both seeds, and HotpotQA (reported, not gating) ties too.", "status": "supported", "reason": "Restates the Settled bullets below. All six gating pairs are ≥ −2 pt with eve…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.9836 turns=29 is_error=False denials=0
+== declared: {"claims": [{"claim": "TL;DR: Answer: yes — arm Q passed its gate at both seeds, an…", "status": "supported", "reason": "Restates the Settled bullets below. All six gating pairs are…"}, {"claim": "Arm Q VALIDATED at both seeds (gate: every gating set Q − R …", "status": "supported", "reason": "Every number matches the paired files for n=1,500 (pairs/doc…"}, {"claim": "HotpotQA (reported, not gating), same code md5, n=1,500: Q −…", "status": "supported", "reason": "Matches hotpot_QminusR_s42.txt (ALL −0.005 [−0.019, +0.009],…"}, {"claim": "The prediction written before any cell (documents Q − R in […", "status": "supported", "reason": "campaign_qafreeze/CAMPAIGN.md:13 says 'Q − R on documents la…"}, "… +8 more"], "summary": "I checked all 10 Settled bullets plus the TL;DR headline aga…"}
+== final:
+{"claims":[{"claim":"TL;DR: Answer: yes — arm Q passed its gate at both seeds, and HotpotQA (reported, not gating) ties too.","status":"supported","reason":"Restates the Settled bullets below. All six gating pairs are ≥ −2 pt with every 95% CI including 0 (lowest: photos s43 −0.5 [−1.7, +0.7]). Both HotpotQA CIs include 0. Verdicts 191527 and 191530 are 'best'."},{"claim":"Arm Q VALIDATED at both seeds (gate: every gating set Q − R ≥ −2 pt, no CI wholly below 0). Documents +0.5 [−0.6,+1.6] p .470 / −0.1 [−1.1,+0.9] p .896; photos −0.3 [−1.5,+0.9] p .741 / −0.5 [−1.7,+0.7] p .434; MRQA +1.1 [−0.1,+2.3] p .068 / +0.3 [−0.8,+1.5] p .661; verdicts 191527/191530 → best.","status":"supported","reason":"Every number matches the paired files for n=1,500 (pairs/docs_, photos_ and mrqa_QminusR_s42/s43.txt). Examples: documents s42 +0.005 [−0.006, +0.016], 38/31 discordant, p 0.470; MRQA s42 +0.011 [−0.001, +0.023], p 0.068. Each verdict note records the same md5s on both sides. I read the training configs: the only differences from R are freeze_compressor:true and model_name_or_path→init_s4x, plus seed 43 on both sides at s43, as the arms table allows. The eval-cell factors in the grid are identical between the Q and R cells. The law's gate (≥ −2 pt, no CI wholly below 0, both seeds) is met."},{"claim":"HotpotQA (reported, not gating), same code md5, n=1,500: Q − R −0.5 [−1.9,+0.9] p .562 50/57 (s42, .600 vs .605); +0.9 [−0.5,+2.1] p .223 55/42 (s43, .600 vs .591). Campaign freeze F − R −2.8 [−4.5,−1.3] / −2.3 [−4.1,−0.6] (campaign_freeze/STATE.md:13); bridge −3.0 / −2.8 (QUESTION.md:10).","status":"supported","reason":"Matches hotpot_QminusR_s42.txt (ALL −0.005 [−0.019, +0.009], 50/57, p 0.562) and hotpot_QminusR_s43.txt (+0.009 [−0.005, +0.021], 55/42, p 0.223). Grid: 191766 .6000, 191767 .6000, 191768 .6047, 191769 .5913. campaign_freeze/STATE.md:13 reads −.028 [−.045, −.013] / −.023 [−.041, −.006], and QUESTION.md:10 reads hotpot_bridge −3.0/−2.8. The F − R figures are recorded context from the older eval code (50abc167); they are not paired with Q."},{"claim":"The prediction written before any cell (documents Q − R in [−1, +2] pt) held: +0.5 / −0.1.","status":"supported","reason":"campaign_qafreeze/CAMPAIGN.md:13 says 'Q − R on documents lands in [−1, +2] pt'. The measured +0.005 / −0.001 (docs_QminusR_s42/s43.txt) is inside that range. Read-only tools without git cannot confirm when the line was written."},{"claim":"Instrument control (a): R s42 documents paired with itself = +0.000, 0 discordant (pairs/docs_noop_R42.txt).","status":"supported","reason":"docs_noop_R42.txt: ALL n=1500, diff +0.000, CI [+0.000, +0.000], 0/0 discordant, p 1.000. This is the no-op the law requires."},{"claim":"Instrument control (b): Q − F documents +3.3 [+1.1,+5.3] p .003 (s42, 191626 vs 191677) and +3.3 [+1.1,+5.7] p .003 (s43, 191628 vs 191678); law asks ≥ +2 pt with CI above 0 → met. R − F +2.8 [+0.7,+4.9] p .011 / +3.5 [+1.4,+5.7] p .002, the recorded −2.8 / −3.5 of
+== rc=0

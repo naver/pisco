@@ -1,0 +1,1 @@
+2026-11-19 18:06 — standby by hdejean — closed by the owner 2026-11-19 (REQUEST 17:05): arm Q VALIDATED at both seeds (QA-trained compressor frozen ties the reference on all sets, n=1,500 paired); arm H (decoder lr 1e-4) not run; nothing left to launch; remove this file (or `expmon campaign arm`) to resume

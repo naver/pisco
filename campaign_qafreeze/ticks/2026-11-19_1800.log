@@ -1,0 +1,108 @@
+== campaign qafreeze wake 2026-11-19_1800  reasons=gate,request  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795078801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=2.0 idle_h=20.5 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=7372 sig=260cc69f same=40 behind=0 upstream=0 upfiles=0 upmine=0 upsib=14 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/hook.log
+== session 9b002c6b-4de6-4dcd-81a6-8ea1b21fa414  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/BRIEF.md
+  ↳ # Wake brief — campaign qafreeze — 2026-11-19_1800   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+159 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && ls -la && cat CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat STATE.md && echo ---- && cat known_issues.md && echo ---- && cat GATE; echo ---; ls ticks | tail -5; cat RETRO.md 2>/dev/null
+  ↳ Exit code 1 (+60 lines)
+  ↳ <persisted-output> (+31 lines)
+→ Bash: sed -n 1,400p CAMPAIGN.md | grep -n -i -E "^#|deliverable|retro|stand|close|owner checkpoint|REPORT" | head -80
+  ↳ 1:# CAMPAIGN qafreeze — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+38 lines)
+→ Bash: sed -n 130,175p CAMPAIGN.md && sed -n 250,270p CAMPAIGN.md
+  ↳ `ft_qafreeze.sbatch` itself, under "## Patchable". (+57 lines)
+→ Bash: sed -n 40,200p STATE.md
+→ Bash: cat VERIFY.md; echo ----; cat NEXT; cat DECISIONS.md | head -40; ls pairs; ls ../campaign_freeze/
+  ↳ 500 per other source; no CI excludes 0 except BioASQ / DuoRC s42 touching 0. (+94 lines)
+  ↳ # VERIFY — campaign qafreeze — 2026-11-18_2200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+78 lines)
+Owner's answer arrived: close the campaign, no higher-learning-rate arm. I'm doing the close-out now (final report, retro, stand-down).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon help 2>&1 | grep -i -E "campaign (report|retro|standby)|standby|retro" | head -20; expmon ledger 40 2>&1 | grep -i qafreeze | tail -15
+  ↳ (CAT: defect|workaround|gap|wish|retro; default wish) -> EXP_FEEDBACK (+2 lines)
+→ Bash: expmon campaign 2>&1 | head -60
+  ↳ campaign:      qafreeze   dir /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze   until 2027-02-15 (launches allowed through 2027-02-15 23:59) (+51 lines)
+→ Bash: expmon help 2>&1 | grep -n -i -E "standby|retro|report|resolve" | head; cat campaign_freeze/STAND-DOWN; head -30 campaign_freeze/STATE.md
+  ↳ 5:Config: expmon walks UP from $PWD to find `.expmon.conf` (like .git), sources it, and resolves (+40 lines)
+→ Bash: expmon help 2>&1 | sed -n '/campaign </,/^  [a-z]/p' | head -60
+  ↳ each tagged into campaign <l> with the combo as factors + lineage, (+15 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -80
+  ↳ **Settled** (+10 lines)
+→ Bash: sed -n 95,115p docs/training_plan.md; echo ----; grep -n -i -A6 "Decisions pending" HANDOFF.md | head -30; echo ----; expmon handoff list 2>&1 | head -20
+  ↳ |---|---|---|---|---|---| (+42 lines)
+Recording the owner's decision in the ledger, then writing the final report and retro.
+→ Bash: expmon note "qafreeze CLOSED by the owner (REQUEST 2026-11-19 17:05, pisco chat: \"do as recommended\" = close here): arm H (decoder LoRA lr 1e-4, 2 seeds, ~22 GPU-h) NOT run; owner's reason: the document loss is in the slots, not the decod…
+  ↳ expmon note: 107 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+1 lines)
+→ Bash: timeout 60 expmon campaign retro 2>&1 | tail -30; ls -la campaign_qafreeze/ | grep -E "RETRO|SYNC|REPORT"
+  ↳ -rw-r--r--  1 hdejean hdejean 40860 Nov 19 18:02 REPORT.json (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cat RETRO.md | head -150
+  ↳ # Campaign retro — qafreeze (2026-11-19) (+108 lines)
+→ Bash: ls -la SYNC.md 2>&1; head -40 REPORT.md; cd .. && expmon gripe --open --search "report settled" 2>&1 | head; expmon gripe --open --search "retro idle" 2>&1 | head; expmon gripe --open --search "SYNC.md retro" 2>&1 | head
+  ↳ ls: cannot access 'SYNC.md': No such file or directory (+69 lines)
+→ Bash: expmon gripe --open --search "SYNC.md ready" 2>&1 | head -6; expmon gripe --open --search "push FAILED" 2>&1 | head -6
+  ↳ == 2 open report(s) matching 'sync.md ready', every machine, newest first == (+9 lines)
+→ Bash: expmon gripe --same 7b6e24b7 "pisco/qafreeze 2026-11-19 close-out: report/retro Settled leads with 4 'healthy:' eval-cell lines (HotpotQA reruns) and the s42 arm verdict 'arm Q VALIDATED' (191527, best) is hidden under '... 22 more'. Sugges…
+  ↳ logged as a +1 of 7b6e24b7 (entry b61181f9) -> /home/hdejean/.claude/feedback/ncp.log (+3 lines)
+Gripes filed. Now removing the answered question files and writing the final STATE, retro lessons and page.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze && cp REQUEST /tmp/qafreeze_REQUEST_2026-11-19.txt && rm REQUEST BLOCKED.md && ls
+  ↳ ALERT (+16 lines)
+→ Bash: n=$(grep -n '^## Lessons (rewrite' RETRO.md | cut -d: -f1) && echo $n && head -n $((n-1)) RETRO.md > /tmp/qafreeze_retro_head.md && wc -l /tmp/qafreeze_retro_head.md
+  ↳ 91 (+1 lines)
+→ Bash: cat /tmp/qafreeze_retro_head.md - > RETRO.md <<'EOF' ⏎ ## Lessons ⏎ **Outcome.** The question is answered: yes. A compressor that has had ONE QA finetune (184778 / 184780) can stay ⏎ frozen while a fresh decoder LoRA trains on the same 28k …
+  ↳ **For the successor** (+4 lines)
+→ Bash: sed -i 's|^~25.5 GPU-h of the 55 budgeted; 2 trainings + 18 evals + 7 checks, no failed cell.|24.5 GPU-h (SLURM, measured by the retro) of the 55 budgeted; 28 runs = 2 trainings + 1 smoke + 1 build + 6 weight checks + 18 judged evals, every…
+  ↳ 96:24.5 GPU-h (SLURM, measured by the retro) of the 55 budgeted; 28 runs = 2 trainings + 1 smoke + 1 build + 6 weight checks + 18 judged evals, every one COMPLETED 0:0.
+→ Bash: sed -n 22,42p STATE.md
+  ↳ **Open, and running** (+19 lines)
+→ Bash: grep -n '^## ' STATE.md
+  ↳ 7:## TL;DR — where this leaves the question (readable as an email) (+12 lines)
+Writing the final STATE.md now (keeps the result tables, replaces the header, plan and blocker sections).
+→ Bash: sed -n 26,92p STATE.md > /tmp/qafreeze_state_body.md && sed -i 's/^| model | what trains | documents/| model | what trains | compression | documents/; s/^|---|---|---|---|---|---|---|---|---|---|$/|---|---|---|---|---|---|---|---|---|---|--…
+  ↳ ## Deliverable table (+11 lines)
+→ Bash: { cat <<'EOF' ⏎ # STATE — campaign qafreeze   (rewritten WHOLESALE by every LLM wake; never append) ⏎  ⏎ Last wake: 2026-11-19 18:00 (woken by the owner's REQUEST + GATE). **The campaign is CLOSED.** The owner answered the one ⏎ open questi…
+  ↳ 148 /tmp/qafreeze_STATE_new.md (+1 lines)
+→ Bash: grep -n '^## ' STATE.md; cd .. && timeout 90 expmon display --exp qafreeze 2>&1 | tail -3
+  ↳ 8:## TL;DR — where this leaves the question (readable as an email) (+14 lines)
+→ Bash: expmon handoff add --to pisco "campaign qafreeze is CLOSED (owner, 2026-11-19): write its result into docs/training_plan.md:103-106 (the 'Open:' sentence + 'unless the successor test passes') and HANDOFF.md Decisions pending 1-2" --detail "…
+  ↳ hand-off 07966a filed: pisco:qafreeze -> pisco (its chats): campaign qafreeze is CLOSED (owner, 2026-11-19): write its result into docs/training_plan.md:103-106 (the 'Open:' sentence + 'unless the suc (+1 lines)
+→ Bash: sed -i 's/(hand-off filed this wake)/(hand-off 07966a)/' campaign_qafreeze/STATE.md && expmon gripe -c retro "RETRO qafreeze: WENT OK: one question answered cleanly in 2 days and 24.5 GPU-h with no failed run - a QA-trained compressor kept …
+  ↳ logged (retro) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+Last step: putting the campaign in stand-down so later ticks do nothing.
+→ Bash: expmon campaign standby "closed by the owner 2026-11-19 (REQUEST 17:05): arm Q VALIDATED at both seeds (QA-trained compressor frozen ties the reference on all sets, n=1,500 paired); arm H (decoder lr 1e-4) not run; nothing left to launch" 2…
+  ↳ standby: /beegfs/scratch/user/hdejean/pisco/campaign_qafreeze/STAND-DOWN written. The crontab is UNTOUCHED (still 1 line(s)); every tick (+3 lines)
+I closed the campaign as you asked. The test passed: a compressor that has already had one question-answering finetune can stay frozen while only the decoder trains. The higher learning-rate run was not done.
+
+**Check one thing.** Your reply said "do as recommended", but my recommendation had been "yes, run the higher learning-rate test" (about 22 GPU-hours). The rest of your request said "close the campaign here; do not run" that test, so I followed those words. If you meant to run it, delete `campaign_qafreeze/STAND-DOWN` and send a new request.
+
+## Final result
+Judge accuracy ↑ (higher is better), seed 42 / seed 43. The difference is the frozen model minus the reference, in points, with a paired 95% interval. 1,500 questions per set. Compression is the same for both models: 8 image tokens per slot, about 123 slots per page.
+
+| set | reference ↑ | frozen compressor, decoder-only training ↑ | difference (pt) | uncompressed ↑ |
+|---|---|---|---|---|
+| documents | .610 / .615 | .615 / .613 | +0.5 [−0.6, +1.6] / −0.1 [−1.1, +0.9] | .809 |
+| photos | .679 / .685 | .677 / .679 | −0.3 / −0.5 | .717 |
+| MRQA text | .715 / .724 | .726 / .727 | +1.1 / +0.3 | .807 |
+| HotpotQA (reported only) | .605 / .591 | .600 / .600 | −0.5 / +0.9 | — |
+
+- Every interval includes 0, so the two models tie on every set.
+- **The evaluation can see a gap this size.** A compressor that never had question-answering training, frozen the same way, scores 3.3 points lower on documents at both seeds.
+- **What this means:** you can compress a collection once, store the compressed slots, and train only the decoder on them. Building that store is already handed to the pisco chats.
+- **Not answered:** whether the higher decoder learning rate would help. It was never run.
+- **Cost:** 24.5 GPU-hours of the 55 budgeted, over 28 runs. None failed.
+
+## Done this wake
+- Logged your decision in the ledger. Deleted the request file and the open question.
+- Rewrote the campaign's state file with the final table, and filled the lessons in `RETRO.md`. The main lesson: the campaign waited 20 h on your answer because I recommended a 22 GPU-hour option. Your standing rule only auto-accepts options of 5 GPU-hours or less.
+- Sent the pisco chats a hand-off with the paste-ready text for `docs/training_plan.md` and the decision list in `HANDOFF.md`. The campaign is not allowed to edit those files.
+- Refreshed the results page `display_qafreeze.html`.
+- Filed four reports on the experiment tooling. The retro claimed it wrote a cross-cluster note file but did not, so there is nothing for you to paste.
+- Put the campaign in stand-down: every later 30-minute check now does nothing. The next-step file says `done`.
+
+**Your decision:** confirm that "close" is what you meant. Optionally, run `expmon campaign disarm` to remove its cron line, and delete the old verifier alert file, which is already fixed.
+→ StructuredOutput: {"next": "done", "summary": "Executed the owner's REQUEST (2026-11-19 17:05): campaign qafreeze closed, arm H (decoder LoRA lr 1e-4) not run. Final: arm Q (QA-trained compressor + connector of 184778/184780 frozen, fresh decoder LoRA, 28k r…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.8209 turns=33 is_error=False denials=0
+== declared: {"next": "done", "summary": "Executed the owner's REQUEST (2026-11-19 17:05): campaign qafreeze closed, arm H (decoder LoRA lr 1e-4) not run. Final: arm Q (QA-trained compressor + connector of 184778/184780 frozen, fresh decoder LoRA, 28k rows) VALIDATED at s42/s43, paired judge n=1,500/set: docs +0.5/-0.1, photos -0.3/-0.5, MRQA +1.1/+0.3, HotpotQA -0.5/+0.9 pt, every CI includes 0; control Q-F docs +3.3 p .003. 24.5 GPU-h of 55. Wrote ledger note, final STATE.md, RETRO.md Lessons, retro journal line, refreshed display, hand-off 07966a (doc text to pisco chats), deleted REQUEST + BLOCKED.md, NEXT=done, expmon campaign standby (STAND-DOWN written). Flagged in STATE.md: the REQUEST's 'do as recommended' contradicts BLOCKED.md's 'yes' recommendation; the explicit 'close / do not run arm H' words were followed.", "launched": [], "verdicts": [], "gripes": ["+1 7b6e24b7: report Settled leads with eval-cell 'healthy' lines, arm verdict hidden in '... 22 more'", "+1 6aff7fdb: retro counts waiting-owner hours as 'idle with work outstanding'", "+1 732da21c: retro 'What went wrong' strips digits from the push alert text", "new defect: campaign retro says SYNC.md is ready but writes none", "retro: RETRO qafreeze journal line"]}
+== final:
+{"next":"done","summary":"Executed the owner's REQUEST (2026-11-19 17:05): campaign qafreeze closed, arm H (decoder LoRA lr 1e-4) not run. Final: arm Q (QA-trained compressor + connector of 184778/184780 frozen, fresh decoder LoRA, 28k rows) VALIDATED at s42/s43, paired judge n=1,500/set: docs +0.5/-0.1, photos -0.3/-0.5, MRQA +1.1/+0.3, HotpotQA -0.5/+0.9 pt, every CI includes 0; control Q-F docs +3.3 p .003. 24.5 GPU-h of 55. Wrote ledger note, final STATE.md, RETRO.md Lessons, retro journal line, refreshed display, hand-off 07966a (doc text to pisco chats), deleted REQUEST + BLOCKED.md, NEXT=done, expmon campaign standby (STAND-DOWN written). Flagged in STATE.md: the REQUEST's 'do as recommended' contradicts BLOCKED.md's 'yes' recommendation; the explicit 'close / do not run arm H' words were followed.","launched":[],"verdicts":[],"gripes":["+1 7b6e24b7: report Settled leads with eval-cell 'healthy' lines, arm verdict hidden in '... 22 more'","+1 6aff7fdb: retro counts waiting-owner hours as 'idle with work outstanding'","+1 732da21c: retro 'What went wrong' strips digits from the push alert text","new defect: campaign retro says SYNC.md is ready but writes none","retro: RETRO qafreeze journal line"]}
+== rc=0 secs=363
+== verify: 11/12

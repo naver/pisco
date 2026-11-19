@@ -1,0 +1,547 @@
+{
+ "label": "qafreeze",
+ "dir": "/beegfs/scratch/user/hdejean/pisco/campaign_qafreeze",
+ "generated": "2026-11-19 18:02",
+ "mission": "Successor of campaign 'freeze' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_freeze/REPORT.md \u2014 not written yet; REPORT.json carries the same Settled list). Open at hand-off: nothing \u2014 the previous campaign settled every arm. **Question (owner, QUESTION.md; HANDOFF.md:66-70):** campaign freeze froze a compressor that had NEVER seen question-answering training. Can a compressor that HAS had one QA finetune then stay FROZEN while a fresh decoder LoRA is trained on the same rows? That is the case `<MEM>` caching needs: compress a collection once, train only the decoder afterwards. **Arm Q (what is tested):** the reference finetune recipe of 184778 / 184780 with ONE change \u2014 it starts from a hybrid init: R's own `compressor/` + `connector.pt` (QA-trained) with R's `decoder_state.pt` replaced by the stage-2 decoder (`expQ/archq3/pt_mm_5M_spread/model/decoder_state.pt`, R's own starting point), run with `+model_config_overrides.freeze_compressor=true`, so only the decoder LoRA trains. The hybrid is assembled by copying R's model dir and swapping that one file \u2014 the only route that needs no new code, since `PISCO.from_pretrained` reads exactly `decoder_state.pt`, `compressor/compressor_state.pt`, `connector.pt` and `config.json` (pisco/model.py:1376-1405); the two configs differ only in `connector_out_norm` / its init / the image-processor path (`expQ/ft_mm_4b_184778/model/config.json:11-12,24`), and R's config travels with R's connector.",
+ "window": [
+  "2026-11-17",
+  "2026-11-19"
+ ],
+ "until": "2027-02-15",
+ "over": false,
+ "ticks": 95,
+ "wakes": 11,
+ "wakes_bad": 2,
+ "gpu_h": 24.5,
+ "card_h": 0,
+ "idle_max_h": 20.0,
+ "idle_flag": true,
+ "settled": [
+  {
+   "jobid": "191769",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "note": "healthy: COMPLETED 0:0 24:26 homer-020; R s43 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .591 (recorded on old code .593)",
+   "text": "healthy: COMPLETED 0:0 24:26 homer-020; R s43 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .591 (recorded on old code .593) \u2014 job 191769, closed",
+   "jobs": [
+    "191769"
+   ]
+  },
+  {
+   "jobid": "191768",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "note": "healthy: COMPLETED 0:0 22:15 homer-011; R s42 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .605 (recorded on old code .603)",
+   "text": "healthy: COMPLETED 0:0 22:15 homer-011; R s42 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .605 (recorded on old code .603) \u2014 job 191768, closed",
+   "jobs": [
+    "191768"
+   ]
+  },
+  {
+   "jobid": "191767",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "note": "healthy: COMPLETED 0:0 22:55 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s43 judge .600; Q - R (191769) +0.9 pt [-0.5,+2.1] McNemar p .223, 55/42 discordant (reported, not gating); same md5 as the gating pairs",
+   "text": "healthy: COMPLETED 0:0 22:55 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s43 judge .600; Q - R (191769) +0.9 pt [-0.5,+2.1] McNemar p .223, 55/42 discordant (reported, not gating); same md5 as the gating pairs \u2014 job 191767, closed",
+   "jobs": [
+    "191767"
+   ]
+  },
+  {
+   "jobid": "191766",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "note": "healthy: COMPLETED 0:0 22:36 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s42 judge .600; Q - R (191768) -0.5 pt [-1.9,+0.9] McNemar p .562, 50/57 discordant (reported, not gating); md5 eval_mm_4b b3d1cda1 / eval dfe32aa0 / judge 02bc8748 / paired a3cc13b2 / model 994cff3d",
+   "text": "healthy: COMPLETED 0:0 22:36 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s42 judge .600; Q - R (191768) -0.5 pt [-1.9,+0.9] McNemar p .562, 50/57 discordant (reported, not gating); md5 eval_mm_4b b3d1cda1 / eval dfe32aa0 / judge 02bc8748 / paired a3cc13b2 / model 994cff3d \u2014 job 191766, closed",
+   "jobs": [
+    "191766"
+   ]
+  },
+  {
+   "jobid": "191530",
+   "verdict": "best",
+   "arm": "kind=ft_mm arm=qa_frozen seed=43 smoke=0 init=qafreeze_init_s43 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "note": "arm Q VALIDATED s43: Q-R judge, n=1500 paired: documents -0.1 [-1.1,+0.9] p.896; photos -0.5 [-1.7,+0.7] p.434; MRQA +0.3 [-0.8,+1.5] p.661. Control Q-F docs +3.3 [+1.1,+5.7] p.003. Module move 191627: compressor/connector 0.0%, decoder lora_B 66.9%",
+   "text": "arm Q VALIDATED s43: Q-R judge, n=1500 paired: documents -0.1 [-1.1,+0.9] p.896; photos -0.5 [-1.7,+0.7] p.434; MRQA +0.3 [-0.8,+1.5] p.661. Control Q-F docs +3.3 [+1.1,+5.7] p.003. Module move 191627: compressor/connector 0.0%, decoder lora_B 66.9% \u2014 job 191530, best",
+   "jobs": [
+    "191530"
+   ]
+  },
+  {
+   "jobid": "191678",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=f_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: F s43 documents today's code judge .580 (recorded .580), 1500 judged, 0 unparseable, px 1003520, homer-020",
+   "text": "healthy: F s43 documents today's code judge .580 (recorded .580), 1500 judged, 0 unparseable, px 1003520, homer-020 \u2014 job 191678, closed",
+   "jobs": [
+    "191678"
+   ]
+  },
+  {
+   "jobid": "191677",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=f_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: F s42 documents today's code judge .582, 0 of 1500 answers judged differently from the recorded file; 1500 judged, 0 unparseable, px 1003520; final gen+judge homer-011 after one preemption",
+   "text": "healthy: F s42 documents today's code judge .582, 0 of 1500 answers judged differently from the recorded file; 1500 judged, 0 unparseable, px 1003520; final gen+judge homer-011 after one preemption \u2014 job 191677, closed",
+   "jobs": [
+    "191677"
+   ]
+  },
+  {
+   "jobid": "191676",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "healthy: R s43 MRQA today's code judge .724 (recorded .724), 1500 judged, 0 unparseable; homer-017, preempted after finish, file reused",
+   "text": "healthy: R s43 MRQA today's code judge .724 (recorded .724), 1500 judged, 0 unparseable; homer-017, preempted after finish, file reused \u2014 job 191676, closed",
+   "jobs": [
+    "191676"
+   ]
+  },
+  {
+   "jobid": "191675",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "healthy: R s42 MRQA today's code judge .715 (recorded .718), 1500 judged, 0 unparseable; generated+judged on homer-017, preempted after the .batch step ended, requeue reused the file (known_issues row: preemption after finish)",
+   "text": "healthy: R s42 MRQA today's code judge .715 (recorded .718), 1500 judged, 0 unparseable; generated+judged on homer-017, preempted after the .batch step ended, requeue reused the file (known_issues row: preemption after finish) \u2014 job 191675, closed",
+   "jobs": [
+    "191675"
+   ]
+  },
+  {
+   "jobid": "191662",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "healthy: Q s43 MRQA judge .727, 1500 judged, 0 unparseable, CML 4096, homer-010; Q-R +0.3 [-0.8,+1.5]",
+   "text": "healthy: Q s43 MRQA judge .727, 1500 judged, 0 unparseable, CML 4096, homer-010; Q-R +0.3 [-0.8,+1.5] \u2014 job 191662, closed",
+   "jobs": [
+    "191662"
+   ]
+  },
+  {
+   "jobid": "191661",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "healthy: Q s42 MRQA judge .726, 1500 judged, 0 unparseable, CML 4096, homer-020; Q-R +1.1 [-0.1,+2.3]",
+   "text": "healthy: Q s42 MRQA judge .726, 1500 judged, 0 unparseable, CML 4096, homer-020; Q-R +1.1 [-0.1,+2.3] \u2014 job 191661, closed",
+   "jobs": [
+    "191661"
+   ]
+  },
+  {
+   "jobid": "191660",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: Q s43 photos judge .679, 1500 judged, 0 unparseable, px 1003520, homer-020; Q-R -0.5 [-1.7,+0.7]",
+   "text": "healthy: Q s43 photos judge .679, 1500 judged, 0 unparseable, px 1003520, homer-020; Q-R -0.5 [-1.7,+0.7] \u2014 job 191660, closed",
+   "jobs": [
+    "191660"
+   ]
+  },
+  {
+   "jobid": "191659",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: Q s42 photos judge .677, 1500 rows judged, 0 unparseable, px 1003520, homer-017; Q-R -0.3 [-1.5,+0.9]",
+   "text": "healthy: Q s42 photos judge .677, 1500 rows judged, 0 unparseable, px 1003520, homer-017; Q-R -0.3 [-1.5,+0.9] \u2014 job 191659, closed",
+   "jobs": [
+    "191659"
+   ]
+  },
+  {
+   "jobid": "191527",
+   "verdict": "best",
+   "arm": "kind=ft_mm arm=qa_frozen seed=42 smoke=0 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "note": "arm Q VALIDATED s42: QA-trained compressor+connector frozen, decoder LoRA only, 1 epoch 28k rows. Q-R judge, n=1500 paired: documents +0.5 [-0.6,+1.6] p.470; photos -0.3 [-1.5,+0.9] p.741; MRQA +1.1 [-0.1,+2.3] p.068. Control Q-F docs +3.3 [+1.1,+5.3] p.003; no-op 0.000. Same md5 both sides (b3d1cda1/dfe32aa0/02bc8748/a3cc13b2)",
+   "text": "arm Q VALIDATED s42: QA-trained compressor+connector frozen, decoder LoRA only, 1 epoch 28k rows. Q-R judge, n=1500 paired: documents +0.5 [-0.6,+1.6] p.470; photos -0.3 [-1.5,+0.9] p.741; MRQA +1.1 [-0.1,+2.3] p.068. Control Q-F docs +3.3 [+1.1,+5.3] p.003; no-op 0.000. Same md5 both sides (b3d1cda1/dfe32aa0/02bc8748/a3cc13b2) \u2014 job 191527, best",
+   "jobs": [
+    "191527"
+   ]
+  },
+  {
+   "jobid": "191628",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 homer-017 28:42 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s43 documents judge .613 vs R re-run 191496 .615: Q-R -.001 [-.011,+.009] McNemar p .896 (Q-only 28 / R-only 30), n=1,500 pairs, same md5s",
+   "text": "healthy: COMPLETED 0:0 homer-017 28:42 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s43 documents judge .613 vs R re-run 191496 .615: Q-R -.001 [-.011,+.009] McNemar p .896 (Q-only 28 / R-only 30), n=1,500 pairs, same md5s \u2014 job 191628, closed",
+   "jobs": [
+    "191628"
+   ]
+  },
+  {
+   "jobid": "191626",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 homer-017 28:51 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s42 documents judge .615 vs R re-run 191495 .610: Q-R +.005 [-.006,+.016] McNemar p .470 (Q-only 38 / R-only 31), n=1,500 pairs, same md5s",
+   "text": "healthy: COMPLETED 0:0 homer-017 28:51 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s42 documents judge .615 vs R re-run 191495 .610: Q-R +.005 [-.006,+.016] McNemar p .470 (Q-only 38 / R-only 31), n=1,500 pairs, same md5s \u2014 job 191626, closed",
+   "jobs": [
+    "191626"
+   ]
+  },
+  {
+   "jobid": "191627",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s43",
+   "note": "health PASS: init_s43 -> ft_frozen_s43/model: every compressor.* and connector.* row 0.0%; decoder lora_B 66.9%, lora_A 14.8%. homer-020, exit 0",
+   "text": "health PASS: init_s43 -> ft_frozen_s43/model: every compressor.* and connector.* row 0.0%; decoder lora_B 66.9%, lora_A 14.8%. homer-020, exit 0 \u2014 job 191627, closed",
+   "jobs": [
+    "191627"
+   ]
+  },
+  {
+   "jobid": "191625",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s42",
+   "note": "health PASS: init_s42 -> ft_frozen_s42/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 66.9% (> 60%; F full 66.3-66.7%), lora_A 14.8%. homer-014, exit 0",
+   "text": "health PASS: init_s42 -> ft_frozen_s42/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 66.9% (> 60%; F full 66.3-66.7%), lora_A 14.8%. homer-014, exit 0 \u2014 job 191625, closed",
+   "jobs": [
+    "191625"
+   ]
+  },
+  {
+   "jobid": "191532",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy (COMPLETED 0:0, homer-017, 18:10, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184780 photos on b3d1cda1: judge .685 (recorded .685)",
+   "text": "healthy (COMPLETED 0:0, homer-017, 18:10, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184780 photos on b3d1cda1: judge .685 (recorded .685) \u2014 job 191532, closed",
+   "jobs": [
+    "191532"
+   ]
+  },
+  {
+   "jobid": "191531",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy (COMPLETED 0:0, homer-018, 18:59, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184778 photos on b3d1cda1: judge .679 (recorded .673; known photo re-run drift)",
+   "text": "healthy (COMPLETED 0:0, homer-018, 18:59, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184778 photos on b3d1cda1: judge .679 (recorded .673; known photo re-run drift) \u2014 job 191531, closed",
+   "jobs": [
+    "191531"
+   ]
+  },
+  {
+   "jobid": "191496",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy (COMPLETED 0:0, homer-019, 28:04, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 646,042). R 184780 documents on b3d1cda1: judge .615 (recorded .615)",
+   "text": "healthy (COMPLETED 0:0, homer-019, 28:04, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 646,042). R 184780 documents on b3d1cda1: judge .615 (recorded .615) \u2014 job 191496, closed",
+   "jobs": [
+    "191496"
+   ]
+  },
+  {
+   "jobid": "191495",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy (COMPLETED 0:0, homer-017, 27:13, one attempt; 1,500 rows, judge on all, unparseable 0, image_max_pixels 1003520, mems_used 646,042, no exceeds error). R 184778 documents on eval_mm_4b.sh b3d1cda1: judge .610 (recorded .610 on 50abc167)",
+   "text": "healthy (COMPLETED 0:0, homer-017, 27:13, one attempt; 1,500 rows, judge on all, unparseable 0, image_max_pixels 1003520, mems_used 646,042, no exceeds error). R 184778 documents on eval_mm_4b.sh b3d1cda1: judge .610 (recorded .610 on 50abc167) \u2014 job 191495, closed",
+   "jobs": [
+    "191495"
+   ]
+  },
+  {
+   "jobid": "191494",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s42_smoke",
+   "note": "plumbing PASS: init_s42 -> ft_frozen_s42_smoke/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 76.0%, lora_A 30.1%, token_adapter 0.0%. homer-019, 0:44",
+   "text": "plumbing PASS: init_s42 -> ft_frozen_s42_smoke/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 76.0%, lora_A 30.1%, token_adapter 0.0%. homer-019, 0:44 \u2014 job 191494, closed",
+   "jobs": [
+    "191494"
+   ]
+  },
+  {
+   "jobid": "191493",
+   "verdict": "closed",
+   "arm": "kind=ft_mm arm=qa_frozen seed=42 smoke=20 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "note": "plumbing PASS (Qs, s42, 20 steps = 1,280 rows = .046 epoch; COMPLETED 0:0, homer-010, 29:19): log 'freeze_compressor=True: froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0', total trainable 155,978,240 = decoder; loss step 10 .555 / step 20 .515 vs frozen smoke 188528 .594 / .584 (-.039 / -.069, inside +-.10); training_config.yaml diff vs 184778 = max_steps 20 + freeze_compressor true + model_name_or_path init_s42 only; 80.97 s/step overall (70-73 steady, step 1 231 s); peak gpumem 49.7 GB (= 188528), gpuutil 93%",
+   "text": "plumbing PASS (Qs, s42, 20 steps = 1,280 rows = .046 epoch; COMPLETED 0:0, homer-010, 29:19): log 'freeze_compressor=True: froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0', total trainable 155,978,240 = decoder; loss step 10 .555 / step 20 .515 vs frozen smoke 188528 .594 / .584 (-.039 / -.069, inside +-.10); training_config.yaml diff vs 184778 = max_steps 20 + freeze_compressor true + model_name_or_path init_s42 only; 80.97 s/step overall (70-73 steady, step 1 231 s); peak gpumem 49.7 GB (= 188528), gpuutil 93% \u2014 job 191493, closed",
+   "jobs": [
+    "191493"
+   ]
+  },
+  {
+   "jobid": "191453",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=ft_mm_4b_184780 trained=qafreeze",
+   "note": "arm B seed-43 init OK: R s43 (184780) -> init_s43: compressor.* and connector.* rows 0.0%; decoder lora_B 67.5% (> 60%), lora_A 15.1%. homer-014, 0:57",
+   "text": "arm B seed-43 init OK: R s43 (184780) -> init_s43: compressor.* and connector.* rows 0.0%; decoder lora_B 67.5% (> 60%), lora_A 15.1%. homer-014, 0:57 \u2014 job 191453, closed",
+   "jobs": [
+    "191453"
+   ]
+  },
+  {
+   "jobid": "191452",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=pt_mm_5M_spread trained=qafreeze",
+   "note": "feasibility gate (2) PASS: stage-2 (pt_mm_5M_spread) -> init_s42: every decoder.* row changed 0.0% (decoder == R's own start); compressor lora_B changed 73.8% (> 60%; known-positive R s44 74.1%), lora_A 16.7%, connector MLP 20.7%. homer-019, 0:48",
+   "text": "feasibility gate (2) PASS: stage-2 (pt_mm_5M_spread) -> init_s42: every decoder.* row changed 0.0% (decoder == R's own start); compressor lora_B changed 73.8% (> 60%; known-positive R s44 74.1%), lora_A 16.7%, connector MLP 20.7%. homer-019, 0:48 \u2014 job 191452, closed",
+   "jobs": [
+    "191452"
+   ]
+  },
+  {
+   "jobid": "191451",
+   "verdict": "closed",
+   "arm": "kind=check_module_move init=ft_mm_4b_184778 trained=qafreeze",
+   "note": "feasibility gate (1) PASS: R s42 (184778) -> init_s42: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (MLP, norm gain) row changed 0.0%; decoder lora_B changed 68.6% (> 60%: decoder reset), lora_A 15.4%. homer-012, 1:02",
+   "text": "feasibility gate (1) PASS: R s42 (184778) -> init_s42: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (MLP, norm gain) row changed 0.0%; decoder lora_B changed 68.6% (> 60%: decoder reset), lora_A 15.4%. homer-012, 1:02 \u2014 job 191451, closed",
+   "jobs": [
+    "191451"
+   ]
+  },
+  {
+   "jobid": "191450",
+   "verdict": "closed",
+   "arm": "kind=build_init seeds=42 decoder_from=pt_mm_5M_spread",
+   "note": "arm B build OK: init_s42 / init_s43 built (exit 0, 3:07, homer-012). md5: decoder_state.pt == stage-2 pt_mm_5M_spread (dca63864); compressor_state.pt, connector.pt, config.json == R's (s42 6a67c55f/4963a039/4a10d4ee, s43 19666dda/6f1c2e6c/4a10d4ee); swapped decoder has R's 696 key names, shapes and dtypes, 200/696 tensors identical to R (the rest reset)",
+   "text": "arm B build OK: init_s42 / init_s43 built (exit 0, 3:07, homer-012). md5: decoder_state.pt == stage-2 pt_mm_5M_spread (dca63864); compressor_state.pt, connector.pt, config.json == R's (s42 6a67c55f/4963a039/4a10d4ee, s43 19666dda/6f1c2e6c/4a10d4ee); swapped decoder has R's 696 key names, shapes and dtypes, 200/696 tensors identical to R (the rest reset) \u2014 job 191450, closed",
+   "jobs": [
+    "191450"
+   ]
+  }
+ ],
+ "open": [],
+ "findings": [
+  "healthy: COMPLETED 0:0 24:26 homer-020; R s43 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .591 (recorded on old code .593) (job 191769, closed)",
+  "healthy: COMPLETED 0:0 22:15 homer-011; R s42 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .605 (recorded on old code .603) (job 191768, closed)",
+  "healthy: COMPLETED 0:0 22:55 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s43 judge .600; Q - R (191769) +0.9 pt [-0.5,+2.1] McNemar p .223, 55/42 discordant (reported, not gating); same md5 as the gating pairs (job 191767, closed)",
+  "healthy: COMPLETED 0:0 22:36 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s42 judge .600; Q - R (191768) -0.5 pt [-1.9,+0.9] McNemar p .562, 50/57 discordant (reported, not gating); md5 eval_mm_4b b3d1cda1 / eval dfe32aa0 / judge 02bc8748 / paired a3cc13b2 / model 994cff3d (job 191766, closed)",
+  "arm Q VALIDATED s43: Q-R judge, n=1500 paired: documents -0.1 [-1.1,+0.9] p.896; photos -0.5 [-1.7,+0.7] p.434; MRQA +0.3 [-0.8,+1.5] p.661. Control Q-F docs +3.3 [+1.1,+5.7] p.003. Module move 191627: compressor/connector 0.0%, decoder lora_B 66.9% (job 191530, best)"
+ ],
+ "wrong": [
+  "The campaign idled 20.0 h of its 47.0 h window (42%) \u2014 with work outstanding, that is the main operational fact.",
+  "2 of 11 LLM wakes returned rc\u22600.",
+  "Alert raised: last push FAILED (push_rc=, behind ) \u2014 git -C /beegfs/scratc|2026-11-18.",
+  "6 tick(s) could not push the campaign state.",
+  "BLOCKED.md is standing: BLOCKED \u2014 campaign qafreeze   (owner checkpoint; one question)."
+ ],
+ "arms": [
+  {
+   "arm": "kind=build_init seeds=42 decoder_from=pt_mm_5M_spread",
+   "jobid": "191450",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm B build OK: init_s42 / init_s43 built (exit 0, 3:07, homer-012). md5: decoder_state.pt == stage-2 pt_mm_5M_spread (dca63864); compressor_state.pt, connector.pt, config.json == R's (s42 6a67c55f/4963a039/4a10d4ee, s43 19666dda/6f1c2e6c/4a10d4ee); swapped decoder has R's 696 key names, shapes and dtypes, 200/696 tensors identical to R (the rest reset)"
+  },
+  {
+   "arm": "kind=check_module_move init=ft_mm_4b_184778 trained=qafreeze",
+   "jobid": "191451",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "feasibility gate (1) PASS: R s42 (184778) -> init_s42: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (MLP, norm gain) row changed 0.0%; decoder lora_B changed 68.6% (> 60%: decoder reset), lora_A 15.4%. homer-012, 1:02"
+  },
+  {
+   "arm": "kind=check_module_move init=pt_mm_5M_spread trained=qafreeze",
+   "jobid": "191452",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "feasibility gate (2) PASS: stage-2 (pt_mm_5M_spread) -> init_s42: every decoder.* row changed 0.0% (decoder == R's own start); compressor lora_B changed 73.8% (> 60%; known-positive R s44 74.1%), lora_A 16.7%, connector MLP 20.7%. homer-019, 0:48"
+  },
+  {
+   "arm": "kind=check_module_move init=ft_mm_4b_184780 trained=qafreeze",
+   "jobid": "191453",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm B seed-43 init OK: R s43 (184780) -> init_s43: compressor.* and connector.* rows 0.0%; decoder lora_B 67.5% (> 60%), lora_A 15.1%. homer-014, 0:57"
+  },
+  {
+   "arm": "kind=ft_mm arm=qa_frozen seed=42 smoke=20 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "jobid": "191493",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "plumbing PASS (Qs, s42, 20 steps = 1,280 rows = .046 epoch; COMPLETED 0:0, homer-010, 29:19): log 'freeze_compressor=True: froze 506 compressor + connector tensors', 'Compressor trainable parameters: 0', total trainable 155,978,240 = decoder; loss step 10 .555 / step 20 .515 vs frozen smoke 188528 .594 / .584 (-.039 / -.069, inside +-.10); training_config.yaml diff vs 184778 = max_steps 20 + freeze_compressor true + model_name_or_path init_s42 only; 80.97 s/step overall (70-73 steady, step 1 231 s); peak gpumem 49.7 GB (= 188528), gpuutil 93%"
+  },
+  {
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s42_smoke",
+   "jobid": "191494",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "plumbing PASS: init_s42 -> ft_frozen_s42_smoke/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 76.0%, lora_A 30.1%, token_adapter 0.0%. homer-019, 0:44"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191495",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 27:13, one attempt; 1,500 rows, judge on all, unparseable 0, image_max_pixels 1003520, mems_used 646,042, no exceeds error). R 184778 documents on eval_mm_4b.sh b3d1cda1: judge .610 (recorded .610 on 50abc167)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191496",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-019, 28:04, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 646,042). R 184780 documents on b3d1cda1: judge .615 (recorded .615)"
+  },
+  {
+   "arm": "kind=ft_mm arm=qa_frozen seed=42 smoke=0 init=qafreeze_init_s42 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "jobid": "191527",
+   "state": "COMPLETED",
+   "gpu_h": 9.0,
+   "verdict": "best",
+   "headline": "arm Q VALIDATED s42: QA-trained compressor+connector frozen, decoder LoRA only, 1 epoch 28k rows. Q-R judge, n=1500 paired: documents +0.5 [-0.6,+1.6] p.470; photos -0.3 [-1.5,+0.9] p.741; MRQA +1.1 [-0.1,+2.3] p.068. Control Q-F docs +3.3 [+1.1,+5.3] p.003; no-op 0.000. Same md5 both sides (b3d1cda1/dfe32aa0/02bc8748/a3cc13b2)"
+  },
+  {
+   "arm": "kind=ft_mm arm=qa_frozen seed=43 smoke=0 init=qafreeze_init_s43 samples=28000 bs=1 accum=64 lr=2e-5 max_pixels=1003520",
+   "jobid": "191530",
+   "state": "COMPLETED",
+   "gpu_h": 9.3,
+   "verdict": "best",
+   "headline": "arm Q VALIDATED s43: Q-R judge, n=1500 paired: documents -0.1 [-1.1,+0.9] p.896; photos -0.5 [-1.7,+0.7] p.434; MRQA +0.3 [-0.8,+1.5] p.661. Control Q-F docs +3.3 [+1.1,+5.7] p.003. Module move 191627: compressor/connector 0.0%, decoder lora_B 66.9%"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191531",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-018, 18:59, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184778 photos on b3d1cda1: judge .679 (recorded .673; known photo re-run drift)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191532",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 18:10, one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322). R 184780 photos on b3d1cda1: judge .685 (recorded .685)"
+  },
+  {
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s42",
+   "jobid": "191625",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "health PASS: init_s42 -> ft_frozen_s42/model: every compressor.* (lora_A, lora_B, token_adapter) and connector.* (linear, norm_gain) row changed 0.0%; decoder lora_B 66.9% (> 60%; F full 66.3-66.7%), lora_A 14.8%. homer-014, exit 0"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191626",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-017 28:51 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s42 documents judge .615 vs R re-run 191495 .610: Q-R +.005 [-.006,+.016] McNemar p .470 (Q-only 38 / R-only 31), n=1,500 pairs, same md5s"
+  },
+  {
+   "arm": "kind=check_module_move init=qafreeze trained=ft_frozen_s43",
+   "jobid": "191627",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "health PASS: init_s43 -> ft_frozen_s43/model: every compressor.* and connector.* row 0.0%; decoder lora_B 66.9%, lora_A 14.8%. homer-020, exit 0"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191628",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-017 28:42 one attempt; 1,500 rows, judge on all, unparseable 0, px 1003520, no exceeds error. Q s43 documents judge .613 vs R re-run 191496 .615: Q-R -.001 [-.011,+.009] McNemar p .896 (Q-only 28 / R-only 30), n=1,500 pairs, same md5s"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191659",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: Q s42 photos judge .677, 1500 rows judged, 0 unparseable, px 1003520, homer-017; Q-R -0.3 [-1.5,+0.9]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191660",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: Q s43 photos judge .679, 1500 judged, 0 unparseable, px 1003520, homer-020; Q-R -0.5 [-1.7,+0.7]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191661",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: Q s42 MRQA judge .726, 1500 judged, 0 unparseable, CML 4096, homer-020; Q-R +1.1 [-0.1,+2.3]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191662",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: Q s43 MRQA judge .727, 1500 judged, 0 unparseable, CML 4096, homer-010; Q-R +0.3 [-0.8,+1.5]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191675",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "healthy: R s42 MRQA today's code judge .715 (recorded .718), 1500 judged, 0 unparseable; generated+judged on homer-017, preempted after the .batch step ended, requeue reused the file (known_issues row: preemption after finish)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191676",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "healthy: R s43 MRQA today's code judge .724 (recorded .724), 1500 judged, 0 unparseable; homer-017, preempted after finish, file reused"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=f_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191677",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "healthy: F s42 documents today's code judge .582, 0 of 1500 answers judged differently from the recorded file; 1500 judged, 0 unparseable, px 1003520; final gen+judge homer-011 after one preemption"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=f_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191678",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy: F s43 documents today's code judge .580 (recorded .580), 1500 judged, 0 unparseable, px 1003520, homer-020"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "jobid": "191766",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 22:36 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s42 judge .600; Q - R (191768) -0.5 pt [-1.9,+0.9] McNemar p .562, 50/57 discordant (reported, not gating); md5 eval_mm_4b b3d1cda1 / eval dfe32aa0 / judge 02bc8748 / paired a3cc13b2 / model 994cff3d"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ft_frozen_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "jobid": "191767",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 22:55 homer-011; HotpotQA 1,500 rows, judge on all, 0 unparseable, no exceeds error; Q s43 judge .600; Q - R (191769) +0.9 pt [-0.5,+2.1] McNemar p .223, 55/42 discordant (reported, not gating); same md5 as the gating pairs"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "jobid": "191768",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 22:15 homer-011; R s42 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .605 (recorded on old code .603)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=ref_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520 TOPK=10",
+   "jobid": "191769",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 24:26 homer-020; R s43 HotpotQA on today's code 1,500 rows, judge on all, 0 unparseable: .591 (recorded on old code .593)"
+  }
+ ],
+ "artifacts": [
+  "/beegfs/scratch/user/hdejean/pisco/expQ/191530",
+  "/beegfs/scratch/user/hdejean/pisco/expQ/191527"
+ ],
+ "ledger_entries": 46
+}

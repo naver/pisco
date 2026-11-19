@@ -1,0 +1,4 @@
+== review 2026-11-19_1802  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/REVIEW_INPUT.md
+== session f922afc9-44a2-40fd-846b-012438dd7ca5  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/qafreeze/REVIEW_INPUT.md
+  ↳ 1	# Campaign review input (+441 lines)
