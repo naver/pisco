@@ -1,0 +1,55 @@
+== verifier 2026-11-20_0130  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 56f68b6e-ba41-45fd-b84c-ebd13f84385a  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+274 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (27936 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 276	  192008); no capped answer −4.8 / −3.4 (n 731 / 733, a subset chosen on answers). (+129 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 406	191393     L    -        ended     closed     eval_mm  base     base_qwen35_4b text_hotpotqa_1500 all      ckpt       40       451584     0        0             none       brief        0         n (+136 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/*"}
+→ Glob: {"pattern": "expQ/longdoc/audit_191516/*"}
+→ Glob: {"pattern": "expQ/longdoc/e_r42/eval/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+I'm checking the cited result files behind the STATE claims (file searches timed out, so I'm narrowing the paths).
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+24 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/rows.jsonl (+2 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/e_r42/eval"}
+  ↳ expQ/longdoc/e_r42/eval/.done/mm_docqa_pisco_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json.191636.gen (+14 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 1	{ (+279 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1105	- 2026-11-16 18:31 [job 189693] verdict: closed — L2048 stage 1 STOPPED by the owner (REQUEST 2026-11-16 18:22, option A) at step 3,561/5,208 = 683,712 of 1M docs (~0.89 B text tokens, estimate), (+24 lines)
+→ Grep: {"pattern": "def gen_base|compress\\(", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content"}
+  ↳ 106:        return model.compress(ids, mask, pixel_values=comp.get("pixel_values"), image_grid_thw=comp.get("image_grid_thw"), (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 526	def gen_base(base, proc, tok, row, *, device, topk, max_new_tokens, decoder_max_length, system=None): (+44 lines)
+→ Grep: {"pattern": "gen_base|from_pretrained|import pisco|from pisco", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content"}
+  ↳ 38:from pisco import mm_tasks  # noqa: E402 (+14 lines)
+→ Grep: {"pattern": "192326|353|−16.6|-16.6", "path": "/beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md", "output_mode": "content"}
+  ↳ 185:| pages 10 | 1,407 | 1,198 | ~120 slots per page | .507 (192326) | .672 (192287) | −16.6 [−19.5, −13.9], McNemar p < .001 | 120 / 353 | reference | not run |
+→ Glob: {"pattern": "*.log", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks"}
+  ↳ campaign_longdoc/ticks/2026-11-16_1823.draft.log (+47 lines)
+→ Grep: {"pattern": "353|1689350|1,689,350|mems_used|at_cap|-0\\.166|0\\.5068", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-20_0130.log", "output_mode": "content", "head_limit": 40}
+  ↳ 24:  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.5068, "at_cap": 20, "at_cap_pct": 1.42, "prompt_max": 1576, "m (+4 lines)
+Still checking: the pages-10 health line is confirmed; now looking for the paired-test output in the wake's log.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks/2026-11-20_0130.log
+  ↳ 20	  ↳ expQ/longdoc/eval_mnt_192326.out (+1 lines) (+29 lines)
+→ Grep: {"pattern": "Apache", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/longdoc_build.py", "output_mode": "content"}
+  ↳ 3:Source: LongDocURL (dengchao/LongDocURL, Apache-2.0): 2,325 questions on 396 PDFs of 40-150 pages, evidence pages (+1 lines)
+→ Grep: {"pattern": "\"191776\"|191776.*md5|md5.*191776", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "head_limit": 5}
+  ↳ 1389:[Omitted long matching line]
+→ StructuredOutput: {"claims": [{"claim": "R s42 − uncompressed on one long document, pages 10, cap 512, same code: R .507 (192326) vs U .672 (192287), −16.6 pt [−19.5, −13.9], McNemar 120 / 353, p < .001, n 1,407 pairs. Health OK on both cells.", "status": "p…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3790 turns=24 is_error=False denials=0
+== declared: {"claims": [{"claim": "R s42 − uncompressed on one long document, pages 10, cap 512…", "status": "provisional", "reason": "Checked: grid row 192326 shows judge=0.5068 and gap_vs_base=…"}, {"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Each count is in its verdict: 192266 47 (2.1%); 192287 8; 19…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169: 360/360 byte-identical, 70.5% = 70.5%. The l…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515, 191774 and 192265 give these counts exactly…"}, "… +11 more"], "summary": "Every number I checked matches its verdict, grid row or cite…"}
+== final:
+{"claims":[{"claim":"R s42 − uncompressed on one long document, pages 10, cap 512, same code: R .507 (192326) vs U .672 (192287), −16.6 pt [−19.5, −13.9], McNemar 120 / 353, p < .001, n 1,407 pairs. Health OK on both cells.","status":"provisional","reason":"Checked: grid row 192326 shows judge=0.5068 and gap_vs_base=-0.166; verdicts 192326 and 192287 show .507 vs .672, 1,407/1,407 judged, 0 unparseable. The tick log 2026-11-20_0130 lines 24 and 32 show the cell_health and paired_judge runs, and (120−353)/1,407 = −16.6 agrees. Missing: one seed only (s43 not run), no project-prompt re-judge, and no `provisional:` prefix, which the law requires on headline claims. It is listed under Settled but it is a single read."},{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2% (1,407 each); bar 5%. R s42 pages 10 at the cap 1.4% (20 / 1,407, 192326).","status":"supported","reason":"Each count is in its verdict: 192266 47 (2.1%); 192287 8; 192288 14; 192267 14; 192289 15; 192290 26; 192268 31; 192326 20. As shares of 1,407: .57 / .99 / .99 / 1.07 / 1.85 / 2.20 / 1.42%. All are far below the law's 5% bar, counted by the token rule the law kept (191777 = 7–8 / 300, under 5%)."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169: 360/360 byte-identical, 70.5% = 70.5%. The law's target is 71% ±2 pt (architecture_review.md:105), so the gate is met."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 rows (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225. Closed-book set: 1,407 questions (job 191774). Bucket sets (job 192265): 6 × 1,407 rows.","status":"supported","reason":"Verdicts 191515, 191774 and 192265 give these counts exactly, and 637+610+588+411 = 2,246. The licence is stated in the header of scripts/longdoc/longdoc_build.py (line 3). This only records that the sets exist; it decides nothing."},{"claim":"provisional: arm E soundness check 1 PASS in every bucket: the uncompressed decoder with the document beats closed-book by ≥ 20 pt, cap 512 both files, paired per question. Closed-book 191776 (1,407 Q, judge .164); text +41.0/+41.3/+38.9/+32.8; pages +50.8/+50.0/+49.5; mixed +49.0/+47.8/+46.7.","status":"provisional","reason":"Numbers match: grid 191776 judge=0.164; verdict 192266 gives +41.0/+41.3/+38.9/+32.8; verdicts 192287/192288/192267/192289/192290/192268 give the page and mixed gaps with their CIs. Every gap clears 20 pt. It stays provisional for a real reason: closed-book ran on model.py 994cff3d, the with-document cells on f8ae6efe. That breaks the law's same-code rule, even though base mode loads AutoModelForImageTextToText and gen_base (eval_mm_docqa.py:526, called at :723
+== rc=0

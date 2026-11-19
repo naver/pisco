@@ -174,8 +174,24 @@ because the base decoder answers in a sentence. Bar: ≥ 90% per length, else th
 Reading: every length bucket stays in the yardstick; the uncompressed decoder reads up to 33.5k-token text, 40-page
 and 68.7k-token mixed prompts. The judge gives the same verdict (≥ .88 at every depth, ≥ .95 per length), so two
 scorings agree. EM fails everywhere (text ~4k .52 where the code is found 100%): it scores the whole sentence, a fault
-of the check, not of the reader. Next: the full R cells (owner-approved 2026-11-19; R s42 text / 40 pages / 40 mixed /
-10 pages running since 2026-11-20 00:10).
+of the check, not of the reader.
+
+**Arm E full cells — compressed R vs uncompressed on one long document (cap 512 both, same code md5, paired per question)**
+Rate 8 tokens per slot. Gap = R − uncompressed, paired bootstrap 95% CI (`scripts/paired_judge.py`); Δ_len = gap at
+this size − gap at the shortest size of the set (decided only when both seeds are in).
+
+| set, size | questions | `<MEM>` slots per question p50 | compression | R s42 judge ↑ | uncompressed judge ↑ | gap (pt) ↑, 95% CI | R only right / uncompressed only right | Δ_len vs shortest | R s43 |
+|---|---|---|---|---|---|---|---|---|---|
+| pages 10 | 1,407 | 1,198 | ~120 slots per page | .507 (192326) | .672 (192287) | −16.6 [−19.5, −13.9], McNemar p < .001 | 120 / 353 | reference | not run |
+| pages 20 | 1,407 | 2,392 | ~120 slots per page | running (192356) | .665 (192288) | — | — | — | not run |
+| pages 40 | 1,407 | 4,795 | ~120 slots per page | running (192324) | .659 (192267) | — | — | — | not run |
+| mixed 10 / 20 / 40 | 1,407 each | 977 / 1,922 / 3,821 | ~8 tokens per slot | running (192357 / 192358 / 192325) | .654 / .643 / .631 | — | — | — | not run |
+| text ~4k-32k | 2,246 | 540-4,079 | 8 tokens per slot | running (192323) | .612 / .615 / .587 / .547 (192266) | — | — | — | running (192359) |
+
+Health of the R 10-page cell: 1,407 / 1,407 judged, 0 unparseable, 1.4% of answers at the cap, `<MEM>`s used
+1,689,350 = the audit's prediction exactly, one attempt on homer-014. Reading so far: at 10 pages the compressed reader
+loses 16.6 pt to the uncompressed one (300 trial rows said −13); whether the gap grows with length needs the 20- and
+40-page cells.
 
 ## 3. Input audit: what the decoder sees in training vs in evaluation
 Job 191147, model R (expQ/ft_mm_4b_184778), images at 1,003,520 px, rate 8 tokens per slot, position stride 8.

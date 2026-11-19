@@ -1,0 +1,102 @@
+== campaign longdoc wake 2026-11-20_0130  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795105802 live=192325:RUNNING,192324:RUNNING,192323:RUNNING running=3 pending=0 problems=0 problems_other=0 new=0 gpuh24=22.0 idle_h=0.0 min_util=38 alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7238 sig=74a99d0b same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:192326_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192326 (ended)   (NEXT was: wake-when job:192326 max 4h)
+== session 2450e868-e3a7-4ca9-9035-bfbdf134c790  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/2450e868-e3a7-4ca9-9035-bfbdf134c790/tool-results/bwkxsnw8g.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-20_0130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+156 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la && cat STATE.md
+  ↳ 372 CAMPAIGN.md (+188 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -n '^## \|^### ' campaign_longdoc/CAMPAIGN.md; sacct -X -j 192326,192323,192324,192325 --format=JobID,State,ExitCode,Elapsed,NodeList,Start,End -P
+  ↳ 9:## Mission (+16 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 128	## Decision gates (+244 lines)
+Checking the finished compressed 10-page cell (job 192326), then pairing it with the uncompressed reference and submitting the next four cells.
+→ Bash: ls -la expQ/longdoc/e_r42/eval/ expQ/base_qwen35_4b/eval/ | grep -i 'longdoc' ; expmon logs 192326 30 2>&1 | tail -40
+  ↳ -rw-rw-r-- 1 hdejean hdejean 1097141 Nov 18 21:36 mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json (+25 lines)
+→ Bash: ls expQ/192326/ 2>/dev/null; ls expQ/longdoc/logs 2>/dev/null | grep 19232 ; find expQ/192326 expQ/longdoc -maxdepth 2 -name '*192326*' 2>/dev/null | head
+  ↳ expQ/longdoc/eval_mnt_192326.out (+1 lines)
+→ Bash: grep -n -i 'md5\|error\|traceback\|exceeds\|judge\|homer\|wrote\|saved\|rows' expQ/longdoc/eval_mnt_192326.out | tail -30; wc -l expQ/longdoc/eval_mnt_192326.out
+→ Bash: .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --cap 512 --json /tmp/h192326.json expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json 2>&1 | tail -30
+  ↳ 4:02bc874887bce216c7da14dfab5b74f5  scripts/judge_mm_docqa.py (+15 lines)
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.5068, "at_cap": 20, "at_cap_pct": 1.42, "prompt_max": 1576, "mems_use
+→ Bash: ls expQ/longdoc/audit_191516/ && grep -o '"[a-z_]*p10[a-z_0-9]*"[^,}]*' -r expQ/longdoc/audit_191516/*.json | head -20; head -c 1500 expQ/longdoc/audit_191516/audit.json 2>/dev/null
+  ↳ audit.json (+87 lines)
+→ Bash: head -c 600 expQ/longdoc/audit_191516/rows.jsonl; echo; wc -l expQ/longdoc/audit_191516/rows.jsonl
+  ↳ {"v": "E_text_cml1024", "i": 8, "qid": "summary2title_4120460_12_41_7__t4k", "src": "longdocurl_t4k", "n_mem": 583, "n_chunks": 6, "chunk_tok_max": 1102, "prompt": 777, "span": 4858, "base_prompt": 48 (+2 lines)
+→ Bash: python3 -I -c " ⏎ import json,collections ⏎ t=collections.Counter(); n=collections.Counter() ⏎ for l in open('expQ/longdoc/audit_191516/rows.jsonl'): ⏎     r=json.loads(l); k=(r['v'],r['src']); t[k]+=r['n_mem']; n[k]+=1 ⏎ for k in sorted(t)…
+  ↳ ('E_mixed_cml1024', 'longdocurl_m10') 1407 1406369 (+43 lines)
+Compressed 10-page cell is healthy (1,407/1,407 rows judged, `<MEM>` count equals the audit's prediction exactly). Now pairing it with the uncompressed answers on the same questions.
+→ Bash: python3 -I scripts/paired_judge.py expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json 2>&1 | ta…
+  ↳ judge: A = expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json (+4 lines)
+→ Bash: head -6 expQ/longdoc/eval_mnt_192326.out; echo ---; head -6 expQ/longdoc/eval_mnt_192287.out 2>/dev/null; sacct -j 192326 --format=JobID,MaxRSS,Elapsed -P | head; grep -c . /dev/null
+  ↳ b3d1cda17302eb3f1d9fd4441ebc789a  eval_mm_4b.sh (+16 lines)
+→ Bash: sacct -j 192287,192288,192267,192289,192290,192268,192266 --format=JobID,MaxRSS,Elapsed -P | grep batch
+  ↳ 192266.batch|2398912K|02:09:04 (+6 lines)
+→ Bash: sstat -j 192324.batch,192325.batch,192323.batch --format=JobID,MaxRSS,AveRSS -P 2>&1; for j in 192323 192324 192325; do f=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_$j.out; echo "$j $(wc -l < $f) lines; last: $(tail -1 $f | cu…
+  ↳ JobID|MaxRSS|AveRSS (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc && for j in 192323 192324 192325; do echo "$j: $(grep -E '^\[[0-9]+/[0-9]+\]' eval_mnt_$j.out | tail -1)"; done; grep -E '^\[[0-9]+/[0-9]+\]' eval_mnt_192326.out | tail -1; grep -i 'oom\|ki…
+  ↳ 192323: [1150/2246] em=0.233 f1=0.377 anls=0.304 match=0.303  5117s (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -d eval_data/longdoc_* && ls -la expQ/longdoc/e_r43/ && grep '"192326"\|192326' .expmon/runs.jsonl | tail -1 | head -c 1500
+  ↳ eval_data/longdoc_closedbook (+18 lines)
+Pairing done: compressed is 16.6 points below uncompressed on 10-page documents. Recording that, then submitting the next four cells (20-page pages, 10- and 20-item mixed, second-seed text).
+→ Bash: expmon verdict 192326 closed "health OK: R s42 pages p10 cap 512, 1,407/1,407 judged, unparseable 0, at cap 20 (1.4%), prompt max 1,576, mems_used 1,689,350 = audit 191516 prediction, homer-014 1 attempt, COMPLETED 0:0 1:13:11, MaxRSS 5.6 G…
+  ↳ verdict recorded: 192326 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+→ Bash: expmon launch --dry-run --exp longdoc --stage E -p gpu-be --mem 14G --time 7:18:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/m…
+  ↳ would submit: sbatch -p gpu-be --mem 14G --time 7:18:00 --exclude=homer-[005-009] scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_p (+4 lines)
+→ Bash: ls expQ/longdoc/e_r43/eval 2>&1 | head -3; squeue -u hdejean -h -o '%i %j %T' ; L="expmon launch --exp longdoc --stage E -p gpu-be --exclude=homer-[005-009] --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024" ⏎ $=L 2>/dev/null; t…
+  ↳ ls: cannot access 'expQ/longdoc/e_r43/eval': No such file or directory (+9 lines)
+→ Bash: squeue -u hdejean -h -o '%i %j %T' | grep -v expmon; echo --- ⏎ expmon launch --exp longdoc --stage E -p gpu-be --mem 14G --time 7:18:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=561…
+  ↳ 192325 eval_mnt.sbatch RUNNING (+5 lines)
+→ Bash: expmon launch --exp longdoc --stage E -p gpu-be --mem 8G --time 3:54:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=15672 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model pisco…
+  ↳ Submitted batch job 192357 (+5 lines)
+→ Bash: python3 -I -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r.get('jobid') in ('192356','192357','192358','192359'): print(r['jobid'], len(r['argv']), r['argv'][0], r['argv'][-1].split('/')[-1], r['en…
+  ↳ 192356 4 expQ/longdoc/e_r42/model longdoc_pages_1500_p20 5612 {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '7:18:00'} (+11 lines)
+All four cells are submitted and running (argv checked). Recording intents, then updating the diagnosis doc and state.
+→ Bash: expmon note -j 192356 "intent: arm E R s42 pages p20 (1,407 rows), cap 512, DML 5612, --time 7:18 (R p10 wall 1:13 x2 x3), --mem 14G (R p10 MaxRSS 5.6 GB x U p20/p10 RSS 1.58 x1.5); pairs with U 192288" >/dev/null; expmon note -j 192357 "in…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: wc -l docs/longdoc_diagnosis.md && grep -n '^#\|p10\|10 pages\|| 10 ' docs/longdoc_diagnosis.md | head -60
+  ↳ 218 docs/longdoc_diagnosis.md (+19 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 100	by 3-5 pt from 10 to 40 passages at both seeds: a length loss is plausible on text, but the subset is chosen on the (+79 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md has been updated successfully.
+→ Bash: expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+16 lines)
+→ Bash: sed -n 1,12p campaign_longdoc/VERIFY.md | cut -c1-2000 | head -c 4000
+  ↳ # VERIFY — campaign longdoc — 2026-11-20_0000   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+11 lines)
+→ Bash: git diff --stat pisco/model.py && git diff -U2 pisco/model.py | grep -n '^@@' 
+  ↳ pisco/model.py | 15 +++++++++++++++ (+2 lines)
+→ Bash: git diff -U4 pisco/model.py | sed -n 1,30p; awk 'NR<=923 && /    def /{l=$0; n=NR} END{}; NR==923{print n": "l}' pisco/model.py
+  ↳ diff --git a/pisco/model.py b/pisco/model.py (+28 lines)
+→ Bash: grep -n '\.compress(\|mode == .base\|args.mode ==' scripts/eval_mm_docqa.py | head -15
+  ↳ 106:        return model.compress(ids, mask, pixel_values=comp.get("pixel_values"), image_grid_thw=comp.get("image_grid_thw"), (+7 lines)
+→ Bash: sed -n 712,735p scripts/eval_mm_docqa.py; grep -n '^def \|^    def ' scripts/eval_mm_docqa.py | awk -F: '$1<135' | tail -3
+  ↳ for i, row in enumerate(ds): (+26 lines)
+→ Bash: sed -n 1,8p campaign_longdoc/known_issues.md | cut -c1-300; tail -3 campaign_longdoc/known_issues.md | cut -c1-300; grep -n 'no matches found\|zsh' campaign_longdoc/known_issues.md | cut -c1-200
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+11 lines)
+→ Bash: cat >> campaign_longdoc/known_issues.md <<'EOF' ⏎ | `expmon launch` prints `(eval):1: no matches found: --exclude=homer-[005-009]` and submits nothing (2026-11-20 01:30) | zsh globs the unquoted `[005-009]` when the launch line is built in …
+→ Bash: sacct -X -u hdejean -S 2026-11-16 --format=JobID,ElapsedRaw,AllocTRES -P -n 2>/dev/null | python3 -I -c " ⏎ import sys,json ⏎ ids=set() ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r.get('exp')=='longdoc': ids.add(r…
+  ↳ (Bash completed with no output)
+  ↳ 73 cells 48.1 GPU-h so far (last attempts, running included)
+Writing the state file for the next wake now (results so far, running cells, plan).
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_longdoc/STATE.md' ⏎ s=open(p).read() ⏎ a=s.index('## TL;DR'); b=s.index('**Open, and running**'); c=s.index('## Arm E — the long-document yardstick') ⏎ print(len(s), a, b, c) ⏎ EOF
+  ↳ 15485 2352 7759 9198
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon gripe --open --search 'logs pattern' 2>&1 | head -8; expmon gripe --open --search 'no log file' 2>&1 | head -8
+  ↳ == 5 open report(s) matching 'logs pattern', every machine, newest first == (+15 lines)
+→ Bash: grep -n 'SBATCH.*-o\|SBATCH --output\|SBATCH -e' scripts/longdoc/eval_mnt.sbatch; expmon gripe --same 36226205 "pisco/longdoc 2026-11-20: 'expmon logs 192326' says no log file for pattern '*_%j.out'; the launcher's '#SBATCH --output' (scrip…
+  ↳ 8:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_%j.out (+1 lines)
+→ Bash: expmon display --exp longdoc 2>&1 | tail -3; echo 'wake-when job:192323,192325,192357 max 4h' > campaign_longdoc/NEXT; cat campaign_longdoc/NEXT
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "The compressed model R (seed 42) loses 16.6 points to the uncompressed reader on 10-page long documents (LongDocURL): judge accuracy .507 vs .672, gap −16.6 pt [−19.5, −13.9], McNemar 120 R-only vs 353 unco…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.4038 turns=44 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "The compressed model R (seed 42) loses 16.6 points to the uncompressed reader on 10-page long documents (LongDocURL): judge accuracy .507 vs .672, gap −16.6 pt [−19.5, −13.9], McNemar 120 R-only vs 353 uncompressed-only right, n = 1,407 paired questions. Both cells ran on the same code.\n\nDone this wake:\n- **Health check of the 10-page cell (job 192326):** passed. 1,407/1,407 rows judged, 0 unparseable, 1.4% of answers at the 512-token answer cap. The `<MEM>` count was 1,689,350, exactly the audit's prediction. Verdict recorded as closed.\n- **Four new cells submitted (cap 4), all running:**\n  - R seed 42 on pages 20 (192356), mixed 10 (192357) and mixed 20 (192358)\n  - R seed 43 on the full text set (192359)\n- **Fixes and notes:**\n  - The verifier flagged that closed-book job 191776 ran on a different model.py version. That is now stated in STATE. The only code change is inside `PISCO.compress`, which the uncompressed (base) mode never calls. The claim stays provisional; a closed-book r…", "launched": ["192356", "192357", "192358", "192359"], "verdicts": [{"jobid": "192326", "verdict": "closed", "note": "health OK; R s42 pages p10 .507 vs uncompressed .672, -16.6 pt [-19.5,-13.9], McNemar 120/353, n 1,407 pairs"}], "gripes": ["+1 of 36226205: expmon logs cannot find a log written to the launcher's own #SBATCH --output path (expQ/longdoc/eval_mnt_<id>.out)"], "wake_when": "job:192323,192325,192357 max 4h"}
+== final:
+{"next":"wake-when","summary":"The compressed model R (seed 42) loses 16.6 points to the uncompressed reader on 10-page long documents (LongDocURL): judge accuracy .507 vs .672, gap −16.6 pt [−19.5, −13.9], McNemar 120 R-only vs 353 uncompressed-only right, n = 1,407 paired questions. Both cells ran on the same code.\n\nDone this wake:\n- **Health check of the 10-page cell (job 192326):** passed. 1,407/1,407 rows judged, 0 unparseable, 1.4% of answers at the 512-token answer cap. The `<MEM>` count was 1,689,350, exactly the audit's prediction. Verdict recorded as closed.\n- **Four new cells submitted (cap 4), all running:**\n  - R seed 42 on pages 20 (192356), mixed 10 (192357) and mixed 20 (192358)\n  - R seed 43 on the full text set (192359)\n- **Fixes and notes:**\n  - The verifier flagged that closed-book job 191776 ran on a different model.py version. That is now stated in STATE. The only code change is inside `PISCO.compress`, which the uncompressed (base) mode never calls. The claim stays provisional; a closed-book re-run is planned once the R grid is submitted.\n  - Two rows added to known_issues.md: zsh globbing the `--exclude` bracket, and the host-memory rung being too low.\n  - New \"Arm E full cells\" table in `docs/longdoc_diagnosis.md`.\n  - STATE.md rewritten.\n\nStill running from the last wake: R seed 42 text (192323), pages 40 (192324) and mixed 40 (192325). Risk: 192324 already uses 8.56 GB of host RAM under an 8G request. If it is killed for memory, relaunch it once with 22G.\n\nBudget: 73 of 87 cells used, about 53 of 114 GPU-hours.\n\nNext wake: when 192323, 192325 and 192357 end (all three expected within about 1.5 h of each other), pair each with its uncompressed cell. Then submit the R seed 43 cells for pages 10/20 and mixed 10/20.\n\nNothing needed from the owner.","launched":["192356","192357","192358","192359"],"verdicts":[{"jobid":"192326","verdict":"closed","note":"health OK; R s42 pages p10 .507 vs uncompressed .672, -16.6 pt [-19.5,-13.9], McNemar 120/353, n 1,407 pairs"}],"gripes":["+1 of 36226205: expmon logs cannot find a log written to the launcher's own #SBATCH --output path (expQ/longdoc/eval_mnt_<id>.out)"],"wake_when":"job:192323,192325,192357 max 4h"}
+== rc=0 secs=342
+== verify: 4/15
