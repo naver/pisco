@@ -1,0 +1,153 @@
+== campaign longdoc wake 2026-11-20_0800  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795129202 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=59.1 idle_h=0.1 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=6952 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:192362,192363,192364,192365,192366,192367,192374,192375,192376_max_5h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192362,192363,192364,192365,192366,192367,192374,192375,192376 (ended)   (NEXT was: wake-when job:192362,192363,192364,192365,192366,192367,192374,192375,192376 max 5h)
+== session 3c0e7115-460f-487a-8f13-7249fda39ad2  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3c0e7115-460f-487a-8f13-7249fda39ad2/tool-results/bqud1zhso.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-20_0800   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+168 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la && cat STATE.md
+  ↳ 372 CAMPAIGN.md (+237 lines)
+→ Bash: cat CAMPAIGN.md
+  ↳ <persisted-output> (+27 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3c0e7115-460f-487a-8f13-7249fda39ad2/tool-results/be3ee6g5n.txt
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+372 lines)
+Nine evaluation jobs ended; I'm checking each one's health, then pairing the results to decide the length and long-chunk questions.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -X -j 192362,192363,192364,192365,192366,192367,192374,192375,192376 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS -P 2>&1 | head -20; sacct -j 192362,192363,192364,192365,192366,192367…
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|MaxRSS (+27 lines)
+→ Bash: find expQ/longdoc -name '*.json' -newer campaign_longdoc/STATE.md -path '*eval*' | sort; ls -la --time-style=+%H:%M expQ/base_qwen35_4b/eval/ | grep -i closedbook; for j in 192362 192363 192364 192365 192366 192367 192374 192375 192376; do …
+  ↳ expQ/longdoc/e_r43/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_m20.json (+18 lines)
+→ Bash: E=expQ/longdoc; N=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc; time .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --cap 512 --json $E/length/health_0800.json $E/e_r43/eval/${N}_pages_1500_p20.json $E/e_r43/eval/$…
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p20.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.462, "at_cap": 33, "at_cap_pct": 2.35, "prompt_max": 2836, "mems_used (+11 lines)
+All nine jobs finished cleanly and their slot counts match the predictions. Now pairing them with the reference files.
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep mnt512; ls expQ/longdoc/e_r42/eval/ expQ/longdoc/e_r43/eval/ | grep mnt512; ls expQ/longdoc/length/ | head -50; grep -n 'argparse\|add_argument' scripts/longdoc/length_effect.py | head; grep -n 'add_argum…
+  ↳ mm_docqa_base_k0_px1003520_cml1024_mnt512_longdoc_closedbook.json (+82 lines)
+→ Bash: sed -n 1,11p scripts/longdoc/length_effect.py; python3 -c "import json;d=json.load(open('expQ/longdoc/length/E_dlen_pages_p40_s42_judge.json'));print({k:v for k,v in d.items() if not isinstance(v,(list,dict))} if isinstance(d,dict) else d)"…
+  ↳ """Paired contrasts of judged eval files (campaign longdoc, arms J / L / U). Stdlib only. (+11 lines)
+→ Bash: B=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc; P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc; R2=expQ/longdoc/e_r42/eval/$P; R3=expQ/longdoc/e_r43/eval/$P; L=expQ/longdoc/length ⏎ for s in pages_1…
+  ↳ == R43 - U pages_1500_p20 (+35 lines)
+Now the length effect at seed 43 (each question paired with itself at 10 pages / 10 items):
+→ Bash: B=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc; P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc; R3=expQ/longdoc/e_r43/eval/$P; L=expQ/longdoc/length ⏎ for m in judge match em; do ⏎ for pair in "page…
+  ↳ == judge s43 pages p20 vs p10 (+35 lines)
+Pages at 40 vs 10 pages lose accuracy at both seeds. Now the long-chunk text pairs and the closed-book re-run.
+→ Bash: P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json; E=expQ/longdoc; U=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json ⏎ for s in 42 43; do echo "== L1024 - C256 s$s (judge)"; …
+  ↳ == L1024 - C256 s42 (judge) (+31 lines)
+→ Bash: sed -n 1,40p scripts/longdoc/rejudge.sbatch | grep -v '^$' | head -40; grep '"191629"\|191629' .expmon/runs.jsonl | head -1 | cut -c1-900; sacct -X -j 191629 --format=JobID,State,Elapsed,NodeList -P; sacct -j 191629 --format=JobID,MaxRSS -P…
+  ↳ #!/bin/bash (+40 lines)
+→ Bash: grep -n -i 'judg\|it/s\|s/it\|elapsed\|took' expQ/longdoc/eval_mnt_192364.out | tail -8; grep -c . expQ/longdoc/rejudge_191629.out; grep -i 'it/s\|s/it\|took\|elapsed' expQ/longdoc/rejudge_191629.out | tail -3
+  ↳ 1594:[judge] mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p40.json 496/1407 (+11 lines)
+Launching one second-judge job (the older Yes/No "project" prompt) on copies of the six files behind the 40-page decision. Dry run first.
+→ Bash: ls -d expQ/longdoc/rejudge/E_pages_p10_p40 2>&1; expmon runs --running 2>&1 | tail -3; expmon launch --dry-run --exp longdoc --stage J -p gpu-be --mem 3G --time 0:18:00 --exclude='homer-[005-009]' scripts/longdoc/rejudge.sbatch E_pages_p10_…
+  ↳ ls: cannot access 'expQ/longdoc/rejudge/E_pages_p10_p40': No such file or directory (+5 lines)
+→ Bash: expmon launch --exp longdoc --stage J -p gpu-be --mem 3G --time 0:18:00 --exclude='homer-[005-009]' scripts/longdoc/rejudge.sbatch E_pages_p10_p40 expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/rejudge_192405.out (+4 lines)
+Submitted (job 192405, 7 arguments as expected). Recording verdicts and numbers in the ledger.
+→ Bash: M="md5 b3d1cda1/dfe32aa0/02bc8748/f8ae6efe" ⏎ expmon note -j 192405 "intent: arm J project-prompt re-judge of the six files behind the pages 40 vs 10 length effect (R s42 / R s43 / U at p10 and p40, 1,407 rows each), copies under expQ/longd…
+  ↳ verdict recorded: 192362 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+4 lines)
+→ Bash: B=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc; python3 scripts/longdoc/closedbook_pair.py expQ/base_qwen35_4b/eval/mm_docqa_base_k0_px1003520_cml1024_mnt512_longdoc_closedbook.json ${B}_text_1500.json ${B}_…
+  ↳ p40  1407     0.659   0.164    +49.5 [ +46.4, +52.5]  758/62    PASS (+13 lines)
+→ Bash: python3 -c " ⏎ import json;d=json.load(open('expQ/longdoc/length/health_0800.json'));print(type(d).__name__, list(d)[:3] if isinstance(d,dict) else list(d[0]))" ; grep -n 'at_cap\|def ' scripts/longdoc/cell_health.py | head -20
+  ↳ dict ['expQ/longdoc/e_r43/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p20.json', 'expQ/longdoc/e_r43/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_m20 (+3 lines)
+→ Bash: sed -n 19,45p scripts/longdoc/cell_health.py
+  ↳ def main(): (+26 lines)
+→ Bash: TOK=$(grep -m1 '^TOK' scripts/longdoc/cell_health.py); .pixi/envs/default/bin/python -I -c " ⏎ import json,tokenizers ⏎ $TOK ⏎ t=tokenizers.Tokenizer.from_file(TOK);t.no_padding();t.no_truncation() ⏎ P='mm_docqa_pisco_k1000_px1003520_cml102…
+  ↳ 42 n 2079 of 2246 L1024-C256 +4.9 pt pos 224 neg 123 (+1 lines)
+→ Bash: M="md5 b3d1cda1/dfe32aa0/02bc8748/f8ae6efe" ⏎ expmon verdict 192366 closed "health OK: C256 s42 finetune on longdoc text CML 1,024 cap 512, 2,246/2,246 judged, unparseable 0, at cap 91 (4.1%), prompt max 4,976, mems_used 3,887,462 = audit p…
+  ↳ ok
+Recorded. Now updating the results page (`docs/longdoc_diagnosis.md`) with the seed-43 columns and the long-chunk text result.
+→ Bash: wc -l docs/longdoc_diagnosis.md && grep -n '^#\|^|' docs/longdoc_diagnosis.md | cut -c1-220 | head -80
+  ↳ 252 docs/longdoc_diagnosis.md (+80 lines)
+→ Bash: sed -n 1,10p docs/longdoc_diagnosis.md; sed -n 17,21p docs/longdoc_diagnosis.md; sed -n 175,252p docs/longdoc_diagnosis.md
+  ↳ # Long inputs: where is the bottleneck? (campaign longdoc) (+92 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ old_head=s[s.index('Rewritten by each campaign wake'):s.index('\nQuestion (owner)')] ⏎ new_head=("Rewritten by each campaign wake when an arm decides. Last rewrite 2026-1…
+  ↳ (Bash completed with no output)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ a="Arm E (one long PDF per question, cap 512, R s42 only, paired per question on itself at the shortest size): pages 20 / 40 vs 10 −2.8 [−5.6, −0.1] / −6.5 [−9.5, −3.5] (…
+  ↳ done
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ a="checked by page transcription before any finetune |" ⏎ b="checked by page transcription before any finetune. On one long text document (arm E) the seeds disagree (+4.6…
+  ↳ ok
+Now the known-issues row, the display page, and the ledger note.
+→ Bash: cat >> campaign_longdoc/known_issues.md <<'EOF' ⏎ | a model-vs-model arm E file sits just over the 5% answer-cap bar (L1024 s42 text 114 / 2,246 = 5.08%, 2026-11-20) | the 5% rule is written for Δ_len contrasts; a two-model contrast has no …
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+7 lines)
+→ Bash: expmon note --did "closed 9 arm E cells (health OK); launched project-prompt re-judge 192405" --saw "provisional: pages 40 vs 10 length loss at both seeds, Delta_len -6.5 / -5.3 pt (judge, n 1,407); long-chunk text L1024-C256 +4.6 (s42) vs …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: squeue -j 192405 -h -o '%T %M %N %R' 2>&1; tail -3 expQ/longdoc/rejudge_192405.out 2>/dev/null | cut -c1-200
+  ↳ RUNNING 4:04 homer-018 homer-018 (+3 lines)
+The re-judge job is fast (4th of 6 files after 4 minutes). While it finishes, I'm writing the length-curve figure script the deliverable asks for.
+→ Bash: ls .pixi/envs/default/lib/python3*/site-packages 2>/dev/null | grep -i -m2 '^matplotlib'; ls scripts/longdoc/plot_length.py 2>&1; python3 -c " ⏎ import json;r=json.load(open('expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mn…
+  ↳ ls: cannot access 'scripts/longdoc/plot_length.py': No such file or directory (+1 lines)
+→ Bash: python3 -c "import matplotlib; print(matplotlib.__version__)" 2>&1 | tail -1; ls .pixi/envs/*/lib/python3*/site-packages 2>/dev/null | grep -i -m3 'matplotlib\|plotly'
+  ↳ ModuleNotFoundError: No module named 'matplotlib'
+No plotting library exists in either environment, so the figure will be a plain SVG written with the standard library.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/plot_length.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/plot_length.py (file state is current in your context — no need to Read it back)
+→ Bash: mkdir -p expQ/longdoc/figures && python3 -I scripts/longdoc/plot_length.py expQ/longdoc/figures/length_curve.svg; squeue -j 192405 -h -o '%T %M' ; tail -2 expQ/longdoc/rejudge_192405.out | cut -c1-150
+  ↳ page images [(1198, 0.507, 0.489, 0.672), (2392, 0.471, 0.462, 0.665), (4795, 0.429, 0.422, 0.659)] (+6 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ i=s.index('## 4. Figure') ⏎ s=s[:i]+"""## 4. Figure ⏎ `expQ/longdoc/figures/length_curve.svg` (`python3 scripts/longdoc/plot_length.py`; stdlib SVG, the pixi env has no ⏎…
+  ↳ RUNNING 5:13 (+1 lines)
+→ Bash: squeue -j 192405 -h -o '%T %M'; tail -2 expQ/longdoc/rejudge_192405.out | cut -c1-150; expmon handoff list 2>&1 | grep -i -m5 'longdoc\|cap' 
+  ↳ RUNNING 5:42 (+3 lines)
+→ Bash: for i in 1 2 3 4 5 6 7 8 9 10 11 12; do squeue -j 192405 -h -o '%T' | grep -q . || break; timeout 10 tail -f /dev/null 2>/dev/null; done; squeue -j 192405 -h -o '%T %M'; tail -3 expQ/longdoc/rejudge_192405.out | cut -c1-120; sacct -X -j 192…
+  ↳ match                        0.5345 (+3 lines)
+The re-judge finished (exit 0, 6 minutes). Pairing the project-prompt copies:
+→ Bash: D=expQ/longdoc/rejudge/E_pages_p10_p40; P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; B=base_qwen35_4b__mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; ls $D | wc -l; python3 -c " ⏎ import json,glob ⏎ …
+  ↳ 6 (+10 lines)
+The second judge agrees: the 40-page loss holds at both seeds (−5.7 and −6.1 pt). Recording it, then writing the owner's checkpoint question.
+→ Bash: expmon verdict 192405 closed "health OK: project-prompt re-judge of 6 copies (R s42 / R s43 / U at pages 10 and 40), 1,407 rows each, unparseable 0, homer-018, COMPLETED 0:0 5:58; Delta_len pages 40 vs 10 under the project prompt -5.7 [-8.7…
+  ↳ ok
+→ Bash: ids=$(python3 -c " ⏎ import json ⏎ ids=[json.loads(l)['jobid'] for l in open('.expmon/runs.jsonl') if json.loads(l).get('exp')=='longdoc'] ⏎ print(','.join(ids))"); echo "cells $(echo $ids | tr ',' '\n' | wc -l)"; sacct -X -j $ids --format=…
+  ↳ cells 85 (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: expmon handoff add --to pisco "eval yardstick: the shared 32-token answer cap (eval_mm_4b.sh) cuts the uncompressed decoder's answers mid-sentence, so every uncompressed reference is underestimated; consider raising it (campaign longdoc use…
+  ↳ hand-off 8d45d0 filed: pisco:longdoc -> pisco (its chats): eval yardstick: the shared 32-token answer cap (eval_mm_4b.sh) cuts the uncompressed decoder's answers mid-sentence, so every uncompressed re (+1 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md'; s=open(p).read() ⏎ rep=[ ⏎ ("the project-prompt re-judge running; 20 pages, mixed and text meet no bar.", ⏎  "−5.7 / −6.1 under the project prompt; 20 pages, mixed and text meet no bar."), …
+  ↳ ok
+Now rewriting STATE.md for the next wake.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: grep -o -i 'unsupported[^|]*' campaign_longdoc/VERIFY.md | head -5; grep -o 'Elements are missing[^|]*' campaign_longdoc/VERIFY.md | cut -c1-400
+  ↳ unsupported. What is still missing: a second seed for the only length loss (pages 40 vs 10, −6.5 pt), the project-prompt re-judge, any results file for that comparison's EM and match numbers, the per- (+2 lines)
+→ Bash: B=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; R=expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; for m in match em; do python3 scripts/longdoc/length_eff…
+  ↳ d = -0.0455  95% CI [-0.0711, -0.0206]  n=1407  non-zero +115/-174  sign p=0.000621  (match) (+2 lines)
+→ Bash: echo "waiting-owner" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && head -3 campaign_longdoc/BLOCKED.md | cut -c1-120
+  ↳ waiting-owner (+3 lines)
+I need your decision: two more probes would find out why 40-page documents lose extra accuracy, and they need 9 runs past the campaign's 87-run cap. All the evaluation work is finished and nothing is running.
+
+## What the campaign found
+These results are provisional. Scores come from the Qwen3-8B rubric judge (an LLM that grades each answer), paired per question, at seeds 42 and 43. The test set is LongDocURL: 1,407 questions, each on one real PDF. A "slot" is one compressed vector standing for 8 tokens of input.
+
+| rank | cause | judge accuracy, compressed minus uncompressed (pt) | questions affected |
+|---|---|---|---|
+| 1 | Compression itself, at every length | −17 to −20 already at the shortest size (10 pages, 10 mixed items, ~4k text tokens); the two seeds agree within 2 pt in every cell | ~233 of 1,407 on 10-page documents |
+| 2 | Length, on page images only | 40 pages vs 10 pages loses a further −6.5 / −5.3 (rubric judge), −5.7 / −6.1 (a second, Yes/No judge prompt), −4.6 / −3.6 (string match) | ~80 of 1,407 at 40 pages |
+| 3 | Training the compressor on 1,024-token chunks instead of 256 | hurts image pages; on long text the seeds disagree (+4.6 / 0.0), and the +4.6 comes from one weak 256-chunk model | ~65–93 of 1,500 on 4-page documents |
+
+- **No length effect shown elsewhere:** 20 pages, mixed documents (each page given as image or as text) and plain text meet neither the loss bar nor the no-loss bar. Text has too few questions per length bucket to decide.
+- **One scorer disagrees on rank 2.** Exact match (the whole answer string must be identical) flips the sign: +6.0 / +7.2. The uncompressed model writes longer sentences at 40 pages, so its exact-match score falls from .19 to .08 while its judge score barely moves (.67 to .66). By the campaign rule, any scorer flipping the sign marks the number "judge-sensitive". I think the fault is in exact match, but that call is yours.
+- **The evaluation itself is sound:** nothing is truncated, both modes see the same pages, and the closed-book and hidden-fact checks pass. The closed-book re-run on current code gives exactly the old score (.164).
+- **One problem in the shared evaluation script:** its 32-token answer limit cuts the uncompressed model's answers mid-sentence. On 300 trial questions, raising the limit to 256 tokens moved the uncompressed page score from .34 to .72. I filed this as a hand-off to the pisco chat, because changing it moves every campaign's baseline.
+
+## What this wake did
+- Checked all nine finished jobs: each completed in one attempt, every answer was judged, and slot counts match the predictions. One file has 5.08% of answers at the length limit against a 5% bar. Removing those questions leaves the result unchanged (+4.9 vs +4.6).
+- Ran the second-judge check (6 minutes) on the six files behind the 40-page result.
+- Rewrote `docs/longdoc_diagnosis.md`, drew the length figure at `expQ/longdoc/figures/length_curve.svg` (an SVG, because no plotting library is installed), and rewrote `STATE.md`.
+- Wrote the question to you in `campaign_longdoc/BLOCKED.md`.
+
+Budget: 85 of 87 runs used, about 90 of 114 GPU-hours.
+
+## Your decision
+| option | runs | GPU-hours | what you get |
+|---|---|---|---|
+| A. Fund both probes | +9 (cap 87 → 96) | ~13, staying inside the 114 already approved | Whether the 40-page loss comes from the decoder reading too many slots, or from slot positions it never saw in training. A position cause might be fixable without any training. |
+| B. Close now | 0 | 0 | The ranked list above, with the cause of rank 2 left open |
+
+I recommend **A**. Both probes are already in the campaign plan, they can be undone, and only the run count goes over the cap.
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Closed all nine arm E cells (health OK; L1024 s42 text 5.08% at cap, sensitivity read unchanged). Page images lose a further -6.5/-5.3 pt at 40 vs 10 pages at both seeds (rubric), -5.7/-6.1 (project pro…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.9738 turns=50 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Closed all nine arm E cells (health OK; L1024 s42 text 5.08% at cap, sensitivity read unchanged). Page images lose a fur…", "launched": ["192405"], "verdicts": [{"jobid": "192362", "verdict": "closed", "note": "R s43 pages 20: .462 vs U .665, -20.3 pt; Delta_len -1.9"}, {"jobid": "192363", "verdict": "closed", "note": "R s43 mixed 20: .436 vs U .643, -20.7; Delta_len -1.2"}, {"jobid": "192364", "verdict": "closed", "note": "R s43 pages 40: .422 vs U .659, -23.7; Delta_len -5.3 [-8.4,-2.3]"}, {"jobid": "192365", "verdict": "closed", "note": "R s43 mixed 40: .407 vs U .631, -22.5; Delta_len -3.0 [-5.9,0.0]"}, {"jobid": "192366", "verdict": "closed", "note": "C256 s42 long text .366 (-5.0 vs R s42)"}, {"jobid": "192367", "verdict": "closed", "note": "L1024 s42 long text .412; L1024-C256 +4.6 [+3.1,+6.2]; cap 5.08%"}, {"jobid": "192374", "verdict": "closed", "note": "C256 s43 long text .411"}, {"jobid": "192375", "verdict": "closed", "note": "L1024 s43 long text .411; L1024-C256 -0.0 [-1.7,+1.7]"}, {"jobid": "192376", "verdict": "closed", "note": "closed-book re-run .164 = 191776, 0 discordant"}, {"jobid": "192405", "verdict": "closed", "note": "project prompt Delta_len pages 40 vs 10 -5.7 / -6.1"}], "blocked": "BLOCKED.md final checkpoint: fund arms U (slot reading) and P (positions) on page images at 40 vs 10 pages — +9 runs (ca…", "gripes": []}
+== final:
+{"next":"waiting-owner","summary":"Closed all nine arm E cells (health OK; L1024 s42 text 5.08% at cap, sensitivity read unchanged). Page images lose a further -6.5/-5.3 pt at 40 vs 10 pages at both seeds (rubric), -5.7/-6.1 (project prompt, job 192405), -4.6/-3.6 (match); EM flips (EM fault on uncompressed sentences). 20 pages, mixed, text: no bar. Gap compressed-uncompressed -17 to -20 pt already at the shortest size; seeds within 2 pt everywhere. Long-chunk text at CML 1,024: L1024-C256 +4.6 (s42, weak C256 s42 model) vs 0.0 (s43): not adopted. Closed-book re-run identical to 191776. Wrote plot_length.py + SVG figure, rewrote docs/longdoc_diagnosis.md and STATE.md, handed off the 32-token cap finding (8d45d0), and wrote the final checkpoint in BLOCKED.md: fund arms U/P (9 runs, ~13 GPU-h; 2 of 87 runs left) or close.","launched":["192405"],"verdicts":[{"jobid":"192362","verdict":"closed","note":"R s43 pages 20: .462 vs U .665, -20.3 pt; Delta_len -1.9"},{"jobid":"192363","verdict":"closed","note":"R s43 mixed 20: .436 vs U .643, -20.7; Delta_len -1.2"},{"jobid":"192364","verdict":"closed","note":"R s43 pages 40: .422 vs U .659, -23.7; Delta_len -5.3 [-8.4,-2.3]"},{"jobid":"192365","verdict":"closed","note":"R s43 mixed 40: .407 vs U .631, -22.5; Delta_len -3.0 [-5.9,0.0]"},{"jobid":"192366","verdict":"closed","note":"C256 s42 long text .366 (-5.0 vs R s42)"},{"jobid":"192367","verdict":"closed","note":"L1024 s42 long text .412; L1024-C256 +4.6 [+3.1,+6.2]; cap 5.08%"},{"jobid":"192374","verdict":"closed","note":"C256 s43 long text .411"},{"jobid":"192375","verdict":"closed","note":"L1024 s43 long text .411; L1024-C256 -0.0 [-1.7,+1.7]"},{"jobid":"192376","verdict":"closed","note":"closed-book re-run .164 = 191776, 0 discordant"},{"jobid":"192405","verdict":"closed","note":"project prompt Delta_len pages 40 vs 10 -5.7 / -6.1"}],"blocked":"BLOCKED.md final checkpoint: fund arms U (slot reading) and P (positions) on page images at 40 vs 10 pages — +9 runs (cap 87 -> 96), ~13 GPU-h inside the 114 approved — or close the campaign. Recommended: fund.","gripes":[]}
+== rc=0 secs=881
+== verify: 4/18
