@@ -1,0 +1,60 @@
+== verifier 2026-11-19_1030  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session 178cf459-c0c4-41e1-bda0-180190063e06  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+294 lines)
+→ Glob: {"pattern": "campaign_slotcheck/*"}
+→ Glob: {"pattern": "expQ/slotcheck/**/*.json"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck"}
+  ↳ campaign_slotcheck/ticks/.keep (+25 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/checkpoint-210/trainer_state.json
+  ↳ 1	{ (+237 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/training_config.yaml
+  ↳ 1	output_dir: ./outputs/run (+47 lines)
+→ Grep: {"pattern": "slots|mems|n_mem|stride|recall|ceiling", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out", "output_mode": "content", "head_limit": 60}
+  ↳ 2:FACTORS kind=probe_recall arm=O_recall passes=start_dense100:start:slotcheck_dense100 ref_dense100:ref:slotcheck_dense100 start_heldout:start:slotcheck_dense100_heldout ref_heldout:ref:slotcheck_den (+12 lines)
+Still checking the claims one by one against the result files. Next I'm reading the recall baseline log for the slot counts and the 0.702 / 0.670 figures.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out
+  ↳ 515	wrote /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/ref_heldout.json (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out
+  ↳ 150	Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+21 lines)
+→ Grep: {"pattern": "119|0\\.702|\\.702", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log", "output_mode": "content", "head_limit": 30}
+  ↳ 128:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "slotcheck wake 02:00" --did "check 2b decided NOT A CAUSE (padded - unpadded judge +0.5 pt [-1.1,+2.1] s42, +0.9 [-0.7,+2.5] s43, n=1,50 (+2 lines)
+→ Grep: {"pattern": "\"n_mems\"|\"mems\"|\"slots\"|n_slots|\"recall\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "count"}
+  ↳ expQ/slotcheck/recall/start_dense100.json:100 (+2 lines)
+→ Grep: {"pattern": "\"n_mems\"|\"mems\"|\"slots\"|n_slots", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 22:"mems" (+6 lines)
+→ Grep: {"pattern": "\"mems\": \\d+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "content", "-o": true, "head_limit": 120}
+  ↳ 22:"mems": 121 (+99 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json
+  ↳ 1	{ (+34 lines)
+Still checking claims. The baseline slot counts run 116 to 123 per page, not the stated 119 to 121. Now I'm looking for where the 0.702 recall was computed.
+→ Grep: {"pattern": "recall_pair|mean recall|0\\.670|sign", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log", "output_mode": "content", "head_limit": 20}
+  ↳ 35:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la scripts/longdoc/recall_pair.py; md5sum scripts/longdoc/recall_pair.py | cut -c1-8; sed -n 1,200p scripts/longdoc/recall_pair.py (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.log
+  ↳ 36	  ↳ -rw-r--r-- 1 hdejean hdejean 3193 Nov 17 02:35 scripts/longdoc/recall_pair.py (+77 lines) (+39 lines)
+→ Grep: {"pattern": "12 GPU-h|owner checkpoint|GPU-h", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 7:time, not GPU-hours (navmem: 0.4 of 12 GPU-h used, cells of 1m42–3m17). (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 160	  or 4 is a proposed arm in BLOCKED.md, never launched here. (+31 lines)
+→ Grep: {"pattern": "RESULT|at_cap|empty|EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/transcribe_192010.out", "output_mode": "content", "head_limit": 20}
+  ↳ 347:RESULT arm=X_transcribe shard=0 n_shards=4 limit=all pages=317 unique_total=1268 page_slots=2000 empty=0 at_cap=28 mean_words=189 max_tokens=1026 s_per_page_median=8.6 wall_s=3806 (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out
+  ↳ 1	FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+58 lines)
+→ Grep: {"pattern": "CI|McNemar|mcnemar|judge|node|exceeds", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_pad_191783.out", "output_mode": "content", "head_limit": 30}
+  ↳ 2:FACTORS kind=eval_pad arm=P2b cell=p2b_s42 steps=none,64 limit=all judge=1 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model set=mm_docqa_1500_1m px=1003520 topk=4 mnt=32 (+31 lines)
+Nearly done. The audit, padding, training-loss and transcription numbers all match their files. Last step: reading the previous verifier report so I don't repeat or contradict it.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/VERIFY.md
+  ↳ 1	# VERIFY — campaign slotcheck — 2026-11-19_0200   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+15 lines)
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3256 turns=26 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the finetune collato…", "status": "supported", "reason": "audit_ft_191663/summary.txt, trained rows: dropped 0/20,000 …"}, {"claim": "Check 2a (arm P, padding probe), n = 120 pages, job 191672 (…", "status": "provisional", "reason": "The numbers match. Grid 191672: inert=False, w63_cos .934, c…"}, {"claim": "Check 2b (arm P) decided: NOT A CAUSE. Padded to 64 − not pa…", "status": "supported", "reason": "Grid 191783: judge_pad64 .6147, padnone .6100, diff +.0047, …"}, {"claim": "Check 4 (arm O) baseline, job 191893 (closed): word recall o…", "status": "supported", "reason": "Grid and probe 191893: recall_start_dense100 .702, heldout .…"}, "… +5 more"], "summary": "Every decided result holds against the logs and grid. Check …"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the finetune collator's 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause of the document gap. Beside it: 1,910 / 20,000 document rows (9.55%; all Docmatix) lose one of their two source pages. Job 191663 (verdict closed).","status":"supported","reason":"audit_ft_191663/summary.txt, trained rows: dropped 0/20,000 docpages and 0/8,000 natural. Partial 1,910 (9.55%), all docmatix (19.10% of 10,000). The 4,745 five-doc docmatix rows carry 2 golds each, and the gold histogram sums to 14,745. Per-source table given. Health: rows_read_eq_set and sources_sum_to_total true. Controls: 50/50 sampled rows OK; planted golds [4,5] counted dropped. 0% is under the law's 2% 'closed' bar. Grid row 191663 agrees: dropped_trained=0, gate1=gate2=True."},{"claim":"Check 2a (arm P, padding probe), n = 120 pages, job 191672 (closed): not inert. Split, n = 40 pages, job 191781 (closed): a ONE-row padded batch leaks the pads (median cosine .935 bf16 / .953 fp32 at 63 pads; .995 / 1.0000 with the pad zeroing forced on) — latent, no training or eval run takes that path (hand-off 2de131). A two-row padded batch: median .9948 bf16 / 1.0000 fp32 = the no-pad two-row floor .9943 / 1.0000 → bf16 rounding, not a pad effect.","status":"provisional","reason":"The numbers match. Grid 191672: inert=False, w63_cos .934, controls_ok, other-page cos .739. pad_split_191781.out SUMMARY: bf16 A63 .9345, Afix63 .9947, B63 .9948, twin0 .9943; fp32 A63 .9527, Afix63 / B63 1.0000. bf16 B63 equals twin0 on max abs (1.66 vs 1.72) and on rel_l2 (.282 vs .283). But fp32 B63 is NOT equal to its floor beyond median cosine: max abs median .078 vs twin0 .034 (2.3x, while the law's inert bar is 2x the floor), rel_l2 .0058 vs .0028, cos min .9845 vs .9942. So 'not a pad effect' rests on median cosine alone. It is too small to matter: check 2b measured the real cost directly."},{"claim":"Check 2b (arm P) decided: NOT A CAUSE. Padded to 64 − not padded, judge accuracy, n = 1,500 paired questions per seed, same node and code per pair: seed 42 .615 − .610 = +0.5 pt [−1.1, +2.1], McNemar p .62 (job 191783, closed); seed 43 .624 − .615 = +0.9 pt [−0.7, +2.5], p .29 (job 191784, closed). Both CIs inside ±3 pt.","status":"supported","reason":"Grid 191783: judge_pad64 .6147, padnone .6100, diff +.0047, CI [-.011, +.021], McNemar .618, 1,500 rows, unparseable 0/0, mems ratio 1.0000. Grid 191784: .6240 vs .6147, +.0093, CI [-.007, +.025], p .285. eval_pad_191783.out: node homer-020; padnone judge 0.6100; md5 judge 02bc8748 and paired a3cc13b2 match the law. Both pairs ran in one job on one node. Both CIs sit inside ±3 pt at both seeds, which is the law's 'not a cause' bar."},{"claim":"Check 4 (arm O) baseline, job 191893 (closed): word recall of the START model from its slots, n = 100 pages each: .702 on the 100 pages to overfit, .670 on the 100 held-out; text-layer ceiling .974
+== rc=0

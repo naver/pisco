@@ -6,6 +6,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=0:55:00
 #SBATCH --requeue
+#SBATCH --open-mode=append
 #SBATCH --output=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pt_overfit_%j.out
 #SBATCH --error=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pt_overfit_%j.out
 # Campaign slotcheck, arm O (check 4, the campaign's ONLY training): overfit the stage-2 start model on the 100 dense
@@ -26,7 +27,12 @@ case $PREC in
   fp32) P=(++model_config_overrides.torch_dtype=float32) ;;   # fp32 master weights, bf16 autocast (one variable)
   *) echo "unknown precision $PREC"; exit 2 ;;
 esac
-[[ -e "$OUT/model" ]] && { echo "refusing to overwrite $OUT/model"; exit 3; }
+if [[ -e "$OUT/model" ]]; then   # a requeue after the run finished (192002: exit 3 here broke its afterok recall chain)
+  GS=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["global_step"])' "$OUT/checkpoint-$STEPS/trainer_state.json" 2>/dev/null)
+  if [[ "${SLURM_RESTART_COUNT:-0}" -gt 0 && "$GS" == "$STEPS" && -f "$OUT/model/config.json" ]]; then
+    echo "requeue (restart $SLURM_RESTART_COUNT): $OUT/model complete at step $GS, nothing to redo"; exit 0; fi
+  echo "refusing to overwrite $OUT/model"; exit 3
+fi
 [[ -d "$DATA" ]] || { echo "missing $DATA"; exit 2; }
 echo "FACTORS kind=train arm=O name=$NAME max_steps=$STEPS precision=$PREC data=$(basename $DATA) start=pt_mm_5M_spread task=image_ae_only bs=8 accum=8 lr=3e-5 px=1003520"
 echo "node $(hostname)"

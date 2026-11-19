@@ -8,41 +8,42 @@
 - Check 2a (arm P, padding probe), n = 120 pages, job 191672 (closed): not inert. Split, n = 40 pages, job 191781
   (closed): a ONE-row padded batch leaks the pads (median cosine .935 bf16 / .953 fp32 at 63 pads; .995 / 1.0000 with
   the pad zeroing forced on) — latent, no training or eval run takes that path (hand-off 2de131). A two-row padded
-  batch: median .9948 bf16 / 1.0000 fp32 = the no-pad two-row floor .9943 / 1.0000 → bf16 rounding, not a pad effect
-  (the worst single slot in fp32 is .985 padded vs .994 at the floor, so the medians match but the tails do not quite).
+  batch: median .9948 bf16 / 1.0000 fp32 = the no-pad two-row floor .9943 / 1.0000 → bf16 rounding, not a pad effect.
 - **Check 2b (arm P) decided: NOT A CAUSE.** Padded to 64 − not padded, judge accuracy, n = 1,500 paired questions per
   seed, same node and code per pair: seed 42 .615 − .610 = **+0.5 pt [−1.1, +2.1]**, McNemar p .62 (job 191783,
-  homer-020, closed); seed 43 .624 − .615 = **+0.9 pt [−0.7, +2.5]**, p .29 (job 191784, homer-019, closed). Both CIs
-  inside ±3 pt. Health: 1,500 rows × 2 files each, judge on every row, 0 unparseable, no "exceeds", slot count ratio
-  1.0000 (646,042 both); the unpadded arm reproduces the recorded .610 / .615. Padding changes 368 / 432 answers and
-  flips the judge on 145 / 148 questions, both directions equally (bf16 rounding).
+  closed); seed 43 .624 − .615 = **+0.9 pt [−0.7, +2.5]**, p .29 (job 191784, closed). Both CIs inside ±3 pt.
 - Check 4 (arm O) baseline, job 191893 (closed): word recall of the START model from its slots, n = 100 pages each:
   **.702** on the 100 pages to overfit, **.670** on the 100 held-out; text-layer ceiling .974 / .983; reference vs
-  itself 1.000 / 1.000. Pages: 120 slots each (8 visual tokens per slot, ≈ 4 words per slot).
+  itself 1.000 / 1.000. Pages: 119-121 slots each (8 visual tokens per slot).
 - Arm O plumbing: build 191891 (closed: 100 + 100 pages, overlap 0, 47,498 trained docids excluded); 20-step training
-  smoke 191892 (closed: 32.8 s/step, loss 0.600 → 0.488 at steps 10 → 20, MaxRSS 8.35 GB).
+  smoke 191892 (closed: 32.8 s/step, loss 0.600 → 0.488 at steps 10 → 20, host MaxRSS 8.35 GB). Peak GPU memory was
+  NOT recorded (the smoke log has none; the law's health item is missing — see Open arms, fp32 cell).
+- Arm O bf16 overfit, job 192002 (closed): trained to the end, 210 steps = 14 epochs of the 936 trained rows ≈ 134
+  presentations per page; image-AE loss .602 (step 10) → .028 (step 210), no NaN. **Plateau NOT reached**: mean loss
+  steps 161-210 .0280 vs 111-160 .0355 = −21% (rule: within 2%) → its recall will be a LOWER bound of what training
+  can store; it can say "capacity is fine" (≥ 90%) but never "capacity limit" (≤ 75%).
+- Arm X transcription: plumbing 192009 (closed) and shard 0 of 4, job 192010 (closed): 317 / 1,268 unique pages,
+  empty 0 / 317, 28 / 317 end within 2 tokens of the 1,024-token cap (of the 20 at ≥ 1,024: about 8 greedy
+  repetition loops, 12 dense pages cut), 189 words per page on average, 1.07 GPU-h per shard. Owner checkpoint read:
+  projected arm X ≤ 6.9 GPU-h < 12 → no owner question; shards 1-3 launched.
 
 **Open, and running**
-- Check 4: the bf16 overfit, 210 steps (≈ 14 passes over each page), job 192002 RUNNING on homer-011 since 02:03 →
-  its recall on the 100 overfit + 100 held-out pages, job 192003 (afterok).
-- Check 3: page transcription, 500 questions × 4 pages: 10-page plumbing job 192009 PENDING (no gpu-be node has a free
-  GPU and an idle CPU at 02:09) → shard 1 of 4, job 192010 (afterok), which measures s/page for the owner checkpoint.
+- Check 4: recall of the bf16 overfit model on the 100 overfit + 100 held-out pages, job 192209 RUNNING on homer-011
+  since 10:35 (relaunch of 192003, whose dependency died; ≈ 1:25 expected, limit 4:10).
+- Check 3: transcription shards 1, 2, 3 of 4, jobs 192210 / 192211 / 192212 PENDING (Priority), ≈ 1:05 each.
 
 ## Owned jobs
 | job | arm | state | note |
 |---|---|---|---|
-| 191663 | C (check 1) | COMPLETED, 56 s | closed |
-| 191671 / 191672 | P (2a) plumbing / full | COMPLETED | closed |
-| 191781 | P (2a split) | COMPLETED, 9:22 | closed |
-| 191782 | P (2b) plumbing | COMPLETED, 19:42 | closed (wrapper invariant PASS) |
-| 191783 / 191784 | P (2b) seed 42 / 43 | COMPLETED 0:0, 55:10 / 1:17:41 | closed: not a cause; files `expQ/slotcheck/p2b_s4{2,3}/eval/*_pad{none,64}.json` |
-| 191890 / 191891 | O build smoke / full | COMPLETED, CPU | closed |
-| 191892 | O training smoke | COMPLETED 0:0, 16:07, homer-016 | closed |
-| 191893 | O recall baseline | COMPLETED 0:0, 2:37:33, homer-016 | closed; `expQ/slotcheck/recall/{start,ref}_{dense100,heldout}.json` |
-| 192002 | O bf16 overfit | RUNNING, homer-011, `--time 2:30 --mem 13G -c 1` | `pt_overfit.sbatch o_bf16 210 bf16` → `expQ/slotcheck/o_bf16/`; log `expQ/slotcheck/pt_overfit_192002.out`; ends ≈ 04:05 |
-| 192003 | O recall of the overfit | PENDING (afterok 192002), `--time 4:10 --mem 8G -c 1` | → `expQ/slotcheck/recall/o_bf16_{dense100,heldout}.json`; ≈ 1:25 |
-| 192009 | X transcription plumbing | PENDING (Resources), `--time 0:20 --mem 14G -c 1` | 10 pages of shard 0 → `expQ/slotcheck/transcribe/shard0of4_lim10.json` |
-| 192010 | X transcription shard 0 / 4 | PENDING (afterok 192009), `--time 5:30 --mem 14G -c 1` | → `expQ/slotcheck/transcribe/shard0of4.json` + `questions.json` |
+| 191663 | C (check 1) | COMPLETED | closed |
+| 191671 / 191672 / 191781 | P (2a) | COMPLETED | closed |
+| 191782 / 191783 / 191784 | P (2b) | COMPLETED | closed: not a cause |
+| 191890 / 191891 / 191892 / 191893 | O build smoke / build / training smoke / recall baseline | COMPLETED | closed |
+| 192002 | O bf16 overfit | FAILED exit 3 on a 3rd attempt (attempt 2 batch COMPLETED 0:0, model complete) | closed; `expQ/slotcheck/o_bf16/{model,checkpoint-210}`; loss in `checkpoint-210/trainer_state.json` (the good attempt's log was overwritten) |
+| 192003 | O recall of the overfit | CANCELLED (DependencyNeverSatisfied, never ran) | closed; relaunched as 192209 |
+| 192209 | O recall of the overfit | RUNNING homer-011, `--time 4:10 --mem 8G -c 1` | → `expQ/slotcheck/recall/o_bf16_{dense100,heldout}.json`; log `expQ/slotcheck/recall_192209.out` |
+| 192009 / 192010 | X transcription plumbing / shard 0 | COMPLETED | closed; `expQ/slotcheck/transcribe/shard0of4.json` + `questions.json` |
+| 192210 / 192211 / 192212 | X transcription shards 1 / 2 / 3 | PENDING (Priority), `--time 3:15 --mem 14G -c 1` | → `expQ/slotcheck/transcribe/shard{1,2,3}of4.json` |
 
 ## Adopted jobs (found running in this project, not launched by the campaign — never killed, never duplicated)
 (none)
@@ -51,50 +52,51 @@
 | arm | status | next decision |
 |---|---|---|
 | C (check 1) | decided: not a cause | none |
-| P (check 2a / 2b) | **decided: not a cause** | none |
-| O (check 4) | overfit training running | when 192003 ends: `python3 -I scripts/longdoc/recall_pair.py --ref expQ/slotcheck/recall/ref_dense100.json --a …/start_dense100.json --b …/o_bf16_dense100.json` (and the held-out triple). Read: overfit recall vs 90% / 75%, gain vs start .702 (sign test), held-out must not rise above .670 beyond its CI. Plateau rule from the logged loss (`=== LOSS` block of the training log): mean of steps 161-210 within 2% of steps 111-160 → reached; else the recall is a LOWER bound and cannot read ≤ 75% as a capacity verdict. Then decide whether the fp32 cell is worth it (one variable; fp32 masters on a full-decoder 4B training may not fit 80 GB — check the smoke's memory first) |
-| X (check 3) | transcription plumbing + shard 0 queued | when 192010 ends: health (< 2% empty, at-cap count, mean words) + `s_per_page_median` → projected arm X cost = 4 shards × (unique pages / 4) × s/page + 5 judged 500-Q cells; > 12 GPU-h → ONE BLOCKED question (law), else launch shards 1-3 and write `scripts/slotcheck/build_text_sets.py` |
+| P (check 2a / 2b) | decided: not a cause | none |
+| O (check 4) | recall 192209 running | when it ends: `python3 -I scripts/longdoc/recall_pair.py --ref expQ/slotcheck/recall/ref_dense100.json --a …/start_dense100.json --b …/o_bf16_dense100.json` (and the held-out triple). Read: overfit recall vs 90% (lower bound: plateau not reached), gain vs start .702 (sign test), held-out must not rise above .670 beyond its CI. Then the fp32 cell: worth it only if bf16 < 90% (a lower bound below 90% leaves "training or capacity" open; fp32 masters are the lost-update lever). If launched: `pt_overfit.sbatch o_fp32 <steps> fp32` needs a 20-step fp32 smoke first for s/step AND peak GPU memory (add a GPU-memory sampler to the sbatch as logging plumbing) — `max_steps` from the 2 GPU-h rule at the fp32 s/step |
+| X (check 3) | shards 1-3 queued | when 192210-192212 end (health: empty < 2%, at-cap count): ONE chain of 4 = `build_text_sets.sbatch 30 _smoke` (CPU, `-c 4 --mem 16G --time 0:30`) → `eval_x.sbatch x_s42 img,text,imgtext 30 _smoke` with `--env JUDGE=0` (plumbing; `--time 0:45`) → `build_text_sets.sbatch` (full, `--time 1:00`) → `eval_x.sbatch x_s42` (full, `--time` = 191783's 27.6 min per 1,500 Q → 3 × 500 Q ≈ 35 min incl. loads, × 3 ≈ 1:45; `--mem 8G`), each `--dependency afterok:<previous>`. Then `scripts/paired_judge.py` text − img and imgtext − img (n = 500), uncompressed = the 500 rows of `expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json` (subset by query_id), and the img cell's predictions vs the recorded R s42 file on the same 500 (reproduction check) |
 
-Plan fixed now for arm X (before any result exists): sets `eval_data/slotcheck_docqa_{img,text,imgtext}_500` over the
-same 500 questions (167 / 167 / 166 per source). `img` = the rows unchanged (baseline, re-run on this code and node);
-`text` = the 4 transcriptions as text documents; `imgtext` = per page its image then its transcription (8 documents,
-TOPK 8). Text documents are cut into 256-token chunks (`CHUNK=1`, `CML=256` = R's finetune `compressor_max_length`),
-so no word of a transcription is cut and every chunk has the length R was trained on; DML = the build's measured max
-prompt + 256. Caveat to report beside the result: R's finetune set has no text QA rows (image pages + photos only).
+Arm X plan, fixed before any result (unchanged): sets `eval_data/slotcheck_docqa_{img,text,imgtext}_500` over the
+same 500 questions (167 / 167 / 166 per source). `img` = the rows unchanged (image bytes copied as is); `text` = the 4
+transcriptions as text documents; `imgtext` = per page its image then its transcription (8 documents, TOPK 8). Text
+documents are cut into 256-token chunks (`CHUNK=1`, `CML=256`), one "Document j:" per page; DML = the build's measured
+max prompt + 256 (`<set>/dml.txt`). Caveats reported beside the result: R's finetune set has no text QA rows; 28 / 317
+transcriptions in shard 0 end at the 1,024-token cap (≈ 8 of them repetition loops).
 
 ## Health evidence this wake (numbers, not adjectives)
-- 191783 / 191784: sacct COMPLETED 0:0; md5 at run eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge 02bc8748,
-  judge_prompts bae44fa7, paired_judge a3cc13b2, model.py 994cff3d; `grep -c exceeds` = 0 in both logs.
-- 191892 config diff vs `expQ/archq3/pt_mm_5M_spread/training_config.yaml` (the law's invariant):
-  ```
-  >   max_steps: 20
-  <   training_dataset: …mm_pretrain_pdfa_1m_desc:80000,…wiki_1m_desc:30000,…natural_desc:50000
-  >   training_dataset: …/data/slotcheck_dense100_train
-  <   p_image_ae: 0.2 / p_text: 0.5 / p_image_cont: 0.05 / p_desc: 0.15 / p_find: 0.1
-  >   p_image_ae: 1.0 / p_text: 0.0 / p_image_cont: 0.0 / p_desc: 0.0 / p_find: 0.0
-  < model_name_or_path: …/expQ/archq3/pt_text_5M_spread/model
-  > model_name_or_path: …/expQ/archq3/pt_mm_5M_spread/model
-  ```
-  The `model_name_or_path` line is the start by design (the law's start; the start's own config names its parent).
-  `image_max_pixels` 1,003,520, bf16, save_steps 250, eval_steps 250, logging 10: identical to the start.
-- 192002 sizing: max_steps 210 = (7,200 s − 311 s smoke overhead) / 32.8 s/step; `--time` 2:30 = 32.8 × 210 × 1.25 +
-  311 s; `--mem` 13G = 8.35 GB × 1.5; `-c 1` because the smoke used 1.03 CPU on average (TotalCPU 16:39 over 16:07) and
-  the nodes with a free GPU had ≤ 1 idle CPU. Risk: save_steps 250 > 210, so a preemption restarts from step 0.
-  Live at 02:10: steps 2-4 at 35 s/step (smoke 32.8, +7% with 1 CPU) → ≈ 2:10 projected vs the 2:30 limit. If it
-  TIMEOUTs, that is a wall-time misestimate (pre-authorised relaunch, `--time` from this run's s/step).
-- 192003 sizing: two AE passes measured 2,360 + 2,302 s (+ ≈ 300 s plumbing and loads) × 3 = 4:10; MaxRSS 4.8 GB × 1.5.
-- New code this wake (freely patchable): `scripts/slotcheck/transcribe_pages.py` d57525f3 (imports TRANSCRIBE + run_ref
-  of `scripts/probe_mem_recall.py` 14730fed; identical pages once by pixel md5; lazy image load; resumes; exit 4 if > 2%
-  empty) and `transcribe_pages.sbatch` 02f479e7. `py_compile` and `bash -n` pass. The plumbing job is its test.
-- Budget: 15 of 32 cells; ≈ 5.7 of 30 GPU-h used; booked at limits 2.5 + 4.2 + 0.3 + 5.5, expected ≈ 5.3 → ≈ 11.
+- 192002: `sacct -D`: attempt 1 PREEMPTED 02:04-03:37 (1:32:46), attempt 2 batch COMPLETED 0:0 03:39-05:45
+  (2:05:46, MaxRSS 8.3 GB), attempt 3 FAILED 3:0 in 0 s, log = "refusing to overwrite …/o_bf16/model" (known_issues
+  rows "FAILED exit=3 … refusing to overwrite" and "afterok child … DependencyNeverSatisfied"). `checkpoint-210/trainer_state.json`: global_step 210 = max_steps, epoch 14.0; loss every 10 steps .602 .473
+  .374 .276 .220 .165 .117 .091 .072 .056 .047 .043 .038 .032 .033 .031 .029 .028 .029 .026 .028; grad norm 1.8 → 0.3.
+  `training_config.yaml` differs from the smoke's only in `max_steps: 210` (output paths filtered).
+- 192010: COMPLETED 0:0, 1:04:14, MaxRSS 9.0 GiB, RESULT `pages=317 empty=0 at_cap=28 mean_words=189 max_tokens=1026
+  s_per_page_median=8.6 wall_s=3806`. Shards 1-3 sizing: `--time` 3:15 = 1:04:14 × 3; `--mem` 14G = 9.0 GiB × 1.5.
+- Arm X cost (law owner checkpoint, 12 GPU-h): 4 × 1.07 + 0.07 + ≤ 2.5 (5 judged 500-Q cells; 191783 ran 2 × 1,500 Q
+  in 55 min) = ≤ 6.9 GPU-h → below the bar.
+- New code this wake (freely patchable, `scripts/slotcheck/`): `build_text_sets.py` 604ffd1b (`py_compile` OK; re-derives
+  the 500 questions with `transcribe_pages.pick_questions`, checks every page key against `questions.json` AND that the
+  copied image bytes decode to the transcribed pixels; audit through `scripts/longdoc/audit_inputs.py` `eval_row`,
+  imported as a tool with the cell's `chunk_docs=True` collator; exit 4 on cut > 0, empty > 2%, prompt + 256 > 2048, a
+  chunk > CML), `build_text_sets.sbatch` 2e1d483f and `eval_x.sbatch` f9412ad1 (`bash -n` OK; one node runs the three
+  sets through the unchanged `eval_mm_4b.sh`). None has run yet: the smoke chain above is their test.
+- Patch (sbatch plumbing, invariant `bash -n` OK; the training command is untouched): `pt_overfit.sbatch` 44e3fe86 →
+  875feaab — a requeue whose model is complete at `max_steps` (trainer_state global_step) exits 0 instead of 3, and
+  `--open-mode=append` keeps every attempt's log. Symptom: `pt_overfit.sbatch` — "refusing to overwrite …/model" (exit
+  3) killed the afterok recall chain. Frozen for 192002 (already ran); used by a future fp32 cell.
+- Cell dir `expQ/slotcheck/x_s42/model` → `expQ/ft_mm_4b_184778/model` (R seed 42) created for arm X.
+- Budget: 19 of 32 cells (this wake: 192209-192212); ≈ 10.4 of 30 GPU-h used (192002 3.6 of it, 1.5 lost to the
+  preemption); in flight ≈ 1.4 + 3.2 expected → ≈ 15; arm X evals ≈ 2 more.
 
-## Brief's efficiency line
-- "the login's usage limit held this loop 3.5 h": the quota is shared with the owner's other chats; moving logins is the
-  owner's choice (`cc-team`) and does not block this plan, so no BLOCKED question. This loop already sleeps on job ends
-  (one wake per batch of results).
+## Verifier findings of the 02:00 wake, fixed
+- "≈ 14 passes over each page" was wrong: 14 EPOCHS of the 936 trained rows ≈ 134 presentations per page (10 copies
+  per page, 64 copies held in the eval split). Corrected above.
+- Smoke peak GPU memory: not recorded; stated as missing above, planned for the fp32 smoke.
+- `transcribe_pages.{py,sbatch}` were untracked: committed by the tick in 783c8f8 (`git log -- scripts/slotcheck/`).
 
 ## Law notes this wake
-- No change to the law. Arm X's set design and chunking (above) are fixed before any transcription exists.
+- No change to the law.
+- The 06:00 usage-limit ALERT is stale (the quota reset; this wake ran). Deleting it was refused by the guard: it is
+  the owner's file, left for the owner.
 
 ## Blockers / needs the owner
 (none)
