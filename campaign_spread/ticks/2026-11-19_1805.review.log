@@ -1,0 +1,47 @@
+== review 2026-11-19_1805  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/REVIEW_INPUT.md
+== session e7124793-7a91-4525-a0f0-e28968d24aa1  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/REVIEW_INPUT.md
+  ↳ 1	# Campaign review input (+351 lines)
+→ Glob: {"pattern": ".expmon/campaign/spread/*"}
+→ Glob: {"pattern": "campaign_spread/**/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/RETRO.md
+  ↳ 1	# Campaign retro — spread (2026-11-19) (+100 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-19_0230.escalate.log
+  ↳ 1	== escalation check 2026-11-19_0230  model=claude-sonnet-5-5  new question(s): 441b0adc6d 920091de7f (+12 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks"}
+  ↳ campaign_spread/ticks/.keep (+20 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2300.escalate.log
+  ↳ 1	== escalation check 2026-11-17_2300  model=claude-sonnet-5-5  new question(s): 893449a2c6 (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_1930.log
+  ↳ 1	== campaign spread wake 2026-11-18_1930  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+10 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_2330.log
+  ↳ 1	== campaign spread wake 2026-11-18_2330  reasons=idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+10 lines)
+Checking the tick logs to find what caused the 18-hour gap between the second and third wakes.
+→ Grep: {"pattern": "^== (campaign|sensors|wait|result|rc)|BLOCKED|waiting-owner|NEXT", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-18_1630.log", "output_mode": "content", "head_limit": 40}
+  ↳ 1:== campaign spread wake 2026-11-18_1630  reasons=gate,request,idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+8 lines)
+→ Grep: {"pattern": "^== (campaign|sensors|wait|result|rc)|BLOCKED|waiting-owner|NEXT|wake-when", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-17_2230.log", "output_mode": "content", "head_limit": 40}
+  ↳ 1:== campaign spread wake 2026-11-17_2230  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+10 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread"}
+  ↳ .expmon/campaign/spread/draft.scaffold.md (+36 lines)
+→ Grep: {"pattern": "2026-11-1(7T2[2-3]|8T0[0-9]|8T1[0-6])", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/cron.log", "output_mode": "content", "head_limit": 60}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/cron.log
+  ↳ 1	watchdog: OK (ts=1794907022 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=4 daemon=1 disk_gb=8254 sig=3f0317b9 same=0 behind=0 (+79 lines)
+Found the main cause of the 16-hour idle: a weekly-quota pacing rule blocked every wake. Now checking whether the owner checkpoint question went out before the verifier's corrections were applied.
+→ Grep: {"pattern": "arm D|every inference arm|incomplete|transcription", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-19_0200.verify.log", "output_mode": "content", "head_limit": 20}
+  ↳ 30:  ↳ 3:Rewritten whenever an arm decides. Last rewrite 2026-11-19 02:15, after the MRQA tail re-runs (today's code) and arm D (+8 lines)
+→ Grep: {"pattern": "arm D|every inference arm|incomplete|transcription|option C|option A", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_spread/ticks/2026-11-19_1800.log", "output_mode": "content", "head_limit": 20}
+  ↳ 39:→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "spread: owner REQUEST 2026-11-19 17:05 executed. (1) Arm E (tail control, one stage-2 pass) NOT run = option C, 0 GPU-h: the campaign clo
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/spread/verify.result.json
+  ↳ 1	{ (+214 lines)
+I found four lessons, plus a smaller fifth one about the results page. The main one: most of the 16.3 idle hours came from the weekly quota pacing, not from the worker.
+→ StructuredOutput: {"lessons": [{"lesson": "When the weekly quota pacing holds back a wake whose awaited jobs have already ended, raise an alert on the watch page after two hours and name the pacing as the cause in the report, because here it silently refused…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2861 turns=19 is_error=False denials=0
+== declared: {"lessons": [{"lesson": "When the weekly quota pacing holds back a wake whose awaited jobs have already ended, raise an alert on the watch page a…", "for": "tooling", "evidence": "The campaign idled 16.3 h of its 47.0 h window (34%)"}, {"lesson": "Before arming, run each decision gate once on the recorded files it will judge and rewrite any gate those files show can…", "for": "template", "evidence": "one seed's 95% CI on 1,500 Q is .044-.053 wide on"}, {"lesson": "Before the tool forwards an owner checkpoint question, have it read the verifier's latest verdicts and either hold the q…", "for": "tooling", "evidence": "arm D moved to Open as incomplete (no finetunes, no transcription control)"}, {"lesson": "When the law names data sets for the 'one repeat on new data' rule, check while drafting that their question ids do not …", "for": "template", "evidence": "gives the same question ids as the gating set (1,500 / 1,500)"}, {"lesson": "Make `expmon display` and the result grid read each eval file from the cell's own folder when the law puts every eval be…", "for": "tooling", "evidence": "`expmon display --exp spread` writes 0 table rows while the grid has judged cells"}]}
+== final:
+{"lessons":[{"lesson":"When the weekly quota pacing holds back a wake whose awaited jobs have already ended, raise an alert on the watch page after two hours and name the pacing as the cause in the report, because here it silently refused every wake from about midnight to 16:30 on the first day of the quota week while the next 20-minute evals were ready, and the report blamed idling with work outstanding.","for":"tooling","evidence":"The campaign idled 16.3 h of its 47.0 h window (34%)"},{"lesson":"Before arming, run each decision gate once on the recorded files it will judge and rewrite any gate those files show can never be met, such as a per-seed 'equal' band of ±2 pt when one seed's 95% interval is already 4.4 to 5.3 pt wide, or a 'within 2 pt under every scoring' rule that exact match breaks on every large gain, so the owner is not asked to redefine a gate in the middle of the run.","for":"template","evidence":"one seed's 95% CI on 1,500 Q is .044-.053 wide on"},{"lesson":"Before the tool forwards an owner checkpoint question, have it read the verifier's latest verdicts and either hold the question or attach every claim the verifier downgraded, because here the training checkpoint went to the owner on the claim that all inference work was done, while the slot probes on the finetuned models and the page-transcription control had not run, and the owner closed the campaign on that basis.","for":"tooling","evidence":"arm D moved to Open as incomplete (no finetunes, no transcription control)"},{"lesson":"When the law names data sets for the 'one repeat on new data' rule, check while drafting that their question ids do not overlap the gating set, and where no fresh questions exist, either build and hold back a fresh set before arming or state in the law that a promising document result cannot be repeated.","for":"template","evidence":"gives the same question ids as the gating set (1,500 / 1,500)"},{"lesson":"Make `expmon display` and the result grid read each eval file from the cell's own folder when the law puts every eval behind a linked model folder, so the worker does not have to copy every score in by hand with `expmon probe --from-json`.","for":"tooling","evidence":"`expmon display --exp spread` writes 0 table rows while the grid has judged cells"}]}
+== rc=0
+== review: 3 finding(s); 5 lesson(s) kept, 0 dropped (no quote in the record)

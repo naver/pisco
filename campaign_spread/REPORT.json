@@ -1,0 +1,397 @@
+{
+ "label": "spread",
+ "dir": "/beegfs/scratch/user/hdejean/pisco/campaign_spread",
+ "generated": "2026-11-19 18:05",
+ "mission": "**Question (owner, QUESTION.md):** why was the spread `<MEM>` layout not validated \u2014 in which cases is it better, equal or worse than the tail layout, does the evaluation itself hide or inflate the difference, and can the gain be brought back? Probes (inference only) first; a training arm only after a probe supports it, one variable per arm.",
+ "window": [
+  "2026-11-17",
+  "2026-11-19"
+ ],
+ "until": "2027-02-15",
+ "over": false,
+ "ticks": 95,
+ "wakes": 8,
+ "wakes_bad": 2,
+ "gpu_h": 8.6,
+ "card_h": 0,
+ "idle_max_h": 16.3,
+ "idle_flag": true,
+ "settled": [
+  {
+   "jobid": "191780",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "MRQA one long passage BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.084..+.098, project prompt +.070..+.103, EM +.057..+.074 (n 1,500 per seed, 191779/191780 vs qafreeze 191675/191676, rejudge 192006)",
+   "text": "MRQA one long passage BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.084..+.098, project prompt +.070..+.103, EM +.057..+.074 (n 1,500 per seed, 191779/191780 vs qafreeze 191675/191676, rejudge 192006) \u2014 job 191780, closed",
+   "jobs": [
+    "191780"
+   ]
+  },
+  {
+   "jobid": "191528",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "arm B ONE chunk BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.247..+.260, project prompt +.253..+.271, EM +.151..+.152 (n 1,500 per seed, 191457/191528 vs 191456/191526, rejudge 191665)",
+   "text": "arm B ONE chunk BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.247..+.260, project prompt +.253..+.271, EM +.151..+.152 (n 1,500 per seed, 191457/191528 vs 191456/191526, rejudge 191665) \u2014 job 191528, closed",
+   "jobs": [
+    "191528"
+   ]
+  },
+  {
+   "jobid": "192006",
+   "verdict": "closed",
+   "arm": "rejudge.sbatch",
+   "note": "healthy: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies x 1,500 rows, project prompt on all, unparseable 0 (4/4); copies' judge_rubric reproduce the rubric pairs exactly (+.084 / +.098). MRQA spread - tail under the project prompt +.070 [+.046,+.095] 233/128 (s42) / +.103 [+.079,+.128] 249/95 (s43): better under rubric, project prompt, EM and ANLS; EM is 2.4-2.7 pt below the rubric (arm J size rule: owner question 2)",
+   "text": "healthy: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies x 1,500 rows, project prompt on all, unparseable 0 (4/4); copies' judge_rubric reproduce the rubric pairs exactly (+.084 / +.098). MRQA spread - tail under the project prompt +.070 [+.046,+.095] 233/128 (s42) / +.103 [+.079,+.128] 249/95 (s43): better under rubric, project prompt, EM and ANLS; EM is 2.4-2.7 pt below the rubric (arm J size rule: owner question 2) \u2014 job 192006, closed",
+   "jobs": [
+    "192006"
+   ]
+  },
+  {
+   "jobid": "191785",
+   "verdict": "closed",
+   "arm": "mech_probes.sbatch",
+   "note": "healthy: COMPLETED 0:0 56:54 homer-011, one attempt, MaxRSS 4.5 GB; 4 models x probe_mixer + probe_connector, all 8 JSONs written. Control PASS: reduced pair reproduces ownership .977/.799 and answer loss pages 1.138/1.334, text 1.812/1.927, photos 1.765/1.802 to 3 decimals. Gate pair full budget pt_mm_5M_spread vs pt_mm_v4kd_4b: ownership .972 vs .763 (+.208; reduced +.178); answer NLL pages 1.102 vs 1.226 (-.124; reduced -.196), text 1.844 vs 1.788 (+.056; reduced -.115), photos 1.736 vs 1.813 (-.077; reduced -.037) -> the advantage does NOT shrink inside +-2 pt on ownership, pages, photos (text reverses): the full-budget accuracy tie is not a representation tie. NLL = 40 rows, unpaired means: mechanism evidence only",
+   "text": "healthy: COMPLETED 0:0 56:54 homer-011, one attempt, MaxRSS 4.5 GB; 4 models x probe_mixer + probe_connector, all 8 JSONs written. Control PASS: reduced pair reproduces ownership .977/.799 and answer loss pages 1.138/1.334, text 1.812/1.927, photos 1.765/1.802 to 3 decimals. Gate pair full budget pt_mm_5M_spread vs pt_mm_v4kd_4b: ownership .972 vs .763 (+.208; reduced +.178); answer NLL pages 1.102 vs 1.226 (-.124; reduced -.196), text 1.844 vs 1.788 (+.056; reduced -.115), photos 1.736 vs 1.813 (-.077; reduced -.037) -> the advantage does NOT shrink inside +-2 pt on ownership, pages, photos (text reverses): the full-budget accuracy tie is not a representation tie. NLL = 40 rows, unpaired means: mechanism evidence only \u2014 job 191785, closed",
+   "jobs": [
+    "191785"
+   ]
+  },
+  {
+   "jobid": "191779",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 16:17 homer-011, one attempt, MaxRSS 3.9 GB; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 80,003 = spread twin qafreeze 191675. Tail 174908 MRQA judge .631 em .404; spread - tail +.084 [+.060,+.109] 239/113 p<.001 (rubric), EM +.057 [+.034,+.081]",
+   "text": "healthy: COMPLETED 0:0 16:17 homer-011, one attempt, MaxRSS 3.9 GB; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 80,003 = spread twin qafreeze 191675. Tail 174908 MRQA judge .631 em .404; spread - tail +.084 [+.060,+.109] 239/113 p<.001 (rubric), EM +.057 [+.034,+.081] \u2014 job 191779, closed",
+   "jobs": [
+    "191779"
+   ]
+  },
+  {
+   "jobid": "191668",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=2823 PX=1003520 TOPK=20 XD=16",
+   "note": "healthy: COMPLETED 0:0 1h30m50 homer-011; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 3,229,884 = spread twin longdoc 191377. Tail 174908 20 pages (XD=16 TOPK=20) judge .579; spread - tail +.019 [-.006,+.043] 181/152; DiD vs 4 pages +.009 [-.015,+.031] -> arm C gate (DiD >= +3 pt, CI>0, both seeds) cannot be met",
+   "text": "healthy: COMPLETED 0:0 1h30m50 homer-011; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 3,229,884 = spread twin longdoc 191377. Tail 174908 20 pages (XD=16 TOPK=20) judge .579; spread - tail +.019 [-.006,+.043] 181/152; DiD vs 4 pages +.009 [-.015,+.031] -> arm C gate (DiD >= +3 pt, CI>0, both seeds) cannot be met \u2014 job 191668, closed",
+   "jobs": [
+    "191668"
+   ]
+  },
+  {
+   "jobid": "191667",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "note": "healthy: COMPLETED 0:0 50m32 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191390. Tail 176242 10 pages judge .591; spread - tail +.017 [-.007,+.040] 174/149; DiD vs 4 pages -.007 [-.031,+.015]",
+   "text": "healthy: COMPLETED 0:0 50m32 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191390. Tail 176242 10 pages judge .591; spread - tail +.017 [-.007,+.040] 174/149; DiD vs 4 pages -.007 [-.031,+.015] \u2014 job 191667, closed",
+   "jobs": [
+    "191667"
+   ]
+  },
+  {
+   "jobid": "191666",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "note": "healthy: COMPLETED 0:0 51m36 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191378. Tail 174908 10 pages (XD=6 TOPK=10) judge .600; spread - tail +.007 [-.017,+.031] 170/160; DiD vs 4 pages -.004 [-.027,+.019]",
+   "text": "healthy: COMPLETED 0:0 51m36 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191378. Tail 174908 10 pages (XD=6 TOPK=10) judge .600; spread - tail +.007 [-.017,+.031] 170/160; DiD vs 4 pages -.004 [-.027,+.019] \u2014 job 191666, closed",
+   "jobs": [
+    "191666"
+   ]
+  },
+  {
+   "jobid": "191665",
+   "verdict": "closed",
+   "arm": "rejudge.sbatch",
+   "note": "healthy: COMPLETED 0:0 7m27 homer-017, one attempt; 16 copies x 1,500 rows, project prompt on all, unparseable 0 (16/16); copies' rubric verdicts and answers = sources 16/16. Arm J (spread - tail, pooled over s42/s43, project / rubric / EM): one chunk +.262 / +.254 / +.152 (better under all three); ten chunks -.003 / -.001 / -.023 [-.039,-.007] (EM and ANLS favour tail: judge-sensitive); 4-page documents +.024 [+.006,+.042] / +.017 / +.012 (lean spread under all three); photos -.006 / +.001 / -.003 (project s42 -.023 [-.043,-.004] -> equal not certified under the project prompt)",
+   "text": "healthy: COMPLETED 0:0 7m27 homer-017, one attempt; 16 copies x 1,500 rows, project prompt on all, unparseable 0 (16/16); copies' rubric verdicts and answers = sources 16/16. Arm J (spread - tail, pooled over s42/s43, project / rubric / EM): one chunk +.262 / +.254 / +.152 (better under all three); ten chunks -.003 / -.001 / -.023 [-.039,-.007] (EM and ANLS favour tail: judge-sensitive); 4-page documents +.024 [+.006,+.042] / +.017 / +.012 (lean spread under all three); photos -.006 / +.001 / -.003 (project s42 -.023 [-.043,-.004] -> equal not certified under the project prompt) \u2014 job 191665, closed",
+   "jobs": [
+    "191665"
+   ]
+  },
+  {
+   "jobid": "191633",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 homer-010 28:20; 1,500 rows, judge on all, unparseable 0, mems_used 646,042. Tail 176242 documents s43 today's code: judge .591 = recorded 176244 (0/1,500 differ). Spread 191496 - tail = +.024 [-.002,+.048], 193/157, p .061. Documents pooled +.017 [-.002,+.036] width .038 -> not equal, not better: not resolvable here. Infographics +.050 [+.008,+.094] 76/51 (s42 +.050 [+.006,+.094] 80/55), post-hoc slice",
+   "text": "healthy: COMPLETED 0:0 homer-010 28:20; 1,500 rows, judge on all, unparseable 0, mems_used 646,042. Tail 176242 documents s43 today's code: judge .591 = recorded 176244 (0/1,500 differ). Spread 191496 - tail = +.024 [-.002,+.048], 193/157, p .061. Documents pooled +.017 [-.002,+.036] width .038 -> not equal, not better: not resolvable here. Infographics +.050 [+.008,+.094] 76/51 (s42 +.050 [+.006,+.094] 80/55), post-hoc slice \u2014 job 191633, closed",
+   "jobs": [
+    "191633"
+   ]
+  },
+  {
+   "jobid": "191632",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 homer-010 18:56; 1,500 rows, judge on all, unparseable 0, mems_used 79,322. Tail 176242 photos s43 today's code: judge .675 = recorded 176245 (0/1,500 differ). Spread 191532 - tail = +.010 [-.011,+.030], 125/110, p .36. Photos pooled +.001 [-.014,+.018] width .031 -> EQUAL (controls PASS)",
+   "text": "healthy: COMPLETED 0:0 homer-010 18:56; 1,500 rows, judge on all, unparseable 0, mems_used 79,322. Tail 176242 photos s43 today's code: judge .675 = recorded 176245 (0/1,500 differ). Spread 191532 - tail = +.010 [-.011,+.030], 125/110, p .36. Photos pooled +.001 [-.014,+.018] width .031 -> EQUAL (controls PASS) \u2014 job 191632, closed",
+   "jobs": [
+    "191632"
+   ]
+  },
+  {
+   "jobid": "191631",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "note": "healthy: COMPLETED 0:0 homer-010 17:39; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322. Tail 174908 photos s42 today's code: judge .687 (recorded 174911 .685, 135/1,500 answers differ, 34 judge flips). Spread 191531 - tail = -.007 [-.027,+.011], 105/116, p .50",
+   "text": "healthy: COMPLETED 0:0 homer-010 17:39; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322. Tail 174908 photos s42 today's code: judge .687 (recorded 174911 .685, 135/1,500 answers differ, 34 judge flips). Spread 191531 - tail = -.007 [-.027,+.011], 105/116, p .50 \u2014 job 191631, closed",
+   "jobs": [
+    "191631"
+   ]
+  },
+  {
+   "jobid": "191630",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy: COMPLETED 0:0 homer-017 22:19, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = tail twin 191519; = freeze file ref_s43 0/1,500 answers differ. Spread 184780 ten chunks s43: judge .593; spread - tail = -.004 [-.027,+.019], 154/160, p .78. Pooled ten chunks (s42 191518-191455 +.001): -.001 [-.0203,+.018] width .038 -> equal NOT certified (misses the +-2 pt band by .03 pt)",
+   "text": "healthy: COMPLETED 0:0 homer-017 22:19, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = tail twin 191519; = freeze file ref_s43 0/1,500 answers differ. Spread 184780 ten chunks s43: judge .593; spread - tail = -.004 [-.027,+.019], 154/160, p .78. Pooled ten chunks (s42 191518-191455 +.001): -.001 [-.0203,+.018] width .038 -> equal NOT certified (misses the +-2 pt band by .03 pt) \u2014 job 191630, closed",
+   "jobs": [
+    "191630"
+   ]
+  },
+  {
+   "jobid": "191526",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-018, 18:52; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191528). Tail 176242 ONE chunk s43: judge .369 (ten chunks .597: -.229 [-.255,-.200])",
+   "text": "healthy (COMPLETED 0:0, homer-018, 18:52; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191528). Tail 176242 ONE chunk s43: judge .369 (ten chunks .597: -.229 [-.255,-.200]) \u2014 job 191526, closed",
+   "jobs": [
+    "191526"
+   ]
+  },
+  {
+   "jobid": "191519",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-017, 21:11; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = twin). Tail production 176242 ten chunks s43: judge .597",
+   "text": "healthy (COMPLETED 0:0, homer-017, 21:11; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = twin). Tail production 176242 ten chunks s43: judge .597 \u2014 job 191519, closed",
+   "jobs": [
+    "191519"
+   ]
+  },
+  {
+   "jobid": "191518",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-011, 21:01, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = tail twin 191455). Spread 184778 ten chunks s42, today's code: judge .605; spread - tail = +.001 [-.021,+.025], 156/154, p .96. vs freeze file 188615: 58/1,500 answers differ, 19 judge flips (8/11)",
+   "text": "healthy (COMPLETED 0:0, homer-011, 21:01, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = tail twin 191455). Spread 184778 ten chunks s42, today's code: judge .605; spread - tail = +.001 [-.021,+.025], 156/154, p .96. vs freeze file 188615: 58/1,500 answers differ, 19 judge flips (8/11) \u2014 job 191518, closed",
+   "jobs": [
+    "191518"
+   ]
+  },
+  {
+   "jobid": "191457",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-019, 17:31; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = tail twin 191456). Spread 184778, ONE chunk s42: judge .611; spread - tail = +.260 [+.233,+.289] McNemar 488/98 p<.001",
+   "text": "healthy (COMPLETED 0:0, homer-019, 17:31; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = tail twin 191456). Spread 184778, ONE chunk s42: judge .611; spread - tail = +.260 [+.233,+.289] McNemar 488/98 p<.001 \u2014 job 191457, closed",
+   "jobs": [
+    "191457"
+   ]
+  },
+  {
+   "jobid": "191456",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-017, 16:41; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191457). Tail production 174908, ONE chunk s42: judge .351 (ten chunks .603: -.253 [-.281,-.225])",
+   "text": "healthy (COMPLETED 0:0, homer-017, 16:41; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191457). Tail production 174908, ONE chunk s42: judge .351 (ten chunks .603: -.253 [-.281,-.225]) \u2014 job 191456, closed",
+   "jobs": [
+    "191456"
+   ]
+  },
+  {
+   "jobid": "191455",
+   "verdict": "closed",
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "note": "healthy (COMPLETED 0:0, homer-017, 20:26, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = freeze ref_s42 twin). Tail production 174908, ten chunks s42: judge .603",
+   "text": "healthy (COMPLETED 0:0, homer-017, 20:26, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = freeze ref_s42 twin). Tail production 174908, ten chunks s42: judge .603 \u2014 job 191455, closed",
+   "jobs": [
+    "191455"
+   ]
+  },
+  {
+   "jobid": "191454",
+   "verdict": "closed",
+   "arm": "kind=audit arm=A spec=audit_pairs.tsv boot=2000 slice_boot=1000",
+   "note": "arm A feasibility PASS: 8/8 recorded diffs re-derived exactly, self-pairs 0.000, 184778 docs health OK",
+   "text": "arm A feasibility PASS: 8/8 recorded diffs re-derived exactly, self-pairs 0.000, 184778 docs health OK \u2014 job 191454, closed",
+   "jobs": [
+    "191454"
+   ]
+  }
+ ],
+ "open": [],
+ "findings": [
+  "MRQA one long passage BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.084..+.098, project prompt +.070..+.103, EM +.057..+.074 (n 1,500 per seed, 191779/191780 vs qafreeze 191675/191676, rejudge 192006) (job 191780, closed)",
+  "arm B ONE chunk BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.247..+.260, project prompt +.253..+.271, EM +.151..+.152 (n 1,500 per seed, 191457/191528 vs 191456/191526, rejudge 191665) (job 191528, closed)",
+  "healthy: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies x 1,500 rows, project prompt on all, unparseable 0 (4/4); copies' judge_rubric reproduce the rubric pairs exactly (+.084 / +.098). MRQA spread - tail under the project prompt +.070 [+.046,+.095] 233/128 (s42) / +.103 [+.079,+.128] 249/95 (s43): better under rubric, project prompt, EM and ANLS; EM is 2.4-2.7 pt below the rubric (arm J size rule: owner question 2) (job 192006, closed)",
+  "healthy: COMPLETED 0:0 56:54 homer-011, one attempt, MaxRSS 4.5 GB; 4 models x probe_mixer + probe_connector, all 8 JSONs written. Control PASS: reduced pair reproduces ownership .977/.799 and answer loss pages 1.138/1.334, text 1.812/1.927, photos 1.765/1.802 to 3 decimals. Gate pair full budget pt_mm_5M_spread vs pt_mm_v4kd_4b: ownership .972 vs .763 (+.208; reduced +.178); answer NLL pages 1.102 vs 1.226 (-.124; reduced -.196), text 1.844 vs 1.788 (+.056; reduced -.115), photos 1.736 vs 1.813 (-.077; reduced -.037) -> the advantage does NOT shrink inside +-2 pt on ownership, pages, photos (text reverses): the full-budget accuracy tie is not a representation tie. NLL = 40 rows, unpaired means: mechanism evidence only (job 191785, closed)",
+  "healthy: COMPLETED 0:0 16:17 homer-011, one attempt, MaxRSS 3.9 GB; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 80,003 = spread twin qafreeze 191675. Tail 174908 MRQA judge .631 em .404; spread - tail +.084 [+.060,+.109] 239/113 p<.001 (rubric), EM +.057 [+.034,+.081] (job 191779, closed)"
+ ],
+ "wrong": [
+  "The campaign idled 16.3 h of its 47.0 h window (34%) \u2014 with work outstanding, that is the main operational fact.",
+  "2 of 8 LLM wakes returned rc\u22600."
+ ],
+ "arms": [
+  {
+   "arm": "kind=audit arm=A spec=audit_pairs.tsv boot=2000 slice_boot=1000",
+   "jobid": "191454",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "arm A feasibility PASS: 8/8 recorded diffs re-derived exactly, self-pairs 0.000, 184778 docs health OK"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191455",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 20:26, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = freeze ref_s42 twin). Tail production 174908, ten chunks s42: judge .603"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191456",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 16:41; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191457). Tail production 174908, ONE chunk s42: judge .351 (ten chunks .603: -.253 [-.281,-.225])"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s42 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191457",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-019, 17:31; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = tail twin 191456). Spread 184778, ONE chunk s42: judge .611; spread - tail = +.260 [+.233,+.289] McNemar 488/98 p<.001"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s42 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191518",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-011, 21:01, one attempt; 1,500 rows, judge on all, unparseable 0, no error in log, mems_used 265,880 = tail twin 191455). Spread 184778 ten chunks s42, today's code: judge .605; spread - tail = +.001 [-.021,+.025], 156/154, p .96. vs freeze file 188615: 58/1,500 answers differ, 19 judge flips (8/11)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191519",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-017, 21:11; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = twin). Tail production 176242 ten chunks s43: judge .597"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191526",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy (COMPLETED 0:0, homer-018, 18:52; 1,500 rows, judge on all, unparseable 0, mems_used 259,986 = spread twin 191528). Tail 176242 ONE chunk s43: judge .369 (ten chunks .597: -.229 [-.255,-.200])"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s43 data=text_hotpotqa_1500_g10 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191528",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "arm B ONE chunk BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.247..+.260, project prompt +.253..+.271, EM +.151..+.152 (n 1,500 per seed, 191457/191528 vs 191456/191526, rejudge 191665)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_spread_s43 data=text_hotpotqa_1500 limit=all image_rate=ckpt topk=10 max_pixels=451584 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 TOPK=10",
+   "jobid": "191630",
+   "state": "COMPLETED",
+   "gpu_h": 0.4,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-017 22:19, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 265,880 = tail twin 191519; = freeze file ref_s43 0/1,500 answers differ. Spread 184780 ten chunks s43: judge .593; spread - tail = -.004 [-.027,+.019], 154/160, p .78. Pooled ten chunks (s42 191518-191455 +.001): -.001 [-.0203,+.018] width .038 -> equal NOT certified (misses the +-2 pt band by .03 pt)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191631",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-010 17:39; 1,500 rows, judge on all, unparseable 0, px 1003520, mems_used 79,322. Tail 174908 photos s42 today's code: judge .687 (recorded 174911 .685, 135/1,500 answers differ, 34 judge flips). Spread 191531 - tail = -.007 [-.027,+.011], 105/116, p .50"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_naturalqa_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191632",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-010 18:56; 1,500 rows, judge on all, unparseable 0, mems_used 79,322. Tail 176242 photos s43 today's code: judge .675 = recorded 176245 (0/1,500 differ). Spread 191532 - tail = +.010 [-.011,+.030], 125/110, p .36. Photos pooled +.001 [-.014,+.018] width .031 -> EQUAL (controls PASS)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 PX=1003520",
+   "jobid": "191633",
+   "state": "COMPLETED",
+   "gpu_h": 0.5,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 homer-010 28:20; 1,500 rows, judge on all, unparseable 0, mems_used 646,042. Tail 176242 documents s43 today's code: judge .591 = recorded 176244 (0/1,500 differ). Spread 191496 - tail = +.024 [-.002,+.048], 193/157, p .061. Documents pooled +.017 [-.002,+.036] width .038 -> not equal, not better: not resolvable here. Infographics +.050 [+.008,+.094] 76/51 (s42 +.050 [+.006,+.094] 80/55), post-hoc slice"
+  },
+  {
+   "arm": "rejudge.sbatch",
+   "jobid": "191665",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 7m27 homer-017, one attempt; 16 copies x 1,500 rows, project prompt on all, unparseable 0 (16/16); copies' rubric verdicts and answers = sources 16/16. Arm J (spread - tail, pooled over s42/s43, project / rubric / EM): one chunk +.262 / +.254 / +.152 (better under all three); ten chunks -.003 / -.001 / -.023 [-.039,-.007] (EM and ANLS favour tail: judge-sensitive); 4-page documents +.024 [+.006,+.042] / +.017 / +.012 (lean spread under all three); photos -.006 / +.001 / -.003 (project s42 -.023 [-.043,-.004] -> equal not certified under the project prompt)"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "jobid": "191666",
+   "state": "COMPLETED",
+   "gpu_h": 0.9,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 51m36 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191378. Tail 174908 10 pages (XD=6 TOPK=10) judge .600; spread - tail +.007 [-.017,+.031] 170/160; DiD vs 4 pages -.004 [-.027,+.019]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=10 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=6 rank=none drop=0 keep_ranked=0 DML=1578 PX=1003520 TOPK=10 XD=6",
+   "jobid": "191667",
+   "state": "COMPLETED",
+   "gpu_h": 0.8,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 50m32 homer-010; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 1,614,940 = spread twin longdoc 191390. Tail 176242 10 pages judge .591; spread - tail +.017 [-.007,+.040] 174/149; DiD vs 4 pages -.007 [-.031,+.015]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=mm_docqa_1500_1m limit=all image_rate=ckpt topk=20 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=16 rank=none drop=0 keep_ranked=0 DML=2823 PX=1003520 TOPK=20 XD=16",
+   "jobid": "191668",
+   "state": "COMPLETED",
+   "gpu_h": 1.5,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 1h30m50 homer-011; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 3,229,884 = spread twin longdoc 191377. Tail 174908 20 pages (XD=16 TOPK=20) judge .579; spread - tail +.019 [-.006,+.043] 181/152; DiD vs 4 pages +.009 [-.015,+.031] -> arm C gate (DiD >= +3 pt, CI>0, both seeds) cannot be met"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s42 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191779",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 16:17 homer-011, one attempt, MaxRSS 3.9 GB; 1,500 rows, judge on all, unparseable 0, no exceeds error, mems_used 80,003 = spread twin qafreeze 191675. Tail 174908 MRQA judge .631 em .404; spread - tail +.084 [+.060,+.109] 239/113 p<.001 (rubric), EM +.057 [+.034,+.081]"
+  },
+  {
+   "arm": "kind=eval_mm mode=pisco ckpt=b_tail_s43 data=text_mrqa_ood_1500 limit=all image_rate=ckpt topk=4 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style=brief gold_only=0 mem_quant=none extra_distractors=0 rank=none drop=0 keep_ranked=0 CML=4096 PX=1003520",
+   "jobid": "191780",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "MRQA one long passage BETTER, settled by owner rule (a) 2026-11-19: better at both seeds under every scoring; size range rubric +.084..+.098, project prompt +.070..+.103, EM +.057..+.074 (n 1,500 per seed, 191779/191780 vs qafreeze 191675/191676, rejudge 192006)"
+  },
+  {
+   "arm": "mech_probes.sbatch",
+   "jobid": "191785",
+   "state": "COMPLETED",
+   "gpu_h": 0.9,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 56:54 homer-011, one attempt, MaxRSS 4.5 GB; 4 models x probe_mixer + probe_connector, all 8 JSONs written. Control PASS: reduced pair reproduces ownership .977/.799 and answer loss pages 1.138/1.334, text 1.812/1.927, photos 1.765/1.802 to 3 decimals. Gate pair full budget pt_mm_5M_spread vs pt_mm_v4kd_4b: ownership .972 vs .763 (+.208; reduced +.178); answer NLL pages 1.102 vs 1.226 (-.124; reduced -.196), text 1.844 vs 1.788 (+.056; reduced -.115), photos 1.736 vs 1.813 (-.077; reduced -.037) -> the advantage does NOT shrink inside +-2 pt on ownership, pages, photos (text reverses): the full-budget accuracy tie is not a representation tie. NLL = 40 rows, unpaired means: mechanism evidence only"
+  },
+  {
+   "arm": "rejudge.sbatch",
+   "jobid": "192006",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 2:23 homer-019, one attempt; 4 copies x 1,500 rows, project prompt on all, unparseable 0 (4/4); copies' judge_rubric reproduce the rubric pairs exactly (+.084 / +.098). MRQA spread - tail under the project prompt +.070 [+.046,+.095] 233/128 (s42) / +.103 [+.079,+.128] 249/95 (s43): better under rubric, project prompt, EM and ANLS; EM is 2.4-2.7 pt below the rubric (arm J size rule: owner question 2)"
+  }
+ ],
+ "artifacts": [],
+ "ledger_entries": 43
+}
