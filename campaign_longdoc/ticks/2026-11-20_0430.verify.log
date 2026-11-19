@@ -1,0 +1,49 @@
+== verifier 2026-11-20_0430  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 433ff274-1aaa-4ff6-9758-0815fb802f74  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+262 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (34485 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 264	- provisional: arm J — the length-effect calculator recovers −.1687 [−.1960, −.1407] (target −.169 ± .005), self-pair (+139 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 404	191878     E    -        ended     closed     -        -        -        -        -        -          -        -          -        -             -          -            -         -         -       (+89 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 494	{"ts": "2026-11-17 07:33", "jobid": "191218", "verdict": "closed", "note": "stage-1 AE probe, 500 held-out MS MARCO docs, nats/token (lower better), d = L1024 - C256: s256 0.0126 vs 0.0144, d -0.0 (+104 lines)
+I've read the whole verify input; now spot-checking the cited result files (Δ_len tables, per-bucket splits, cap counts).
+→ Glob: {"pattern": "expQ/longdoc/length/E_*"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-20_0400   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+27 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*s43*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s43_judge.json (+14 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/split"}
+  ↳ expQ/longdoc/length/split/text_R42_t32k.json (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t8k_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t16k_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t32k_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Glob: {"pattern": "E_*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/E_dlen_mixed_m40_s42_judge.json (+9 lines)
+→ Grep: {"pattern": "\\+6\\.0 \\[\\+3\\.6", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*.md", "output_mode": "content"}
+  ↳ campaign_longdoc/STATE.md:55:    Scorers on 40 vs 10: match −4.6 [−7.1, −2.1]; EM +6.0 [+3.6, +8.3] (EM fails on the uncompressed answers, which
+→ Grep: {"pattern": "match −4\\.6|match -4\\.6|-0\\.046|−\\.046", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "{EXPERIMENTS.md,docs/longdoc_diagnosis.md,campaign_longdoc/**}", "output_mode": "content"}
+  ↳ EXPERIMENTS.md:1593:  - saw: provisional, s42 only: page-image gap grows with length: R-U -16.6 / -19.4 / -23.0 pt at 10 / 20 / 40 pages (n 1,407 each); Delta_len 40 vs 10 pages -6.5 [-9.5,-3.5] sign  (+4 lines)
+Checking the code line the closed-book re-run claim cites, and the job's launch record.
+→ Grep: {"pattern": "def gen_base|compressor_max_length", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content"}
+  ↳ 17:--compressor_max_length, clean_text, the OSCAR query prefix with --query_dependent). A prompt longer than (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 712	    for i, row in enumerate(ds): (+19 lines)
+→ Grep: {"pattern": "19237[456]", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1175:{"ts": "2026-11-20 04:33", "jobid": "192374", "launcher": "scripts/longdoc/eval_mnt.sbatch", "argv": ["expQ/longdoc/t_c256_s43/model", "pisco", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/l (+2 lines)
+→ Grep: {"pattern": "\"jobid\": \"(191776|192266|192367|192366)\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1106:{"ts": "2026-11-18 21:06", "jobid": "191776", "launcher": "scripts/longdoc/eval_mnt.sbatch", "argv": ["expQ/longdoc/e_r42/model", "base", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc (+3 lines)
+→ StructuredOutput: {"claims": [{"claim": "This wake: R s43 text 192359, pages 10 192360, mixed 10 192361 all COMPLETED 0:0, one attempt, health OK (every row judged, 0 unparseable, at the cap 3.6% / 1.1% / 1.8%, <MEM>s used 3,887,462 / 1,689,350 / 1,406,369 =…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2184 turns=21 is_error=False denials=0
+== declared: {"claims": [{"claim": "This wake: R s43 text 192359, pages 10 192360, mixed 10 1923…", "status": "supported", "reason": "Verdicts 192359-192361 give cap counts 81 / 15 / 25 (3.6 / 1…"}, {"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Each share matches its verdict: 192266 47; 192287 8; 192288 …"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169 says 360/360 byte-identical and 70.5% = 70.5%…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515, 191774 and 192265 state exactly these count…"}, "… +16 more"], "summary": "Every number I checked matches its verdict, grid row, result…"}
+== final:
+{"claims":[{"claim":"This wake: R s43 text 192359, pages 10 192360, mixed 10 192361 all COMPLETED 0:0, one attempt, health OK (every row judged, 0 unparseable, at the cap 3.6% / 1.1% / 1.8%, <MEM>s used 3,887,462 / 1,689,350 / 1,406,369 = the audit's predictions)","status":"supported","reason":"Verdicts 192359-192361 give cap counts 81 / 15 / 25 (3.6 / 1.1 / 1.8%) and mems_used equal to the predicted totals in the arm E section (text 3,887,462; p10 1,689,350; m10 1,406,369). They also give md5 b3d1cda1 / dfe32aa0 / 02bc8748 / f8ae6efe = U, nodes homer-016 / 011 / 014 (outside 005-009), and judge .4216 / .489 / .4591 in the grid."},{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2%; bar 5%. R s42 pages 1.4 / 1.7 / 3.6%, mixed 1.8 / 1.9 / 3.2%, text 3.2%","status":"supported","reason":"Each share matches its verdict: 192266 47; 192287 8; 192288 14; 192267 14; 192289 15; 192290 26; 192268 31; 192326 20; 192356 24; 192324 50; 192357 26; 192358 27; 192325 45; 192323 71. All are under the 5% bar. Known small mismatch: the law records the 191777 trigger as 7/300, its verdict says 8/300; both are under 5%. Per-bucket text shares are not reported (see the text Δ_len row)."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt)","status":"supported","reason":"Verdict 191169 says 360/360 byte-identical and 70.5% = 70.5%. That is within the law's ±2 pt of the legacy 71% (architecture_review.md:105)."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637 / 610 / 588 / 411), needles 300 / 225 / 225. Closed-book 1,407 (191774). Bucket sets (192265) 6 × 1,407","status":"supported","reason":"Verdicts 191515, 191774 and 192265 state exactly these counts, and 637+610+588+411 = 2,246. This is a build fact, not a result."},{"claim":"provisional (s43 in for text / pages 10 / mixed 10): R − uncompressed on one long document, cap 512, paired: pages 10 s42 −16.6 / s43 −18.3 (s43−s42 −1.8 [−3.8,+0.2]); pages 20 −19.4; pages 40 −23.0; mixed 10 s42 −20.5 / s43 −19.5 (+1.0); mixed 20 −20.8; mixed 40 −21.9; text s42 −17.9 / s43 −17.3, per bucket; s43−s42 t4k +3.3 [+0.8,+5.8]","status":"provisional","reason":"Every number matches its verdict and grid gap_vs_base (192326 −.166, 192360 −.183, 192356 −.194, 192324 −.230, 192357 −.205, 192361 −.195, 192358 −.208, 192325 −.219, 192323 −.179, 192359 −.173). McNemar counts and n 1,407 / 2,246 match, and each pair ran on the same md5. The s43 per-bucket R values agree with the split files (R43 t8k .4246, t16k .4184, t32k .3698). Pages / mixed 20 and 40 are still one seed. The t4k seed difference (+3.3, CI above 0, 44/23) shows bucket-level seed noise as large as the 3-pt bar."},{"claim":"provisional (NOT DECIDED): Δ_len for R on arm E — pages 
+== rc=0

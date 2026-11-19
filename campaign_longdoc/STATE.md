@@ -1,26 +1,26 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-20 04:00 (twenty-third LLM wake; woken because R s42 pages 40, pages 20 and mixed 20 ended).
-NEXT: `wake-when job:192359,192360,192361 max 3h` (R s43 text / pages 10 / mixed 10: at 2,040 / 2,246, 1,190 / 1,407
-and 1,180 / 1,407 rows at 04:01, projected to end ~04:20-04:35 with the judge; that wake pairs them and submits the
-C256 / L1024 s43 text cells, the closed-book re-run and the project-prompt re-judge of the pages 10 / 40 files).
+Last wake: 2026-11-20 04:30 (twenty-fourth LLM wake; woken because R s43 text, pages 10 and mixed 10 ended).
+NEXT: `wake-when job:192362,192363,192364,192365,192366,192367,192374,192375,192376 max 5h` (every running cell; R s43
+pages 20 / mixed 20 and the closed-book re-run end ~05:05, text C256 / L1024 s42 ~06:45, R s43 mixed 40 ~07:00, C256 /
+L1024 s43 text ~07:15, R s43 pages 40 ~07:55; one wake then closes all nine and decides the page / mixed length question).
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- R s42 pages 20 192356 (homer-014, 1:55:52), pages 40 192324 (homer-012, 3:48:36), mixed 20 192358 (homer-016,
-  1:44:42): all COMPLETED 0:0, one attempt, code md5 b3d1cda1 / dfe32aa0 / 02bc8748 / f8ae6efe (model.py last changed
-  2026-11-19 17:06, before they started), no "exceeds" in the logs. Health OK (`cell_health.py --cap 512`): every row
-  judged, 0 unparseable, answers at the cap 1.7% / 3.6% / 1.9%, `<MEM>`s used 3,378,666 / 6,757,206 / 2,815,326 = the
-  audit's predictions exactly. MaxRSS 7.5 / 13.7 / 5.5 GB. Verdicts closed; probes judge + gap + Δ_len recorded.
-- Paired with the uncompressed cells and Δ_len vs the 10 bucket (tables `expQ/longdoc/length/E_dlen_{pages_p20,
-  pages_p40,mixed_m20}_s42_judge.json`). Scorer check on pages 40 vs 10 (stdlib): match −4.6 [−7.1, −2.1], sign
-  115 / 174; EM +6.0 [+3.6, +8.3] — EM fails on the uncompressed reference (its EM .190 → .080, match .539 → .534,
-  judge .672 → .659): known_issues.md row added.
-- Launched 4 of cap 4, all RUNNING at 04:05, argv length 4 each: R s43 pages 40 192364 (homer-012, `--time 11:26`,
-  `--mem 22G`), R s43 mixed 40 192365 (homer-014, `8:45`, `15G`), C256 s42 text 192366 and L1024 s42 text 192367
-  (homer-016, `7:54`, `8G` each; models `expQ/longdoc/t_{c256,l1024}_s42/model`, rate 8, stride 8 like R).
-- `docs/longdoc_diagnosis.md`: arm E table filled for pages 20 / 40 and mixed 20, reading and length row rewritten.
+- R s43 text 192359 (homer-016, 2:44:37), pages 10 192360 (homer-011, 1:13:08), mixed 10 192361 (homer-014, 1:14:01):
+  all COMPLETED 0:0, one attempt, code md5 b3d1cda1 / dfe32aa0 / 02bc8748 / f8ae6efe (unchanged), no "exceeds" in the
+  logs. Health OK (`cell_health.py --cap 512`): every row judged, 0 unparseable, answers at the cap 3.6% / 1.1% / 1.8%,
+  `<MEM>`s used 3,887,462 / 1,689,350 / 1,406,369 = the audit's predictions exactly. MaxRSS 4.3 / 5.7 / 4.3 GB.
+  Verdicts closed; probes judge + gap recorded.
+- Paired with U and with R s42 (`paired_judge.py`); text split per bucket (`expQ/longdoc/length/split/text_R43_*.json`)
+  and Δ_len s43 tables `expQ/longdoc/length/E_dlen_text_{t8k,t16k,t32k}_s43_judge.json`.
+- Launched 3 of cap 4, all RUNNING at 04:36, argv length 4 each: C256 s43 text 192374 (homer-011) and L1024 s43 text
+  192375 (homer-013), `--time 7:54`, `--mem 8G`; closed-book re-run 192376 (homer-014, base, `TOPK=0`, `--env CML=1024`
+  only renames the file: `gen_base` never receives `compressor_max_length`, `scripts/eval_mm_docqa.py:723`; new name
+  `mm_docqa_base_k0_px1003520_cml1024_mnt512_longdoc_closedbook.json` checked absent; `--time 1:31` = 191776's 0:30 × 3,
+  `--mem 4G` = its 2.1 GB × 1.5). The fourth slot (the project-prompt re-judge) waits for R s43 pages 40.
+- `docs/longdoc_diagnosis.md`: arm E table gets the s43 column for text / pages 10 / mixed 10, reading rewritten.
 
 ## TL;DR — where this leaves the question
 **Settled**
@@ -33,18 +33,22 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
 - Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows
   each (1,407 × 10 / 20 / 40 pages), text 2,246 rows (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 /
   pages 225 / mixed 225. Closed-book set: 1,407 questions (job 191774). Bucket sets (job 192265): 6 × 1,407 rows.
-- provisional (one seed; s43 running): R s42 − uncompressed on one long document, cap 512, same code, paired per
-  question (`paired_judge.py`), health OK on every file:
-  - pages 10: R .507 (192326) vs U .672 (192287), −16.6 [−19.5, −13.9], McNemar 120 / 353, n 1,407.
+- provisional (s43 in for text / pages 10 / mixed 10, the rest running): R − uncompressed on one long document, cap
+  512, same code, paired per question (`paired_judge.py`), health OK on every file:
+  - pages 10: R s42 .507 (192326) vs U .672 (192287), −16.6 [−19.5, −13.9], McNemar 120 / 353, n 1,407; R s43 .489
+    (192360), −18.3 [−21.3, −15.4], 119 / 377; s43 − s42 −1.8 [−3.8, +0.2].
   - pages 20: R .471 (192356) vs U .665 (192288), −19.4 [−22.4, −16.4], 121 / 394, n 1,407.
   - pages 40: R .429 (192324) vs U .659 (192267), −23.0 [−26.1, −19.9], 123 / 447, n 1,407.
-  - mixed 10: R .449 (192357) vs U .654 (192289), −20.5 [−23.3, −17.6], 100 / 388, n 1,407.
+  - mixed 10: R s42 .449 (192357) vs U .654 (192289), −20.5 [−23.3, −17.6], 100 / 388, n 1,407; R s43 .459
+    (192361), −19.5 [−22.3, −16.5], 110 / 384; s43 − s42 +1.0 [−0.9, +3.0].
   - mixed 20: R .435 (192358) vs U .643 (192290), −20.8 [−23.8, −17.8], 109 / 401, n 1,407.
   - mixed 40: R .412 (192325) vs U .631 (192268), −21.9 [−24.7, −18.9], 105 / 413, n 1,407.
-  - text whole set: R .415 (192323) vs U .594 (192266), −17.9 [−20.0, −15.8], 147 / 549, n 2,246; per bucket t4k
-    .422 vs .612 −19.0 [−22.9, −15.1] (637), t8k .423 vs .615 −19.2 [−23.6, −14.9] (610), t16k .427 vs .587 −16.0
-    [−20.1, −11.7] (588), t32k .377 vs .547 −17.0 [−22.6, −11.9] (411).
-- provisional (one seed, NOT DECIDED: needs s43 and a CI inside ±3): Δ_len for R s42 on arm E, each question paired
+  - text whole set: R s42 .415 (192323) vs U .594 (192266), −17.9 [−20.0, −15.8], 147 / 549, n 2,246; per bucket
+    t4k .422 vs .612 −19.0 [−22.9, −15.1] (637), t8k .423 vs .615 −19.2 [−23.6, −14.9] (610), t16k .427 vs .587 −16.0
+    [−20.1, −11.7] (588), t32k .377 vs .547 −17.0 [−22.6, −11.9] (411). R s43 .422 (192359), −17.3 [−19.4, −15.1],
+    149 / 537; per bucket t4k .455 −15.7 [−19.6, −11.8], t8k .425 −19.0 [−23.1, −15.1], t16k .418 −16.8 [−21.3,
+    −12.8], t32k .370 −17.8 [−23.4, −12.9]; s43 − s42 t4k +3.3 [+0.8, +5.8] (44 / 23), other buckets within ±1.
+- provisional (NOT DECIDED: pages / mixed need s43; text meets no bar at either seed): Δ_len for R on arm E, each question paired
   with itself at the shortest size (`length_effect.py --strip_bucket`, judge), n 1,407 per pages / mixed contrast:
   - pages 20 vs 10 −2.8 [−5.6, −0.1], sign 157 / 193, p .06 (192356 / 192288 vs 192326 / 192287); pages 40 vs 10
     −6.5 [−9.5, −3.5], sign 165 / 249, p 4e-5 (192324 / 192267 vs the same): past the length-loss bar at s42 only.
@@ -52,9 +56,11 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
     grow longer at 40 pages: U EM .190 → .080, U judge .672 → .659). Project prompt not run yet.
   - mixed 20 vs 10 −0.3 [−3.1, +2.5], sign 174 / 176, p .96 (192358 / 192290 vs 192357 / 192289); mixed 40 vs 10
     −1.4 [−4.5, +1.6], 206 / 223, p .44 (192325 / 192268 vs the same).
-  - text t8k / t16k / t32k vs t4k +0.7 [−3.1, +4.4] (n 610), +3.6 [−1.0, +8.0] (n 588), +3.9 [−1.7, +9.7] (n 411)
-    (192323 vs 192266).
-  Tables `expQ/longdoc/length/E_dlen_*_s42_judge.json`.
+  - text t8k / t16k / t32k vs t4k, s42: +0.7 [−3.1, +4.4] (n 610), +3.6 [−1.0, +8.0] (n 588), +3.9 [−1.7, +9.7]
+    (n 411) (192323 vs 192266); s43: −2.5 [−6.2, +1.3] sign 57 / 69, −0.7 [−5.3, +3.9] 73 / 75, −1.7 [−7.5, +4.1]
+    63 / 68 (192359 vs 192266). No length loss at either seed, but no CI inside ±3 either: n 411-610 per bucket is
+    too few for the 3-pt bar, so "text: no length loss" cannot be decided on this set.
+  Tables `expQ/longdoc/length/E_dlen_*_s4{2,3}_judge.json`.
 - provisional (closed-book 191776 ran on model.py 994cff3d, the with-document cells on f8ae6efe; the change is in
   `PISCO.compress`, unused by base mode): arm E soundness check 1 PASS in every bucket: the uncompressed decoder with the
   document beats closed-book by ≥ 20 pt (bar), cap 512 both files, paired per question. Closed-book 191776 (1,407 Q,
@@ -105,14 +111,15 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
     191221), −0.6 [−2.7, +1.3] 121 / 130 (s43; 191307 vs 191306): seeds disagree; answered by arm E's text cells.
 
 **Open, and running**
-- Arm E full grid (owner-approved 2026-11-19): 24 of 26 cells submitted; uncompressed reference DONE on all 7 inputs;
-  R s42 DONE on all 7.
-  - Running R s43 (pairs with U and R s42 of the same bucket): text 192359 (2,040 / 2,246 rows at 04:01), pages 10
-    192360 (1,190 / 1,407), mixed 10 192361 (1,180 / 1,407), pages 20 192362 (690 / 1,407), mixed 20 192363
-    (700 / 1,407), pages 40 192364 and mixed 40 192365 (started 04:05).
-  - Running long-chunk text at CML 1,024, seed 42: C256 192366 and L1024 192367 (started 04:05).
-  - Left (3 cells): C256 / L1024 s43 text (symlinks `expQ/longdoc/t_{c256,l1024}_s43/model`); closed-book re-run on
-    f8ae6efe. Plus the project-prompt re-judge (CPU-light GPU job) of every Δ_len that decides.
+- Arm E full grid (owner-approved 2026-11-19): 26 of 26 grid cells submitted; uncompressed reference DONE on all 7
+  inputs; R s42 DONE on all 7; R s43 DONE on text / pages 10 / mixed 10.
+  - Running R s43: pages 20 192362 and mixed 20 192363 (homer-016, started 03:04), pages 40 192364 (homer-012) and
+    mixed 40 192365 (homer-014, started 04:05).
+  - Running long-chunk text at CML 1,024: C256 / L1024 s42 192366 / 192367 (homer-016, started 04:05); C256 / L1024
+    s43 192374 / 192375 (homer-011 / homer-013, started 04:36).
+  - Running closed-book re-run on f8ae6efe 192376 (homer-014, started 04:36).
+  - Left: ONE project-prompt re-judge job (`rejudge.sbatch`) on copies of every file of each Δ_len that decides (pages
+    10 / 20 / 40 R and U, both seeds, if pages decides; mixed likewise), after R s43 pages 40.
 - provisional (plumbing, 300 rows, never decides): R s42 − uncompressed on LongDocURL. Pages cap 256 −17.0 [−23.0,
   −11.0] (24 / 75; −13 / −15 / −23 at 10 / 20 / 40 pages; 191673 vs 191669); text cap 256 −16.3 [−21.7, −11.0] (15 / 64;
   −16 / −19 / −12 / −19 at 4k-32k; 191674 vs 191670); mixed cap 512 −15.7 [−22.0, −9.3] (31 / 78; −12 / −14 / −21 at 10
@@ -138,15 +145,15 @@ p10 5.6, p20 7.5, p40 13.7, m10 4.3, m20 5.5, m40 9.8, text 3.9 GB (`--mem` is n
 Submission rule: `--time` = the measured R s42 wall of that bucket × 3 (pages 3:40 / 5:48 / 11:26, mixed 3:36 / 5:15 /
 8:45, text 7:54). `--mem` = measured R MaxRSS × 1.5: pages 9G / 12G / 22G, mixed 8G / 9G / 15G, text 8G. C256 / L1024
 text cells: as R text (7:54, 8G).
-1. DONE: uncompressed on all 7 inputs; R s42 on all 7. RUNNING: R s43 on all 7; C256 / L1024 s42 text.
-2. Next wake (192359 / 192360 / 192361 ended): health + pair R s43 text, pages 10, mixed 10 (vs U and vs R s42);
-   submit C256 s43 and L1024 s43 text (CML 1,024, DML 5232, `7:54`, `8G`) and the closed-book re-run on f8ae6efe
-   (base mode, `TOPK=0`, set `eval_data/longdoc_closedbook`). Base mode always writes
-   `expQ/base_qwen35_4b/eval/mm_docqa_base<SUF>.json` (eval_mm_4b.sh:31, 58), so the same env would overwrite the
-   recorded `…_k0_px1003520_mnt512_longdoc_closedbook.json`: add `--env CML=1024` (no document, so no effect; name gains
-   `_cml1024`), check with `ls` that the name is new, and confirm in `main()` that CML is unused with TOPK=0. When R s43
-   pages 40 ends: Δ_len at both seeds decides the length question per set; then ONE project-prompt re-judge job
-   (`rejudge.sbatch`) on copies of every file of each Δ_len that decides (pages 10 / 40 R and U, both seeds).
+1. DONE: uncompressed on all 7 inputs; R s42 on all 7; R s43 text / pages 10 / mixed 10. RUNNING: R s43 pages / mixed
+   20 and 40; C256 / L1024 text s42 and s43; closed-book re-run.
+2. Next wake (all nine ended): health + verdict each. Pair R s43 pages 20 / 40 and mixed 20 / 40 with U and R s42; Δ_len
+   s43 vs the 10 bucket (`length_effect.py --strip_bucket`, tables `E_dlen_{pages_p20,pages_p40,mixed_m20,mixed_m40}_s43`);
+   decide pages and mixed length per the bars (both seeds). Long-chunk text: L1024 − C256 per seed, overall and per
+   bucket (`paired_judge.py`), decide per the arm E long-chunk bars. Closed-book: soundness check 1 per bucket with
+   `closedbook_pair.py` on the new file (replaces the 994cff3d one; check 1 loses its `provisional: md5` caveat if every
+   margin stays ≥ 20 pt). Then submit ONE `rejudge.sbatch` job on copies of the files of every Δ_len that decides
+   (files as separate arguments; check `len(argv)`), and the scorer check (EM, match) with `length_effect.py --metric`.
 3. Each full cell: health (n rows, judge on all, unparseable 0, no "exceeds", answers at the cap < 5%, `mems_used`
    = the predicted total above ±1%, node, one attempt, model.py md5 f8ae6efe); gap R − U per bucket with
    `paired_judge.py`; Δ_len vs the shortest bucket with `length_effect.py --strip_bucket` (text: the per-bucket files
@@ -162,19 +169,20 @@ each launch (192360-192363: 4). Pisco results land in `expQ/longdoc/<cell>/eval/
 | job | arm | state | rows | note |
 |---|---|---|---|---|
 | 192364 / 192365 | E R s43 pages p40 / mixed m40 | RUNNING homer-012 / homer-014 | 1,407 each | pair with 192267 / 192268 and R s42 192324 / 192325 |
+| 192362 / 192363 | E R s43 pages p20 / mixed m20 | RUNNING homer-016 | 1,407 each | pair with 192288 / 192290 and R s42 192356 / 192358 |
 | 192366 / 192367 | E long-chunk text C256 / L1024 s42, CML 1,024 | RUNNING homer-016 | 2,246 each | pair with each other |
-| 192359 | E R s43 text | RUNNING homer-016 | 2,246 | pairs with 192266 and R s42 192323 |
-| 192360 / 192362 | E R s43 pages p10 / p20 | RUNNING homer-011 / homer-016 | 1,407 each | pair with 192287 / 192288 |
-| 192361 / 192363 | E R s43 mixed m10 / m20 | RUNNING homer-014 / homer-016 | 1,407 each | pair with 192289 / 192290 |
+| 192374 / 192375 | E long-chunk text C256 / L1024 s43, CML 1,024 | RUNNING homer-011 / homer-013 | 2,246 each | pair with each other |
+| 192376 | E closed-book re-run on f8ae6efe | RUNNING homer-014 | 1,407 | replaces 191776 in soundness check 1 |
+| 192359 / 192360 / 192361 | E R s43 text / p10 / m10 | COMPLETED, verdict closed | 2,246 / 1,407 / 1,407 | health OK; gaps above |
 | 192323 / 192326 / 192356 / 192324 / 192357 / 192358 / 192325 | E R s42 text / p10 / p20 / p40 / m10 / m20 / m40 | COMPLETED, verdict closed | 2,246 / 1,407 × 6 | health OK; gaps above |
 | 192266-192268, 192287-192290 | E uncompressed reference | COMPLETED, verdict closed | 1,407-2,246 | health OK |
 | 192265, 192142, 192007, 192008, 191877-191879, 191887, 191774, 191776-191778, 191669, 191670, 191673, 191674, 191629, 191634-191636 | E, J, L | COMPLETED, verdict closed | | |
 | 191517 | J re-judge (first try) | FAILED, verdict closed "launch fault" | — | replaced by 191629 |
 | 191515 / 191516 / 191392 / 191393 / 191375-191378 / 191390 / 191391 / 191305-191308 / 191218-191221 / 191169-191172 / 191148-191155 / 191165-191168 / 191145-191147 | E, L, T, A | COMPLETED, verdict closed | | |
 
-Cells used: 81 of 87. GPU-h: 64.4 by `sacct -X` over the 81 campaign jobs (last attempts, running cells included, to
-04:10) + about 4.5 in requeued attempts ≈ 69. Left ≈ 22 GPU-h (running cells ~16, C256 / L1024 s43 ~5.4, closed-book
-~0.5, re-judge ~0.5) → ≈ 91 of 114. Cells left: 3 planned + 1 re-judge = 85 of 87.
+Cells used: 84 of 87. GPU-h: 68.1 by `sacct -X` over the 84 campaign jobs (last attempts, running cells included, to
+04:40) + about 4.5 in requeued attempts ≈ 73. Left ≈ 17 GPU-h in the running cells + 0.5 for the re-judge → ≈ 90 of
+114. Cells left: 1 planned (the re-judge) = 85 of 87.
 Code md5 for the arm E full grid: eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748,
 pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 
@@ -184,7 +192,7 @@ pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 ## Open arms and the next decision for each
 | arm | status | next |
 |---|---|---|
-| E long-document yardstick | soundness checks 1 (provisional: md5) and 2 pass, 3 provisional; 24 / 26 cells submitted; R s42 gap −16 to −23 pt at every size; grows with length on pages only (40 vs 10 −6.5, s42) | the submission plan above |
+| E long-document yardstick | soundness checks 1 (provisional: md5, re-run 192376) and 2 pass, 3 provisional; 26 / 26 grid cells submitted; R gap −16 to −23 pt at every size, s43 = s42 within 2 pt where in; grows with length on pages only (40 vs 10 −6.5, s42); text length undecidable at ±3 (n per bucket) | step 2 of the arm E plan |
 | L length on a fixed model | NOT DECIDED (cap confound); 512 re-run not approved | arm E answers the length question |
 | J instrument | control 1 PASS (frontend); project prompt done for every arm L number | re-run the project prompt on any arm E number that decides |
 | U reading many `<MEM>`s | not started | after E; only where a length loss shows |
