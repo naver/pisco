@@ -1,0 +1,75 @@
+== verifier 2026-11-19_1330  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session fbcd2ed2-587c-4684-adf7-69549278c840  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+314 lines)
+→ Grep: {"pattern": "fp32", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content"}
+  ↳ campaign_slotcheck/VERIFY.md:3:[Omitted long matching line] (+35 lines)
+→ Glob: {"pattern": "expQ/slotcheck/**/*.json", "path": "/beegfs/scratch/user/hdejean/pisco"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Grep: {"pattern": "budget line|under 90|fp32 masters|second cell", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md", "output_mode": "content", "-C": 2}
+  ↳ 98-  same pages before the overfit (the baseline; the recorded .647 / .566 belong to other chains' stage-2 models, jobs (+11 lines)
+→ Grep: {"pattern": "fp32.*(90|only if)|(90|only if).*fp32", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 358:  - saw: finetune 173550: 80% connector, 83-85% LoRA-A, 32-37% LoRA-B never changed; stage-2 v4kd: 70% / 66-76% / 21-26%; norm gain 100% (174908); LoRA is bf16 because add_adapter skips PEFT's fp3 (+7 lines)
+→ Grep: {"pattern": "fp32", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true, "offset": 0, "head_limit": 0}
+  ↳ 358:fp32 (+35 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ File content (25384 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1430	- 2026-11-18 22:07 longdoc wake 22:00 (+14 lines)
+Checking the ledger for the fp32 plan and the job notes behind each STATE claim.
+→ Grep: {"pattern": "fp32", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "offset": 29}
+  ↳ No entries at this offset (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1445	- 2026-11-19 02:04 [job 192003] arm O recall of the bf16 overfit intent (afterok 192002): recall.sbatch o_bf16_dense100 + o_bf16_heldout on expQ/slotcheck/o_bf16/model (5-page stride plumbing fir (+11 lines)
+→ Grep: {"pattern": "^- 2026-11-19 1[0-3]:\\d\\d (did|\\[job 19220[29]\\]|\\[job 19200[23]\\])", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1486:[Omitted long matching line] (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1492	- 2026-11-19 10:41 slotcheck wake 10:30 (+3 lines)
+→ Grep: {"pattern": "fp32[^\\n]{0,160}(90|under|only if)", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks", "output_mode": "content", "glob": "2026-11-1[89]_{0[0-9],1[0-2]}*.log"}
+  ↳ No matches found
+→ Grep: {"pattern": "fp32", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks", "output_mode": "content", "glob": "2026-11-19_{02,06,10}*.log"}
+  ↳ campaign_slotcheck/ticks/2026-11-19_0200.verify.log:16:  ↳ 1	FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+58 lines) (+3 lines)
+Still checking claims: now looking for where the "fp32 only if under 90%" rule was written down, then the result files.
+→ Grep: {"pattern": ".{0,200}fp32 (second|cell|train|run).{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_1030.verify.log", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": ".{0,200}fp32 (second|cell|train|run|only).{0,200}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_0200.verify.log", "output_mode": "content", "-o": true}
+  ↳ No matches found
+→ Grep: {"pattern": ".{0,250}(below|under|< ?) ?90.{0,150}", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks", "output_mode": "content", "-o": true, "glob": "2026-11-1[89]_{0[0-9],1[0-2],2[0-3]}*", "head_limit": 15}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/QUESTION.md
+  ↳ 22	3. Text-slot probe (no training): for all 4 pages of each document question, compress the page's TEXT transcription as text (+13 lines)
+→ Grep: {"pattern": "(?i)budget", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md", "output_mode": "content", "-C": 1}
+  ↳ 89-  campaign_spread/CAMPAIGN.md:88). Report beside it: uncompressed on the same rows, slots per question per arm and the (+18 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 162	## Budget and caps (+19 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+100 lines)
+Checking the result files behind the padding split and the overfit recall numbers.
+→ Grep: {"pattern": "maxabs|max_abs", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out", "output_mode": "content", "head_limit": 30}
+  ↳ 31:SUMMARY bf16 repeat: {"pages": 40, "cos_med_median": 1.0000004768371582, "cos_min_min": 1.0, "maxabs_max": 0.0, "maxabs_median": 0.0, "rel_l2_median": 0.0} (+15 lines)
+→ Glob: {"pattern": "recall*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/recall_191893.out (+1 lines)
+→ Grep: {"pattern": "(?i)RESULT|sign|mem_position_stride|EXIT CODE|recall_pair|md5|self|ceiling|median", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_192209.out", "output_mode": "content", "head_limit": 60}
+  ↳ 28:[probe] mem_position_stride=8 (+3 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall"}
+  ↳ expQ/slotcheck/recall/start_dense100_lim5.json (+7 lines)
+→ Grep: {"pattern": "recall_pair|8e-27|0\\.921|98 up|sign", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_1330.log", "output_mode": "content", "head_limit": 25}
+  ↳ 23:→ Bash: grep -n "^import\|^from" scripts/longdoc/recall_pair.py; python3 -I scripts/longdoc/recall_pair.py --help 2>&1 | head -20; grep -n "mem_position_stride" expQ/slotcheck/recall_192209.out | h (+9 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-19_1330.log
+  ↳ 28	→ Bash: R=expQ/slotcheck/recall; md5sum scripts/longdoc/recall_pair.py scripts/analyze_mem_recall.py | cut -c1-8; echo "--- overfit pages: start vs overfit"; python3 -I scripts/longdoc/recall_pair. (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+Last checks: the padding hand-off reference and the open-arm queue state.
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "files_with_matches", "glob": "*.jsonl"}
+  ↳ No files found
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/ticks/2026-11-18_2200.log", "output_mode": "content", "head_limit": 5}
+  ↳ 103:  ↳ hand-off 2de131 filed: pisco:slotcheck -> pisco (its chats): latent pad leak in compress(): a ONE-row compressor batch with left pads (pad_to_multiple_of set, one chunk) moves that page's <MEM (+3 lines)
+→ Grep: {"pattern": "\"global_step\"|\"epoch\": 1[34]\\.|\"step\": (10|210),?$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/checkpoint-210/trainer_state.json", "output_mode": "content", "-B": 6, "head_limit": 40}
+  ↳ 1-{ (+41 lines)
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%, all Docmatix)…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5878 turns=33 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap n…", "status": "supported", "reason": "expQ/slotcheck/audit_ft_191663/summary.txt shows trained row…"}, {"claim": "Check 2a (arm P): not inert at n = 120 pages (191672); split…", "status": "provisional", "reason": "Every number matches the grid and pad_split_191781.out: bf16…"}, {"claim": "Check 2b (arm P) decided NOT A CAUSE: padded − not padded ju…", "status": "supported", "reason": "Grid rows 191783 / 191784: 1,500 rows; judge .6147 vs .6100 …"}, {"claim": "Check 4 (arm O) decided: slot capacity is NOT the limit (gat…", "status": "supported", "reason": "Grid row 192209 and the recall_pair output (ticks/2026-11-19…"}, "… +6 more"], "summary": "Eight of the ten claims are supported by the grid, the resul…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%, all Docmatix) lose one of two source pages. Job 191663 (closed).","status":"supported","reason":"expQ/slotcheck/audit_ft_191663/summary.txt shows trained rows dropped 0 (0.00%) of 20,000 and 0 of 8,000, partial 1,910 (9.55%), all docmatix (19.10% of 10,000). Health is true (rows read = set, sources sum to total), the 50/50 sampled control passes, and the planted golds_4_5 row comes out 'dropped'. 0% is at or under the law's 2% 'closed, not a cause' bar. Note: the 8,000 photo rows all have exactly 1 document (n_docs histogram), so their 0 is true by construction."},{"claim":"Check 2a (arm P): not inert at n = 120 pages (191672); split at n = 40 (191781): a one-row padded batch leaks the pads (.935 bf16 / .953 fp32 at 63 pads; .995 / 1.0000 with zeroing forced), latent (hand-off 2de131); two-row padded batch .9948 / 1.0000 = no-pad two-row floor .9943 / 1.0000 (median cosine only; fp32 max abs .078 = 2.3× the .034 floor) → bf16 rounding, not a pad effect.","status":"provisional","reason":"Every number matches the grid and pad_split_191781.out: bf16 A63 .9345, Afix63 .9947, B63 .9948, twin0 .9943; fp32 A63 .9527, B63 maxabs_median .0780 vs twin0 .0340. Hand-off 2de131 is in ticks/2026-11-18_2200.log:103. 'Not inert' is supported (.934 is under the .9999 bar). The two-row 'not a pad effect' reading is not: it fails the law's own inert test, max abs ≤ 2× the repeat floor (the repeat floor is 0; even against the wake's own no-pad twin, fp32 is 2.3×, and B17 is 2.8×). The residual in fp32 cannot be bf16 rounding. Check 2b covers the cost, so this is an interpretation, not a verdict."},{"claim":"Check 2b (arm P) decided NOT A CAUSE: padded − not padded judge accuracy, n = 1,500 paired per seed: s42 .615 − .610 = +0.5 pt [−1.1, +2.1], McNemar p .62 (191783); s43 .624 − .615 = +0.9 pt [−0.7, +2.5], p .29 (191784). Both CIs inside ±3 pt.","status":"supported","reason":"Grid rows 191783 / 191784: 1,500 rows; judge .6147 vs .6100 (diff +.0047, CI −.011/+.021, p .618) and .6240 vs .6147 (+.0093, CI −.007/+.025, p .285). unparseable 0, mems_ratio 1.0000. Each pair ran in one job on one node (homer-020 / homer-019, outside 005-009), with the pad=None twin re-run in the same job. Both CIs sit inside ±3 at both seeds, which is the law's 'not a cause' gate."},{"claim":"Check 4 (arm O) decided: slot capacity is NOT the limit (gate ≥ 90%): overfit word recall .921 vs start .702, +21.9 pt [+18.5, +25.3], 98 up / 2 down, sign p 8e-27, n = 100; median .951, 76 ≥ .90, 7 ≤ .75 (192209; start 191893); held-out .667 vs .670 −0.3 [−4.2, +3.6]; ceiling .974; self-pair 0.000; 116-123 slots/page identical; loss not flattened → .921 is a lower bound; one training, one seed.","status":"supported","reason":"Grid row 192209 and the recall_pair output (ticks/202
+== rc=0

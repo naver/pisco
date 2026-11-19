@@ -1,0 +1,164 @@
+== campaign slotcheck wake 2026-11-19_1330  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795062601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=11.6 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7450 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:192209,192210,192211,192212_max_8h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== wait condition met: job:192209,192210,192211,192212 (ended)   (NEXT was: wake-when job:192209,192210,192211,192212 max 8h)
+== session bac850c7-dcf2-4dc1-bdbc-de969cce69a0  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-19_1330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+94 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md
+  ↳ Exit code 1 (+88 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+328 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+103 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat known_issues.md; ls -la; cat ../.gitignore | head -5
+  ↳ # Known issues — campaign slotcheck   (symptom → verdict → action; check here BEFORE diagnosing) (+60 lines)
+Reading the verifier notes and the finished job results (overfit recall + transcription shards).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_slotcheck/VERIFY.md; expmon ledger 40 2>&1 | tail -60 | head -5
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 192209,192210,192211,192212 -D -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,MaxRSS 2>&1; ls -la expQ/slotcheck/recall/ expQ/slotcheck/transcribe/ 2>&1
+  ↳ # VERIFY — campaign slotcheck — 2026-11-19_1030   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+21 lines)
+  ↳ JobID             State ExitCode    Elapsed               Start                 End        NodeList     MaxRSS  (+28 lines)
+→ Bash: tail -25 expQ/slotcheck/recall_192209.out; echo; for j in 192210 192211 192212; do f=$(ls expQ/slotcheck/transcribe_${j}.out 2>/dev/null); grep -h "RESULT" $f | tail -1; grep -h "EXIT" $f | tail -1; done; ls expQ/slotcheck/
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+62 lines)
+→ Bash: grep -n "^import\|^from" scripts/longdoc/recall_pair.py; python3 -I scripts/longdoc/recall_pair.py --help 2>&1 | head -20; grep -n "mem_position_stride" expQ/slotcheck/recall_192209.out | head
+  ↳ 13:import argparse (+16 lines)
+→ Bash: grep -n "^import\|^from" scripts/analyze_mem_recall.py; sed -n 1,30p scripts/longdoc/recall_pair.py
+  ↳ 13:import argparse (+33 lines)
+Stdlib only — fine to run here on small JSON. Pairing the overfit recall against the start model on both page sets.
+→ Bash: R=expQ/slotcheck/recall; md5sum scripts/longdoc/recall_pair.py scripts/analyze_mem_recall.py | cut -c1-8; echo "--- overfit pages: start vs overfit"; python3 -I scripts/longdoc/recall_pair.py --ref $R/ref_dense100.json --a $R/start_dense100…
+  ↳ ea4a6bcd (+15 lines)
+Overfit result is in: word recall .921 on the 100 trained pages (bar: 90%), held-out flat. Computing per-page detail before recording it.
+→ Bash: python3 -I - <<'EOF' ⏎ import json,sys,statistics as st ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall ⏎ R='expQ/slotcheck/recall/' ⏎ def load(p): return {r["query_id"]:r for r in json.load(open(p))["records"]} ⏎ for…
+  ↳ dense100 record keys: ['query_id', 'source', 'query', 'answers', 'gold_page', 'text', 'mems', 'stride'] (+49 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ import json,sys,statistics as st ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall,norm ⏎ R='expQ/slotcheck/recall/' ⏎ def load(p): return {r["query_id"]:r for r in json.load(open(p))["records"]} …
+  ↳ dense100 n 100 mean A 0.702 B 0.921 median B 0.951 min B 0.497 B>=.90: 76 B<=.75: 7 mems min/max 116/123 same_as_start=True ref words mean 479 words/slot 3.99 (+1 lines)
+Check 4 reads clearly: .921 mean recall (median .951, 76 / 100 pages ≥ .90), held-out flat. Now checking the arm X scripts before launching the transcription chain.
+→ Bash: grep -E "^CAMP_(MAX_SUBMIT|PATCH|UNTIL|COMMIT|DISK)" campaign_slotcheck/campaign.conf; md5sum scripts/slotcheck/build_text_sets.py scripts/slotcheck/build_text_sets.sbatch scripts/slotcheck/eval_x.sbatch eval_mm_4b.sh scripts/eval_mm_docqa.…
+  ↳ CAMP_UNTIL='2027-02-16'            # YYYY-MM-DD, INCLUSIVE: launches allowed through that day 23:59 (default: init + 90 days, EXP_CAMP_WINDOW_DAYS); `expmon campaign extend` adds 90 more (+82 lines)
+→ Bash: cat eval_mm_4b.sh | head -120
+  ↳ #!/bin/bash (+88 lines)
+→ Bash: wc -l scripts/slotcheck/build_text_sets.py && sed -n 1,60p scripts/slotcheck/build_text_sets.py
+  ↳ 184 scripts/slotcheck/build_text_sets.py (+60 lines)
+→ Bash: ls -d eval_data/slotcheck_* 2>&1; ls -la expQ/slotcheck/x_s42/ expQ/slotcheck/x_s42/eval 2>&1; ls expQ/slotcheck/textsets_* 2>&1 | head; sed -n 60,184p scripts/slotcheck/build_text_sets.py
+  ↳ eval_data/slotcheck_dense100 (+135 lines)
+→ Bash: grep '"192210"' .expmon/runs.jsonl | tail -1 | head -c 1500; echo; sacct -j 191783,191784 -o JobID,MaxRSS,Elapsed,State -P | head; sinfo -p gpu-be -o "%n %C %e %G" 2>/dev/null | grep -v "homer-00[5-9]" | head -30
+  ↳ {"ts": "2026-11-19 10:34", "jobid": "192210", "launcher": "scripts/slotcheck/transcribe_pages.sbatch", "argv": ["1", "4"], "git": "4c1bfc8+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/19 (+17 lines)
+→ Bash: sacct -j 191892,192002 -o JobID%20,TRESUsageInMax%120 -P 2>&1 | head; grep -i "memory\|max_memory\|GiB\|nvidia" expQ/slotcheck/pt_overfit_191892.out | head -5
+  ↳ JobID|TRESUsageInMax (+5 lines)
+Found the missing health number: SLURM accounting records the overfit smoke's peak GPU memory (52.0 GB of 80). Now recording verdicts for the four finished jobs.
+→ Bash: expmon probe 192209 recall_overfit_dense100=0.921 recall_start_dense100=0.702 diff=+0.219 ci_lo=+0.185 ci_hi=+0.253 up=98 down=2 sign_p=8e-27 median=0.951 pages_ge90=76 pages_le75=7 recall_overfit_heldout=0.667 recall_start_heldout=0.670 di…
+  ↳ probe recorded: 192209 (recall_overfit_dense100=0.921 recall_start_dense100=0.702 diff=+0.219 ci_lo=+0.185 ci_hi=+0.253 up=98 down=2 sign_p=8e-27 median=0.951 pages_ge90=76 pages_le75=7 recall_overfit (+3 lines)
+→ Bash: expmon verdict 192209 closed "check 4 DECIDED, capacity is not the limit: healthy (COMPLETED 0:0 1:26:45 homer-011, one attempt; 2 passes x 100 pages; mem_position_stride=8 printed; <MEM>s per page 116-123, identical to the start model's on…
+  ↳ verdict recorded: 192209 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+3 lines)
+→ Bash: expmon help launch 2>&1 | head -40; grep '"192009"\|"191782"' .expmon/runs.jsonl | head -2
+  ↳ expmon.sh — generic SLURM experiment monitor (project-agnostic; stdlib/bash + SLURM only). (+41 lines)
+→ Bash: sacct -j 191145,191147,191663 -X -o JobID,JobName%25,Elapsed,AllocCPUS,ReqMem,State -P; sacct -j 191145,191147,191663 -o JobID,MaxRSS -P | grep batch
+  ↳ JobID|JobName|Elapsed|AllocCPUS|ReqMem|State (+5 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage X_build_smoke --partition gpu-be --exclude='homer-[005-009]' --gres=gpu:0 -c 4 --mem 16G --time 0:30:00 scripts/slotcheck/build_text_sets.sbatch 30 _smoke 2>&1 | tail -15
+  ↳ would submit: sbatch --partition gpu-be --exclude=homer-[005-009] --gres=gpu:0 -c 4 --mem 16G --time 0:30:00 scripts/slotcheck/build_text_sets.sbatch 30 _smoke (+3 lines)
+Dry run is clean. Writing the intent note, then submitting the chain.
+→ Bash: expmon note "arm X (check 3) chain intent: (1) build_text_sets.sbatch 30 _smoke (CPU -c 4 --mem 16G --time 0:30; audit_inputs 191147 ran 1,500 rows x variants in 7:10 at 12 CPUs, MaxRSS 11.5 GB) -> (2) eval_x.sbatch x_s42 img,text,imgtext 3…
+  ↳ Submitted batch job 192214 (+7 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage X_eval_smoke --parent 192214 --env JUDGE=0 --partition gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 --dependency=afterok:192214 scripts/slotcheck/eval_x.sbatch …
+  ↳ would submit: sbatch --partition gpu-be --exclude=homer-[005-009] --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 --dependency=afterok:192214 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 30 _smoke (+4 lines)
+→ Bash: J2=$(expmon launch --exp slotcheck --stage X_eval_smoke --parent 192214 --env JUDGE=0 --partition gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 --dependency=afterok:192214 scripts/slotcheck/eval_x.sbatch x_s42…
+  ↳ J2=192215 (+9 lines)
+Chain submitted (4 jobs, each waits for the previous). While the build smoke runs, I'll check gripes and update the deliverable.
+→ Bash: expmon gripe --open --search gpumem 2>&1 | tail -5; expmon gripe --open --search "peak GPU" 2>&1 | tail -5; expmon gripe --open --search "RESULT line" 2>&1 | tail -3
+→ Bash: ls docs/slot_checks.md 2>&1 && wc -l docs/slot_checks.md && cat docs/slot_checks.md
+  ↳ == 1 open report(s) matching 'gpumem', every machine, newest first == (+10 lines)
+  ↳ docs/slot_checks.md (+117 lines)
+→ Bash: squeue -j 192214 -h -o "%T %M" ; tail -20 expQ/slotcheck/textsets_192214.out
+  ↳ RUNNING 0:36 (+28 lines)
+Build smoke wrote its 3 small sets and is auditing. Updating the deliverable doc with the check 4 result meanwhile.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md has been updated successfully.
+→ Bash: python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ i=s.index('## Check 4 ') ⏎ new='''## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19: slot capacity is not the limit) ⏎  ⏎ Pages: 100 dense PDF pages of `d…
+  ↳ The fp32 second training is not run: the plan fixed before the result ran it only if bf16 stayed under 90%. (+16 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Bash: until ! squeue -j 192214 -h -o %T 2>/dev/null | grep -q .; do sleep 15; done; sacct -j 192214 -X -o State,ExitCode,Elapsed -n; tail -15 expQ/slotcheck/textsets_192214.out
+  ↳ Command running in background with ID: bloom135t. Output is being written to: /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/bac850c7-dcf2-4dc1-bdbc-de969cce69a0/tasks/bloom135t.output. You
+→ Bash: expmon gripe --same 26827d20 "slotcheck 2026-11-19: the law's arm O health item 'peak GPU memory from the smoke' was marked missing by the verifier for a day; sacct TRESUsageInMax had gres/gpumem=52020M all along (191892). expmon hist / gri…
+  ↳ logged as a +1 of 26827d20 (entry 965659e3) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: sleep 1; cat /tmp/claude-1809401154/-beegfs-scratch-user-hdejean-pisco/bac850c7-dcf2-4dc1-bdbc-de969cce69a0/tasks/bloom135t.output; squeue -j 192214 -h -o "%T %M"
+  ↳ (Bash completed with no output)
+→ Bash: sacct -j 192214,192215 -X -o JobID,State,ExitCode,Elapsed,NodeList -n; tail -12 expQ/slotcheck/textsets_192214.out
+  ↳ 192214           FAILED      4:0   00:01:11       homer-014  (+13 lines)
+The build smoke failed its own health check (exit 4). Looking at whether it's a data fault or a bug in the check: 289 = 256 text tokens + 33 `<MEM>`s, so it looks like the check's arithmetic.
+→ Bash: grep -n "chunk_tok_max\|n_chunks\|def eval_row\|cut_pisco\|in_raw" scripts/longdoc/audit_inputs.py | head -20; squeue -j 192215,192216,192217 -h -o "%i %T %R"
+  ↳ 116:def eval_row(task): (+15 lines)
+→ Bash: sed -n 116,175p scripts/longdoc/audit_inputs.py
+  ↳ def eval_row(task): (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py
+  ↳ 146	        in_raw = sum(x["in_raw"] for x in R); cut = sum(x["cut_pisco"] for x in R) (+11 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py has been updated successfully.
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py
+  ↳ 155	                                  for s in sorted(PER_SOURCE)}) (+24 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py has been updated successfully.
+Now replaying the corrected rule on the smoke's own audit file (stdlib, small JSON) to confirm it passes on good data and still catches a planted bad row.
+→ Bash: python3 -I -m py_compile scripts/slotcheck/build_text_sets.py && echo compile-ok && md5sum scripts/slotcheck/build_text_sets.py | cut -c1-8 && git diff --stat scripts/slotcheck/build_text_sets.py && python3 -I - <<'EOF' ⏎ import json, copy …
+  ↳ compile-ok (+7 lines)
+→ Bash: expmon note -j 192214 "result: FAILED exit 4 in 1:11 on homer-014 = its own health check, a BUG in the check (not data): it compared chunk length incl. <MEM>s to CML + 1 (a full 256-token text chunk is 256 + 33 = 289) and counted imgtext's …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: expmon verdict 192214 closed "plumbing FAILED its own health check by a bug in the check (exit 4, 1:11, homer-014): chunk length incl. <MEM>s compared to CML + 1, and imgtext's image chunks counted as text. Data passed: 30 Q x 3 sets, empty…
+  ↳ verdict recorded: 192214 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+8 lines)
+→ Bash: expmon gripe --open --search "DependencyNeverSatisfied" 2>&1 | head -5; expmon gripe --open --search "dead chain" 2>&1 | head -4
+  ↳ == 2 open report(s) matching 'dependencyneversatisfied', every machine, newest first == (+6 lines)
+→ Bash: expmon gripe --same b12e7cba "slotcheck 2026-11-19: a 1-minute smoke at the head of a 4-job chain failed; its 3 never-run children count against CAMP_MAX_SUBMIT_PER_WAKE (4) and the campaign's cell budget, so the relaunch waits a full wake.…
+  ↳ logged as a +1 of b12e7cba (entry 87916d9b) -> /home/hdejean/.claude/feedback/ncp.log
+Recording the new symptom in known_issues and updating the deliverable's status line.
+→ Bash: cat >> campaign_slotcheck/known_issues.md <<'EOF' ⏎ | `build_text_sets.sbatch` exits 4, `FAIL text: a text chunk of 289 tokens > CML 256 (+1 <MEM>)` / `FAIL imgtext: … 903 tokens …` (192214, 2026-11-19) | a bug in the build's health rule, n…
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_slotcheck.html   (0 table rows, 0 media files from 0 runs) (+1 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+10 lines)
+Writing STATE.md wholesale.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: expmon note "check 4 (arm O) DECIDED: slot capacity is not the limit. n = 100 dense pages, paired per page: word recall from the slots after the bf16 overfit .921 vs .702 before, +21.9 pt [+18.5,+25.3], sign 98/2 p 8e-27 (job 192209); held-…
+  ↳ Exit code 2 (+3 lines)
+I recorded check 4 (can the slots hold a dense page?): the slots can hold the page, so the number of slots is not what limits the model. Check 3 (do text slots keep what image slots lose?) is stalled for one wake: the first job of its chain failed on a bug in its own check. I fixed the bug, but the 4-submissions-per-wake cap is spent, so the relaunch waits for the next wake.
+
+## Check 4 — decided
+I trained the stage-2 model on 100 dense pages only, then had it rewrite each page from its slots alone.
+
+| pages | word recall before training ↑ | word recall after ↑ | after − before (95% CI) | pages better / worse |
+|---|---|---|---|---|
+| the 100 trained pages | .702 | **.921** | +21.9 pt [+18.5, +25.3] | 98 / 2, p 8e-27 |
+| 100 held-out pages | .670 | .667 | −0.3 pt [−4.2, +3.6] | 32 / 66 |
+
+- Word recall means the share of the page's words that come back.
+- About 120 slots per page, 8 image tokens per slot, roughly 4 words per slot.
+- The bar was 90%, so the slots have room. The flat held-out pages show this is memorisation, not a general gain.
+- Training loss was still falling at the last step, so .921 is a minimum. This is one training on one seed.
+- What it means for the stage-2 rebuild: change what training teaches (objective, data, steps), not the number of slots.
+- The second training (fp32 master weights) was not run. The plan fixed beforehand ran it only if recall stayed under 90%.
+- The missing health number (peak GPU memory of the 20-step test training) was in SLURM's accounting all along: 52 GB of 80.
+
+## Check 3 — what happened this wake
+- All 1,268 pages of the 500 questions are transcribed, with 0 empty.
+- The 30-question test build wrote correct sets, but exited with code 4 on its own health check. That check was wrong in two ways:
+  - it counted the slots inside a text chunk's length (256 text tokens + 33 slots = 289);
+  - it counted image chunks as text chunks.
+- I fixed the check in `scripts/slotcheck/build_text_sets.py`. Replayed on the test build's audit file, the new rule passes all 30 questions and catches both faults I planted. The fixed script itself has not run yet.
+- The 3 jobs chained behind the test build could never start, so I cancelled them.
+- In the test data, the answer text appears in the page transcription for 26 of 30 questions.
+
+## Next wake
+- The 30-question eval and the full set build run side by side.
+- Then the judged eval on 500 questions, with image slots, text slots, and both.
+
+## Budget
+- 23 of 32 jobs used.
+- About 15 of 30 GPU-hours used.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "working", "summary": "Check 4 decided: slot capacity is not the limit. Word recall from the slots after the 100-page bf16 overfit is .921, against .702 before: +21.9 pt [+18.5, +25.3], n = 100 pages, 98 up / 2 down, sign p 8e-27. …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.2769 turns=54 is_error=False denials=0
+== declared: {"next": "working", "summary": "Check 4 decided: slot capacity is not the limit. Word recall from the slots after the 100-page bf16 overfit is .921, aga…", "launched": ["192214", "192215", "192216", "192217"], "verdicts": [{"jobid": "192209", "verdict": "closed", "note": "check 4 decided: overfit recall .921 vs .702, +21.9 pt [+18.5,+25.3], n=100, held-out flat; capacity is not the limit (l…"}, {"jobid": "192210", "verdict": "closed", "note": "healthy shard 1: 317 pages, empty 0, 31 at cap"}, {"jobid": "192211", "verdict": "closed", "note": "healthy shard 2: 317 pages, empty 0, 23 at cap"}, {"jobid": "192212", "verdict": "closed", "note": "healthy shard 3: 317 pages, empty 0, 42 at cap; all 1,268/1,268 pages"}, {"jobid": "192214", "verdict": "closed", "note": "build smoke exit 4 on a health-rule bug (chunk length counts <MEM>s); data sound; patched 1c110e22"}, {"jobid": "192215", "verdict": "closed", "note": "never ran: parent 192214 failed; killed"}, {"jobid": "192216", "verdict": "closed", "note": "never ran: parent chain dead; killed"}, {"jobid": "192217", "verdict": "closed", "note": "never ran: parent chain dead; killed"}], "gripes": ["+1 26827d20: sacct gres/gpumem had the arm O smoke's peak GPU memory (52.0 GB) all along; expmon hist/grid should show i…", "+1 b12e7cba: a failed 1-min chain head makes its 3 never-run children consume the per-wake submission cap and cell budge…"]}
+== final:
+{"next":"working","summary":"Check 4 decided: slot capacity is not the limit. Word recall from the slots after the 100-page bf16 overfit is .921, against .702 before: +21.9 pt [+18.5, +25.3], n = 100 pages, 98 up / 2 down, sign p 8e-27. Held-out pages stay flat (.667 vs .670), and the text-layer ceiling is .974. The loss had not flattened, so .921 is a lower bound. The fp32 cell was not run, per the plan fixed before results. The four transcription shards are closed: 1,268 of 1,268 pages, 0 empty, 9.8% at the 1,024-token cap. The 30-question arm X build smoke (192214) wrote sound sets (cut 0, empty 0) but exited 4 on a bug in its own health rule. The audit counts each chunk's <MEM>s in its length (256 + 33 = 289), and imgtext's image chunks were counted as text. Patched build_text_sets.py 604ffd1b -> 1c110e22; replayed on the smoke's audit.json it gives 0 failures on the real rows and catches 2 of 2 planted faults; the patched script itself has not run yet. Its children 192215-192217 never ran and were killed. The submission cap of 4 is spent, so the next wake launches the eval smoke and the full build in parallel, then the full eval (n = 500 questions × 3 sets) afterok both. docs/slot_checks.md, STATE.md, known_issues.md and the display page are updated. The verifier's fixes are applied: slots 116-123, about 131 presentations per page, smoke peak GPU memory 52.0 GB from sacct. 23 of 32 cells and about 15.2 of 30 GPU-h used.","launched":["192214","192215","192216","192217"],"verdicts":[{"jobid":"192209","verdict":"closed","note":"check 4 decided: overfit recall .921 vs .702, +21.9 pt [+18.5,+25.3], n=100, held-out flat; capacity is not the limit (lower bound)"},{"jobid":"192210","verdict":"closed","note":"healthy shard 1: 317 pages, empty 0, 31 at cap"},{"jobid":"192211","verdict":"closed","note":"healthy shard 2: 317 pages, empty 0, 23 at cap"},{"jobid":"192212","verdict":"closed","note":"healthy shard 3: 317 pages, empty 0, 42 at cap; all 1,268/1,268 pages"},{"jobid":"192214","verdict":"closed","note":"build smoke exit 4 on a health-rule bug (chunk length counts <MEM>s); data sound; patched 1c110e22"},{"jobid":"192215","verdict":"closed","note":"never ran: parent 192214 failed; killed"},{"jobid":"192216","verdict":"closed","note":"never ran: parent chain dead; killed"},{"jobid":"192217","verdict":"closed","note":"never ran: parent chain dead; killed"}],"gripes":["+1 26827d20: sacct gres/gpumem had the arm O smoke's peak GPU memory (52.0 GB) all along; expmon hist/grid should show it","+1 b12e7cba: a failed 1-min chain head makes its 3 never-run children consume the per-wake submission cap and cell budget; suggest a chain-retry that does not spend the cap"]}
+== rc=0 secs=490
+== verify: 8/10

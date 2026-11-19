@@ -157,8 +157,16 @@ def main():
             fails.append(f"{n}: cut {cut} rows (answer in the transcription, not in the compressor's text)")
         if summ[n]["dml"] > args.dml_cap:
             fails.append(f"{n}: max prompt {max(pr)} + 256 > {args.dml_cap}")
-        if summ[n]["chunk_tok_max"] > SETS[n][1] + 1 and n != "img":
-            fails.append(f"{n}: a text chunk of {summ[n]['chunk_tok_max']} tokens > CML {SETS[n][1]} (+1 <MEM>)")
+        # a chunk's length counts its <MEM>s: CML text tokens + CML // 8 + 1 (rate 8, the law's; 192214 used CML + 1).
+        # Only the text set is all-text; imgtext's chunks include atomic image spans, checked below by additivity.
+        if n == "text" and summ[n]["chunk_tok_max"] > SETS[n][1] + SETS[n][1] // 8 + 1:
+            fails.append(f"{n}: a text chunk of {summ[n]['chunk_tok_max']} tokens > CML {SETS[n][1]} + its <MEM>s")
+    # imgtext = img pages + text pages of the same question: its <MEM>s per question must be exactly their sum
+    per = {n: {x["qid"]: x["n_mem"] for x in res if x["v"] == f"X_{n}{args.tag}"} for n in SETS}
+    bad = [q for q in per["imgtext"] if per["imgtext"][q] != per["img"].get(q, -1) + per["text"].get(q, -1)]
+    if bad:
+        fails.append(f"imgtext: <MEM>s != img + text on {len(bad)} questions (first {bad[:3]})")
+    for n in SETS:
         out = ED / f"slotcheck_docqa_{n}_500{args.tag}"
         (out / "dml.txt").write_text(f"{summ[n]['dml']}\n")
     stats = dict(stats, questions=len(rows["img"]), empty_share=round(stats["empty"] / max(1, stats["page_slots"]), 4))

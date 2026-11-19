@@ -10,8 +10,8 @@ documents ≈ 108 slots per page (430.7 per 4-page question, 646,042 / 1,500).
 | 1 | does the finetune collator's 4-document cap drop the answer page? | **decided: not a cause** (0 of 20,000 rows) |
 | 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row batch moves the slots only by bf16 rounding, as much as batching with any other page |
 | 2b | does training-style padding (to 64) change judge accuracy? | **decided: not a cause** (1,500 Q × 2 seeds: +0.5 / +0.9 pt, both CIs inside ±3) |
-| 3 | do text slots of the page's transcription keep what image slots lose? | running: page transcription (10-page plumbing, then shard 1 of 4) |
-| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | running: start model's recall measured (.702); the 210-step overfit training and its recall are running |
+| 3 | do text slots of the page's transcription keep what image slots lose? | running: all 1,268 pages transcribed (empty 0); the 30-question plumbing build passed on data but tripped a bug in its own check (fixed); the 500-question sets and their judged evals launch next |
+| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided: capacity is not the limit** (word recall .921 after the overfit vs .702 before, 100 pages; held-out pages flat) |
 
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
 
@@ -95,22 +95,31 @@ directions about equally: this is the bf16 batch-shape rounding of check 2a reac
 the batch shape flips the judge on about 10% of questions (net ±1 pt), so a paired difference under ~1.5 pt between two
 arms is within what bf16 rounding alone produces on 1,500 questions.
 
-## Check 4 — can stage 2 memorise 100 dense pages? (running; baseline measured 2026-11-19)
+## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19: slot capacity is not the limit)
 
-Pages: 100 dense PDF pages of `data/mm_pretrain_pdfa_1m` never trained on (674-760 text-layer tokens, 953 visual tokens,
-120 slots per page = 8 visual tokens per slot, about 4 words per slot) + 100 held-out pages of the same kind (build job
-191891). Metric: word recall = share of the words of the uncompressed transcription (Qwen3.5-4B reads the pixels) found
-in the text the model rebuilds from the page's slots alone (`scripts/longdoc/mem_recall.py`, image autoencoding format).
-Paired per page by `scripts/longdoc/recall_pair.py` (bootstrap CI, sign test).
+Pages: 100 dense PDF pages of `data/mm_pretrain_pdfa_1m` never trained on (674-760 text-layer tokens, 953 visual
+tokens, 116-123 slots per page = 8 visual tokens per slot, about 4 words per slot: 479 words / 120 slots) + 100
+held-out pages of the same kind (build job 191891). Metric: word recall = share of the words of the uncompressed
+transcription (Qwen3.5-4B reads the pixels) found in the text the model rebuilds from the page's slots alone
+(`scripts/longdoc/mem_recall.py`, image autoencoding format). Paired per page by `scripts/longdoc/recall_pair.py`
+(bootstrap 95% CI, sign test). Overfit = the stage-2 start model trained on image autoencoding of those 100 pages only,
+bf16, its own recipe otherwise, 210 steps (what fits 2 GPU-hours) = 14 epochs, about 131 presentations per page.
 
-| row | model | pages | n | word recall ↑ | vs the start model | read |
+| row | model | pages | n | word recall ↑ | minus the start model (95% CI, sign test) | read |
 |---|---|---|---|---|---|---|
-| start model, before any overfit (baseline) | `expQ/archq3/pt_mm_5M_spread/model` | the 100 to overfit | 100 | **.702** | — | job 191893 |
-| start model (held-out control) | same | 100 held-out | 100 | **.670** | — | must not rise after the overfit |
-| ceiling: the page's own text layer (the training target) | — | 100 / 100 held-out | 100 | .974 / .983 | — | the bars (90% / 75%) are reachable |
-| control: reference against itself | — | 100 / 100 | 100 | 1.000 / 1.000 | 0.000 | the tool works |
-| overfit, bf16, 210 steps (≈ 14 passes over each page) | `expQ/slotcheck/o_bf16/model` | 100 / 100 held-out | 100 | running | — | gate: ≥ 90% → capacity is fine; ≤ 75% (with the loss flat) → a capacity limit |
+| start model, before the overfit (baseline) | `expQ/archq3/pt_mm_5M_spread/model` | the 100 to overfit | 100 | .702 | — | job 191893 |
+| **overfit, bf16, 210 steps** | `expQ/slotcheck/o_bf16/model` | **the 100 trained pages** | 100 | **.921** (median .951; 76 pages ≥ .90, 7 ≤ .75) | **+21.9 pt** [+18.5, +25.3], 98 up / 2 down, p 8e-27 | job 192209: **≥ 90% → capacity is fine** |
+| start model (held-out control) | start | 100 held-out | 100 | .670 | — | job 191893 |
+| overfit (held-out control) | overfit | 100 held-out | 100 | .667 | −0.3 pt [−4.2, +3.6], 32 up / 66 down | does not rise: the gain is memorisation, not a general gain |
+| ceiling: the page's own text layer (the training target) | — | 100 / 100 held-out | 100 | .974 / .983 | — | .921 = 94.6% of the ceiling |
+| control: a file paired with itself | — | 100 | 100 | — | 0.000 | the tool works |
 
-Training smoke (job 191892, 20 steps): 32.8 s per step (batch 8 × accumulation 8 = 64 pages per step), loss 0.600 →
-0.488 from step 10 to 20, config identical to the start's recipe except the data, the task mix (image autoencoding
-only) and `max_steps`. The step count 210 is what fits 2 GPU-hours.
+Health: training job 192002 ran to its last step (loss .602 → .028, no NaN); the 20-step smoke (job 191892) ran
+32.8 s per step with 52.0 GB peak GPU memory of 80 (SLURM accounting); the recall prints `mem_position_stride=8`;
+slots per page are the same before and after the overfit on every page. The loss had NOT flattened at step 210
+(−21% over the last 50 steps, the plateau rule asks ≤ 2%), so .921 is a lower bound of what training can store.
+The fp32 second training is not run: the plan fixed before the result ran it only if bf16 stayed under 90%.
+
+**For the stage-2 rebuild:** about 120 slots per page CAN hold 92% of a dense page's words (lower bound, one training,
+one seed). The slots are not too few; the rebuild should change what training teaches (objective, data, steps), not
+the number of slots or the read-out.
