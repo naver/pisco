@@ -1,0 +1,125 @@
+== campaign slotcheck wake 2026-11-20_0000  reasons=idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795100401 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=12.5 idle_h=2.3 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7276 sig=3f0317b9 same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=4 uplaw=0 push_rc=0 next=wake-when_job:192239_max_12h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== wait condition met: job:192239 (ended)   (NEXT was: wake-when job:192239 max 12h)
+== session 7de030df-5ff0-42cc-b146-c190ccbf1854  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-20_0000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+115 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ====== && cat known_issues.md && ls -la
+  ↳ Exit code 1 (+87 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN slotcheck — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+331 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat STATE.md; echo =====; ls -la; echo ====; cat known_issues.md 2>/dev/null | head -80
+  ↳ Exit code 1 (+111 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && sed -n 55,80p STATE.md; echo; ls -la; echo; wc -l known_issues.md; cat known_issues.md
+  ↳ ## Owned jobs (+88 lines)
+I'm checking how the round-2 repeat chain for check 3 ended (transcription → build → judged eval).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -j 192237,192238,192239 -D -X -o JobID,JobName%20,State,ExitCode,Elapsed,Start,End,NodeList%12 2>&1; expmon ledger 40 2>&1 | tail -40
+  ↳ JobID                     JobName      State ExitCode    Elapsed               Start                 End     NodeList  (+44 lines)
+All three round-2 jobs completed 0:0. Reading their logs for health.
+→ Bash: expmon logs 192237 25 2>&1 | tail -25; echo -----; expmon logs 192238 60 2>&1 | tail -60
+  ↳ no log file for 192237 yet — pattern '*_%j.out' matched no existing file. Dir listing: (+4 lines)
+→ Bash: grep -h '"19223[6789]"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print({k:d.get(k) for k in ('jobid','log','outdir','argv','env','script','launcher')}) ⏎ " ; ls -t logs 2>/dev/null | h…
+  ↳ {'jobid': '192236', 'log': None, 'outdir': '/beegfs/scratch/user/hdejean/pisco/expQ/192236', 'argv': ['0', '1', '10'], 'env': {'ROUND': '2'}, 'script': None, 'launcher': 'scripts/slotcheck/transcribe_ (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck && tail -15 transcribe_192237.out; echo -----; cat textsets_192238.out | tail -60
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+86 lines)
+→ Bash: grep -n -i 'round-1\|re-audit\|RESULT\|FAIL\|round 2' textsets_192238.out | head -20; ls textsets_192238_r1 textsets_192238; md5sum ../../scripts/slotcheck/build_text_sets.py ../../scripts/slotcheck/build_text_sets.sbatch ../../scripts/slot…
+  ↳ 63:RESULT arm=X_build tag=none questions=500 empty=0 img_mems_mean=430.4 img_prompt_max=583 img_cut=0 img_cut_boundary=0 img_answer_in_text=0 text_mems_mean=222.8 text_prompt_max=606 text_cut=1 text_c (+12 lines)
+Build passed (round 2 cut 0; round-1 re-audit confirms its one "cut" was a chunk-boundary artefact, ok=True). Now the judged eval.
+→ Bash: grep -v 'pad_token_id\|torch_dtype\|Saving the dataset\|it/s\]\|s/it\]' eval_x_192239.out | grep -i -n 'exceeds\|EXIT\|error\|Traceback\|wrote\|judge\|summary\|accuracy\|md5\|node\|host\|FACTORS\|model.py' | head -50; ls -la x_s42/eval/ | g…
+  ↳ 2:FACTORS kind=eval_x arm=X cell=x_s42 sets=img,text,imgtext limit=all tag=_r2 judge=1 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model px=1003520 mnt=32 (+48 lines)
+→ Bash: sed -n 1,14p eval_x_192239.out; sed -n 82,102p eval_x_192239.out; grep -c -i exceeds eval_x_192239.out; cd /beegfs/scratch/user/hdejean/pisco && git log --oneline -3 -- pisco/model.py; git diff --stat pisco/model.py
+  ↳ GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-04067f56-e2cb-8777-ff15-10a51d14fd1b) (+40 lines)
+→ Bash: git diff pisco/model.py
+  ↳ diff --git a/pisco/model.py b/pisco/model.py (+25 lines)
+→ Bash: head -60 scripts/paired_judge.py; ls scripts/slotcheck/
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+78 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/x_s42/eval && P=/beegfs/scratch/user/hdejean/pisco/scripts/paired_judge.py; I=mm_docqa_pisco_px1003520_slotcheck_docqa_img_500_r2.json; T=mm_docqa_pisco_px1003520_chunk_cml256_slotcheck_d…
+  ↳ judge: imgtext = mm_docqa_pisco_k8_px1003520_chunk_cml256_slotcheck_docqa_imgtext_500_r2.json (+14 lines)
+Repeat passes its pre-fixed gate: image+text − image = +5.4 pt [+1.8, +8.8], no source below 0. Now health, reproduction, uncompressed ceiling and the pooled 1,000-question read.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && head -30 scripts/slotcheck/compare_preds.py; ls expQ/ft_mm_4b_184778/eval/ | grep 1500_1m; ls expQ/base_qwen35_4b/eval/ | grep 'docqa_base_px1003520_mm_docqa_1500_1m'
+  ↳ """Campaign slotcheck: per-question comparison of two eval_mm_docqa result files (stdlib only). (+31 lines)
+→ Bash: E=expQ/slotcheck/x_s42/eval; I=$E/mm_docqa_pisco_px1003520_slotcheck_docqa_img_500_r2.json; REC=expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json; python3 scripts/slotcheck/compare_preds.py $I $REC --names img_r2 reco…
+  ↳ [compare] img_r2 rows 500 | recorded_s42 rows 1500 | shared 500 (+6 lines)
+Reproduction is exact: 500 / 500 identical predictions vs the recorded R s42 file. Now health of all three files, the uncompressed ceiling and the pooled read.
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/slotcheck/textsets_192238/audit.json')) ⏎ print(type(d), list(d)[:10] if isinstance(d,dict) else len(d)) ⏎ for k,v in (d.items() if isinstance(d,dict) else []): ⏎     print(k, type(v).__na…
+  ↳ <class 'dict'> ['summary', 'stats', 'fails', 'md5', 'rows'] (+5 lines)
+→ Bash: cat > /tmp/slotcheck_x_pool.py <<'EOF' ⏎ import json, sys, random, math ⏎ sys.path.insert(0, 'scripts') ⏎ from paired_judge import bootstrap_ci, mcnemar ⏎ E = 'expQ/slotcheck/x_s42/eval/' ⏎ F = { ⏎  1: dict(img=E+'mm_docqa_pisco_px1003520_s…
+  ↳ r1 img      rows 500 judge_on 500 unparse 0 empty 0 mems 215202 mean 0.602 (+16 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ a=json.load(open('expQ/slotcheck/textsets_192238/audit.json'))['rows'] ⏎ t=[x for x in a if x['v'].startswith('X_text')] ⏎ print(len(t), sorted(t[0].keys())); print(sum(bool(x['in_raw']) for x in t)) ⏎ "; sed -i…
+  ↳ 500 ['base_prompt', 'chunk_tok_max', 'chunk_toks', 'cut_base', 'cut_boundary', 'cut_pisco', 'gold_dropped', 'i', 'in_raw', 'n_chunks', 'n_docs', 'n_mem', 'parity', 'prompt', 'qid', 'span', 'src', 'tex (+5 lines)
+→ Bash: wc -l docs/slot_checks.md && cat docs/slot_checks.md
+  ↳ 163 docs/slot_checks.md (+163 lines)
+→ Bash: grep -n -i 'rebuild\|plan\|## ' docs/review_2026-11-18.md | head -40
+  ↳ 6:share of a page's words the decoder rebuilds from its slots (.647 on the reference stage-2 model). (+5 lines)
+→ Bash: sed -n 1,30p docs/review_2026-11-18.md; sed -n 60,120p docs/review_2026-11-18.md
+  ↳ # Why nothing moved: review of campaigns, data, model, evaluation (2026-11-18) (+50 lines)
+Before writing, I'll read the verifier's full findings (the brief cut them) so this wake fixes them.
+→ Bash: cat campaign_slotcheck/VERIFY.md
+  ↳ # VERIFY — campaign slotcheck — 2026-11-19_1630   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+19 lines)
+→ Bash: cat >> /tmp/slotcheck_x_pool.py <<'EOF' ⏎ print('--- pooled per source, and uncompressed') ⏎ allR = {k: {} for k in ('img','text','imgtext')} ⏎ for rd in (1,2): ⏎     for k,p in F[rd].items(): ⏎         allR[k].update({r['query_id']: r for …
+  ↳ --- pooled per source, and uncompressed (+5 lines)
+Pooled per source: image+text helps on InfoVQA (+6.6) and MP-DocVQA (+7.5), not on SlideVQA (+0.9, CI spans 0). Recording the results in the grid now.
+→ Bash: expmon probe 192237 arm=X_transcribe round=2 shard=0 n_shards=1 limit=all pages=1252 unique_total=1252 page_slots=2000 empty=0 at_cap=121 mean_words=199 max_tokens=1038 s_per_page_median=9.4 wall_s=15145 2>&1 | tail -2; expmon probe 192238 …
+  ↳ probe recorded: 192237 (arm=X_transcribe round=2 shard=0 n_shards=1 limit=all pages=1252 unique_total=1252 page_slots=2000 empty=0 at_cap=121 mean_words=199 max_tokens=1038 s_per_page_median=9.4 wall_ (+2 lines)
+→ Bash: expmon verdict 192237 closed "round-2 transcription healthy: COMPLETED 0:0 4:13:18 homer-017, one attempt; 1,252/1,252 pages, empty 0, 121 at the 1,024-token cap, median 9.4 s/page; transcribe_pages.py 03867f94" 2>&1 | tail -1; expmon verdi…
+  ↳ verdict recorded: 192237 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+Now the budget tally (all attempts, from SLURM accounting).
+→ Bash: J=$(python3 -c " ⏎ import json ⏎ ids=[] ⏎ for l in open('.expmon/runs.jsonl'): ⏎     d=json.loads(l) ⏎     if d.get('exp')=='slotcheck': ids.append(str(d['jobid'])) ⏎ print(','.join(ids))"); echo "$J" | tr ',' '\n' | wc -l; sacct -j "$J" -D…
+  ↳ 31 (+1 lines)
+31 of 32 cells, 20.9 of 30 GPU-hours. Checking the open hand-off about the pad leak (the fix now sits uncommitted in `pisco/model.py`).
+→ Bash: expmon handoff --help 2>&1 | head -30; expmon handoff show 2de131 2>&1 | head -30
+  ↳ expmon handoff -- work one loop or chat files for another, instead of asking the owner to relay it. (+25 lines)
+Now the deliverable. Checking the measured stage-2 cost line the owner question will cite.
+→ Bash: sed -n 150,158p campaign_spread/CAMPAIGN.md; grep -n 'GPU-h\|gpu' campaign_qafreeze/CAMPAIGN.md | head -5
+  ↳ A serving case this campaign confirms (for example "compress long text as one chunk") stays an existing (+13 lines)
+Writing the deliverable: status table, a ranked "campaign answer" section, and the check 3 section rewritten with both reads.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md has been updated successfully.
+→ Bash: grep -n '^## Check 3\|^## Check 4' docs/slot_checks.md
+  ↳ 116:## Check 3 — do text slots of the page's own words keep what image slots lose? (first read 2026-11-19; repeat running) (+1 lines)
+→ Bash: cat > /tmp/check3_section.md <<'EOF' ⏎ ## Check 3 — do text slots of the page's own words keep what image slots lose? (decided 2026-11-20: image + text slots beat image slots) ⏎  ⏎ Cells: one job per read, all three sets on one node with th…
+  ↳ 16:## The campaign's answer: the four checks ranked by how much of the document gap they explain (+7 lines)
+Verifying the answer-in-transcription split numbers I wrote, from the files.
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ E='expQ/slotcheck/x_s42/eval/' ⏎ tot={'y':[0,0,0],'n':[0,0,0]} ⏎ for rd,suf,aud in ((1,'',  'expQ/slotcheck/textsets_192238_r1/audit.json'),(2,'_r2','expQ/slotcheck/textsets_192238/audit.json')): ⏎     I={r…
+  ↳ y 878 img 0.646 (567) imgtext 0.703 (617) net +50 (+1 lines)
+Split confirmed (878 / 122 questions, net +50 / +0). Recording the headline note, a hand-off note, and refreshing the display page.
+→ Bash: expmon note "check 3 (arm X) DECIDED: image+transcription slots beat image slots. Pooled 1,000 paired Q (two disjoint reads of mm_docqa_1500_1m, R s42): judge .667 vs .617, +5.0 pt [+2.5,+7.6], McNemar 107/57 p 1e-4; read 1 +4.6 [+1.0,+8.0]…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -60
+  ↳ **Settled** (+10 lines)
+All four checks are decided, so the law's one end-of-campaign owner question is due. Writing BLOCKED.md.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/BLOCKED.md (file state is current in your context — no need to Read it back)
+One cost figure is inconsistent: if the change fails the recall gate, both stage-2 runs have already been spent (≈ 63 GPU-h, not 33). Fixing.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && python3 - <<'EOF' ⏎ p='BLOCKED.md'; s=open(p).read() ⏎ s=s.replace("one change plus its control costs about 90 GPU-hours, and a change that fails the first check\nstops at about 33…
+  ↳ 6:about 63 (no finetunes). (+2 lines)
+Now rewriting STATE.md wholesale.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Let me verify the arm X GPU-hour figure I wrote rather than estimate it.
+→ Bash: sacct -j 192009,192010,192210,192211,192212,192214,192215,192216,192217,192220,192221,192222,192223,192236,192237,192238,192239 -D -X -n -P -o JobID,ElapsedRaw,AllocTRES | python3 -c " ⏎ import sys,re ⏎ g=0 ⏎ for l in sys.stdin: ⏎     j,e,t…
+  ↳ arm X GPU-h 10.12
+→ Bash: python3 - <<'EOF' ⏎ p='STATE.md'; s=open(p).read() ⏎ old="20.9 of 30. Arm X ≈ 15 (over its ≈ 12 line, by the\n  repeat the Promising rule requires), within the campaign total." ⏎ assert old in s ⏎ s=s.replace(old,"20.9 of 30. Arm X 10.1 (17…
+  ↳ 102:- Budget: 31 of 32 cells; GPU-hours, all attempts from `sacct -D`: 20.9 of 30. Arm X 10.1 (17 jobs, `sacct -D`) of
+Adding the two new symptoms of this wake to known_issues.md, and checking whether the log-path gap is already griped.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -n 'output' scripts/slotcheck/eval_x.sbatch | head -3; expmon gripe --open --search 'log file' 2>&1 | head -12; expmon gripe --open --search 'output pattern' 2>&1 | head -8
+  ↳ 9:#SBATCH --output=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_x_%j.out (+19 lines)
+→ Bash: expmon gripe --same c01de2e1 "pisco/slotcheck 2026-11-20: same gap with an ABSOLUTE #SBATCH --output=.../expQ/slotcheck/eval_x_%j.out (also transcribe_%j.out, textsets_%j.out): 'expmon logs 192239' says no log file; runs.jsonl stores log=No…
+  ↳ logged as a +1 of c01de2e1 (entry cf7dc0b2) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat >> known_issues.md <<'EOF' ⏎ | `expmon logs <jid>` says "no log file for <jid>" for a slotcheck cell (192237-192239, 2026-11-20) | the `scripts/slotcheck/*.sbatch` launchers wr…
+  ↳ | `build_text_sets.sbatch` exits 4 `FAIL text: cut 1 rows (answer in the transcription, not in the compressor's text)` ( (+2 lines)
+Writing the wake's ledger summary, then NEXT.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "slotcheck wake 2026-11-20 00:00 ⏎   - did: closed the check 3 repeat chain 192237/192238/192239 (all COMPLETED 0:0, health OK); decided check 3; rewrote docs/slot_checks.md (ranked campa…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+14 lines)
+Quick check that the rewritten deliverable section reads correctly.
+→ Bash: sed -n 114,130p docs/slot_checks.md | cut -c1-160; git status --short docs/slot_checks.md campaign_slotcheck/
+  ↳ arms is within what a change of batch shape alone produces on 1,500 questions. (+22 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "All four slot checks are decided. Check 3's repeat on 500 new questions passed: adding each page's words as text slots beside its image slots gives +5.4 pt [+1.8, +8.8] (job 192239). Pooled over 1,000 q…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.4651 turns=48 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "All four slot checks are decided. Check 3's repeat on 500 new questions passed: adding each page's words as text slots beside its image slots gives +5.4 pt [+1.8, +8.8] (job 192239). Pooled over 1,000 questions it gives +5.0 pt [+2.5, +7.6] (judge .667 vs .617; uncompressed .811), at 1.52x the slots. The words alone, without the image, lose 13.7 pt. Health was OK on transcription 192237, build 192…", "launched": [], "verdicts": [{"jobid": "192237", "verdict": "closed", "note": "round-2 transcription healthy: 1,252/1,252 pages, empty 0, 121 at cap"}, {"jobid": "192238", "verdict": "closed", "note": "round-2 build ok=True, cut 0; round-1 re-audit decodes its cut row as a chunk-boundary split"}, {"jobid": "192239", "verdict": "closed", "note": "check 3 repeat: image+text - image +5.4 [+1.8,+8.8] p .005 passes; text -15.4; pooled 1,000 Q +5.0 [+2.5,+7.6]"}], "blocked": "End-of-campaign owner question (BLOCKED.md): open a stage-2 rebuild that teaches the image slots to keep the page's words (A, ~90 GPU-h, recommended), a text side channel (B), a second overfit seed (C, ~5 GPU-h, needs cell cap 32->34), or stop (D).", "gripes": ["+1 of c01de2e1: expmon logs cannot find logs written to an absolute #SBATCH --output path (expQ/slotcheck/*_%j.out); runs.jsonl stores log=None"]}
+== final:
+{"next":"waiting-owner","summary":"All four slot checks are decided. Check 3's repeat on 500 new questions passed: adding each page's words as text slots beside its image slots gives +5.4 pt [+1.8, +8.8] (job 192239). Pooled over 1,000 questions it gives +5.0 pt [+2.5, +7.6] (judge .667 vs .617; uncompressed .811), at 1.52x the slots. The words alone, without the image, lose 13.7 pt. Health was OK on transcription 192237, build 192238 and eval 192239. The build's re-audit showed the one 'cut' row in round 1 was a split at a chunk boundary, not truncation. The round-2 image cell gave the same answers as the recorded R s42 file on 500/500 questions, although pisco/model.py had changed to f8ae6efe. Rewrote docs/slot_checks.md: a ranked campaign-answer table plus both check 3 reads. STATE.md is rewritten. BLOCKED.md holds the one end-of-campaign owner question; it recommends option A, a stage-2 rebuild (~90 GPU-h). Budget used: 31/32 cells, 20.9/30 GPU-h.","launched":[],"verdicts":[{"jobid":"192237","verdict":"closed","note":"round-2 transcription healthy: 1,252/1,252 pages, empty 0, 121 at cap"},{"jobid":"192238","verdict":"closed","note":"round-2 build ok=True, cut 0; round-1 re-audit decodes its cut row as a chunk-boundary split"},{"jobid":"192239","verdict":"closed","note":"check 3 repeat: image+text - image +5.4 [+1.8,+8.8] p .005 passes; text -15.4; pooled 1,000 Q +5.0 [+2.5,+7.6]"}],"blocked":"End-of-campaign owner question (BLOCKED.md): open a stage-2 rebuild that teaches the image slots to keep the page's words (A, ~90 GPU-h, recommended), a text side channel (B), a second overfit seed (C, ~5 GPU-h, needs cell cap 32->34), or stop (D).","gripes":["+1 of c01de2e1: expmon logs cannot find logs written to an absolute #SBATCH --output path (expQ/slotcheck/*_%j.out); runs.jsonl stores log=None"]}
+== rc=0 secs=534
+== verify: 7/16

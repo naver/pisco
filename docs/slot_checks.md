@@ -10,8 +10,23 @@ documents ≈ 108 slots per page (430.7 per 4-page question, 646,042 / 1,500).
 | 1 | does the finetune collator's 4-document cap drop the answer page? | **decided: not a cause** (0 of 20,000 rows) |
 | 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row padded batch matches the no-pad batching floor by median cosine, but in fp32 its max abs difference is 2-3× that floor, so a small pad effect remains (cost on answers: check 2b, none) |
 | 2b | does training-style padding (to 64) change judge accuracy? | **decided: not a cause** (1,500 Q × 2 seeds: +0.5 / +0.9 pt, both CIs inside ±3) |
-| 3 | do text slots of the page's transcription keep what image slots lose? | **first read (500 Q): text slots alone are worse (−12.0 pt); image + text slots +4.6 pt [+1.0, +8.0] = promising, under the 5-pt bar** → one repeat on 500 new questions running (jobs 192236-192239) |
-| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided: capacity is not the limit** (word recall .921 [.902, .938] after the overfit vs .702 before, 100 pages; held-out pages flat) |
+| 3 | do text slots of the page's transcription keep what image slots lose? | **decided (2 reads, 1,000 Q): image + text slots beat image slots, +5.0 pt [+2.5, +7.6]** (first read +4.6, repeat on new questions +5.4); text slots alone are worse (−13.7 pt) |
+| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided, one training: capacity is not the limit** (word recall .921 [.902, .938] after the overfit vs .702 before, 100 pages; held-out pages flat) |
+
+## The campaign's answer: the four checks ranked by how much of the document gap they explain
+
+The gap: judge accuracy .610 compressed vs .809 uncompressed on the 1,500 document questions (19.9 pt); on the 1,000
+questions of check 3, .617 vs .811 (19.4 pt). Judge accuracy = Qwen3-8B rubric judge, higher is better.
+
+| rank | check | verdict (n) | how much of the gap it explains | what it means for the stage-2 rebuild |
+|---|---|---|---|---|
+| 1 | 3 — the page's own words beside the image slots | image + text − image **+5.0 pt** [+2.5, +7.6] (1,000 paired Q, two disjoint reads, R seed 42) | about 5 of 19.4 pt (26%) come back when the page's words are added as slots; the whole net gain sits on questions whose answer is written in the words | the image slots miss words the page holds: teach them to keep the words (stage 2 with more page transcription on document pages, judged first by page word recall); the text side channel is the fallback (1.5× the slots plus a transcription pass per page) |
+| 2 | 4 — slot capacity | overfit word recall **.921** [.902, .938] vs .702 before (100 pages, one training) | not a judge number: about 120 slots per page CAN hold 92% of a dense page's words once trained on it | the number of slots and the read-out are not the limit: change what training teaches (objective, data, steps), not the slot geometry |
+| 3 | 2 — padding at eval vs training | +0.5 / +0.9 pt, both CIs inside ±3 (1,500 Q × 2 seeds) | none | the eval protocol is not the problem; nothing to change |
+| 4 | 1 — answer pages cut by the finetune's 4-document cap | 0 of 20,000 document rows lose every answer page | none | the finetune data cap is not the problem; `topk_docs=5` is an optional cleanup (1,910 rows lose one of two source pages) |
+
+Prediction written in the law before any cell: checks 1 and 2 are not causes, and check 4 clears 90% (the limit is
+training). All three held. Check 3 had no prediction.
 
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
 
@@ -98,39 +113,59 @@ masked-pad residual) reaching the answers.
 the batch shape flips the judge on about 10% of questions (net ±1 pt), so a paired difference under ~1.5 pt between two
 arms is within what a change of batch shape alone produces on 1,500 questions.
 
-## Check 3 — do text slots of the page's own words keep what image slots lose? (first read 2026-11-19; repeat running)
+## Check 3 — do text slots of the page's own words keep what image slots lose? (decided 2026-11-20: image + text slots beat image slots)
 
-Cells: one job per read, all three sets on one node with the same code (job 192223, homer-014; `scripts/slotcheck/eval_x.sbatch`
-→ the shared `eval_mm_4b.sh`, unchanged). Model R seed 42 (`expQ/ft_mm_4b_184778/model`). Questions: the first
-167 / 167 / 166 per source of `eval_data/mm_docqa_1500_1m` (4 pages each). What is compressed: the page images (as
-recorded), or each page's uncompressed Qwen3.5-4B transcription as text (256-token chunks, nothing cut), or per page
-its image then its transcription. No raw page ever reaches the decoder. Metric: judge accuracy (Qwen3-8B rubric judge),
-paired per question by `scripts/paired_judge.py`.
+Cells: one job per read, all three sets on one node with the same code (read 1: job 192223, homer-014; read 2, the
+repeat: job 192239, homer-016; both `scripts/slotcheck/eval_x.sbatch` → the shared `eval_mm_4b.sh`, unchanged, md5
+b3d1cda1). Model R seed 42 (`expQ/ft_mm_4b_184778/model`). Questions: read 1 = the first 167 / 167 / 166 per source of
+`eval_data/mm_docqa_1500_1m`; read 2 = the next 167 / 167 / 166 (no question shared; 1,252 new pages transcribed),
+4 pages per question. What is compressed: the page images (as recorded), or each page's uncompressed Qwen3.5-4B
+transcription as text (256-token chunks, nothing cut), or per page its image then its transcription. No raw page ever
+reaches the decoder. Metric: judge accuracy (Qwen3-8B rubric judge), paired per question by `scripts/paired_judge.py`.
+Compression rate: 8 tokens per slot everywhere (visual tokens for images, text tokens for transcriptions).
 
-| what is compressed | n (pairs) | judge ↑ | minus image slots (95% CI; McNemar: questions only this arm / only image right, p) | uncompressed judge ↑ (same Q) | compression rate: slots per question (tokens per slot) | health | read |
+| what is compressed | read | n (pairs) | judge ↑ | minus image slots (95% CI; McNemar: questions only this arm / only image right, p) | uncompressed judge ↑ (same Q) | slots per question | health | verdict |
+|---|---|---|---|---|---|---|---|---|
+| page images (baseline) | 1 | 500 | .602 | — | .790 | 430.4 | ok | = the recorded R s42 file (0 of 500 answers differ) |
+| page transcriptions only | 1 | 500 | .482 | −12.0 pt [−16.6, −7.6]; 39 / 99, p 3e-7 | .790 | 222.8 | ok | worse |
+| image + transcription | 1 | 500 | .648 | +4.6 pt [+1.0, +8.0]; 51 / 28, p .013 | .790 | 653.2 | ok | promising (under 5 pt, CI above 0) → one repeat |
+| page images (baseline) | 2 | 500 | .632 | — | .832 | 431.9 | ok | = the recorded R s42 file (0 of 500 answers differ) |
+| page transcriptions only | 2 | 500 | .478 | −15.4 pt [−20.2, −10.6]; 45 / 122, p 2e-9 | .832 | 222.6 | ok | worse |
+| image + transcription | 2 | 500 | .686 | **+5.4 pt** [+1.8, +8.8]; 56 / 29, p .005 | .832 | 654.5 (1.52× image) | ok | **passes the repeat** |
+| page transcriptions only | both | 1,000 | .480 vs .617 | **−13.7 pt** [−17.1, −10.3]; 84 / 221, p 2e-15 | .811 | 222.7 | ok | **worse** (≤ −5 pt, CI below 0) |
+| image + transcription | both | 1,000 | .667 vs .617 | **+5.0 pt** [+2.5, +7.6]; 107 / 57, p 1e-4 | .811 | 653.9 | ok | **the image slots lose content the page's words keep** (≥ +5 pt, CI above 0) |
+
+Health, each read: 3 × 500 rows, a judge on every row, 0 unparseable, 0 empty answers, no "exceeds" error; the build
+cut nothing (read 2: cut 0; read 1's one "cut" row is a digit string split at a chunk boundary, decoded by the re-audit
+in job 192238: `cut_boundary` 1 = `cut` 1); transcriptions 1,268 + 1,252 pages, 0 empty, 124 + 121 end at the
+1,024-token cap. Read 2 ran on `pisco/model.py` f8ae6efe (another chat's guard for one-row padded batches; the eval pads
+nothing): its image cell still gives the recorded answers on all 500 questions.
+
+Per source, both reads pooled (judge ↑: image / text / image + text / uncompressed; differences to image slots):
+
+| source | n | image | text | image + text | uncompressed | image + text − image (95% CI, p) | text − image (95% CI) |
 |---|---|---|---|---|---|---|---|
-| page images (baseline) | 500 | .602 | — | .790 | 430.4 (8 visual tokens) | 500 rows, judge on all, 0 unparseable, 0 empty, no "exceeds" | = the recorded R s42 file on these 500 (0 answers differ) |
-| page transcriptions, text only | 500 | .482 | **−12.0 pt** [−16.6, −7.6]; 39 / 99, p 3e-7 | .790 | 222.8 (8 text tokens) | same | **worse** (≤ −5 pt, CI below 0) |
-| image + transcription of each page | 500 | .648 | **+4.6 pt** [+1.0, +8.0]; 51 / 28, p .013 | .790 | 653.2 = 430.4 + 222.8 (1.52× image) | same | **promising**: under the 5-pt bar, CI above 0 → one repeat |
+| InfoVQA (infographics) | 334 | .485 | .425 | .551 | .746 | +6.6 [+1.5, +11.4], p .012 | −6.0 [−11.7, −0.3] |
+| MP-DocVQA (scanned text pages) | 334 | .689 | .509 | .763 | .916 | +7.5 [+2.7, +12.0], p .002 | −18.0 [−24.0, −12.0] |
+| SlideVQA (slides) | 332 | .678 | .506 | .687 | .771 | +0.9 [−2.4, +4.2], p .72 | −17.2 [−22.3, −12.0] |
 
-Per source (judge ↑, image / text / image + text / uncompressed): InfoVQA .491 / .419 / .515 / .725; MP-DocVQA
-.677 / .515 / .772 / .898; SlideVQA .639 / .512 / .657 / .747. Image + text − image: +2.4 / **+9.6** [+3.6, +16.2] /
-+1.8 pt; text − image: −7.2 / −16.2 / −12.7 pt. Split by whether the answer string is in the transcription (424 / 500
-questions): there, image .630 / text .514 / image + text .684 / uncompressed .830; elsewhere (76) .447 / .303 / .447 / .566.
-So text slots lose 11.6 pt even when the words are there, and the image + text gain sits only where they are.
+The two reads disagree on which source gains most (read 1: MP-DocVQA +9.6, InfoVQA +2.4; read 2: InfoVQA +10.8,
+MP-DocVQA +5.4); SlideVQA gains in neither (+1.8, +0.0). Split by whether the answer string is written in the
+transcription (878 of 1,000 questions): there image .646 / image + text .703, a net 50 questions; elsewhere (122)
+.410 / .410, a net 0. The whole gain sits where the words hold the answer.
 
-Caveats: R was finetuned on image documents and photos only (no text-QA rows), so text slots are read by a decoder never
-trained to answer from them; 124 / 1,268 transcriptions end at the 1,024-token cap; image + text spends 1.52× the
-slots, so its gain cannot be split between "the words" and "more slots" (no slot-matched arm in the law).
-Repeat (fixed before launch): the next 167 / 167 / 166 questions per source of the same set (disjoint ids, 1,252 new
-pages transcribed), same model and code, image baseline re-run in the same job; passes if image + text − image > 0 with
-the CI above 0 and no source's CI wholly below 0. Pooled 1,000-question difference reported beside it, not gating.
+Caveats: one model seed (the law runs seed 43 only if the first read clears the 5-pt bar; it gave +4.6). Image + text
+spends 1.52× the slots, so the gain cannot be split cleanly between "the words" and "more slots"; the split above
+(gain only where the answer is in the words) is consistent with "the words", but it is not a slot-matched test. R was
+finetuned on image documents and photos only (no text-QA rows), so its decoder never learned to answer from text slots.
+A transcription costs 9-12 s per page on one A100 (Qwen3.5-4B, up to 1,024 tokens).
 
-**For the stage-2 rebuild (provisional until the repeat):** compressing the page's own words instead of its pixels is
-not a shortcut (−12 pt); adding them beside the image slots buys a few points, mostly on scanned text pages
-(MP-DocVQA +9.6), at 1.5× the slots — a candidate side channel, not yet past the 5-pt bar.
+**For the stage-2 rebuild:** the image slots miss about 5 of the 19.4 judge points that the page's own words carry;
+compressing the words instead of the pixels is no substitute (−13.7 pt). So teach the image slots to keep the words
+(stage 2 with more page transcription on document pages; check 4 says about 120 slots can hold them); a text side
+channel beside the image slots gets the same +5 now, at 1.5× the slots plus a transcription pass per page.
 
-## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19: slot capacity is not the limit)
+## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19, one training: slot capacity is not the limit)
 
 Pages: 100 dense PDF pages of `data/mm_pretrain_pdfa_1m` never trained on (674-760 text-layer tokens, 953 visual
 tokens, 116-123 slots per page = 8 visual tokens per slot, about 4 words per slot: 479 words / 120 slots) + 100
