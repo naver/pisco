@@ -1,0 +1,51 @@
+== verifier 2026-11-20_0000  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 0e403067-455b-4ba2-a141-ec864c32be6f  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+271 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (26218 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 273	R whole-set walls: pages 7.3 h, mixed 7.3 h, text 3.8 h; C256 / L1024 text 3.8 h). Once a first R bucket cell ends, (+109 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 383	191148     T    -        ended     closed     eval_mm  pisco    t_c256_s42 mm_docqa_1500_1m all      ckpt       4        451584     0        0             none       brief        1         none    (+131 lines)
+→ Glob: {"pattern": "expQ/longdoc/{soundness,length,audit_191516}/*.json"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+Checking the result files that the claims cite.
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/soundness"}
+  ↳ expQ/longdoc/soundness/closedbook_trial300.json (+2 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+24 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/soundness/closedbook_full.json
+  ↳ 1	[ (+256 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/soundness/uncompressed_full_health.json
+  ↳ 1	{ (+125 lines)
+→ Grep: {"pattern": "191776|b3d1cda1|f8ae6efe", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1218:  - saw: eval_mm_4b.sh md5 now b3d1cda1 vs recorded 50abc167 (uncommitted copy) -> R and F reference cells must be re-run before pairing (+80 lines)
+→ Grep: {"pattern": "\\[job 19177[46]\\]", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true}
+  ↳ 1388:[job 191774] (+3 lines)
+→ Grep: {"pattern": "\\[job 191776\\] intent.{0,700}", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-o": true}
+  ↳ 1389:[Omitted long matching line]
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1389	- 2026-11-18 21:07 [job 191776] intent: arm E soundness check 1, CLOSED-BOOK uncompressed (base, TOPK=0 -> gen_base background empty), 1,407 questions once (eval_data/longdoc_closedbook), answer 
+Confirmed that the closed-book cell ran on older code than the full cells. Now checking the other cited files.
+→ Grep: {"pattern": "71%", "path": "/beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md", "output_mode": "content"}
+  ↳ 50:| pages | requests at once | raw | all `<MEM>` (71% of accuracy) | route-then-expand (99%) | (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 1	{ (+279 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/rows.jsonl (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Grep: {"pattern": "out_of_range|finetune_max", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147", "output_mode": "content", "glob": "*.json", "head_limit": 40}
+  ↳ expQ/longdoc/audit_191147/audit.json:8:  "finetune_max_mem": 488, (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1114	- 2026-11-17 00:55 [job 191145] verdict: closed — cancelled before start: asked 16 CPUs, no allowed gpu-be node had 16 idle; resubmitted as 191146 (+3 lines)
+→ Grep: {"pattern": "Apache|licen", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc", "output_mode": "content", "-i": true, "head_limit": 10}
+  ↳ scripts/longdoc/longdoc_build.py:3:Source: LongDocURL (dengchao/LongDocURL, Apache-2.0): 2,325 questions on 396 PDFs of 40-150 pages, evidence pages (+2 lines)
+→ StructuredOutput: {"claims": [{"claim": "Arm E soundness check 1 PASS in every bucket: the uncompressed decoder with the document beats closed-book by ≥ 20 pt (bar), cap 512 both files, paired per question. Closed-book 191776 (1,407 Q, judge .164). Text +41.…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3707 turns=22 is_error=False denials=0
+== declared: {"claims": [{"claim": "Arm E soundness check 1 PASS in every bucket: the uncompress…", "status": "provisional", "reason": "Every number matches expQ/longdoc/soundness/closedbook_full.…"}, {"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "expQ/longdoc/soundness/uncompressed_full_health.json gives a…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169: 360/360 byte-identical, 70.5% = 70.5%. The l…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515 (1,407 Q on 387 PDFs, 4,221 / 4,221 / 2,246 …"}, "… +10 more"], "summary": "I checked all 14 claims. Every cited number matches its resu…"}
+== final:
+{"claims":[{"claim":"Arm E soundness check 1 PASS in every bucket: the uncompressed decoder with the document beats closed-book by ≥ 20 pt (bar), cap 512 both files, paired per question. Closed-book 191776 (1,407 Q, judge .164). Text +41.0 / +41.3 / +38.9 / +32.8; pages +50.8 / +50.0 / +49.5; mixed +49.0 / +47.8 / +46.7.","status":"provisional","reason":"Every number matches expQ/longdoc/soundness/closedbook_full.json, with n 637/610/588/411 and 1,407. The lowest CI bound is +27.0 (t32k), well above the 20 pt bar, and the grid shows 191776 judge=0.164. The pairing breaks the law's rule 'two cells pair only when they ran on the same code': the 191776 intent note (EXPERIMENTS.md:1389) records pisco/model.py 994cff3d, while the with-document cells (192266-192268, 192287-192290) ran on f8ae6efe. STATE does not mention this, and the bullet has no provisional: prefix. The margin makes a reversal unlikely, but the rule is not met."},{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2% (1,407 each); bar 5%.","status":"supported","reason":"expQ/longdoc/soundness/uncompressed_full_health.json gives at_cap 47/2,246 (2.09%), 8/14/14 of 1,407 (0.57/1.0/1.0%) and 15/26/31 (1.07/1.85/2.2%). These match verdicts 192266-192268 and 192287-192290, and all are under the law's 5% bar. Small aside: the law text says 191777 was 7/300 = 2.3%, but its verdict says 8/300 = 2.7%. The full cells supersede that trial."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"Verdict 191169: 360/360 byte-identical, 70.5% = 70.5%. The law's reference is 71% at architecture_review.md:105, so the port is inside ±2 pt."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 rows (637/610/588/411), needles 300/225/225. Closed-book set 1,407 (191774). Bucket sets (192265): 6 × 1,407 rows.","status":"supported","reason":"Verdicts 191515 (1,407 Q on 387 PDFs, 4,221 / 4,221 / 2,246 rows, needles 300/225/225), 191774 (1,407 Q, 0 mismatches) and 192265 (6 × 1,407, FAILURES none) all match. The licence is stated in the docstring of scripts/longdoc/longdoc_build.py:3."},{"claim":"provisional: training does not show the decoder long inputs (a count, not yet a cause). Finetune sample max 488 <MEM>s / span 4,017 (191147); out of range: 10-/20-page 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, 4-page 0/1,500; arm E above 488: text 2,246/2,246, pages 4,221/4,221, mixed 4,212/4,221.","status":"provisional","reason":"Matches audit_191147/audit.json (finetune_max_mem 488, span 4017; out_of_range_share 0.0 / 1.0 / 1.0 / 0.0233 / 0.9987) and audit_191516/out_of_range.json (2246/2246, 4221/4221, 4212/4221). The 488 is a bound from a 2,000-row sample, the arm E counts were
+== rc=0

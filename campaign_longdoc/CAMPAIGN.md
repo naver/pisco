@@ -77,6 +77,11 @@ Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1
   text layer and the others as images (or another construction the wake justifies in STATE.md);
 - one synthetic needle check per modality: a fact placed at 10% / 50% / 90% depth of a real long document at each
   bucket length, exact scoring (it measures capacity, it never decides a cause alone);
+  [2026-11-20 clarification, under the "a check that fails on (almost) every item, or on the accepted references, is a
+  fault of the check" rule: whole-answer EM fails even at ~4k text tokens (.52) where the code is found 100% and the
+  judge gives 1.00, because the base decoder answers in a sentence. "Exact scoring" = the exact 6-digit code string
+  appears in the answer (no partial credit), AND the judge must agree: a bucket passes only if BOTH are ≥ 90%. EM is
+  reported beside them. Written after the data were seen (verifier, 2026-11-19), so check 3 stays `provisional:`.]
 - a long text document reaches the compressor whole: split into consecutive CML-token pieces (pre-split in the set, or
   the collator's `chunk_docs` with `n_max_chunks` large enough). Without that the eval keeps only the first CML tokens
   (`pisco/mm_collator.py:457-462`). Arm A's cut check is re-run on every E set and must give 0%.

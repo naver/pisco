@@ -1,0 +1,85 @@
+== campaign longdoc wake 2026-11-20_0000  reasons=idle,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795100401 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=16.5 idle_h=2.3 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7276 sig=3f0317b9 same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:192266_max_135m
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192266 (ended)   (NEXT was: wake-when job:192266 max 135m)
+== session 608ff1ad-5d5a-44cb-b861-25ff9940fd81  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/608ff1ad-5d5a-44cb-b861-25ff9940fd81/tool-results/bgzbg65ye.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-20_0000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+153 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat STATE.md
+  ↳ 367 CAMPAIGN.md (+165 lines)
+→ Bash: cat CAMPAIGN.md
+  ↳ <persisted-output> (+27 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/608ff1ad-5d5a-44cb-b861-25ff9940fd81/tool-results/byfi6drdm.txt
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+367 lines)
+Checking the seven uncompressed reference cells that just ended, then submitting the next R cells.
+→ Bash: cat known_issues.md | head -60; sacct -X -j 192266,192267,192268,192287,192288,192289,192290 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End -P
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+46 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -la --time-style=+%m-%d_%H:%M expQ/base_qwen35_4b/eval/ | grep -i mnt512; ls expQ/longdoc/; for j in 192266 192267 192268 192287 192288 192289 192290; do grep "\"$j\"" .expmon/runs.jsonl | python3…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 1097141 11-18_21:36 mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json (+75 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json')) ⏎ print(type(d), list(d.keys()) if isinstance(d,dict) else len(d)) ⏎ if isinstance(d,dict): …
+  ↳ <class 'dict'> ['summary', 'records'] (+93 lines)
+→ Bash: for j in 192266 192267 192268 192287 192288 192289 192290; do echo "== $j $(grep -E 'pisco/model.py|eval_mm_4b|eval_mm_docqa.py' expQ/longdoc/eval_mnt_$j.out | awk '{print substr($1,1,8)}' | tr '\n' ' ') exceeds=$(grep -c 'exceeds' expQ/lon…
+  ↳ == 192266 b3d1cda1 0805270a dfe32aa0 f8ae6efe  exceeds=0 node= (+19 lines)
+→ Bash: ls scripts/longdoc/ expQ/longdoc/length expQ/longdoc/soundness; head -30 scripts/longdoc/closedbook_pair.py
+  ↳ expQ/longdoc/length: (+83 lines)
+Now health on all seven files (rows, judge on every row, answers at the cap by tokenizer) and soundness check 1 per bucket.
+→ Bash: cat > /tmp/ld_health.py <<'EOF' ⏎ import json, sys, collections ⏎ import tokenizers ⏎ t = tokenizers.Tokenizer.from_file("expQ/ft_mm_4b_184778/model/tokenizer.json"); t.no_padding(); t.no_truncation() ⏎ E="expQ/base_qwen35_4b/eval/mm_docqa_…
+  ↳ text_1500 {'n': 2246, 'judged': 2246, 'unparse': 0, 'judge': 0.5944, 'at_cap': 47, 'cap_pct': 2.09, 'prompt_max': 36965, 'prompt_p50': 8663, 'buckets': {'longdocurl_t16k': (588, 0.5867), 'longdocurl_t (+6 lines)
+→ Bash: E=expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_; python3 scripts/longdoc/closedbook_pair.py expQ/base_qwen35_4b/eval/mm_docqa_base_k0_px1003520_mnt512_longdoc_closedbook.json ${E}text_1500.json ${E}pages_150…
+  ↳ == expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json  (2246 rows, metric judge) (+30 lines)
+Soundness check 1 passes on every bucket (with the document beats no document by 33–51 pt, bar 20). Recording verdicts, then dry-running the next four cells.
+→ Bash: \ ⏎ expmon verdict 192266 closed "health OK: uncompressed text cap 512, 2,246/2,246 rows judged, unparseable 0, at cap 47 (2.1%, bar 5%), no exceeds, homer-016 1 attempt, md5 b3d1cda1/dfe32aa0/02bc8748/f8ae6efe; judge .594 (t4k .612 t8k .61…
+  ↳ verdict recorded: 192266 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+22 lines)
+→ Bash: grep -E '"(191887|191674|192267)"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎   d=json.loads(l); print({k:d[k] for k in d if k in ('jobid','argv','env','sbatch','slurm','flags','launcher','stage','partition'…
+  ↳ {'jobid': '191674', 'launcher': 'scripts/longdoc/eval_mnt.sbatch', 'argv': ['expQ/longdoc/e_r42/model', 'pisco', '300', '/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_text_1500'], 'slurm': {'pa (+2 lines)
+→ Bash: ls expQ/longdoc/audit_191516/; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in glob.glob("expQ/longdoc/audit_191516/*.json"): ⏎     try: d=json.load(open(f)) ⏎     except Exception as e: print(f,e); continue ⏎     if isinstance(d,dict): ⏎  …
+  ↳ audit.json (+2 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/longdoc/audit_191516/audit.json')) ⏎ print(type(d), list(d)[:20] if isinstance(d,dict) else len(d)) ⏎ v=d.get('variants', d) ⏎ items = v.items() if isinstance(v,dict) else enumerate(v) ⏎ f…
+  ↳ <class 'dict'> ['meta', 'variants', 'stages', 'health'] (+7 lines)
+DMLs match the audit maxima + 256 (text 5,232, pages 5,612, mixed 15,672). Dry-run first:
+→ Bash: expmon launch --dry-run --exp longdoc --stage E -p gpu-be --mem 8G --time 11:24:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5232 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/m…
+  ↳ would submit: sbatch -p gpu-be --mem 8G --time 11:24:00 --exclude=homer-[005-009] scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_t (+4 lines)
+→ Bash: expmon note "longdoc wake 2026-11-20 00:00 intent: arm E R s42 full cells, cap 512, CML 1024, PX 1003520, TOPK 1000, model expQ/longdoc/e_r42/model (184778): text whole 2,246 rows DML 5232 --time 11:24 (R text 3.8 h x3); pages p40 DML 5612 …
+  ↳ expmon note: 94 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+13 lines)
+→ Bash: for j in 192323 192324 192325 192326; do grep "\"$j\"" .expmon/runs.jsonl | python3 -c "import sys,json; d=json.loads(sys.stdin.readline()); print(d['jobid'], len(d['argv']), d['argv'][3].split('/')[-1], d['env'], d['slurm'])"; done; squeue…
+  ↳ 192323 4 longdoc_text_1500 {'CML': '1024', 'DML': '5232', 'MNT': '512', 'PX': '1003520', 'TOPK': '1000'} {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '11:24:00'} (+8 lines)
+All four R s42 cells are running (text, pages 40, mixed 40, pages 10). Now the verifier's open point on the needle check: let me see whether the needle files carry judge scores too.
+→ Bash: for j in 192323 192324 192325 192326; do :; done; python3 - <<'EOF' ⏎ import json,collections ⏎ E="expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_needle_" ⏎ for s in ["text","pages","mixed"]: ⏎     d=json.load…
+  ↳ text 1.0 0 {'needle_text_16k_d10': (25, 1.0, 0.36, 1.0), 'needle_text_16k_d50': (25, 1.0, 0.48, 1.0), 'needle_text_16k_d90': (25, 1.0, 0.44, 1.0), 'needle_text_32k_d10': (25, 1.0, 0.12, 1.0), 'needle_ (+15 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+165 lines)
+Updating the deliverable: the soundness check 1 table now uses the full uncompressed cells instead of the 300 trial rows.
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md" ⏎ s=open(p).read() ⏎ a=s.index("**Arm E soundness check 1 — is the document needed?") ⏎ b=s.index("**Arm E soundness check 3") ⏎ new='''**Arm E soundness check 1 — is the document needed? (D…
+  ↳ 3:Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-20 00:10 (arm E: the full uncompressed reference is in, 7 cells, 1,407-2,246 rows each; soundness check 1 passes in every bu (+2 lines)
+→ Bash: python3 - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md"; s=open(p).read() ⏎ o="Fixed: every arm E cell runs at 512 tokens (text 2.3% < 5%)." ⏎ assert o in s ⏎ s=s.replace(o,"Fixed: every arm E cell runs at 512 tokens; the full uncompressed cells …
+  ↳ ok
+→ Bash: squeue -j 192323,192324,192325,192326 -o "%i %T %M %N"; for j in 192323 192324 192325 192326; do echo "== $j"; tail -c 600 expQ/longdoc/eval_mnt_$j.out 2>/dev/null | tr '\r' '\n' | tail -4; grep -ciE "traceback|error" expQ/longdoc/eval_mnt_…
+  ↳ Exit code 1 (+29 lines)
+→ Bash: for j in 192323 192324 192325 192326; do echo "$j $(grep -E 'pisco/model.py|eval_mm_4b.sh|eval_mm_docqa.py|judge_mm_docqa.py' expQ/longdoc/eval_mnt_$j.out | awk '{print substr($1,1,8)}' | tr '\n' ' ')"; done; expmon display --exp longdoc 2>…
+  ↳ 192323 b3d1cda1 dfe32aa0 02bc8748 f8ae6efe  (+4 lines)
+→ Bash: expmon gripe --open --search "wake-when any" 2>&1 | head -8; expmon gripe --open --search "first of" 2>&1 | head -5
+  ↳ == 3 open report(s) matching 'wake-when any', every machine, newest first == (+12 lines)
+→ Bash: expmon gripe --same ee961307 "nle/pisco longdoc 2026-11-20: 4 independent R cells with walls ~1.5 h to ~4 h; to free submission slots I must pick the shortest one by guess (job:192326) instead of 'wake when the first ends'" 2>&1 | tail -1; …
+  ↳ logged as a +1 of ee961307 (entry 6c63e250) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+Writing STATE.md and NEXT now.
+→ Bash: ids=$(python3 -c " ⏎ import json ⏎ s=[] ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: d=json.loads(l) ⏎     except: continue ⏎     if d.get('exp')=='longdoc': s.append(str(d['jobid'])) ⏎ print(','.join(s))"); echo "$ids" | tr ',' '\n' |…
+  ↳ 69 (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Saving the health check as a reusable campaign script so the next wake doesn't rebuild it:
+→ Bash: python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json')) ⏎ print(list(d['records'][0].keys())); print({k:v for k,v in d['summary'].items() if 'mem…
+  ↳ ['query_id', 'source', 'query', 'answers', 'prediction', 'em', 'f1', 'anls', 'match', 'mems_used', 'n_images', 'decoder_prompt_tokens', 'judge', 'judge_raw'] (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/cell_health.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/cell_health.py (file state is current in your context — no need to Read it back)
+→ Bash: .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longd…
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json {"n": 300, "judged": 300, "unparseable": 0, "judge": 0.4967, "at_cap": 4, "at_cap_pct": 1.33, "prompt_max": 11739, "mems_us (+3 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:192326 max 4h", "summary": "The uncompressed reference for the long-document yardstick (one real LongDocURL PDF per question) is complete, and the seed-42 compressed cells are running.\n\nDone:\n- All…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.5317 turns=34 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:192326 max 4h", "summary": "The uncompressed reference for the long-document yardstick (one real LongDocURL PDF per question) is complete, and the seed-42 compressed cells are running.\n\nDone:\n- All 7 uncompressed cells finished cleanly, one attempt each, on the same code as the plan (verdicts closed). Every row was judged, none was unparseable, and 0.6–2.2% of answers reach the 512-token answer cap (the limit is 5%).\n- Sound…", "launched": ["192323", "192324", "192325", "192326"], "verdicts": [{"jobid": "192266", "verdict": "closed", "note": "uncompressed text, health OK, judge .594, at cap 2.1%, check 1 PASS every bucket"}, {"jobid": "192287", "verdict": "closed", "note": "uncompressed pages 10, judge .672, check 1 +50.8"}, {"jobid": "192288", "verdict": "closed", "note": "uncompressed pages 20, judge .665, check 1 +50.0"}, {"jobid": "192267", "verdict": "closed", "note": "uncompressed pages 40, judge .659, check 1 +49.5"}, {"jobid": "192289", "verdict": "closed", "note": "uncompressed mixed 10, judge .654, check 1 +49.0"}, {"jobid": "192290", "verdict": "closed", "note": "uncompressed mixed 20, judge .643, check 1 +47.8"}, {"jobid": "192268", "verdict": "closed", "note": "uncompressed mixed 40, judge .631, check 1 +46.7"}], "gripes": ["+1 of ee961307: wake-when waits for ALL listed jobs; with 4 independent cells I must guess the shortest one instead of 'wake when the first ends'"]}
+== final:
+{"next":"wake-when","wake_when":"job:192326 max 4h","summary":"The uncompressed reference for the long-document yardstick (one real LongDocURL PDF per question) is complete, and the seed-42 compressed cells are running.\n\nDone:\n- All 7 uncompressed cells finished cleanly, one attempt each, on the same code as the plan (verdicts closed). Every row was judged, none was unparseable, and 0.6–2.2% of answers reach the 512-token answer cap (the limit is 5%).\n- Soundness check 1 (\"is the document needed?\") passes in all 10 buckets. Judge accuracy with the document minus judge accuracy with the question alone, which is 0.164:\n  - text, about 4k to 32k tokens: +41.0, +41.3, +38.9 and +32.8 pt;\n  - pages, 10 / 20 / 40: +50.8, +50.0 and +49.5 pt;\n  - mixed (some pages as images, some as text), 10 / 20 / 40 items: +49.0, +47.8 and +46.7 pt.\n- The uncompressed model barely drops with length on one long document:\n  - pages 0.672 → 0.659 from 10 to 40 pages;\n  - mixed 0.654 → 0.631;\n  - text 0.612 → 0.547 from 4k to 32k tokens.\n\nRunning: the reference compressed model (seed 42) on text, 40 pages, 40 mixed items and 10 pages (jobs 192323–192326).\n\nRecords: the findings document `docs/longdoc_diagnosis.md`, STATE.md and the ledger are updated. A new reusable health check is at `scripts/longdoc/cell_health.py`; on an earlier trial file it gives the same numbers as that cell's verdict.\n\nThe campaign law now states how the planted-code (\"needle\") check is scored. A bucket passes only if the exact code appears in at least 90% of answers AND the judge agrees on at least 90%. Whole-answer exact match failed even where the code was found every time, because the uncompressed model answers in a full sentence. I wrote this rule after seeing the data, so this check stays provisional.\n\nNext: when the 10-page cell ends, compare it with the uncompressed 10-page cell on the same questions. Then submit 4 more cells: seed 42 at 20 pages, 10 mixed and 20 mixed items, and seed 43 on text.\n\nNothing needed from you.","launched":["192323","192324","192325","192326"],"verdicts":[{"jobid":"192266","verdict":"closed","note":"uncompressed text, health OK, judge .594, at cap 2.1%, check 1 PASS every bucket"},{"jobid":"192287","verdict":"closed","note":"uncompressed pages 10, judge .672, check 1 +50.8"},{"jobid":"192288","verdict":"closed","note":"uncompressed pages 20, judge .665, check 1 +50.0"},{"jobid":"192267","verdict":"closed","note":"uncompressed pages 40, judge .659, check 1 +49.5"},{"jobid":"192289","verdict":"closed","note":"uncompressed mixed 10, judge .654, check 1 +49.0"},{"jobid":"192290","verdict":"closed","note":"uncompressed mixed 20, judge .643, check 1 +47.8"},{"jobid":"192268","verdict":"closed","note":"uncompressed mixed 40, judge .631, check 1 +46.7"}],"gripes":["+1 of ee961307: wake-when waits for ALL listed jobs; with 4 independent cells I must guess the shortest one instead of 'wake when the first ends'"]}
+== rc=0 secs=489
+== verify: 4/14
