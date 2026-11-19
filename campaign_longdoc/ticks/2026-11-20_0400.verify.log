@@ -1,0 +1,48 @@
+== verifier 2026-11-20_0400  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session abc7ada4-e6db-451b-b64f-f236cbc48c14  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+266 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 267	  - Text autoencoding at 256 tokens, d = L1024 − C256: stage 1 −.0018 [−.0031, −.0006], 271 / 229, p .067 (191218); (+159 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 426	191375     L    -        ended     closed     eval_mm  base     base_qwen35_4b mm_docqa_1500_1m 300      ckpt       20       1003520    0        0             none       brief        0         non (+155 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/*.json"}
+→ Grep: {"pattern": "1687|-\\.169", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+3 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "E_dlen_*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/E_dlen_mixed_m40_s42_judge.json (+6 lines)
+Checking the Δ_len tables for each arm E contrast now.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_mixed_m40_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t32k_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t16k_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t8k_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p20_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 1	{ (+279 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147"}
+  ↳ expQ/longdoc/audit_191147/audit.json (+1 lines)
+→ Grep: {"pattern": "EM|\\.190|\\.080", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md", "output_mode": "content"}
+  ↳ 21:[Omitted long matching line] (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ 40	| `expmon launch` prints `(eval):1: no matches found: --exclude=homer-[005-009]` and submits nothing (2026-11-20 01:30) | zsh globs the unquoted `[005-009]` when the launch line is built in a varia (+3 lines)
+→ Grep: {"pattern": "out_of_range|docs_p4", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "-A": 3, "head_limit": 60}
+  ↳ 15:  "docs_p4": { (+61 lines)
+→ Grep: {"pattern": "71", "path": "/beegfs/scratch/user/hdejean/pisco/docs/architecture_review.md", "output_mode": "content", "-n": true, "head_limit": 10}
+  ↳ 32:| 8 | .574 | **.803** | - | .807 | 97% | 1,711 / 6,945 | (+7 lines)
+→ StructuredOutput: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R s42 pages 1.4/1.7/3.6%, mixed 1.8/1.9/3.2%, text 3.2% (bar 5%)", "status":…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3007 turns=21 is_error=False denials=0
+== declared: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Every share matches its verdict: 192266 47 (2.1%), 192287 8,…"}, {"claim": "The transcription-probe port is validated (job 191169): 360/…", "status": "supported", "reason": "Verdict 191169 says 360/360 byte-identical and 70.5% = 70.5%…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515, 191774 and 192265 give exactly these counts…"}, {"claim": "provisional (one seed; s43 running): R s42 − uncompressed on…", "status": "provisional", "reason": "Every number matches its verdict and grid row: 192326 −.166,…"}, "… +15 more"], "summary": "Every number I checked matches its verdict, grid row or resu…"}
+== final:
+{"claims":[{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R s42 pages 1.4/1.7/3.6%, mixed 1.8/1.9/3.2%, text 3.2% (bar 5%)","status":"supported","reason":"Every share matches its verdict: 192266 47 (2.1%), 192287 8, 192288 14, 192267 14, 192289 15, 192290 26, 192268 31; R 192326 20, 192356 24, 192324 50, 192357 26, 192358 27, 192325 45, 192323 71. All are under the 5% bar. The cap-raising trigger (191777, 7/300 by the law's token rule; the verdict says 8/300) is also under 5%. The grid shows MNT 512 on every cell."},{"claim":"The transcription-probe port is validated (job 191169): 360/360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt)","status":"supported","reason":"Verdict 191169 says 360/360 byte-identical and 70.5% = 70.5%. That is within ±2 pt of the legacy 71% in architecture_review.md:105, which is the gate the law sets."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable Q on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637/610/588/411), needles 300/225/225; closed-book 1,407 (191774); bucket sets 6 × 1,407 (192265)","status":"supported","reason":"Verdicts 191515, 191774 and 192265 give exactly these counts, and 637+610+588+411 = 2,246. This is a build fact, not a result."},{"claim":"provisional (one seed; s43 running): R s42 − uncompressed on one long document, cap 512, paired per question: pages 10/20/40 −16.6/−19.4/−23.0, mixed 10/20/40 −20.5/−20.8/−21.9, text −17.9 (per bucket −19.0/−19.2/−16.0/−17.0)","status":"provisional","reason":"Every number matches its verdict and grid row: 192326 −.166, 192356 −.194, 192324 −.230, 192357 −.205, 192358 −.208, 192325 −.219, 192323 −.179. The McNemar counts and n (1,407 / 2,246) match too, and each pair ran on the same md5 at the same cap. Per-bucket text R values are consistent with U .612/.615/.587/.547 (192266). There is no seed repeat yet, so it is correctly marked provisional."},{"claim":"provisional (NOT DECIDED): Δ_len R s42 arm E — pages 20 vs 10 −2.8 [−5.6,−0.1] p .06; pages 40 vs 10 −6.5 [−9.5,−3.5] p 4e-5, past the length-loss bar at s42 only; mixed 20/40 vs 10 −0.3 / −1.4; text t8k/t16k/t32k vs t4k +0.7/+3.6/+3.9","status":"provisional","reason":"The tables E_dlen_*_s42_judge.json match: pages p40 −.0647 [−.0952,−.0348] 165/249; p20 −.0284 [−.0561,−.0007] 157/193; m40 −.0142 [−.0448,+.0163] 206/223; m20 −.0028; t8k/t16k/t32k +.0066/+.0357/+.0389 at n 610/588/411. The four pages files are each under 5% at the cap. But the law needs both seeds. Also, by arm J's rule EM must keep the sign, and EM flips (+6.0); only the wake's own known_issues row 42 excuses that flip, not the law. The project prompt has not run. Per-bucket cap shares for the text files were not checked."},{"claim":"provisional: arm E soundness check 1 PASS in every bucket (uncompressed with document beats closed-book 191776, judge .164, by ≥ 20 pt): text +41.0/
+== rc=0
