@@ -1,35 +1,23 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-19 18:00 (eighteenth LLM wake; woken by the owner's REQUEST of 17:05).
-NEXT: `wake-when job:192265 max 2h` (the bucket-split build; when it ends, submit the next 4 uncompressed bucket cells).
+Last wake: 2026-11-19 18:30 (nineteenth LLM wake; woken because the bucket-split job 192265 ended).
+NEXT: `wake-when job:192266 max 135m` (the uncompressed text cell; when it ends read its health and submit 4 R s42 cells).
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- Owner REQUEST 17:05 executed: option 1 of the arm E budget question approved ("do as recommended"): cells 70 → 87,
-  GPU-hours 60 → 114, arm E model cells at both seeds + the long-chunk text cells. Option 2 (arm L re-run at the
-  512 cap) was NOT approved: arm L stays undecided. Recorded in CAMPAIGN.md "Budget and caps"; REQUEST and BLOCKED.md
-  deleted (question answered).
-- Correction to the deleted BLOCKED.md (verifier): it said "uncompressed with the document beats closed-book by +27 to
-  +54 pt"; the +27 was R mixed at 40 items (191887), not uncompressed. Uncompressed − closed-book on the trial rows is
-  +32 to +33 (text), +44 to +48 (mixed), +52 to +54 (pages, cap-256 file, indicative only).
-- New tooling: `scripts/longdoc/split_buckets.py` + `split_buckets.sbatch` (md5 3ef018be): per-bucket sets
-  `eval_data/longdoc_pages_1500_{p10,p20,p40}` and `eval_data/longdoc_mixed_1500_{m10,m20,m40}` (rows with source
-  `longdocurl_<b>`, source order, checks query ids). Law clarified: a bucket cell pairs only with the same bucket.
-- Symlink `expQ/longdoc/e_r43/model → expQ/ft_mm_4b_184780/model` made (R seed 43).
-- Launched 4 of cap 4 (all `-p gpu-be --exclude=homer-[005-009]`, one GPU, `--mem 8G` = MaxRSS 4.4 GB × 1.5,
-  env `MNT=512 PX=1003520 TOPK=1000 CML=1024`, base mode via `expQ/longdoc/e_r42/model`):
-  - 192265 split build (CPU, `-c 2 --mem 16G --time 1:00`), RUNNING homer-014;
-  - 192266 uncompressed text, whole set 2,246 rows, `--time 8:45` (23:26 per 300 rows × 7.49 × 3), RUNNING homer-016;
-  - 192267 uncompressed pages p40 (1,407 rows), `--time 13:45`, afterok 192265;
-  - 192268 uncompressed mixed m40 (1,407 rows), `--time 17:40`, afterok 192265.
-  `--time` for a bucket = whole-set wall (BLOCKED.md costing) × max(1/3, the bucket's prompt-token share) × 3; the
-  token shares on the trial files are 1/7, 2/7, 4/7 for 10 / 20 / 40 pages or items.
-- Code md5 changed under the campaign: `pisco/model.py` is now f8ae6efe (was 994cff3d), edited 17:06 by another chat:
-  `compress()` drops pad columns of a ONE-row batch (Qwen3.5 linear-attention layers leaked pads into `<MEM>`s,
-  campaign slotcheck job 191781). Base mode does not compress. Every arm E full cell runs on f8ae6efe (192266 logged
-  it); the 300-row trial cells ran on 994cff3d and stay plumbing. Each new cell's log must show f8ae6efe before it pairs.
-- Gripe: runs.jsonl drops `--dependency` / `--mem` from the launch row.
+- Bucket split 192265 PASSED: COMPLETED 0:0 in 14:51 (homer-014, MaxRSS 3.0 GB); 6 sets × 1,407 rows, each from 4,221
+  source rows, FAILURES none (log `expQ/longdoc/split_buckets_192265.out`). Verdict closed; sets ledgered as a resource.
+- The two cells chained on it started: 192267 uncompressed pages p40 and 192268 uncompressed mixed m40, both logged
+  model.py f8ae6efe and the shared md5s. Live speed: p40 9.3 s/row (60 rows, ~3.6 h + judge, limit 13:45); m40 14.7 s/row
+  (40 rows, ~5.7 h, limit 17:40); 192266 text 3.6 s/row (430 / 2,246 rows at 26 min, ~2.3 h + judge, limit 8:45).
+- Launched 4 of cap 4 (same shape as 192267: `-p gpu-be --exclude=homer-[005-009] --mem 8G`, env `MNT=512 PX=1003520
+  TOPK=1000 CML=1024`, base mode via `expQ/longdoc/e_r42/model`, argv length 4 checked in runs.jsonl):
+  192287 uncompressed pages p10 and 192288 pages p20 (`--time 8:00`, RUNNING homer-016); 192289 mixed m10 and
+  192290 mixed m20 (`--time 10:18`, PENDING Resources / Priority).
+- Verifier fixes: mixed answers at the cap are 8 / 300 (verdict 191778), not 7; the arm L s43 20-page lower bound is
+  given from both sources.
+- Gripe +1 of f5bd7344: `expmon logs` does not read a launcher's absolute `#SBATCH --output`.
 
 ## TL;DR — where this leaves the question
 **Settled**
@@ -46,7 +34,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   pages 225 / mixed 225. Closed-book set: 1,407 questions (job 191774).
 - provisional: the arm E answer cap is 512 tokens. Uncompressed text answers at the cap: 7 / 300 (2.3%, bar 5%) by a
   frontend tokenizer recount of 191777's file with padding off (no job); verdict 191777 says 8 / 300 (2.7%, padded
-  count). Mixed 7 / 300 (191778), closed-book 5 / 1,407 (191776), R mixed 4 / 300 (191887). By characters 191777 is 6.3%.
+  count). Mixed 8 / 300 (verdict 191778), closed-book 5 / 1,407 (191776), R mixed 4 / 300 (191887). By characters 191777 is 6.3%.
 - provisional: arm E soundness check 3 (needle) passes in every bucket when scored as "code string in the answer"
   (uncompressed, cap 512, 25 documents × 3 depths per length): text 75 / 75 at ~4k / 8k / 16k / 32k tokens (191877);
   pages 75 / 75, 73 / 75, 74 / 75 at 10 / 20 / 40 pages (191878); mixed 75 / 75, 75 / 75, 74 / 75 (191879); bar 90%.
@@ -81,8 +69,9 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
     191221), −0.6 [−2.7, +1.3] 121 / 130 (s43; 191307 vs 191306): seeds disagree; answered by arm E's text cells.
 
 **Open, and running**
-- Arm E full grid (owner-approved 2026-11-19): 4 of 26 cells submitted (192265-192268, above). Left: uncompressed pages
-  p10 / p20 and mixed m10 / m20; R s42 and R s43 (text whole, pages and mixed per bucket: 14 cells); C256 / L1024 at
+- Arm E full grid (owner-approved 2026-11-19): 8 of 26 cells submitted. The bucket split is done (192265). The
+  uncompressed reference runs on all 7 inputs (text whole set, pages 10 / 20 / 40, mixed 10 / 20 / 40 items; 192266-192268,
+  192287-192290). Left (18 cells): R s42 and R s43 (text whole, pages and mixed per bucket: 14 cells); C256 / L1024 at
   CML 1,024 on text, s42 and s43 (4 cells, symlinks `expQ/longdoc/t_{c256,l1024}_s4{2,3}/model` exist).
 - provisional (first read, trial rows; the full uncompressed cells decide): arm E soundness check 1 — the document is
   needed. Closed-book judge .164 on 1,407 questions (191776, cap 512). With the document − closed-book: text +33 / +33
@@ -97,7 +86,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   / 20 / 40 items; 191887 vs 191778).
 - provisional, NOT DECIDED (32-token cap confound; the 512 re-run was not approved): arm L documents, Δ_len vs 4
   pages, 1,500 pairs: 10 pages +0.5 [−1.8, +2.7] (s42, 191378), +0.1 [−2.2, +2.5] (s43, 191390); 20 pages +4.3 [+1.8,
-  +6.9] (s42, 191377), +3.1 [+0.6, +5.7] (s43, 192007), questions with no capped answer −0.6 / −2.0 (n 1,221 / 1,220).
+  +6.9] (s42, 191377), +3.1 [+0.5 to +0.6, +5.7] (s43, 192007; the lower bound is +0.5 in the verdict, +0.6 in cap32_sensitivity.json), questions with no capped answer −0.6 / −2.0 (n 1,221 / 1,220).
   "The gap shrinks at 20 pages" is withdrawn: it is the cap. Text 40 vs 10 passages: −2.6 [−5.6, +0.3] (s42, 191392),
   +0.1 [−3.0, +3.1] (s43, 192008); no capped answer −4.8 / −3.4 (n 731 / 733, a subset chosen on answers).
 
@@ -108,31 +97,35 @@ every text size. `<MEM>` slots p50 per bucket: pages 1,198 / 2,392 / 4,795; text
 977 / 1,922 / 3,821 (max 14,688). Uncompressed prompt max: pages 39,562; text 36,965; mixed 117,451 (measured up to
 89,311 on one GPU, 191778). Measured walls per 300 judged rows: uncompressed text 23:26 (cap 512), mixed 43:47 (512),
 pages 31:01 (256); R pages 31:05 (256), text 30:22 (256), mixed 31:19 (512). MaxRSS ≤ 4.4 GB everywhere.
-Submission plan (≤ 4 per wake, `--time` rule above; whole-set walls: U pages 8.0 h, U mixed 10.3 h, U text 2.9 h,
-R pages 7.3 h, R mixed 7.3 h, R text 3.8 h, C256 / L1024 text 3.8 h):
-1. When 192265 ends (check its log: 6 buckets × 1,407 rows, FAILURES none): uncompressed pages p10 / p20 (`--time
-   8:00` each), mixed m10 / m20 (`--time 10:18` each).
-2. R s42: text (`--time 11:24`, DML 5232), pages p40 (`--time 12:30`, DML 5612), mixed m40 (`--time 12:30`, DML
-   15672), pages p10. Then R s42 p20 / m10 / m20 + R s43 text; then R s43 per bucket; then C256 / L1024 text.
+Submission plan (≤ 4 per wake, `--time` = whole-set wall × max(1/3, the bucket's prompt-token share 1/7, 2/7, 4/7) × 3;
+whole-set walls: U pages 8.0 h, U mixed 10.3 h, U text 2.9 h, R pages 7.3 h, R mixed 7.3 h, R text 3.8 h, C256 / L1024
+text 3.8 h):
+1. DONE: uncompressed text, p10 / p20 / p40, m10 / m20 / m40.
+2. Next wake: R s42 text (`--time 11:24`, DML 5232), pages p40 (`--time 12:30`, DML 5612), mixed m40 (`--time 12:30`,
+   DML 15672), pages p10 (`--time 7:18`). Then R s42 p20 / m10 / m20 + R s43 text; then R s43 per bucket; then
+   C256 / L1024 text.
 3. Each full cell: health (n rows, judge on all, unparseable 0, no "exceeds", answers at the cap < 5%, `mems_used`
    vs audit, node, model.py md5 f8ae6efe); soundness check 1 per bucket with `closedbook_pair.py`; gap and Δ_len per
    bucket with `length_effect.py`; the project-prompt re-judge on any number that decides.
 Launch shape: `expmon launch --exp longdoc --stage E -p gpu-be --mem 8G --time … --exclude='homer-[005-009]'
 [--dependency afterok:<id>] --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 [--env DML=<set>]
 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r4{2,3}/model pisco|base '' /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_<set>[_<b>]`.
-Check `len(argv)` = 4 in `.expmon/runs.jsonl` after each launch (192266-192268: 4).
+Check `len(argv)` = 4 in `.expmon/runs.jsonl` after each launch (192266-192268, 192287-192290: 4).
 
 ## Owned jobs
 | job | arm | state | rows | note |
 |---|---|---|---|---|
-| 192265 | E split build | RUNNING homer-014 | 6 bucket sets | CPU |
-| 192266 | E uncompressed text, cap 512 | RUNNING homer-016 | 2,246 | model.py f8ae6efe in log |
-| 192267 / 192268 | E uncompressed pages p40 / mixed m40 | PENDING afterok 192265 | 1,407 each | |
+| 192266 | E uncompressed text, cap 512 | RUNNING homer-016 | 2,246 | f8ae6efe in log |
+| 192267 / 192268 | E uncompressed pages p40 / mixed m40 | RUNNING homer-014 / homer-017 | 1,407 each | f8ae6efe in log |
+| 192287 / 192288 | E uncompressed pages p10 / p20 | RUNNING homer-016 | 1,407 each | check md5 in log |
+| 192289 / 192290 | E uncompressed mixed m10 / m20 | PENDING | 1,407 each | |
+| 192265 | E bucket split | COMPLETED, verdict closed | 6 × 1,407 | |
 | 192142, 192007, 192008, 191877-191879, 191887, 191774, 191776-191778, 191669, 191670, 191673, 191674, 191629, 191634-191636 | E, J, L | COMPLETED, verdict closed | | |
 | 191517 | J re-judge (first try) | FAILED, verdict closed "launch fault" | — | replaced by 191629 |
 | 191515 / 191516 / 191392 / 191393 / 191375-191378 / 191390 / 191391 / 191305-191308 / 191218-191221 / 191169-191172 / 191148-191155 / 191165-191168 / 191145-191147 | E, L, T, A | COMPLETED, verdict closed | | |
 
-Cells used: 61 of 87. GPU-h: 32.0 of 114 at the last sacct (08:30) + the cells now running.
+Cells used: 65 of 87. GPU-h: 32.0 at the 08:30 count (requeued attempts included); `sacct -X` now gives 27.5 (last
+attempts only, ended and running cells to 18:45) + the 7 arm E cells running or queued.
 Code md5 for the arm E full grid: eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748,
 pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 
@@ -142,7 +135,7 @@ pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 ## Open arms and the next decision for each
 | arm | status | next |
 |---|---|---|
-| E long-document yardstick | full grid approved and started (4 / 26 cells) | the submission plan above |
+| E long-document yardstick | full grid approved; 8 / 26 cells submitted (uncompressed reference complete) | the submission plan above |
 | L length on a fixed model | NOT DECIDED (cap confound); 512 re-run not approved | arm E answers the length question |
 | J instrument | control 1 PASS (frontend); project prompt done for every arm L number | re-run the project prompt on any arm E number that decides |
 | U reading many `<MEM>`s | not started | after E; only where a length loss shows |
@@ -154,7 +147,7 @@ pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 - `scripts/longdoc/eval_mnt.sbatch` (md5 1c874b32): arm E cells. `--env MNT=<N≠32>` required; STYLE=expand refused;
   writes the derived launcher to `expQ/longdoc/launchers/eval_mm_4b_mnt.<jobid>.sh`; exits 3 if `eval_mm_4b.sh`
   changed shape. Base-mode results land in `expQ/base_qwen35_4b/eval/` (new names: `_mnt512_<set>`).
-- `scripts/longdoc/split_buckets.py` / `.sbatch` (md5 3ef018be): per-bucket sets; keeps a bucket already written.
+- `scripts/longdoc/split_buckets.py` (md5 3ef018be) / `.sbatch` (md5 d5430dc9, log `expQ/longdoc/split_buckets_<job>.out`): per-bucket sets; keeps a bucket already written.
 - `scripts/longdoc/closedbook_pair.py CLOSEDBOOK DOC… [--json OUT]` (stdlib): soundness check 1 per bucket.
 - `scripts/longdoc/length_effect.py +A -B …` (judge default, `--metric em|match`, `--json`); tables in `expQ/longdoc/length/`.
 - `scripts/longdoc/rejudge.sbatch NAME FILE…` (md5 9e2bc7d6): project-prompt judge on copies. Pass files as separate

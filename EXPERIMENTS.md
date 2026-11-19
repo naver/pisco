@@ -1535,3 +1535,10 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
   - did: owner REQUEST executed: arm E option 1 approved (cells 87, GPU-h 114); wrote split_buckets.py; launched 192265 split build, 192266 U text 2,246 rows, 192267 U pages p40, 192268 U mixed m40 (afterok 192265); REQUEST + BLOCKED.md deleted
   - saw: pisco/model.py now f8ae6efe (another chat, 17:06: one-row pad drop in compress); arm E full grid runs on it, trial cells stay plumbing
   - next: when 192265 ends: U pages p10/p20, mixed m10/m20; then R s42, R s43, C256/L1024 text
+- 2026-11-19 18:32 [job 192265] verdict: closed — split build passed: COMPLETED 0:0 14:51 homer-014, MaxRSS 3.0 GB; 6 bucket sets x 1,407 rows (pages p10/p20/p40, mixed m10/m20/m40, each from 4,221 source rows, source order), FAILURES none; split_buckets.py 3ef018be
+- 2026-11-19 18:33 [job 192287] arm E uncompressed pages p10 (1,407 rows), cap 512, CML 1024, PX 1003520, --time 8:00 (whole-set 8.0 h x max(1/3, 1/7) x 3)
+- 2026-11-19 18:33 [job 192288] arm E uncompressed pages p20 (1,407 rows), cap 512, --time 8:00 (8.0 h x 1/3 x 3)
+- 2026-11-19 18:33 [job 192289] arm E uncompressed mixed m10 (1,407 rows), cap 512, --time 10:18 (10.3 h x 1/3 x 3)
+- 2026-11-19 18:33 [job 192290] arm E uncompressed mixed m20 (1,407 rows), cap 512, --time 10:18 (10.3 h x 1/3 x 3)
+- 2026-11-19 18:34 resource: eval_data/longdoc_pages_1500_{p10,p20,p40} and eval_data/longdoc_mixed_1500_{m10,m20,m40}, 1,407 rows each = the rows of longdoc_pages_1500 / longdoc_mixed_1500 with source longdocurl_<bucket>, source order (scripts/longdoc/split_buckets.py 3ef018be, job 192265, FAILURES none). A bucket cell pairs only with the same bucket.
+- 2026-11-19 18:34 longdoc wake 18:30: bucket split 192265 passed (6 x 1,407 rows, FAILURES none); uncompressed p40 192267 / m40 192268 started on model.py f8ae6efe; launched uncompressed pages p10/p20 (192287/192288, --time 8:00) and mixed m10/m20 (192289/192290, --time 10:18) = the uncompressed reference now covers all 7 arm E inputs. Next: when 192266 (uncompressed text) ends, read health and submit R s42 text/p40/m40/p10.

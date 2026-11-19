@@ -1,0 +1,75 @@
+== campaign longdoc wake 2026-11-19_1830  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795080601 live=192267:RUNNING,192268:RUNNING,192266:RUNNING running=3 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.5 idle_h=0.0 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7335 sig=881fa151 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:192265_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192265 (ended)   (NEXT was: wake-when job:192265 max 2h)
+== session cc349b38-8f50-44ae-ab55-3814a4c6e918  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/cc349b38-8f50-44ae-ab55-3814a4c6e918/tool-results/bbvzjo63f.txt | cut -c1-600
+  ↳ <persisted-output> (+22 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-19_1830   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+119 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ 120	191307     T    -        ended     closed     eval_mm  pisco    t_l1024_s43 text_hotpotqa_1500 all      ckpt       10       451584     0        0             none       brief        0         none (+43 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && ls -la && cat campaign.conf 2>/dev/null | head -40
+  ↳ 367 CAMPAIGN.md (+56 lines)
+Reading the longdoc campaign law and state; the bucket-split job finished, so the next step is launching the dependent evals.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ 1	# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+169 lines)
+→ Bash: grep -n '^#' CAMPAIGN.md && cat known_issues.md | cut -c1-400 | tail -25
+  ↳ 1:# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+37 lines)
+→ Bash: sed -n 215,330p CAMPAIGN.md
+  ↳ ## Budget and caps (+115 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon logs 192265 40 2>&1 | tail -40; ls -la eval_data/ | grep longdoc_
+  ↳ no log file for 192265 yet — pattern '*_%j.out' matched no existing file. Dir listing: (+16 lines)
+→ Bash: ls -la expQ/192265/ 2>/dev/null; grep '"192265"\|192265' .expmon/runs.jsonl | tail -1 | cut -c1-800; sacct -j 192265 -o JobID,State,ExitCode,Elapsed,NodeList,MaxRSS -n
+  ↳ {"ts": "2026-11-19 18:03", "jobid": "192265", "launcher": "scripts/longdoc/split_buckets.sbatch", "argv": [], "git": "71e7f9e+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/192265", "exp": (+2 lines)
+→ Bash: grep -n 'output\|error\|#SBATCH' scripts/longdoc/split_buckets.sbatch | head; ls -t expQ/longdoc/logs 2>/dev/null | head; find expQ/longdoc -maxdepth 2 -name '*192265*' 2>/dev/null; ls *192265* logs/*192265* 2>/dev/null
+  ↳ Exit code 1 (+10 lines)
+Checking the bucket-split job's log before launching the next four evals.
+→ Bash: tail -30 expQ/longdoc/split_buckets_192265.out; md5sum scripts/longdoc/split_buckets.py scripts/longdoc/split_buckets.sbatch pisco/model.py scripts/longdoc/eval_mnt.sbatch eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py | c…
+  ↳ FACTORS kind=split_buckets arm=E sets=pages,mixed (+93 lines)
+→ Bash: grep -E '"jobid": "19226[678]"' .expmon/runs.jsonl | cut -c1-900; for j in 192266 192267 192268; do echo "== $j"; f=$(ls expQ/$j/*.log expQ/$j/*.out 2>/dev/null | head -1); echo "$f"; done
+  ↳ {"ts": "2026-11-19 18:04", "jobid": "192266", "launcher": "scripts/longdoc/eval_mnt.sbatch", "argv": ["expQ/longdoc/e_r42/model", "base", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_text (+10 lines)
+→ Bash: for j in 192266 192267 192268; do echo "== $j"; expmon logs $j 6 2>&1 | tail -6 | cut -c1-300; done
+  ↳ == 192266 (+20 lines)
+→ Bash: for j in 192267 192268; do f=$(expmon logs $j 1 2>&1 | head -0; ls -t $(grep -h '"jobid": "'$j'"' .expmon/runs.jsonl >/dev/null; echo expQ/longdoc/*$j* 2>/dev/null) 2>/dev/null | head -3); echo "== $j $f"; done; ls expQ/longdoc | grep -E '1…
+  ↳ == 192267 expQ/longdoc/eval_mnt_192267.out (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc && for j in 192267 192268; do echo "== $j"; grep -E 'md5|f8ae6efe|model.py|^\[[0-9]+/|exceed|Error|error' eval_mnt_$j.out | grep -v pad_token | tail -6 | cut -c1-250; done
+  ↳ == 192267 (+12 lines)
+→ Bash: head -20 eval_mnt_192267.out | cut -c1-200
+  ↳ b3d1cda17302eb3f1d9fd4441ebc789a  eval_mm_4b.sh (+21 lines)
+Split build passed (6 sets × 1,407 rows, no failures). Recording that, then dry-running the four uncompressed bucket cells.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon verdict 192265 closed "split build passed: COMPLETED 0:0 14:51 homer-014, MaxRSS 3.0 GB; 6 bucket sets x 1,407 rows (pages p10/p20/p40, mixed m10/m20/m40, each from 4,221 source rows, source o…
+  ↳ verdict recorded: 192265 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+6 lines)
+→ Bash: for spec in "pages_1500_p10 8:00:00" "pages_1500_p20 8:00:00" "mixed_1500_m10 10:18:00" "mixed_1500_m20 10:18:00"; do set -- ${=spec}; echo "== $1 $2"; expmon launch --exp longdoc --stage E -p gpu-be --mem 8G --time $2 --exclude='homer-[005…
+  ↳ == pages_1500_p10 8:00:00 (+15 lines)
+→ Bash: python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r['jobid'] in ('192287','192288','192289','192290'): print(r['jobid'], len(r['argv']), r['argv'][-1].split('/')[-1], r['slurm'].get('time'), r[…
+  ↳ 192287 4 longdoc_pages_1500_p10 8:00:00 {'CML': '1024', 'MNT': '512', 'PX': '1003520', 'TOPK': '1000'} (+8 lines)
+→ Bash: ids=$(python3 -c " ⏎ import json ⏎ ids=[json.loads(l)['jobid'] for l in open('.expmon/runs.jsonl') if json.loads(l).get('exp')=='longdoc'] ⏎ print(','.join(ids))"); echo "$ids" | tr ',' '\n' | wc -l; sacct -X -j $ids -S 2026-11-16 -o JobID,…
+  ↳ 65 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && head -12 VERIFY.md | cut -c1-400; grep -ci 'unsupported\|wrong\|mismatch' VERIFY.md
+  ↳ # VERIFY — campaign longdoc — 2026-11-19_1800   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe --open --search "logs output" 2>&1 | head -8; expmon gripe --open --search "no log file" 2>&1 | head -5
+  ↳ == 6 open report(s) matching 'logs output', every machine, newest first == (+12 lines)
+Four new eval cells launched and running/queued. Logging one expmon defect (+1 on an existing report), then rewriting STATE.md.
+→ Bash: expmon gripe --same f5bd7344 "pisco/longdoc 2026-11-19: same in ONE repo — split_buckets.sbatch has '#SBATCH --output=/beegfs/.../expQ/longdoc/split_buckets_%j.out' (absolute); 'expmon logs 192265' only tried the conf pattern '*_%j.out' at …
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && sed -n 100,122p CAMPAIGN.md | cut -c1-300 && grep -n 'bucket' CAMPAIGN.md | head -10 | cut -c1-250
+  ↳ logged as a +1 of f5bd7344 (entry b16074ad) -> /home/hdejean/.claude/feedback/ncp.log
+  ↳ and `eval_data/longdoc_mixed_1500_{m10,m20,m40}` (`scripts/longdoc/split_buckets.py`: the same rows, source order), (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && grep -c 'resource:.*longdoc_pages_1500_p' EXPERIMENTS.md; expmon note "resource: eval_data/longdoc_pages_1500_{p10,p20,p40} and eval_data/longdoc_mixed_1500_{m10,m20,m40}, 1,407 rows each = the rows …
+  ↳ 0 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ start=s.index('## TL;DR') ⏎ end=s.index('## Arm E — the long-document yardstick') ⏎ tldr=s[start:end] ⏎ # verifier fixes ⏎ tldr=tldr.r…
+  ↳ 23:**Settled** (+3 lines)
+→ Bash: sed -i 's#- `scripts/longdoc/split_buckets.py` / `.sbatch` (md5 3ef018be): per-bucket sets; keeps a bucket already written.#- `scripts/longdoc/split_buckets.py` (md5 3ef018be) / `.sbatch` (md5 d5430dc9, log `expQ/longdoc/split_buckets_<job>…
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+22 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "longdoc wake 18:30: bucket split 192265 passed (6 x 1,407 rows, FAILURES none); uncompressed p40 192267 / m40 192268 started on model.py f8ae6efe; launched uncompressed pages p10/p20 (19…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ StructuredOutput: {"next": "wake-when", "summary": "The bucket-split job passed and four more uncompressed evals are launched. The uncompressed reference now runs on all 7 long-document inputs: text, pages at 10/20/40, mixed at 10/20/40.\n\n- **Bucket split …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5522 turns=31 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "The bucket-split job passed and four more uncompressed evals are launched. The uncompressed reference now runs on all 7 long-document inputs: text, pages at 10/20/40, mixed at 10/20/40.\n\n- **Bucket split (job 192265):** finished cleanly in 15 minutes. It wrote 6 sets of 1,407 rows each, with no failures. Verdict recorded and the sets logged in the ledger.\n- **Evals already running:** pages at 40 (job 192267) and mixed at 40 (job 192268) started on the expected model code (version f8ae6efe). At their current speed both finish well inside their time limits: about 4 h and 6 h. The text eval (job 192266) is at row 430 of 2,246 and should end around 20:40.\n- **Launched this wake (4 of the 4 allowed per wake):** pages at 10 and 20 (jobs 192287, 192288; running), mixed at 10 and 20 (jobs 192289, 192290; queued).\n- **Counts:** 65 of 87 cells used. GPU-hours so far: 27.5 by the latest SLURM count, against 114 allowed.\n- **Checker's corrections, applied in STATE.md:** mixed answers that hit the …", "launched": ["192287", "192288", "192289", "192290"], "verdicts": [{"jobid": "192265", "verdict": "closed", "note": "split build passed: 6 bucket sets x 1,407 rows, FAILURES none, 14:51 on homer-014"}], "gripes": ["+1 of f5bd7344: expmon logs ignores a launcher's absolute #SBATCH --output (split_buckets.sbatch, job 192265)"], "wake_when": "job:192266 max 135m"}
+== final:
+{"next":"wake-when","summary":"The bucket-split job passed and four more uncompressed evals are launched. The uncompressed reference now runs on all 7 long-document inputs: text, pages at 10/20/40, mixed at 10/20/40.\n\n- **Bucket split (job 192265):** finished cleanly in 15 minutes. It wrote 6 sets of 1,407 rows each, with no failures. Verdict recorded and the sets logged in the ledger.\n- **Evals already running:** pages at 40 (job 192267) and mixed at 40 (job 192268) started on the expected model code (version f8ae6efe). At their current speed both finish well inside their time limits: about 4 h and 6 h. The text eval (job 192266) is at row 430 of 2,246 and should end around 20:40.\n- **Launched this wake (4 of the 4 allowed per wake):** pages at 10 and 20 (jobs 192287, 192288; running), mixed at 10 and 20 (jobs 192289, 192290; queued).\n- **Counts:** 65 of 87 cells used. GPU-hours so far: 27.5 by the latest SLURM count, against 114 allowed.\n- **Checker's corrections, applied in STATE.md:** mixed answers that hit the length cap are 8 of 300 (not 7). One confidence bound is now given from both of its sources.\n- **Next wake:** when the text eval ends (or in 135 min at most), check its health and submit the first 4 compressed-model cells (seed 42).\n\nNothing needed from you.","launched":["192287","192288","192289","192290"],"verdicts":[{"jobid":"192265","verdict":"closed","note":"split build passed: 6 bucket sets x 1,407 rows, FAILURES none, 14:51 on homer-014"}],"gripes":["+1 of f5bd7344: expmon logs ignores a launcher's absolute #SBATCH --output (split_buckets.sbatch, job 192265)"],"wake_when":"job:192266 max 135m"}
+== rc=0 secs=258
+== verify: 3/15
