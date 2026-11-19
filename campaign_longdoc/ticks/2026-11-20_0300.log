@@ -1,0 +1,134 @@
+== campaign longdoc wake 2026-11-20_0300  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795111201 live=192359:RUNNING,192358:RUNNING,192356:RUNNING,192324:RUNNING running=4 pending=0 problems=0 problems_other=0 new=0 gpuh24=31.3 idle_h=0.0 min_util=0 alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7224 sig=5ddce56f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:192323,192325,192357_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:192323,192325,192357 (ended)   (NEXT was: wake-when job:192323,192325,192357 max 4h)
+== session b59080e5-ee17-4b77-9454-a00a973775cd  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b59080e5-ee17-4b77-9454-a00a973775cd/tool-results/bkhmw5fbg.txt | cut -c1-600
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b59080e5-ee17-4b77-9454-a00a973775cd/tool-results/bkhmw5fbg.txt
+  ↳ 14	- BLOCKED.md: absent (+119 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/b59080e5-ee17-4b77-9454-a00a973775cd/tool-results/bkhmw5fbg.txt
+  ↳ 133	(84 file(s) of other experiments left out) (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && wc -l CAMPAIGN.md STATE.md known_issues.md && cat STATE.md
+  ↳ 372 CAMPAIGN.md (+197 lines)
+Woken because three R s42 cells ended (text, mixed 40, mixed 10). Checking their exit state, health, and pairing them now.
+→ Bash: cat known_issues.md | cut -c1-400 && sed -n 1,80p CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sacct -X -j 192323,192325,192357,192324,192356,192358,192359 --format=JobID,State,ExitCode,Elapsed,NodeList,MaxRSS,Start,End -P; sacct -j 192323,192325,192357 --format=JobID,State,ExitCode,MaxRSS -P …
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+120 lines)
+  ↳ JobID|State|ExitCode|Elapsed|NodeList|MaxRSS|Start|End (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && sed -n 80,230p CAMPAIGN.md
+  ↳ [2026-11-20 clarification, under the "a check that fails on (almost) every item, or on the accepted references, is a (+150 lines)
+→ Bash: sed -n 230,372p CAMPAIGN.md
+  ↳ or GPU-hours left, write ONE BLOCKED.md question with that cost and NEXT `waiting-owner`; never trim the grid to fit. (+142 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls -la expQ/longdoc/e_r42/eval/ | tail -20; ls -la expQ/base_qwen35_4b/eval/ | grep mnt512; for j in 192323 192325 192357; do echo "== $j"; tail -5 expQ/longdoc/eval_mnt_$j.out; done
+  ↳ total 5724 (+42 lines)
+→ Bash: E=expQ/longdoc/e_r42/eval; time .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --cap 512 $E/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json $E/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed…
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json {"n": 2246, "judged": 2246, "unparseable": 0, "judge": 0.4154, "at_cap": 71, "at_cap_pct": 3.16, "prompt_max": 4976, "mems_used": 3 (+4 lines)
+→ Bash: for j in 192323 192325 192357; do echo "== $j"; grep -ci 'exceeds' expQ/longdoc/eval_mnt_$j.out; grep -iE 'md5|homer|attempt|restart' expQ/longdoc/eval_mnt_$j.out | head -8; sacct -j $j -D -X --format=JobID,State,NodeList -P -n; done; md5su…
+  ↳ == 192323 (+13 lines)
+All three cells are healthy so far. Now pairing each against the uncompressed reference.
+→ Bash: stat -c '%y %n' pisco/model.py scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/judge_mm_docqa.py scripts/longdoc/eval_mnt.sbatch; E=expQ/longdoc/e_r42/eval; B=expQ/base_qwen35_4b/eval; P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc;…
+  ↳ 2026-11-19 17:06:46.000000000 +0900 pisco/model.py (+12 lines)
+→ Bash: E=expQ/longdoc/e_r42/eval; B=expQ/base_qwen35_4b/eval; P=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc; Q=mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc; for s in m10 m40; do python3 -I scripts/paired_judge.py $E/${P}_mixed_15…
+  ↳ source             n       A       B     diff      SE            95% CI  A-only  B-only    p McN (+38 lines)
+→ Bash: python3 -I -c " ⏎ import json ⏎ for f in ['expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_m10.json','expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json']: ⏎…
+  ↳ ['extract_fig2tab_4075591_6_35_1__m10', 'free_gpt4o_4080557_81_100_17__m10', 'free_gpt4o_4070480_28_46_9__m10'] longdocurl_m10 (+28 lines)
+→ Bash: sed -n 40,200p scripts/longdoc/length_effect.py; md5sum scripts/longdoc/length_effect.py; git log --oneline -1 -- scripts/longdoc/length_effect.py
+  ↳ a = ap.parse_args([x for k, x in enumerate(argv) if x.startswith("--") or (k and argv[k - 1].startswith("--"))]) (+33 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='scripts/longdoc/length_effect.py' ⏎ s=open(p).read() ⏎ s=s.replace('''--metric judge (default) | em | match | anls | f1. --json writes the numbers. ⏎ """''','''--metric judge (default) | em | match | anls | f1. --json…
+  ↳ scripts/longdoc/length_effect.py | 15 ++++++++++----- (+3 lines)
+→ Bash: f=$(python3 -I -c "import json;print(' '.join(('+' if x['sign']>0 else '-')+x['file'] for x in json.load(open('expQ/longdoc/length/dlen_docs_p20_s42_judge.json'))['files']))"); python3 -I scripts/longdoc/length_effect.py $f | tail -1 ⏎ E=ex…
+  ↳ Traceback (most recent call last): (+14 lines)
+Computing the length effect (how the compressed-vs-uncompressed gap changes from short to long). Re-running the regression check with zsh word-splitting.
+→ Bash: f=$(python3 -I -c "import json;print(' '.join(('+' if x['sign']>0 else '-')+x['file'] for x in json.load(open('expQ/longdoc/length/dlen_docs_p20_s42_judge.json'))['files']))"); F=(${=f}); python3 -I scripts/longdoc/length_effect.py "${F[@]}…
+  ↳ d = +0.0433  95% CI [+0.0180, +0.0693]  n=1500  non-zero +197/-146  sign p=0.00685  (judge) (+1 lines)
+→ Bash: mkdir -p expQ/longdoc/length/split && python3 -I - <<'EOF' ⏎ import json, os ⏎ P='mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_text_1500'; Q='mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500' ⏎ for tag, f in [('R42', …
+  ↳ expQ/longdoc/length/split/text_R42_t4k.json 637 (+13 lines)
+→ Bash: for j in 192324 192356 192358 192359; do echo "== $j $(sstat -j $j.batch --format=MaxRSS -P -n 2>/dev/null)"; grep -aE '[0-9]+/[0-9]+' expQ/longdoc/eval_mnt_$j.out | tail -1 | cut -c1-200; done
+  ↳ == 192324 12863144K (+7 lines)
+→ Bash: sacct -X -j 192324,192356,192358,192359 --format=JobID,ReqMem,Timelimit,AllocTRES%60 -P; scontrol show job 192324 | grep -E 'MinMemory|TRES'
+  ↳ JobID|ReqMem|Timelimit|AllocTRES (+7 lines)
+→ Bash: expmon verdict 192323 closed "health OK: R s42 text whole set cap 512, 2,246/2,246 judged, unparseable 0, at cap 71 (3.2%), prompt max 4,976, mems_used 3,887,462 = audit 191516 prediction, homer-011 1 attempt, COMPLETED 0:0 2:37:54, MaxRSS …
+  ↳ verdict recorded: 192323 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+5 lines)
+Verdicts recorded. Now submitting the next four cells (second seed, pages and mixed at 10 and 20) — checking nothing is already running for them first.
+→ Bash: ls -la expQ/longdoc/e_r43/ expQ/longdoc/e_r43/eval/ 2>&1; readlink -f expQ/longdoc/e_r43/model; ls -d eval_data/longdoc_pages_1500_p10 eval_data/longdoc_pages_1500_p20 eval_data/longdoc_mixed_1500_m10 eval_data/longdoc_mixed_1500_m20; expmo…
+  ↳ expQ/longdoc/e_r43/: (+24 lines)
+→ Bash: expmon launch --dry-run --exp longdoc --stage E -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r43/mo…
+  ↳ would submit: sbatch -p gpu-be --mem 9G --time 3:40:00 --exclude=homer-[005-009] scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r43/model pisco  /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pa (+4 lines)
+→ Bash: expmon launch --exp longdoc --stage E -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r43/model pisco …
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_192360.out (+15 lines)
+→ Bash: python3 -I -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if str(r.get('jobid','')) in ('192360','192361','192362','192363'): print(r.get('jobid'), len(r.get('argv',[])), r.get('argv')) ⏎ "; squeue -u …
+  ↳ 192360 4 ['expQ/longdoc/e_r43/model', 'pisco', '', '/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pages_1500_p10'] (+11 lines)
+→ Bash: ids=$(python3 -I -c " ⏎ import json ⏎ s=set() ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r.get('exp')=='longdoc': s.add(str(r['jobid'])) ⏎ print(len(s), file=__import__('sys').stderr); print(','.join(sorted(s))) ⏎…
+  ↳ 77 (+1 lines)
+→ Bash: wc -l docs/longdoc_diagnosis.md && grep -n '^#' docs/longdoc_diagnosis.md && grep -n -A16 'Arm E full cells' docs/longdoc_diagnosis.md | head -40
+  ↳ 234 docs/longdoc_diagnosis.md (+25 lines)
+Updating the results table in the diagnosis doc with the three new cells.
+→ Bash: python3 -I - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ old_start=s.index('| pages 10 | 1,407 | 1,198 |') ⏎ old_end=s.index('40-page cells.\n', old_start)+len('40-page cells.\n') ⏎ new='''| pages 10 | 1,407 | 1,198 | ~120 …
+  ↳ 102-191630, the same models 184778 / 184780, no committed eval-code change between the runs). (+29 lines)
+→ Bash: sed -n 1,21p docs/longdoc_diagnosis.md | cut -c1-400
+  ↳ # Long inputs: where is the bottleneck? (campaign longdoc) (+19 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ L=open(p).read().split('\n') ⏎ for i,l in enumerate(L): ⏎     if l.startswith('| length on a fixed model |'): ⏎         c=l.split(' | ') ⏎         print(len(c)); print(c[3][-300:]); pri…
+  ↳ 7 (+3 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ L=open(p).read().split('\n') ⏎ idx,hi=map(int,open('/tmp/ld_idx').read().split()) ⏎ c=L[idx].split(' | ') ⏎ c[3]=c[3]+'. Arm E (one long PDF per question, cap 512, R s42 only, paired pe…
+  ↳ Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-20 03:10 (arm E: R seed 42 full cells in on text, pages 10, mixed 10 and 40 — the compressed reader loses 16-22 pt to the unco
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 -I - <<'EOF' ⏎ p='known_issues.md' ⏎ L=open(p).read().split('\n') ⏎ for i,l in enumerate(L): ⏎     if l.startswith("| an R (compressed) cell's MaxRSS passes its `--mem`"): ⏎ …
+  ↳ updated 40
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && sed -i 's/the cell kept running and COMPLETED-class progress) — a booking error, not a crash risk so far/the cell kept running past it) — a booking error, not a crash risk so far/' campaign_longdoc/k…
+  ↳ 1 (+6 lines)
+Recording a shorter ledger note, then rewriting the state file.
+→ Bash: expmon note --did 'closed R s42 text / mixed 40 / mixed 10 (health OK); launched R s43 pages 10/20, mixed 10/20 (192360-192363)' --saw 'R-U text -17.9 [-20.0,-15.8] n 2,246; mixed 10 -20.5, mixed 40 -21.9 (n 1,407); Delta_len s42 mixed 40 v…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ Bash: expmon display --exp longdoc 2>&1 | tail -3; expmon campaign report --section leaves 2>&1 | head -60 | cut -c1-300
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs) (+17 lines)
+→ Bash: python3 -I - <<'EOF' ⏎ s=open('campaign_longdoc/STATE.md').read() ⏎ a=s.index('- provisional (closed-book 191776'); b=s.index('**Open, and running**') ⏎ open('/tmp/ld_settled_tail.md','w').write(s[a:b]) ⏎ a=s.index('## Arm E — the long-docu…
+  ↳ 49 /tmp/ld_settled_tail.md (+3 lines)
+→ Bash: cat > /tmp/ld_head.md <<'EOF' ⏎ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) ⏎  ⏎ Last wake: 2026-11-20 03:00 (twenty-second LLM wake; woken because R s42 text, mixed 40 and mixed 10 ended). ⏎ NEXT: `wa…
+  ↳ ok
+→ Bash: cat > /tmp/ld_armE_new.md <<'EOF' ⏎ ## Arm E — the long-document yardstick ⏎ Source: LongDocURL (`dengchao/LongDocURL`, Apache-2.0). Builder `scripts/longdoc/longdoc_build.py` (md5 f14e4640) + ⏎ `build_long.sbatch`. `<MEM>` slots p50 per bu…
+  ↳ 206 (+15 lines)
+→ Bash: sed -n 44,56p campaign_longdoc/STATE.md; sed -n 96,101p campaign_longdoc/STATE.md
+  ↳ [−20.1, −11.7] (588), t32k .377 vs .547 −17.0 [−22.6, −11.9] (411). (+18 lines)
+Wrapping up: fixing a blank line in the state file and writing the wake-up condition.
+→ Bash: python3 -I -c " ⏎ p='campaign_longdoc/STATE.md'; s=open(p).read(); s=s.replace('\n\n\n**Open, and running**','\n\n**Open, and running**'); open(p,'w').write(s)" && echo 'wake-when job:192324,192356,192358 max 4h' > campaign_longdoc/NEXT && …
+  ↳ wake-when job:192324,192356,192358 max 4h (+6 lines)
+The compressed model scores 16 to 22 points below the uncompressed model on one long document, at every length tried. So far the gap does not get bigger as documents get longer. This is from the first model copy (seed 42) only, so nothing is decided yet.
+
+## Done this wake
+- **Three cells finished cleanly:** the seed-42 model on long text, and on mixed documents at 10 and 40 items (mixed = some pages as images, some as their text). Every check passed: all rows scored by the judge, no unreadable verdicts, at most 3.2% of answers hit the 512-token length limit (the bar is 5%), and the number of compressed slots used matched the prediction exactly.
+- **Accuracy as judged by the Qwen3-8B grader, higher is better.** Gap = compressed minus uncompressed, same questions, with a 95% confidence interval (CI). Compression is 8 tokens per slot.
+
+| set, size | questions | compressed ↑ | uncompressed ↑ | gap (pt) | gap change vs shortest size (pt) |
+|---|---|---|---|---|---|
+| pages, 10 | 1,407 | .507 | .672 | −16.6 [−19.5, −13.9] | reference |
+| mixed, 10 items | 1,407 | .449 | .654 | −20.5 [−23.3, −17.6] | reference |
+| mixed, 40 items | 1,407 | .412 | .631 | −21.9 [−24.7, −18.9] | −1.4 [−4.5, +1.6] |
+| text, ~4k tokens | 637 | .422 | .612 | −19.0 | reference |
+| text, ~32k tokens | 411 | .377 | .547 | −17.0 | +3.9 [−1.7, +9.7] |
+
+- **Gap change with length:** every CI here includes 0, so there is no sign of a length loss yet. The CIs are still wider than the ±3-point bar the campaign needs to call it "no effect". That call needs both model copies.
+- **Four new cells launched**, all running: the second model copy (seed 43) on pages and mixed documents at 10 and 20 items. That uses this wake's limit of four launches.
+- **Tool fix:** the script that measures the length effect could not match a question across lengths, because the question ID carries the length as a suffix. I added an option (`--strip_bucket`) to drop the suffix; it is off by default. With the option off, the script still gives exactly the recorded result (+4.3) on an older comparison. With it on, comparing a file against itself gives 0, as it should.
+- **Memory:** the 40-page cell is using 12.9 GB while it booked 8 GB, and it keeps running. The cluster does not enforce the booking on these nodes, so this is a booking mistake, not a crash risk. I updated the known-issues table to say so.
+- **Updated** `docs/longdoc_diagnosis.md`, the state file and the experiment ledger.
+
+## Running now
+- **Seed 42:** pages 20 and 40, mixed 20.
+- **Seed 43:** text, pages 10 and 20, mixed 10 and 20.
+
+## Next
+- **Wake condition:** the next wake starts when the three seed-42 cells end, expected around 03:30–04:00, at most 4 hours from now.
+- **On waking:** pair each of those three cells with its uncompressed reference. Then launch seed 43 at 40 pages and 40 mixed items, plus the first two cells comparing long-chunk and short-chunk training on text.
+- **Budget:** 77 of 87 cells and about 62 of 114 GPU-hours used. The rest of the plan fits, at about 90 GPU-hours in total.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "R s42 text / mixed 40 / mixed 10 (192323/192325/192357) COMPLETED 0:0, health OK, verdicts closed. Compressed minus uncompressed: text -17.9 [-20.0,-15.8] (n 2,246), mixed 10 -20.5, mixed 40 -21.9 (n 1,407 …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.6667 turns=44 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "R s42 text / mixed 40 / mixed 10 (192323/192325/192357) COMPLETED 0:0, health OK, verdicts closed. Compressed minus uncompressed: text -17.9 [-20.0,-15.8] (n 2,246), mixed 10 -20.5, mixed 40 -21.9 (n 1,407 each). Length effect on seed 42 is flat so far (mixed 40 vs 10 -1.4 [-4.5,+1.6]; text 32k vs 4k +3.9 [-1.7,+9.7], n 411); not decided until seed 43. Added --strip_bucket to length_effect.py (default path regression-checked, self-pair 0). Launched R s43 pages 10/20 and mixed 10/20. Updated docs/longdoc_diagnosis.md, STATE.md, known_issues.md (--mem not enforced on gpu-be). 77/87 cells, ~62/114 GPU-h.", "launched": ["192360", "192361", "192362", "192363"], "verdicts": [{"jobid": "192323", "verdict": "closed", "note": "health OK; R s42 text .415 vs U .594, -17.9 [-20.0,-15.8], n 2,246"}, {"jobid": "192325", "verdict": "closed", "note": "health OK; R s42 mixed 40 .412 vs U .631, -21.9 [-24.7,-18.9], n 1,407"}, {"jobid": "192357", "verdict": "closed", "note": "health OK; R s42 mixed 10 .449 vs U .654, -20.5 [-23.3,-17.6], n 1,407"}], "wake_when": "job:192324,192356,192358 max 4h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"R s42 text / mixed 40 / mixed 10 (192323/192325/192357) COMPLETED 0:0, health OK, verdicts closed. Compressed minus uncompressed: text -17.9 [-20.0,-15.8] (n 2,246), mixed 10 -20.5, mixed 40 -21.9 (n 1,407 each). Length effect on seed 42 is flat so far (mixed 40 vs 10 -1.4 [-4.5,+1.6]; text 32k vs 4k +3.9 [-1.7,+9.7], n 411); not decided until seed 43. Added --strip_bucket to length_effect.py (default path regression-checked, self-pair 0). Launched R s43 pages 10/20 and mixed 10/20. Updated docs/longdoc_diagnosis.md, STATE.md, known_issues.md (--mem not enforced on gpu-be). 77/87 cells, ~62/114 GPU-h.","launched":["192360","192361","192362","192363"],"verdicts":[{"jobid":"192323","verdict":"closed","note":"health OK; R s42 text .415 vs U .594, -17.9 [-20.0,-15.8], n 2,246"},{"jobid":"192325","verdict":"closed","note":"health OK; R s42 mixed 40 .412 vs U .631, -21.9 [-24.7,-18.9], n 1,407"},{"jobid":"192357","verdict":"closed","note":"health OK; R s42 mixed 10 .449 vs U .654, -20.5 [-23.3,-17.6], n 1,407"}],"wake_when":"job:192324,192356,192358 max 4h","gripes":[]}
+== rc=0 secs=396
+== verify: 4/19

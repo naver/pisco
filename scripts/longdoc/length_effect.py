@@ -7,18 +7,20 @@ term is `+FILE` or `-FILE`. Examples:
   dilution D (arm U): +eighth_long.json -plain_long.json -eighth_short.json +plain_short.json
 Prints n, mean d, paired bootstrap 95% CI (10,000 resamples, seed 0), sign test on non-zero d (two-sided, exact).
 --metric judge (default) | em | match | anls | f1. --json writes the numbers.
+--strip_bucket pairs on the query_id before its last `__` (arm E bucket sets: `<qid>__m10` vs `<qid>__m40`).
 """
 import argparse, json, math, random, sys
 
 
-def load(path, metric):
+def load(path, metric, strip=False):
     recs = json.load(open(path))["records"]
     out = {}
     for r in recs:
         v = r.get(metric)
         if v is None:
             continue
-        out[str(r["query_id"])] = float(v)
+        q = str(r["query_id"])
+        out[q.rsplit("__", 1)[0] if strip else q] = float(v)
     return out, len(recs)
 
 
@@ -36,14 +38,17 @@ def main():
     ap.add_argument("--metric", default="judge")
     ap.add_argument("--boot", type=int, default=10000)
     ap.add_argument("--json", default=None)
+    ap.add_argument("--strip_bucket", action="store_true")
     argv = sys.argv[1:]   # +FILE / -FILE terms are positional (argparse would read -FILE as an option)
-    a = ap.parse_args([x for k, x in enumerate(argv) if x.startswith("--") or (k and argv[k - 1].startswith("--"))])
-    a.terms = [x for k, x in enumerate(argv) if x[:1] in "+-" and not x.startswith("--") and not (k and argv[k - 1].startswith("--"))]
+    flags = {"--strip_bucket"}   # options without a value
+    val = lambda k: k and argv[k - 1].startswith("--") and argv[k - 1] not in flags
+    a = ap.parse_args([x for k, x in enumerate(argv) if x.startswith("--") or val(k)])
+    a.terms = [x for k, x in enumerate(argv) if x[:1] in "+-" and not x.startswith("--") and not val(k)]
     assert a.terms, "give +FILE / -FILE terms"
     terms = []
     for t in a.terms:
         assert t[0] in "+-", f"term must start with + or -: {t}"
-        sc, n = load(t[1:], a.metric)
+        sc, n = load(t[1:], a.metric, a.strip_bucket)
         terms.append((1.0 if t[0] == "+" else -1.0, t[1:], sc, n))
     common = set(terms[0][2])
     for _, _, sc, _ in terms[1:]:
