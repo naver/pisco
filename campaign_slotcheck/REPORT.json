@@ -1,0 +1,563 @@
+{
+ "label": "slotcheck",
+ "dir": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck",
+ "generated": "2026-11-19 16:42",
+ "mission": "Successor of campaign 'longdoc' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/REPORT.md). Open at hand-off: rejudge.sbatch \u2014 job 191629 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 \u2014 job 191634 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 \u2014 job 191635 COMPLETED, no verdict; CML=1024 DML=5612 PX=1003520 TOPK=1000 \u2014 job 191636 COMPLETED, no verdict. **Those four jobs belong to the LIVE sibling longdoc: never verdict, relaunch, kill or re-use them here.** **Question (owner, QUESTION.md):** \"no progress has been done after many tries to improve the models. double check",
+ "window": [
+  "2026-11-18",
+  "2026-11-19"
+ ],
+ "until": "2027-02-16",
+ "over": false,
+ "ticks": 46,
+ "wakes": 12,
+ "wakes_bad": 4,
+ "gpu_h": 12.4,
+ "card_h": 0,
+ "idle_max_h": 4.7,
+ "idle_flag": true,
+ "settled": [
+  {
+   "jobid": "192223",
+   "verdict": "closed",
+   "arm": "eval_x.sbatch",
+   "note": "check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions",
+   "text": "check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions \u2014 job 192223, closed",
+   "jobs": [
+    "192223"
+   ]
+  },
+  {
+   "jobid": "192220",
+   "verdict": "closed",
+   "arm": "JUDGE=0",
+   "note": "plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design",
+   "text": "plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design \u2014 job 192220, closed",
+   "jobs": [
+    "192220"
+   ]
+  },
+  {
+   "jobid": "192222",
+   "verdict": "closed",
+   "arm": "eval_x.sbatch",
+   "note": "never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke",
+   "text": "never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke \u2014 job 192222, closed",
+   "jobs": [
+    "192222"
+   ]
+  },
+  {
+   "jobid": "192221",
+   "verdict": "closed",
+   "arm": "kind=build arm=X_build limit=0 tag=none questions=500 sets=img,text,imgtext cml=256 chunk=1",
+   "note": "sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt",
+   "text": "sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt \u2014 job 192221, closed",
+   "jobs": [
+    "192221"
+   ]
+  },
+  {
+   "jobid": "192217",
+   "verdict": "closed",
+   "arm": "eval_x.sbatch",
+   "note": "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used)",
+   "text": "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used) \u2014 jobs 192215-192217 (3 cells), closed",
+   "jobs": [
+    "192217",
+    "192216",
+    "192215"
+   ]
+  },
+  {
+   "jobid": "192214",
+   "verdict": "closed",
+   "arm": "kind=build arm=X_build limit=30 tag=_smoke questions=500 sets=img,text,imgtext cml=256 chunk=1",
+   "note": "plumbing FAILED its own health check by a bug in the check (exit 4, 1:11, homer-014): chunk length incl. <MEM>s compared to CML + 1, and imgtext's image chunks counted as text. Data passed: 30 Q x 3 sets, empty 0, cut 0, mems mean 380.1 / 80.4 / 460.5. Patched build_text_sets.py 1c110e22; decides nothing",
+   "text": "plumbing FAILED its own health check by a bug in the check (exit 4, 1:11, homer-014): chunk length incl. <MEM>s compared to CML + 1, and imgtext's image chunks counted as text. Data passed: 30 Q x 3 sets, empty 0, cut 0, mems mean 380.1 / 80.4 / 460.5. Patched build_text_sets.py 1c110e22; decides nothing \u2014 job 192214, closed",
+   "jobs": [
+    "192214"
+   ]
+  },
+  {
+   "jobid": "192212",
+   "verdict": "closed",
+   "arm": "transcribe_pages.sbatch",
+   "note": "healthy: COMPLETED 0:0 1:07:10 homer-018, one attempt; shard 3 = 317/317 pages, empty 0, 42 at the cap, 207 words/page mean. All 4 shards: 1,268/1,268 unique pages, empty 0 (bar < 2%), 124/1,268 = 9.8% within 2 tokens of the cap, 4.35 GPU-h",
+   "text": "healthy: COMPLETED 0:0 1:07:10 homer-018, one attempt; shard 3 = 317/317 pages, empty 0, 42 at the cap, 207 words/page mean. All 4 shards: 1,268/1,268 unique pages, empty 0 (bar < 2%), 124/1,268 = 9.8% within 2 tokens of the cap, 4.35 GPU-h \u2014 job 192212, closed",
+   "jobs": [
+    "192212"
+   ]
+  },
+  {
+   "jobid": "192211",
+   "verdict": "closed",
+   "arm": "transcribe_pages.sbatch",
+   "note": "healthy: COMPLETED 0:0 1:05:10 homer-018, one attempt; shard 2 = 317/317 pages, empty 0, 23 at the cap, 187 words/page mean",
+   "text": "healthy: COMPLETED 0:0 1:05:10 homer-018, one attempt; shard 2 = 317/317 pages, empty 0, 23 at the cap, 187 words/page mean \u2014 job 192211, closed",
+   "jobs": [
+    "192211"
+   ]
+  },
+  {
+   "jobid": "192210",
+   "verdict": "closed",
+   "arm": "transcribe_pages.sbatch",
+   "note": "healthy: COMPLETED 0:0 1:05:50 homer-011, one attempt; shard 1 = 317/317 pages, empty 0, 31 within 2 tokens of the 1,024 cap, 201 words/page mean",
+   "text": "healthy: COMPLETED 0:0 1:05:50 homer-011, one attempt; shard 1 = 317/317 pages, empty 0, 31 within 2 tokens of the 1,024 cap, 201 words/page mean \u2014 job 192210, closed",
+   "jobs": [
+    "192210"
+   ]
+  },
+  {
+   "jobid": "192209",
+   "verdict": "closed",
+   "arm": "kind=probe_recall arm=O_recall passes=o_bf16_dense100:/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model:slotcheck_dense100 px=1003520",
+   "note": "check 4 DECIDED, capacity is not the limit: healthy (COMPLETED 0:0 1:26:45 homer-011, one attempt; 2 passes x 100 pages; mem_position_stride=8 printed; <MEM>s per page 116-123, identical to the start model's on every page). Overfit bf16 model word recall on the 100 trained pages .921 vs start .702: +21.9 pt [+18.5,+25.3], 98 up / 2 down, sign p 8e-27; median .951, 76/100 pages >= .90, 7/100 <= .75; text-layer ceiling .974 (= 94.6% of it). Held-out 100 pages .667 vs .670: -0.3 [-4.2,+3.6] (32 up / 66 down) = no general gain, memorisation. Self-pair 0.000. Gate >= 90% -> about 4 words per slot (479 words / 120 slots) fit; plateau not reached, so .921 is a lower bound",
+   "text": "check 4 DECIDED, capacity is not the limit: healthy (COMPLETED 0:0 1:26:45 homer-011, one attempt; 2 passes x 100 pages; mem_position_stride=8 printed; <MEM>s per page 116-123, identical to the start model's on every page). Overfit bf16 model word recall on the 100 trained pages .921 vs start .702: +21.9 pt [+18.5,+25.3], 98 up / 2 down, sign p 8e-27; median .951, 76/100 pages >= .90, 7/100 <= .75; text-layer ceiling .974 (= 94.6% of it). Held-out 100 pages .667 vs .670: -0.3 [-4.2,+3.6] (32 up / 66 down) = no general gain, memorisation. Self-pair 0.000. Gate >= 90% -> about 4 words per slot (479 words / 120 slots) fit; plateau not reached, so .921 is a lower bound \u2014 job 192209, closed",
+   "jobs": [
+    "192209"
+   ]
+  },
+  {
+   "jobid": "192003",
+   "verdict": "closed",
+   "arm": "recall.sbatch",
+   "note": "never ran (0 of 2 recall passes): its afterok parent 192002 ended FAILED exit 3 on a benign requeue although the training was complete -> DependencyNeverSatisfied; killed and relaunched with the exact command, no dependency, as 192209 (n = the same 100 + 100 pages)",
+   "text": "never ran (0 of 2 recall passes): its afterok parent 192002 ended FAILED exit 3 on a benign requeue although the training was complete -> DependencyNeverSatisfied; killed and relaunched with the exact command, no dependency, as 192209 (n = the same 100 + 100 pages) \u2014 job 192003, closed",
+   "jobs": [
+    "192003"
+   ]
+  },
+  {
+   "jobid": "192010",
+   "verdict": "closed",
+   "arm": "kind=transcribe arm=X_transcribe shard=0 n_shards=4 limit=all set=mm_docqa_1500_1m questions=500 topk=4 px=1003520 max_new_tokens=1024",
+   "note": "healthy: COMPLETED 0:0 1:04:14 homer-011, one attempt, MaxRSS 9.0 GiB; shard 0 = 317/317 pages written (of 1,268 unique), empty 0/317 (bar < 2%), 28/317 within 2 tokens of the 1,024-token cap (20/317 at >= 1,024: ~8 repetition loops, ~12 dense pages cut), mean 189 words/page, 8.6 s/page median; questions.json written (500 questions)",
+   "text": "healthy: COMPLETED 0:0 1:04:14 homer-011, one attempt, MaxRSS 9.0 GiB; shard 0 = 317/317 pages written (of 1,268 unique), empty 0/317 (bar < 2%), 28/317 within 2 tokens of the 1,024-token cap (20/317 at >= 1,024: ~8 repetition loops, ~12 dense pages cut), mean 189 words/page, 8.6 s/page median; questions.json written (500 questions) \u2014 job 192010, closed",
+   "jobs": [
+    "192010"
+   ]
+  },
+  {
+   "jobid": "192009",
+   "verdict": "closed",
+   "arm": "transcribe_pages.sbatch",
+   "note": "plumbing PASS (decides nothing): COMPLETED 0:0 4:25 homer-011, MaxRSS 9.0 GiB; 10/10 pages of shard 0 transcribed, empty 0/10, at cap 0/10, mean 197 words; 500 questions -> 2,000 page slots -> 1,268 unique pages",
+   "text": "plumbing PASS (decides nothing): COMPLETED 0:0 4:25 homer-011, MaxRSS 9.0 GiB; 10/10 pages of shard 0 transcribed, empty 0/10, at cap 0/10, mean 197 words; 500 questions -> 2,000 page slots -> 1,268 unique pages \u2014 job 192009, closed",
+   "jobs": [
+    "192009"
+   ]
+  },
+  {
+   "jobid": "192002",
+   "verdict": "closed",
+   "arm": "pt_overfit.sbatch",
+   "note": "healthy, trained to the end: attempt 1 PREEMPTED at 1:32 (no checkpoint, save_steps 250 > 210), attempt 2 homer-011 03:39-05:45 batch COMPLETED 0:0, MaxRSS 8.3 GB, wrote checkpoint-210 + model/ (global_step 210, epoch 14 = 134 presentations per page); attempt 3 exit 3 = the launcher's overwrite guard (known_issues row: benign requeue). Train loss (image-AE) .602 at step 10 -> .028 at step 210; grad norm 1.8 -> 0.3; no NaN. Plateau rule NOT reached: mean loss steps 161-210 .0280 vs 111-160 .0355 = -21% (rule: within 2%) -> its recall is a LOWER bound of what training can store, never a <=75% capacity verdict. Eval split (64 copies of trained pages, not held-out) Rouge-L .981. Log of attempt 2 overwritten by attempt 3; loss read from checkpoint-210/trainer_state.json. 3.6 GPU-h spent (1.5 lost to the preemption)",
+   "text": "healthy, trained to the end: attempt 1 PREEMPTED at 1:32 (no checkpoint, save_steps 250 > 210), attempt 2 homer-011 03:39-05:45 batch COMPLETED 0:0, MaxRSS 8.3 GB, wrote checkpoint-210 + model/ (global_step 210, epoch 14 = 134 presentations per page); attempt 3 exit 3 = the launcher's overwrite guard (known_issues row: benign requeue). Train loss (image-AE) .602 at step 10 -> .028 at step 210; grad norm 1.8 -> 0.3; no NaN. Plateau rule NOT reached: mean loss steps 161-210 .0280 vs 111-160 .0355 = -21% (rule: within 2%) -> its recall is a LOWER bound of what training can store, never a <=75% capacity verdict. Eval split (64 copies of trained pages, not held-out) Rouge-L .981. Log of attempt 2 overwritten by attempt 3; loss read from checkpoint-210/trainer_state.json. 3.6 GPU-h spent (1.5 lost to the preemption) \u2014 job 192002, closed",
+   "jobs": [
+    "192002"
+   ]
+  },
+  {
+   "jobid": "191893",
+   "verdict": "closed",
+   "arm": "recall.sbatch",
+   "note": "baseline OK: COMPLETED 0:0 2:37:33 homer-016, MaxRSS 4.8 GB; stride 8 printed, 4 passes x 100 pages; word recall vs the uncompressed transcription: start model .702 (overfit pages) / .670 (held-out); text-layer ceiling .974 / .983; reference vs itself 1.000 / 1.000 (control)",
+   "text": "baseline OK: COMPLETED 0:0 2:37:33 homer-016, MaxRSS 4.8 GB; stride 8 printed, 4 passes x 100 pages; word recall vs the uncompressed transcription: start model .702 (overfit pages) / .670 (held-out); text-layer ceiling .974 / .983; reference vs itself 1.000 / 1.000 (control) \u2014 job 191893, closed",
+   "jobs": [
+    "191893"
+   ]
+  },
+  {
+   "jobid": "191892",
+   "verdict": "closed",
+   "arm": "pt_overfit.sbatch",
+   "note": "smoke OK (decides nothing): COMPLETED 0:0 16:07 homer-016, MaxRSS 8.35 GB, 1.03 CPU avg; 32.8 s/step (steps 2-20), first step 166 s; loss 0.600 (step 10) -> 0.488 (step 20), grad norm 1.44 -> 0.81, KD 0 (AE only); eval Rouge-L .823; config diff vs start = max_steps, training_dataset, 5 task-mix fields, model_name_or_path (= the start dir by design: the start's own config records its parent pt_text_5M_spread)",
+   "text": "smoke OK (decides nothing): COMPLETED 0:0 16:07 homer-016, MaxRSS 8.35 GB, 1.03 CPU avg; 32.8 s/step (steps 2-20), first step 166 s; loss 0.600 (step 10) -> 0.488 (step 20), grad norm 1.44 -> 0.81, KD 0 (AE only); eval Rouge-L .823; config diff vs start = max_steps, training_dataset, 5 task-mix fields, model_name_or_path (= the start dir by design: the start's own config records its parent pt_text_5M_spread) \u2014 job 191892, closed",
+   "jobs": [
+    "191892"
+   ]
+  },
+  {
+   "jobid": "191891",
+   "verdict": "closed",
+   "arm": "kind=build arm=O_build scan=60000 tag=none n=100 max_tokens=760",
+   "note": "build OK: COMPLETED 0:0 2:46 homer-010, MaxRSS 1.9 GB; 60,000 scanned rows -> 100 train + 100 held-out pages, 674-760 tokens (mean 749 / 750), overlap 0, 47,498 trained docids excluded; train set 1,000 rows (10 copies)",
+   "text": "build OK: COMPLETED 0:0 2:46 homer-010, MaxRSS 1.9 GB; 60,000 scanned rows -> 100 train + 100 held-out pages, 674-760 tokens (mean 749 / 750), overlap 0, 47,498 trained docids excluded; train set 1,000 rows (10 copies) \u2014 job 191891, closed",
+   "jobs": [
+    "191891"
+   ]
+  },
+  {
+   "jobid": "191784",
+   "verdict": "closed",
+   "arm": "eval_pad.sbatch",
+   "note": "check 2b s43 NOT A CAUSE: COMPLETED 0:0 1:17:41 homer-019; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used ratio 1.0000; pad64 - padNone judge +0.9 pt [-0.7, +2.5] McNemar p .285 (81 vs 67), 1,068/1,500 identical answers; padNone .615 = recorded R s43 .615. Both seeds CI inside +-3 pt -> the eval's missing training padding is not a cause",
+   "text": "check 2b s43 NOT A CAUSE: COMPLETED 0:0 1:17:41 homer-019; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used ratio 1.0000; pad64 - padNone judge +0.9 pt [-0.7, +2.5] McNemar p .285 (81 vs 67), 1,068/1,500 identical answers; padNone .615 = recorded R s43 .615. Both seeds CI inside +-3 pt -> the eval's missing training padding is not a cause \u2014 job 191784, closed",
+   "jobs": [
+    "191784"
+   ]
+  },
+  {
+   "jobid": "191783",
+   "verdict": "closed",
+   "arm": "kind=eval_pad arm=P2b cell=p2b_s42 steps=none,64 limit=all judge=1 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model set=mm_docqa_1500_1m px=1003520 topk=4 mnt=32",
+   "note": "check 2b s42 NOT A CAUSE: COMPLETED 0:0 55:10 homer-020; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used 646,042 both (ratio 1.0000); pad64 - padNone judge +0.5 pt [-1.1, +2.1] McNemar p .618 (76 vs 69 discordant), 1,132/1,500 identical answers; padNone .610 = recorded R s42 .610",
+   "text": "check 2b s42 NOT A CAUSE: COMPLETED 0:0 55:10 homer-020; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used 646,042 both (ratio 1.0000); pad64 - padNone judge +0.5 pt [-1.1, +2.1] McNemar p .618 (76 vs 69 discordant), 1,132/1,500 identical answers; padNone .610 = recorded R s42 .610 \u2014 job 191783, closed",
+   "jobs": [
+    "191783"
+   ]
+  },
+  {
+   "jobid": "191890",
+   "verdict": "closed",
+   "arm": "build_dense100.sbatch",
+   "note": "plumbing OK (decides nothing): COMPLETED 0:0 1:01 homer-010, MaxRSS 1.2 GB; scan 3,000 tail rows -> 100 + 100 pages, 674-760 tokens (mean 714 / 716), overlap 0, trained docids in the scan 0, train set 1,000 rows (10 copies), textlayer files written; builder b7170cf5",
+   "text": "plumbing OK (decides nothing): COMPLETED 0:0 1:01 homer-010, MaxRSS 1.2 GB; scan 3,000 tail rows -> 100 + 100 pages, 674-760 tokens (mean 714 / 716), overlap 0, trained docids in the scan 0, train set 1,000 rows (10 copies), textlayer files written; builder b7170cf5 \u2014 job 191890, closed",
+   "jobs": [
+    "191890"
+   ]
+  },
+  {
+   "jobid": "191782",
+   "verdict": "closed",
+   "arm": "JUDGE=0",
+   "note": "plumbing PASS (decides nothing): COMPLETED 0:0 19:42 homer-020, R s42 300 Q, JUDGE=0; plain eval_mm_4b.sh vs wrapper pad=None: 300/300 identical predictions and mems_used (118,147 both) -> wrapper invariant holds (md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0 unchanged); pad=64 vs None: 233/300 identical predictions, mems_used ratio 1.0000",
+   "text": "plumbing PASS (decides nothing): COMPLETED 0:0 19:42 homer-020, R s42 300 Q, JUDGE=0; plain eval_mm_4b.sh vs wrapper pad=None: 300/300 identical predictions and mems_used (118,147 both) -> wrapper invariant holds (md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0 unchanged); pad=64 vs None: 233/300 identical predictions, mems_used ratio 1.0000 \u2014 job 191782, closed",
+   "jobs": [
+    "191782"
+   ]
+  },
+  {
+   "jobid": "191781",
+   "verdict": "closed",
+   "arm": "pad_split.sbatch",
+   "note": "split decided (40 pages x widths 17/63, bf16 + fp32, homer-011, COMPLETED 0:0 9:22): the 2a not-inert read has two parts. (1) 1-row path, pads left in: bf16 A63 median cos .935 vs Afix63 (pad zeroing forced on) .995; fp32 A63 .953 vs Afix63 1.0000 -> cause = installed transformers zeroes pad states in Qwen3.5 linear-attention layers only for batches of >1 row (modeling_qwen3_5.py:198). (2) >=2-row path (pads masked, as training and the eval run): bf16 B63 .9948 = the no-pad 2-row twin .9943 (batch-composition rounding, min .66), fp32 B63 1.0000 (min .985) -> rounding, not a leak. Training (bs>=2 -> >=2 rows) and the eval (pad None: a 1-row batch has no pads) never take path (1): latent",
+   "text": "split decided (40 pages x widths 17/63, bf16 + fp32, homer-011, COMPLETED 0:0 9:22): the 2a not-inert read has two parts. (1) 1-row path, pads left in: bf16 A63 median cos .935 vs Afix63 (pad zeroing forced on) .995; fp32 A63 .953 vs Afix63 1.0000 -> cause = installed transformers zeroes pad states in Qwen3.5 linear-attention layers only for batches of >1 row (modeling_qwen3_5.py:198). (2) >=2-row path (pads masked, as training and the eval run): bf16 B63 .9948 = the no-pad 2-row twin .9943 (batch-composition rounding, min .66), fp32 B63 1.0000 (min .985) -> rounding, not a leak. Training (bs>=2 -> >=2 rows) and the eval (pad None: a 1-row batch has no pads) never take path (1): latent \u2014 job 191781, closed",
+   "jobs": [
+    "191781"
+   ]
+  },
+  {
+   "jobid": "191672",
+   "verdict": "closed",
+   "arm": "pad_probe.sbatch",
+   "note": "check 2a NOT INERT (n = 120 pages x widths 17/63 + 30 four-page questions): COMPLETED 0:0 4:04 homer-011, MaxRSS 3.6 GB, controls pass (repeat cos 1.0000 / max abs 0 on 120/120; other page median cos .739), <MEM> count same at every width. 1-row page + 17 / 63 left pads: median cos .934 / .934 (min .632), max abs 2.65 / 2.80 vs floor 0. 4-page batch padded to 64 (pads masked): median cos .9966, min .637. Bar .9999 missed on both paths -> check 2b runs (191783/191784). Single-page path carries the 1-row confound: split probe 191781",
+   "text": "check 2a NOT INERT (n = 120 pages x widths 17/63 + 30 four-page questions): COMPLETED 0:0 4:04 homer-011, MaxRSS 3.6 GB, controls pass (repeat cos 1.0000 / max abs 0 on 120/120; other page median cos .739), <MEM> count same at every width. 1-row page + 17 / 63 left pads: median cos .934 / .934 (min .632), max abs 2.65 / 2.80 vs floor 0. 4-page batch padded to 64 (pads masked): median cos .9966, min .637. Bar .9999 missed on both paths -> check 2b runs (191783/191784). Single-page path carries the 1-row confound: split probe 191781 \u2014 job 191672, closed",
+   "jobs": [
+    "191672"
+   ]
+  },
+  {
+   "jobid": "191671",
+   "verdict": "closed",
+   "arm": "pad_probe.sbatch",
+   "note": "plumbing OK: COMPLETED 0:0 homer-011, 6 pages + 2 four-page questions, controls pass (repeat cos 1.0000 / max abs 0; other page cos .742); decides nothing (law: small cells are plumbing)",
+   "text": "plumbing OK: COMPLETED 0:0 homer-011, 6 pages + 2 four-page questions, controls pass (repeat cos 1.0000 / max abs 0; other page cos .742); decides nothing (law: small cells are plumbing) \u2014 job 191671, closed",
+   "jobs": [
+    "191671"
+   ]
+  },
+  {
+   "jobid": "191663",
+   "verdict": "closed",
+   "arm": "kind=audit arm=C n_control=50 topk_docs=4 sets=docpages_20k_1m_teacher,natural_8k_teacher",
+   "note": "check 1 decided, not a cause: COMPLETED 0:0 56 s homer-017; feasibility gate PASS (image rows complete 20,000/20,000; controls 50/50 sampled rows give min(n,4) blocks, planted [4,5]->dropped, [0,5]->partial, [1]->kept). Trained rows losing EVERY gold page to topk_docs=4: 0/20,000 docpages + 0/8,000 natural. Partial (one of two source pages dropped): 1,910/20,000 = 9.55%, all docmatix (19.1% of its 10,000; 4,745 docmatix rows have 5 docs); answer page unknown from the record",
+   "text": "check 1 decided, not a cause: COMPLETED 0:0 56 s homer-017; feasibility gate PASS (image rows complete 20,000/20,000; controls 50/50 sampled rows give min(n,4) blocks, planted [4,5]->dropped, [0,5]->partial, [1]->kept). Trained rows losing EVERY gold page to topk_docs=4: 0/20,000 docpages + 0/8,000 natural. Partial (one of two source pages dropped): 1,910/20,000 = 9.55%, all docmatix (19.1% of its 10,000; 4,745 docmatix rows have 5 docs); answer page unknown from the record \u2014 job 191663, closed",
+   "jobs": [
+    "191663"
+   ]
+  }
+ ],
+ "open": [
+  {
+   "jobid": "192236",
+   "state": "RUNNING",
+   "arm": "ROUND=2",
+   "text": "ROUND=2 \u2014 job 192236 RUNNING 2:25"
+  },
+  {
+   "jobid": "192237",
+   "state": "PENDING",
+   "arm": "ROUND=2",
+   "text": "ROUND=2 \u2014 job 192237 PENDING 0:00"
+  },
+  {
+   "jobid": "192238",
+   "state": "PENDING",
+   "arm": "ROUND=2",
+   "text": "ROUND=2 \u2014 job 192238 PENDING 0:00"
+  },
+  {
+   "jobid": "192239",
+   "state": "PENDING",
+   "arm": "eval_x.sbatch",
+   "text": "eval_x.sbatch \u2014 job 192239 PENDING 0:00"
+  }
+ ],
+ "findings": [
+  "check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions (job 192223, closed)",
+  "plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design (job 192220, closed)",
+  "never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke (job 192222, closed)",
+  "sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt (job 192221, closed)",
+  "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used) (jobs 192215-192217, closed)"
+ ],
+ "wrong": [
+  "The campaign idled 4.7 h of its 22.5 h window (20%) \u2014 with work outstanding, that is the main operational fact.",
+  "4 of 12 LLM wakes returned rc\u22600.",
+  "3 run(s) ended FAILED/TIMEOUT/NODE_FAIL: 192002 192214 192221."
+ ],
+ "arms": [
+  {
+   "arm": "kind=audit arm=C n_control=50 topk_docs=4 sets=docpages_20k_1m_teacher,natural_8k_teacher",
+   "jobid": "191663",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "check 1 decided, not a cause: COMPLETED 0:0 56 s homer-017; feasibility gate PASS (image rows complete 20,000/20,000; controls 50/50 sampled rows give min(n,4) blocks, planted [4,5]->dropped, [0,5]->partial, [1]->kept). Trained rows losing EVERY gold page to topk_docs=4: 0/20,000 docpages + 0/8,000 natural. Partial (one of two source pages dropped): 1,910/20,000 = 9.55%, all docmatix (19.1% of its 10,000; 4,745 docmatix rows have 5 docs); answer page unknown from the record"
+  },
+  {
+   "arm": "pad_probe.sbatch",
+   "jobid": "191671",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "plumbing OK: COMPLETED 0:0 homer-011, 6 pages + 2 four-page questions, controls pass (repeat cos 1.0000 / max abs 0; other page cos .742); decides nothing (law: small cells are plumbing)"
+  },
+  {
+   "arm": "pad_probe.sbatch",
+   "jobid": "191672",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "check 2a NOT INERT (n = 120 pages x widths 17/63 + 30 four-page questions): COMPLETED 0:0 4:04 homer-011, MaxRSS 3.6 GB, controls pass (repeat cos 1.0000 / max abs 0 on 120/120; other page median cos .739), <MEM> count same at every width. 1-row page + 17 / 63 left pads: median cos .934 / .934 (min .632), max abs 2.65 / 2.80 vs floor 0. 4-page batch padded to 64 (pads masked): median cos .9966, min .637. Bar .9999 missed on both paths -> check 2b runs (191783/191784). Single-page path carries the 1-row confound: split probe 191781"
+  },
+  {
+   "arm": "pad_split.sbatch",
+   "jobid": "191781",
+   "state": "COMPLETED",
+   "gpu_h": 0.2,
+   "verdict": "closed",
+   "headline": "split decided (40 pages x widths 17/63, bf16 + fp32, homer-011, COMPLETED 0:0 9:22): the 2a not-inert read has two parts. (1) 1-row path, pads left in: bf16 A63 median cos .935 vs Afix63 (pad zeroing forced on) .995; fp32 A63 .953 vs Afix63 1.0000 -> cause = installed transformers zeroes pad states in Qwen3.5 linear-attention layers only for batches of >1 row (modeling_qwen3_5.py:198). (2) >=2-row path (pads masked, as training and the eval run): bf16 B63 .9948 = the no-pad 2-row twin .9943 (batch-composition rounding, min .66), fp32 B63 1.0000 (min .985) -> rounding, not a leak. Training (bs>=2 -> >=2 rows) and the eval (pad None: a 1-row batch has no pads) never take path (1): latent"
+  },
+  {
+   "arm": "JUDGE=0",
+   "jobid": "191782",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "plumbing PASS (decides nothing): COMPLETED 0:0 19:42 homer-020, R s42 300 Q, JUDGE=0; plain eval_mm_4b.sh vs wrapper pad=None: 300/300 identical predictions and mems_used (118,147 both) -> wrapper invariant holds (md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0 unchanged); pad=64 vs None: 233/300 identical predictions, mems_used ratio 1.0000"
+  },
+  {
+   "arm": "kind=eval_pad arm=P2b cell=p2b_s42 steps=none,64 limit=all judge=1 model=/beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model set=mm_docqa_1500_1m px=1003520 topk=4 mnt=32",
+   "jobid": "191783",
+   "state": "COMPLETED",
+   "gpu_h": 0.9,
+   "verdict": "closed",
+   "headline": "check 2b s42 NOT A CAUSE: COMPLETED 0:0 55:10 homer-020; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used 646,042 both (ratio 1.0000); pad64 - padNone judge +0.5 pt [-1.1, +2.1] McNemar p .618 (76 vs 69 discordant), 1,132/1,500 identical answers; padNone .610 = recorded R s42 .610"
+  },
+  {
+   "arm": "eval_pad.sbatch",
+   "jobid": "191784",
+   "state": "COMPLETED",
+   "gpu_h": 1.3,
+   "verdict": "closed",
+   "headline": "check 2b s43 NOT A CAUSE: COMPLETED 0:0 1:17:41 homer-019; 1,500 rows x 2 files, judge on all, unparseable 0, no exceeds, mems_used ratio 1.0000; pad64 - padNone judge +0.9 pt [-0.7, +2.5] McNemar p .285 (81 vs 67), 1,068/1,500 identical answers; padNone .615 = recorded R s43 .615. Both seeds CI inside +-3 pt -> the eval's missing training padding is not a cause"
+  },
+  {
+   "arm": "build_dense100.sbatch",
+   "jobid": "191890",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "plumbing OK (decides nothing): COMPLETED 0:0 1:01 homer-010, MaxRSS 1.2 GB; scan 3,000 tail rows -> 100 + 100 pages, 674-760 tokens (mean 714 / 716), overlap 0, trained docids in the scan 0, train set 1,000 rows (10 copies), textlayer files written; builder b7170cf5"
+  },
+  {
+   "arm": "kind=build arm=O_build scan=60000 tag=none n=100 max_tokens=760",
+   "jobid": "191891",
+   "state": "COMPLETED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "build OK: COMPLETED 0:0 2:46 homer-010, MaxRSS 1.9 GB; 60,000 scanned rows -> 100 train + 100 held-out pages, 674-760 tokens (mean 749 / 750), overlap 0, 47,498 trained docids excluded; train set 1,000 rows (10 copies)"
+  },
+  {
+   "arm": "pt_overfit.sbatch",
+   "jobid": "191892",
+   "state": "COMPLETED",
+   "gpu_h": 0.3,
+   "verdict": "closed",
+   "headline": "smoke OK (decides nothing): COMPLETED 0:0 16:07 homer-016, MaxRSS 8.35 GB, 1.03 CPU avg; 32.8 s/step (steps 2-20), first step 166 s; loss 0.600 (step 10) -> 0.488 (step 20), grad norm 1.44 -> 0.81, KD 0 (AE only); eval Rouge-L .823; config diff vs start = max_steps, training_dataset, 5 task-mix fields, model_name_or_path (= the start dir by design: the start's own config records its parent pt_text_5M_spread)"
+  },
+  {
+   "arm": "recall.sbatch",
+   "jobid": "191893",
+   "state": "COMPLETED",
+   "gpu_h": 2.6,
+   "verdict": "closed",
+   "headline": "baseline OK: COMPLETED 0:0 2:37:33 homer-016, MaxRSS 4.8 GB; stride 8 printed, 4 passes x 100 pages; word recall vs the uncompressed transcription: start model .702 (overfit pages) / .670 (held-out); text-layer ceiling .974 / .983; reference vs itself 1.000 / 1.000 (control)"
+  },
+  {
+   "arm": "pt_overfit.sbatch",
+   "jobid": "192002",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "healthy, trained to the end: attempt 1 PREEMPTED at 1:32 (no checkpoint, save_steps 250 > 210), attempt 2 homer-011 03:39-05:45 batch COMPLETED 0:0, MaxRSS 8.3 GB, wrote checkpoint-210 + model/ (global_step 210, epoch 14 = 134 presentations per page); attempt 3 exit 3 = the launcher's overwrite guard (known_issues row: benign requeue). Train loss (image-AE) .602 at step 10 -> .028 at step 210; grad norm 1.8 -> 0.3; no NaN. Plateau rule NOT reached: mean loss steps 161-210 .0280 vs 111-160 .0355 = -21% (rule: within 2%) -> its recall is a LOWER bound of what training can store, never a <=75% capacity verdict. Eval split (64 copies of trained pages, not held-out) Rouge-L .981. Log of attempt 2 overwritten by attempt 3; loss read from checkpoint-210/trainer_state.json. 3.6 GPU-h spent (1.5 lost to the preemption)"
+  },
+  {
+   "arm": "recall.sbatch",
+   "jobid": "192003",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "never ran (0 of 2 recall passes): its afterok parent 192002 ended FAILED exit 3 on a benign requeue although the training was complete -> DependencyNeverSatisfied; killed and relaunched with the exact command, no dependency, as 192209 (n = the same 100 + 100 pages)"
+  },
+  {
+   "arm": "transcribe_pages.sbatch",
+   "jobid": "192009",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "plumbing PASS (decides nothing): COMPLETED 0:0 4:25 homer-011, MaxRSS 9.0 GiB; 10/10 pages of shard 0 transcribed, empty 0/10, at cap 0/10, mean 197 words; 500 questions -> 2,000 page slots -> 1,268 unique pages"
+  },
+  {
+   "arm": "kind=transcribe arm=X_transcribe shard=0 n_shards=4 limit=all set=mm_docqa_1500_1m questions=500 topk=4 px=1003520 max_new_tokens=1024",
+   "jobid": "192010",
+   "state": "COMPLETED",
+   "gpu_h": 1.1,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 1:04:14 homer-011, one attempt, MaxRSS 9.0 GiB; shard 0 = 317/317 pages written (of 1,268 unique), empty 0/317 (bar < 2%), 28/317 within 2 tokens of the 1,024-token cap (20/317 at >= 1,024: ~8 repetition loops, ~12 dense pages cut), mean 189 words/page, 8.6 s/page median; questions.json written (500 questions)"
+  },
+  {
+   "arm": "kind=probe_recall arm=O_recall passes=o_bf16_dense100:/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model:slotcheck_dense100 px=1003520",
+   "jobid": "192209",
+   "state": "COMPLETED",
+   "gpu_h": 1.4,
+   "verdict": "closed",
+   "headline": "check 4 DECIDED, capacity is not the limit: healthy (COMPLETED 0:0 1:26:45 homer-011, one attempt; 2 passes x 100 pages; mem_position_stride=8 printed; <MEM>s per page 116-123, identical to the start model's on every page). Overfit bf16 model word recall on the 100 trained pages .921 vs start .702: +21.9 pt [+18.5,+25.3], 98 up / 2 down, sign p 8e-27; median .951, 76/100 pages >= .90, 7/100 <= .75; text-layer ceiling .974 (= 94.6% of it). Held-out 100 pages .667 vs .670: -0.3 [-4.2,+3.6] (32 up / 66 down) = no general gain, memorisation. Self-pair 0.000. Gate >= 90% -> about 4 words per slot (479 words / 120 slots) fit; plateau not reached, so .921 is a lower bound"
+  },
+  {
+   "arm": "transcribe_pages.sbatch",
+   "jobid": "192210",
+   "state": "COMPLETED",
+   "gpu_h": 1.1,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 1:05:50 homer-011, one attempt; shard 1 = 317/317 pages, empty 0, 31 within 2 tokens of the 1,024 cap, 201 words/page mean"
+  },
+  {
+   "arm": "transcribe_pages.sbatch",
+   "jobid": "192211",
+   "state": "COMPLETED",
+   "gpu_h": 1.1,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 1:05:10 homer-018, one attempt; shard 2 = 317/317 pages, empty 0, 23 at the cap, 187 words/page mean"
+  },
+  {
+   "arm": "transcribe_pages.sbatch",
+   "jobid": "192212",
+   "state": "COMPLETED",
+   "gpu_h": 1.1,
+   "verdict": "closed",
+   "headline": "healthy: COMPLETED 0:0 1:07:10 homer-018, one attempt; shard 3 = 317/317 pages, empty 0, 42 at the cap, 207 words/page mean. All 4 shards: 1,268/1,268 unique pages, empty 0 (bar < 2%), 124/1,268 = 9.8% within 2 tokens of the cap, 4.35 GPU-h"
+  },
+  {
+   "arm": "kind=build arm=X_build limit=30 tag=_smoke questions=500 sets=img,text,imgtext cml=256 chunk=1",
+   "jobid": "192214",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "plumbing FAILED its own health check by a bug in the check (exit 4, 1:11, homer-014): chunk length incl. <MEM>s compared to CML + 1, and imgtext's image chunks counted as text. Data passed: 30 Q x 3 sets, empty 0, cut 0, mems mean 380.1 / 80.4 / 460.5. Patched build_text_sets.py 1c110e22; decides nothing"
+  },
+  {
+   "arm": "JUDGE=0",
+   "jobid": "192215",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used)"
+  },
+  {
+   "arm": "build_text_sets.sbatch",
+   "jobid": "192216",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used)"
+  },
+  {
+   "arm": "eval_x.sbatch",
+   "jobid": "192217",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used)"
+  },
+  {
+   "arm": "JUDGE=0",
+   "jobid": "192220",
+   "state": "COMPLETED",
+   "gpu_h": 0.1,
+   "verdict": "closed",
+   "headline": "plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design"
+  },
+  {
+   "arm": "kind=build arm=X_build limit=0 tag=none questions=500 sets=img,text,imgtext cml=256 chunk=1",
+   "jobid": "192221",
+   "state": "FAILED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt"
+  },
+  {
+   "arm": "eval_x.sbatch",
+   "jobid": "192222",
+   "state": "CANCELLED",
+   "gpu_h": 0.0,
+   "verdict": "closed",
+   "headline": "never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke"
+  },
+  {
+   "arm": "eval_x.sbatch",
+   "jobid": "192223",
+   "state": "COMPLETED",
+   "gpu_h": 0.6,
+   "verdict": "closed",
+   "headline": "check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions"
+  },
+  {
+   "arm": "ROUND=2",
+   "jobid": "192236",
+   "state": "RUNNING",
+   "gpu_h": 0.0,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "ROUND=2",
+   "jobid": "192237",
+   "state": "PENDING",
+   "gpu_h": 0.0,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "ROUND=2",
+   "jobid": "192238",
+   "state": "PENDING",
+   "gpu_h": 0.0,
+   "verdict": "-",
+   "headline": "-"
+  },
+  {
+   "arm": "eval_x.sbatch",
+   "jobid": "192239",
+   "state": "PENDING",
+   "gpu_h": 0.0,
+   "verdict": "-",
+   "headline": "-"
+  }
+ ],
+ "artifacts": [],
+ "ledger_entries": 50
+}

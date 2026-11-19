@@ -148,6 +148,9 @@ the audit is not a finding: fix it and re-run.
   passes if the repeat clears that bar; otherwise it is closed with both reads. Never extend a read until it passes,
   never a second repeat. The new items here: documents `eval_data/mm_docqa_retr10_1m` or `mm_docqa_longdoc_1m` (500 Q),
   photos `eval_data/mm_naturalqa_1500`, text `eval_data/text_mrqa_ood_1500`.
+  Tightened 2026-11-19 16:45 (before the repeat ran): for check 3 the new items are the NEXT 167 / 167 / 166 questions
+  per source of `mm_docqa_1500_1m` (disjoint query_ids; `--round 2` of the arm X scripts), because the two named
+  document sets reuse the gating questions with other pages (docs/spread_cases.md:63-65) — new pages, not new items.
 - **On acceptance:** nothing is switched on by the wake; this campaign delivers findings. Default-on is refused because
   four of the five parts of a proper judge are missing: (1) judge frozen for the wake — prose only ("never" below; no
   hook and `CAMP_READ_DENY=''` in campaign.conf covers `scripts/judge_*.py`, `scripts/judge_prompts.py`,

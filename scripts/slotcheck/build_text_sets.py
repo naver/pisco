@@ -59,7 +59,23 @@ def _init_worker(tag):
 
 def _audit(task):
     import audit_inputs as A
-    return A.eval_row(task)
+    x = A.eval_row(task)
+    x["cut_boundary"] = bool(x["cut_pisco"]) and _found_unspaced(A, task)
+    return x
+
+
+def _found_unspaced(A, task):
+    """eval_row joins the decoded chunks with a space, so an answer split at a chunk boundary ("20" | "16", 192221)
+    reads as cut. Re-check on the chunks' text joined as is, all whitespace ignored: found = not a cut."""
+    from pisco.metrics import normalize
+    setn, topk, _, cml, _, _ = A.VARIANTS[task[0]]
+    row, coll, ctok = A._ds(setn)[task[1]], A._coll(topk, cml), A.G["ctok"]
+    batch, _, _ = coll.example_chunks([d if d else " " for d in row["docs"]], list(row.get("doc_images") or []),
+                                      coll.clean_text(row["query"]))
+    flat = normalize("".join(ctok.decode([t for t in c if t != ctok.mem_token_id])
+                             for c, im in zip(batch.input_ids, batch.is_image) if not im)).replace(" ", "")
+    ans = [normalize(a).replace(" ", "") for a in (row.get("answers") or [row.get("mistral_label", "")]) if isinstance(a, str)]
+    return any(a and a in flat for a in ans)
 
 
 def main():
@@ -72,6 +88,7 @@ def main():
     ap.add_argument("--tag", default="")
     ap.add_argument("--workers", type=int, default=int(os.environ.get("SLURM_CPUS_PER_TASK", 4)))
     ap.add_argument("--dml_cap", type=int, default=2048, help="health: max prompt + 256 must fit the eval default")
+    ap.add_argument("--round", type=int, default=1, help="question block (transcribe_pages.pick_questions)")
     args = ap.parse_args()
     assert not args.limit or args.tag, "a --limit build needs its own --tag (never overwrite the full sets)"
     import datasets as D
@@ -89,7 +106,10 @@ def main():
     # --- questions: re-derive and check the keys
     ds = D.load_from_disk(args.data_path)
     ds = ds["train"] if isinstance(ds, D.DatasetDict) else ds
-    qs = pick_questions(ds, 4)
+    qs = pick_questions(ds, 4, args.round)
+    if args.round > 1:   # the repeat must hold NEW questions: none of the gating 500
+        old = set(json.load(open(REPO / "expQ/slotcheck/transcribe/questions.json"))) & {q for _, q, _ in qs}
+        fails += [f"round {args.round}: {len(old)} questions of round 1"] if old else []
     raw = ds.cast_column("doc_images", D.Sequence(D.Image(decode=False)))
     if args.limit:
         qs = qs[: args.limit]
@@ -143,18 +163,18 @@ def main():
     for n in SETS:
         R = [x for x in res if x["v"] == f"X_{n}{args.tag}"]
         mem = [x["n_mem"] for x in R]; pr = [x["prompt"] for x in R]
-        in_raw = sum(x["in_raw"] for x in R); cut = sum(x["cut_pisco"] for x in R)
+        in_raw = sum(x["in_raw"] for x in R); cut = sum(x["cut_pisco"] for x in R); cb = sum(x["cut_boundary"] for x in R)
         summ[n] = dict(rows=len(R), mems_total=sum(mem), mems_mean=round(sum(mem) / max(len(R), 1), 1), mems_max=max(mem),
                        prompt_max=max(pr), dml=max(pr) + 256, chunk_tok_max=max(x["chunk_tok_max"] for x in R),
                        chunks_mean=round(sum(x["n_chunks"] for x in R) / max(len(R), 1), 2),
-                       answer_in_text=in_raw, cut=cut, gold_dropped=sum(x["gold_dropped"] for x in R),
+                       answer_in_text=in_raw, cut=cut, cut_boundary=cb, gold_dropped=sum(x["gold_dropped"] for x in R),
                        by_source={s: dict(rows=sum(x["src"] == s for x in R),
                                           mems_mean=round(sum(x["n_mem"] for x in R if x["src"] == s) /
                                                           max(1, sum(x["src"] == s for x in R)), 1),
                                           answer_in_text=sum(x["in_raw"] for x in R if x["src"] == s))
                                   for s in sorted(PER_SOURCE)})
-        if n != "img" and cut:
-            fails.append(f"{n}: cut {cut} rows (answer in the transcription, not in the compressor's text)")
+        if n != "img" and cut - cb:
+            fails.append(f"{n}: cut {cut - cb} rows (answer in the transcription, not in the compressor's text)")
         if summ[n]["dml"] > args.dml_cap:
             fails.append(f"{n}: max prompt {max(pr)} + 256 > {args.dml_cap}")
         # a chunk's length counts its <MEM>s: CML text tokens + CML // 8 + 1 (rate 8, the law's; 192214 used CML + 1).
@@ -180,7 +200,7 @@ def main():
     for n, s in summ.items():
         log(n, {k: v for k, v in s.items() if k != "by_source"})
     print("RESULT arm=X_build tag=" + (args.tag or "none") + f" questions={stats['questions']} empty={stats['empty']} "
-          + " ".join(f"{n}_mems_mean={s['mems_mean']} {n}_prompt_max={s['prompt_max']} {n}_cut={s['cut']} "
+          + " ".join(f"{n}_mems_mean={s['mems_mean']} {n}_prompt_max={s['prompt_max']} {n}_cut={s['cut']} {n}_cut_boundary={s['cut_boundary']} "
                      f"{n}_answer_in_text={s['answer_in_text']}" for n, s in summ.items())
           + f" ok={not fails}", flush=True)
     for f in fails[:20]:

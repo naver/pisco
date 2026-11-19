@@ -10,8 +10,8 @@ documents ≈ 108 slots per page (430.7 per 4-page question, 646,042 / 1,500).
 | 1 | does the finetune collator's 4-document cap drop the answer page? | **decided: not a cause** (0 of 20,000 rows) |
 | 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row padded batch matches the no-pad batching floor by median cosine, but in fp32 its max abs difference is 2-3× that floor, so a small pad effect remains (cost on answers: check 2b, none) |
 | 2b | does training-style padding (to 64) change judge accuracy? | **decided: not a cause** (1,500 Q × 2 seeds: +0.5 / +0.9 pt, both CIs inside ±3) |
-| 3 | do text slots of the page's transcription keep what image slots lose? | running: all 1,268 pages transcribed (empty 0); the three 500-question sets are built (`<MEM>`s per question: image 430.4, text 222.8, both 653.2); plumbing eval passed (30 Q × 3 sets); the judged eval of R seed 42 runs (job 192223) |
-| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided: capacity is not the limit** (word recall .921 after the overfit vs .702 before, 100 pages; held-out pages flat) |
+| 3 | do text slots of the page's transcription keep what image slots lose? | **first read (500 Q): text slots alone are worse (−12.0 pt); image + text slots +4.6 pt [+1.0, +8.0] = promising, under the 5-pt bar** → one repeat on 500 new questions running (jobs 192236-192239) |
+| 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided: capacity is not the limit** (word recall .921 [.902, .938] after the overfit vs .702 before, 100 pages; held-out pages flat) |
 
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
 
@@ -98,6 +98,38 @@ masked-pad residual) reaching the answers.
 the batch shape flips the judge on about 10% of questions (net ±1 pt), so a paired difference under ~1.5 pt between two
 arms is within what a change of batch shape alone produces on 1,500 questions.
 
+## Check 3 — do text slots of the page's own words keep what image slots lose? (first read 2026-11-19; repeat running)
+
+Cells: one job per read, all three sets on one node with the same code (job 192223, homer-014; `scripts/slotcheck/eval_x.sbatch`
+→ the shared `eval_mm_4b.sh`, unchanged). Model R seed 42 (`expQ/ft_mm_4b_184778/model`). Questions: the first
+167 / 167 / 166 per source of `eval_data/mm_docqa_1500_1m` (4 pages each). What is compressed: the page images (as
+recorded), or each page's uncompressed Qwen3.5-4B transcription as text (256-token chunks, nothing cut), or per page
+its image then its transcription. No raw page ever reaches the decoder. Metric: judge accuracy (Qwen3-8B rubric judge),
+paired per question by `scripts/paired_judge.py`.
+
+| what is compressed | n (pairs) | judge ↑ | minus image slots (95% CI; McNemar: questions only this arm / only image right, p) | uncompressed judge ↑ (same Q) | compression rate: slots per question (tokens per slot) | health | read |
+|---|---|---|---|---|---|---|---|
+| page images (baseline) | 500 | .602 | — | .790 | 430.4 (8 visual tokens) | 500 rows, judge on all, 0 unparseable, 0 empty, no "exceeds" | = the recorded R s42 file on these 500 (0 answers differ) |
+| page transcriptions, text only | 500 | .482 | **−12.0 pt** [−16.6, −7.6]; 39 / 99, p 3e-7 | .790 | 222.8 (8 text tokens) | same | **worse** (≤ −5 pt, CI below 0) |
+| image + transcription of each page | 500 | .648 | **+4.6 pt** [+1.0, +8.0]; 51 / 28, p .013 | .790 | 653.2 = 430.4 + 222.8 (1.52× image) | same | **promising**: under the 5-pt bar, CI above 0 → one repeat |
+
+Per source (judge ↑, image / text / image + text / uncompressed): InfoVQA .491 / .419 / .515 / .725; MP-DocVQA
+.677 / .515 / .772 / .898; SlideVQA .639 / .512 / .657 / .747. Image + text − image: +2.4 / **+9.6** [+3.6, +16.2] /
++1.8 pt; text − image: −7.2 / −16.2 / −12.7 pt. Split by whether the answer string is in the transcription (424 / 500
+questions): there, image .630 / text .514 / image + text .684 / uncompressed .830; elsewhere (76) .447 / .303 / .447 / .566.
+So text slots lose 11.6 pt even when the words are there, and the image + text gain sits only where they are.
+
+Caveats: R was finetuned on image documents and photos only (no text-QA rows), so text slots are read by a decoder never
+trained to answer from them; 124 / 1,268 transcriptions end at the 1,024-token cap; image + text spends 1.52× the
+slots, so its gain cannot be split between "the words" and "more slots" (no slot-matched arm in the law).
+Repeat (fixed before launch): the next 167 / 167 / 166 questions per source of the same set (disjoint ids, 1,252 new
+pages transcribed), same model and code, image baseline re-run in the same job; passes if image + text − image > 0 with
+the CI above 0 and no source's CI wholly below 0. Pooled 1,000-question difference reported beside it, not gating.
+
+**For the stage-2 rebuild (provisional until the repeat):** compressing the page's own words instead of its pixels is
+not a shortcut (−12 pt); adding them beside the image slots buys a few points, mostly on scanned text pages
+(MP-DocVQA +9.6), at 1.5× the slots — a candidate side channel, not yet past the 5-pt bar.
+
 ## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19: slot capacity is not the limit)
 
 Pages: 100 dense PDF pages of `data/mm_pretrain_pdfa_1m` never trained on (674-760 text-layer tokens, 953 visual
@@ -111,7 +143,7 @@ bf16, its own recipe otherwise, 210 steps (what fits 2 GPU-hours) = 14 epochs, a
 | row | model | pages | n | word recall ↑ | minus the start model (95% CI, sign test) | read |
 |---|---|---|---|---|---|---|
 | start model, before the overfit (baseline) | `expQ/archq3/pt_mm_5M_spread/model` | the 100 to overfit | 100 | .702 | — | job 191893 |
-| **overfit, bf16, 210 steps** | `expQ/slotcheck/o_bf16/model` | **the 100 trained pages** | 100 | **.921** (median .951; 76 pages ≥ .90, 7 ≤ .75) | **+21.9 pt** [+18.5, +25.3], 98 up / 2 down, p 8e-27 | job 192209: **≥ 90% → capacity is fine** |
+| **overfit, bf16, 210 steps** | `expQ/slotcheck/o_bf16/model` | **the 100 trained pages** | 100 | **.921** [.902, .938] (median .951; 76 pages ≥ .90, 7 ≤ .75) | **+21.9 pt** [+18.5, +25.3], 98 up / 2 down, p 8e-27 | job 192209: **≥ 90% → capacity is fine** |
 | start model (held-out control) | start | 100 held-out | 100 | .670 | — | job 191893 |
 | overfit (held-out control) | overfit | 100 held-out | 100 | .667 | −0.3 pt [−4.2, +3.6], 32 up / 66 down | does not rise: the gain is memorisation, not a general gain |
 | ceiling: the page's own text layer (the training target) | — | 100 / 100 held-out | 100 | .974 / .983 | — | .921 = 94.6% of the ceiling |
@@ -121,6 +153,8 @@ Health: training job 192002 ran to its last step (loss .602 → .028, no NaN); t
 32.8 s per step with 52.0 GB peak GPU memory of 80 (SLURM accounting); the recall prints `mem_position_stride=8`;
 slots per page are the same before and after the overfit on every page. The loss had NOT flattened at step 210
 (−21% over the last 50 steps, the plateau rule asks ≤ 2%), so .921 is a lower bound of what training can store.
+The mean's bootstrap 95% interval over the 100 pages is [.902, .938] (the same word-recall metric, recomputed
+2026-11-19 16:45; 1.4% of 2,000 resamples fall under .90): the whole interval clears the 90% bar.
 The fp32 second training is not run: the law runs it only if arm O's budget line (≈ 5 GPU-hours) still holds, and arm O
 has used ≈ 7.9 (smoke 0.27, training 3.6, two recall passes 2.63 + 1.45). bf16 already clears the 90% bar.
 

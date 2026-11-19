@@ -15,13 +15,14 @@
 #   text    TOPK=4 CHUNK=1 CML=256     (one "Document j:" per page; its transcription in 256-token chunks, no cut)
 #   imgtext TOPK=8 CHUNK=1 CML=256     (per page: image, then its transcription)
 # DML = <set>/dml.txt (the build's max prompt + 256; DML only decides run vs error, never the output).
-#   eval_x.sbatch <cell under expQ/slotcheck, model -> R dir> [SETS=img,text,imgtext] [LIMIT] [TAG]
+#   eval_x.sbatch <cell under expQ/slotcheck, model -> R dir> [SETS=img,text,imgtext] [LIMIT|all] [TAG]   (repeat: x_s42 img,text,imgtext all _r2)
 source ~/.bashrc
 cd /beegfs/scratch/user/hdejean/pisco
 export HF_HOME=/beegfs/scratch/user/hdejean/Reranking/cache
 unset RAW DML RANK DENSE DROP KEEPK XD CSLICE MQ KEEPF KEEPM HS CHUNK CML GOLD STYLE MERGE CFG NSAMP MINPX TOPK RATE ADAPTER JPROMPT JMODEL
 nvidia-smi -L
 CELL=${1:?cell under expQ/slotcheck}; SETS=${2:-img,text,imgtext}; LIMIT=${3:-}; TAG=${4:-}
+[[ $LIMIT == all ]] && LIMIT=   # "all" = every row (an empty argv slot does not survive the launch)
 CKPT=/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/$CELL/model
 [[ -e "$CKPT/config.json" ]] || { echo "missing $CKPT"; exit 2; }
 echo "FACTORS kind=eval_x arm=X cell=$CELL sets=$SETS limit=${LIMIT:-all} tag=${TAG:-none} judge=${JUDGE:-1} model=$(readlink -f $CKPT) px=1003520 mnt=32"

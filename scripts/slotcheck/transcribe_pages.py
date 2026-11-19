@@ -30,11 +30,15 @@ def page_key(img):
     return hashlib.md5(img.tobytes()).hexdigest()[:16] + f"_{img.size[0]}x{img.size[1]}"
 
 
-def pick_questions(ds, topk):
-    """[(row index, query_id, [PIL image of each kept page])] for the 500 questions."""
-    seen, out = {}, []
+def pick_questions(ds, topk, round_=1):
+    """[(row index, query_id, [PIL image of each kept page])] for the 500 questions. round_ r = the r-th block of
+    167 / 167 / 166 rows per source in set order (1 = the gating 500; 2 = the repeat's new, disjoint 500)."""
+    seen, skip, out = {}, {}, []
     srcs = ds["source"]
     for i, src in enumerate(srcs):
+        if skip.get(src, 0) < (round_ - 1) * PER_SOURCE.get(src, 0):
+            skip[src] = skip.get(src, 0) + 1
+            continue
         if seen.get(src, 0) >= PER_SOURCE.get(src, 0):
             continue
         row = ds[i]
@@ -64,6 +68,7 @@ def main():
     ap.add_argument("--base_model_name", default="Qwen/Qwen3.5-4B")
     ap.add_argument("--image_max_pixels", type=int, default=1003520)
     ap.add_argument("--max_new_tokens", type=int, default=1024)
+    ap.add_argument("--round", type=int, default=1, help="question block (pick_questions); use its own --out_dir")
     args = ap.parse_args()
 
     import datasets
@@ -77,7 +82,7 @@ def main():
     ds = datasets.load_from_disk(args.data_path)
     ds = ds["train"] if isinstance(ds, datasets.DatasetDict) else ds
     t0 = time.time()
-    qs = pick_questions(ds, args.topk)
+    qs = pick_questions(ds, args.topk, args.round)
     pages, qmap = {}, {}   # key -> {"loc": (row, position) of its first occurrence, "qids"}; images not kept (RAM)
     for i, qid, imgs in qs:
         keys = []

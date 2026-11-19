@@ -1,0 +1,220 @@
+== campaign slotcheck wake 2026-11-19_1630  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795073401 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=12.4 idle_h=0.2 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7409 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:192223_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== wait condition met: job:192223 (ended)   (NEXT was: wake-when job:192223 max 3h)
+== session 634faae9-195b-40a3-8d52-33a55057c26e  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-19_1630   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+101 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md && echo ======= && cat STATE.md && echo ===== && cat known_issues.md; ls -la
+  ↳ Exit code 1 (+88 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 30	If it replicates or extends a paper, `papers/<slug>.md` (`expmon paper`, skill `paper`) is the source of every number (+79 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat STATE.md; echo =====; ls -la
+  ↳ Exit code 1 (+110 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 109	  pages) — same 100 pages, same data path. (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; cat known_issues.md | tail -30; ls -la; expmon ledger 10 2>&1 | tail -5
+  ↳ | a comparison between arms differs in something not listed in CAMPAIGN.md Arms | confounded — not a result | list the difference, re-run one arm with it held constant, or downgrade the claim to "cons (+46 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_slotcheck/VERIFY.md; echo ====; sacct -j 192223 -D -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End; expmon logs 192223 80 2>&1 | tail -90
+  ↳ Exit code 1 (+19 lines)
+Job 192223 (the judged check-3 eval) has ended. Next I check its outputs and then do the paired comparison.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192223 -D -X -o JobID,State,ExitCode,Elapsed,NodeList,Start,End; echo "---"; expmon logs 192223 60 2>&1 | tail -70
+  ↳ JobID             State ExitCode    Elapsed        NodeList               Start                 End  (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/slotcheck/ | head -30; ls -la expQ/slotcheck/x_s42/ expQ/slotcheck/x_s42/eval/ 2>&1; find . -maxdepth 3 -name "*192223*" 2>/dev/null | head
+  ↳ total 1138 (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "EXIT CODE|exceeds|Error|Traceback|judge_unparseable|accuracy|summary|mems_used|Saved|wrote" expQ/slotcheck/eval_x_192223.out | head -50; tail -30 expQ/slotcheck/eval_x_192223.out; cat scripts…
+  ↳ 606:wrote /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/x_s42/eval/mm_docqa_pisco_px1003520_slotcheck_docqa_img_500.json (+83 lines)
+All three sets wrote their files, each ended `EXIT CODE 0`. Now the health checks and the paired comparison.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/x_s42/eval; for f in mm_docqa_pisco_px1003520_slotcheck_docqa_img_500.json mm_docqa_pisco_px1003520_chunk_cml256_slotcheck_docqa_text_500.json mm_docqa_pisco_k8_px1003520_chunk_cml256_slo…
+  ↳ Traceback (most recent call last): (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/x_s42/eval; for f in mm_docqa_pisco_px1003520_slotcheck_docqa_img_500.json mm_docqa_pisco_px1003520_chunk_cml256_slotcheck_docqa_text_500.json mm_docqa_pisco_k8_px1003520_chunk_cml256_slo…
+  ↳ mm_docqa_pisco_px1003520_slotcheck_docqa_img_500.json (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -40 scripts/paired_judge.py; grep -nE "n_boot|bootstrap|argparse|add_argument" scripts/paired_judge.py | head
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+49 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 50,100p scripts/paired_judge.py
+  ↳ def main(): (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/slotcheck/x_s42/eval; IMG=$E/mm_docqa_pisco_px1003520_slotcheck_docqa_img_500.json; TXT=$E/mm_docqa_pisco_px1003520_chunk_cml256_slotcheck_docqa_text_500.json; IT=$E/mm_docqa_pisco_k8_px1003520_…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 901921 Oct 20 22:22 expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls scripts/slotcheck/; head -50 scripts/slotcheck/build_text_sets.py; grep -nE "add_argument|questions|seed|sample|per_source|500" scripts/slotcheck/build_text_sets.py | head -40
+  ↳ audit_ft_rows.py (+91 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "def pick_questions|PER_SOURCE|def page_key|add_argument|resume|exists|shard" scripts/slotcheck/transcribe_pages.py | head -40; sed -n "$(grep -n 'def pick_questions' scripts/slotcheck/transcr…
+  ↳ 5:key = md5 of its RGB bytes + size. Unique pages, sorted by key, go to shard k % n_shards. Prompt and generation are (+77 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in mm_docqa_retr10_1m mm_docqa_longdoc_1m mm_docqa_1500_1m; do echo "== $s"; ls eval_data/$s | head; cat eval_data/$s/dataset_info.json 2>/dev/null | python3 -c "import json,sys; d=json.load(sys.…
+  ↳ == mm_docqa_retr10_1m (+32 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 55,75p docs/spread_cases.md
+  ↳ | documents 1,500 Q | .044–.053 | .038 | .49 / .49 (full) | .28 / .28 (full) | "equal" only when the difference is under ~.1 pt; the full-budget +.017 is in the dead zone (not equal, not better) | (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 50,200p scripts/slotcheck/build_text_sets.py
+  ↳ for name, (topk, cml, chunk) in SETS.items(): (+142 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "def eval_row" -A 60 scripts/longdoc/audit_inputs.py | grep -nE "cut|in_raw|join|decode|return|n_max|norm" | head -30; grep -n "def _norm\|def norm" -A6 scripts/longdoc/audit_inputs.py | head -…
+  ↳ 5:120-    from pisco.metrics import normalize (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 116,182p scripts/longdoc/audit_inputs.py; md5sum scripts/longdoc/audit_inputs.py | cut -c1-8
+  ↳ def eval_row(task): (+67 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,30p scripts/slotcheck/transcribe_pages.py; sed -n 70,130p scripts/slotcheck/transcribe_pages.py; echo "-----"; cat scripts/slotcheck/build_text_sets.sbatch
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ """Campaign slotcheck, arm X (check 3): the uncompressed Qwen3.5-4B transcribes the pages of 500 document questions. (+115 lines)
+  ↳ 162	## Budget and caps (+39 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sinfo -p gpu-be -o "%P %l" | head -3; ls -la expQ/slotcheck/recall/; grep -n "RESULT\|ci_lo\|median" expQ/slotcheck/recall_192209.out | tail -5
+  ↳ PARTITION TIMELIMIT (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 20 python3 -c " ⏎ import json ⏎ d=json.load(open('expQ/slotcheck/recall/o_bf16_dense100.json')) ⏎ print(type(d).__name__, list(d.keys())[:10] if isinstance(d,dict) else len(d)) ⏎ r=d.get('recor…
+  ↳ dict ['args', 'records'] (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "python|analy|paired|recall_of|def " scripts/slotcheck/recall.sbatch | head -20; tail -25 expQ/slotcheck/recall_192209.out
+  ↳ 19:# Pair with: python3 -I scripts/longdoc/recall_pair.py --ref <ref json> --a <a json> --b <b json> (+28 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -40 scripts/longdoc/recall_pair.py; grep -nE "add_argument|boot|print" scripts/longdoc/recall_pair.py | head -20
+  ↳ """Pair two transcription-probe rebuilds per page against one reference (campaign longdoc, arm T). Stdlib only. (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/slotcheck/dense100_191891/; timeout 60 python3 -I -c " ⏎ import json,random,sys ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall ⏎ L=lambda p:{r['query_id']:r for r in jso…
+  ↳ summary.json (+3 lines)
+My recomputed mean (.881) does not match the recorded .921. Checking how the pairing tool computes it before trusting either number.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 44,90p scripts/longdoc/recall_pair.py; grep -n "def recall" -A15 scripts/analyze_mem_recall.py
+  ↳ ap = argparse.ArgumentParser() (+48 lines)
+I skipped the text normalization the tool applies. Recomputing with it:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 python3 -I -c " ⏎ import json,random,sys ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall, norm ⏎ L=lambda p:{r['query_id']:r for r in json.load(open(p))['records']} ⏎ …
+  ↳ n 100 mean 0.9207 boot95 [0.9018, 0.9376] boot_share_below_.90 0.014 pages>=.90 76
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py
+  ↳ 30	    return hashlib.md5(img.tobytes()).hexdigest()[:16] + f"_{img.size[0]}x{img.size[1]}" (+41 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py has been updated successfully.
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/transcribe_pages.py has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -i 's/    qs = pick_questions(ds, args.topk)$/    qs = pick_questions(ds, args.topk, args.round)/' scripts/slotcheck/transcribe_pages.py; grep -n "pick_questions(ds" scripts/slotcheck/transcribe_pa…
+  ↳ 33:def pick_questions(ds, topk, round_=1): (+1 lines)
+Now the transcription launcher (env `ROUND`, own output dir):
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/slotcheck/transcribe_pages.sbatch' ⏎ s=open(p).read() ⏎ old_f='echo "FACTORS kind=transcribe arm=X_transcribe shard=$SHARD n_shards=$NS limit=${LIMIT:-all} set=mm_docqa_1…
+  ↳ bash -n OK (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "^def _coll|^def _ds|^def _setup|G\[\"colls\"\]|^G =|^VARIANTS" scripts/longdoc/audit_inputs.py; sed -n "$(grep -n '^def _coll' scripts/longdoc/audit_inputs.py | cut -d: -f1),+8p" scripts/long…
+  ↳ 29:VARIANTS = { (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 60,64p scripts/longdoc/audit_inputs.py
+  ↳ def _setup(): (+4 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/scripts/slotcheck/build_text_sets.py has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/slotcheck/build_text_sets.py' ⏎ s=open(p).read() ⏎ reps=[ ⏎ ('    ap.add_argument("--dml_cap", type=int, default=2048, help="health: max prompt + 256 must fit the eval de…
+  ↳ Traceback (most recent call last): (+7 lines)
+The last replacement string didn't match, so none of that batch was written. Checking the exact RESULT line text:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "_cut=" scripts/slotcheck/build_text_sets.py | cat -A | cut -c1-200
+  ↳ 199:          + " ".join(f"{n}_mems_mean={s['mems_mean']} {n}_prompt_max={s['prompt_max']} {n}_cut={s['cut']} "$
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/slotcheck/build_text_sets.py' ⏎ s=open(p).read() ⏎ reps=[ ⏎ ('    ap.add_argument("--dml_cap", type=int, default=2048, help="health: max prompt + 256 must fit the eval de…
+  ↳ written (+81 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='scripts/slotcheck/build_text_sets.sbatch' ⏎ s=open(p).read() ⏎ old='''LIMIT=${1:-0}; TAG=${2:-} ⏎ echo "FACTORS kind=build arm=X_build limit=${LIMIT} tag=${TAG:-none} questions=5…
+  ↳ ok (+17 lines)
+Syntax checks pass and the shared eval/judge files are unchanged (same md5s as the intent notes). Now a quick stdlib-only test of the question-picking logic on a fake dataset:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 30 python3 -I -c " ⏎ import sys; sys.path.insert(0,'scripts/slotcheck') ⏎ from transcribe_pages import pick_questions, PER_SOURCE ⏎ src=[s for s in ('infovqa','mpdocvqa','slidevqa') for _ in ra…
+  ↳ Exit code 1 (+5 lines)
+Round 3 fails as it should (only 500 rows per source exist; round 3 is never used). Re-running with rounds 1 and 2:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 30 python3 -I -c " ⏎ import sys; sys.path.insert(0,'scripts/slotcheck') ⏎ from transcribe_pages import pick_questions, PER_SOURCE ⏎ src=[s for s in ('infovqa','mpdocvqa','slidevqa') for _ in ra…
+  ↳ sizes 500 500 overlap12 0 pages 4 (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"19222[0-3]"|"192010"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print({k:d.get(k) for k in ('jobid','stage','argv','env','sbatch_args','…
+  ↳ {'jobid': '192010', 'stage': 'X_transcribe', 'argv': ['0', '4'], 'env': {}, 'slurm': {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '5:30:00'}, 'launcher': 'scripts/slotcheck/transcribe (+5 lines)
+→ Bash: expmon help 2>&1 | grep -iE "verdict|probe|launch|note" | head -12; expmon verdict --help 2>&1 | head -15
+  ↳ launch-time fail-fast: the MIN-minute window (default 10) opens when (+14 lines)
+Writing the intent note with the gate fixed before any repeat result exists:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "slotcheck wake 16:30 check 3 (arm X) first read, n=500 paired, R s42, one job one node (192223, homer-014, COMPLETED 0:0 36:49; 500/500 rows, judge on all, 0 unparseable, 0 empty, 0 'excee…
+  ↳ Exit code 1 (+12 lines)
+The ledger caps notes at 80 words. Shorter versions; the detail goes in STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 192223 "check 3 first read (n=500 paired, R s42, one node): image slots .602, text slots .482, image+text .648, uncompressed .790. text-img -12.0 pt [-16.6,-7.6] p<.001 = transcription p…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Now the dry-run of the first chain link (transcription smoke, round 2):
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp slotcheck --stage X_transcribe_smoke --env ROUND=2 --partition gpu-be --exclude 'homer-[005-009]' --time 0:15:00 scripts/slotcheck/transcribe_pages.sbatch 0 1 10 2>&1 | ta…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 0:15:00 scripts/slotcheck/transcribe_pages.sbatch 0 1 10 (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage X_transcribe_smoke --env ROUND=2 --partition gpu-be --exclude 'homer-[005-009]' --time 0:15:00 scripts/slotcheck/transcribe_pages.sbatch 0 1 10 2>&1 | tail -5; tai…
+  ↳ env:     ROUND=2   (recorded in the run row) (+5 lines)
+Smoke is job 192236. Now the full transcription, after it:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage X_transcribe --parent 192236 --env ROUND=2 --partition gpu-be --exclude 'homer-[005-009]' --time 15:00:00 --dependency afterok:192236 scripts/slotcheck/transcribe_…
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=15:00:00 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 192236,192237 -o "%i %T %r %E %l" 2>&1; expmon launch --exp slotcheck --stage X_build --parent 192237 --env ROUND=2 --partition gpu-be --exclude 'homer-[005-009]' --time 0:15:00 --dependency …
+  ↳ JOBID STATE REASON DEPENDENCY TIME_LIMIT (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp slotcheck --stage X_eval --parent 192238 --partition gpu-be --exclude 'homer-[005-009]' --time 1:51:00 --dependency afterok:192238 scripts/slotcheck/eval_x.sbatch x_s42 im…
+  ↳ would submit: sbatch --partition gpu-be --exclude homer-[005-009] --time 1:51:00 --dependency afterok:192238 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext all _r2 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp slotcheck --stage X_eval --parent 192238 --partition gpu-be --exclude 'homer-[005-009]' --time 1:51:00 --dependency afterok:192238 scripts/slotcheck/eval_x.sbatch x_s42 img,text,img…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_x_192239.out (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 192223 arm=X_eval round=1 rows=500 judge_img=0.602 judge_text=0.482 judge_imgtext=0.648 judge_base=0.790 text_minus_img=-0.120 text_ci_lo=-0.166 text_ci_hi=-0.076 text_mcn=39/99 text_p=1e-…
+  ↳ probe recorded: 192223 (arm=X_eval round=1 rows=500 judge_img=0.602 judge_text=0.482 judge_imgtext=0.648 judge_base=0.790 text_minus_img=-0.120 text_ci_lo=-0.166 text_ci_hi=-0.076 text_mcn=39/99 text_ (+2 lines)
+The text McNemar p printed as 0.000; I wrote "1e-4" as a placeholder. Computing the exact value so the grid holds a real number:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import math ⏎ def p(a,b): ⏎     n=a+b;k=min(a,b); return min(1,2*sum(math.comb(n,i) for i in range(k+1))/2**n) ⏎ print('text 39/99 p=%.1e'%p(39,99),' imgtext 51/28 p=%.4f'%p(51,28),' …
+  ↳ text 39/99 p=3.4e-07  imgtext 51/28 p=0.0128  base-img 113/19 p=1.8e-17 (+1 lines)
+I entered a wrong value (8e-8) before reading the output; the correct p is 3.4e-7. Fixing:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 192223 text_p=3.4e-7 2>&1 | tail -1; sleep 1; grep -E "FACTORS|questions|unique|RESULT|EXIT|Error|Traceback|resume|shard" expQ/slotcheck/transcribe_192236.out 2>/dev/null | head; squeue -j…
+  ↳ probe recorded: 192223 (text_p=3.4e-7)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+3 lines)
+The smoke started with `round=2` in its FACTORS line, so the setting reached the job. While it runs, I update the deliverable (`docs/slot_checks.md`).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; wc -l docs/slot_checks.md; grep -n "^#\|Check 3\|check 3" docs/slot_checks.md | head -40
+  ↳ 129 docs/slot_checks.md (+5 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ 1	# Slot checks — campaign slotcheck (2026-11) (+129 lines)
+Before writing the check-3 section, one cheap breakdown from the build's audit file: text-slot accuracy on questions whose answer string is in the transcription vs not (stdlib, small JSON).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/slotcheck/textsets_192221/; timeout 60 python3 -I -c " ⏎ import json ⏎ a=json.load(open('expQ/slotcheck/textsets_192221/audit.json')) ⏎ inraw={x['qid']:x['in_raw'] for x in a['rows'] if x['…
+  ↳ total 743 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -vE "pad_token_id|Loading weights|^\s*$" expQ/slotcheck/transcribe_192236.out | tail -12; squeue -j 192237,192238,192239 -o "%i %T %r %…
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ old13=s[s.index('| 3 | do text slots'):s.index('\n',s.index('| 3 | do text slots'))] ⏎ new13='| 3 | do text slots of the page\'s transcr…
+  ↳ ok (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ old='(−21% over the last 50 steps, the plateau rule asks ≤ 2%), so .921 is a lower bound of what training can store.' ⏎ assert s.count(o…
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+2 lines)
+While the smoke finishes, I update the known-issues row for the cut-rule false alarm (it now has a code fix):
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; python3 - <<'EOF' ⏎ p='known_issues.md' ⏎ s=open(p).read() ⏎ start=s.index('| `build_text_sets.sbatch` exits 4 `FAIL text: cut 1 rows') ⏎ end=s.index('\n',start) ⏎ row=s[start:end] ⏎…
+  ↳ ok (+1 lines)
+Now a one-line tightening of the law, recording which questions count as new items for check 3:
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -5; squeue -j 192237 -o "%i %T %r %M %N" 2>&1
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40
+  ↳ **Settled** (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report 2>&1 | grep -iE "gpu.?h|cells|budget|wakes" | head -10
+  ↳ window 2026-11-18 → 2026-11-19 (until 2027-02-16) · 46 ticks · 12 wakes (4 rc≠0) · 12.4 GPU-h over 31 runs (SLURM only; off-cluster compute: expmon probe <jid> card_h=<hours>) (+4 lines)
+The report's 12.4 GPU-h differs from the ≈16 that STATE carried. A quick sacct sum over all attempts settles it:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; IDS=$(python3 -c " ⏎ import json ⏎ print(','.join(sorted({json.loads(l)['jobid'] for l in open('.expmon/runs.jsonl') if json.loads(l).get('exp')=='slotcheck'})))"); echo "$IDS" | tr ',' '\n' | wc -l; s…
+  ↳ 31 (+1 lines)
+All attempts sum to 16.05 GPU-h (the report counts only final attempts). With the repeat, ≈ 21 of 30. Checking the smoke:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -6; squeue -j 192237,192238,192239 -o "%i %T %r …
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+9 lines)
+While the smoke finishes, I rewrite STATE.md. Reading the middle part of the old one that was cut off, to keep its shape:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n '/^## Owned jobs/,/^Arm X plan/p' campaign_slotcheck/STATE.md
+  ↳ ## Owned jobs (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -6; squeue -j 192237,192238,192239 -o "%i %T %r …
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+9 lines)
+The smoke is still loading the model. I write STATE.md now:
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -6; squeue -j 192237,192238,192239 -o "%i %T %r …
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+9 lines)
+Still within the round-1 smoke's time (222 s; it prints only at the end). Meanwhile, refreshing the display page:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon display --exp slotcheck 2>&1 | tail -3; grep -c '<tr' display_slotcheck.html
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_slotcheck.html   (0 table rows, 0 media files from 0 runs) (+1 lines)
+The display message is the known wrong count (the HTML has 32 rows; gripe already open). One new expmon gap this wake: the report's GPU-hours ignore preempted attempts. Searching before filing:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "GPU-h attempts" 2>&1 | head -8; expmon gripe --open --search "requeue gpu" 2>&1 | head -5
+  ↳ == 0 open report(s) matching 'gpu-h attempts', every machine, newest first == (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "campaign report" 2>&1 | head -6
+  ↳ == 94 open report(s) matching 'campaign report', every machine, newest first == (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "campaign report's GPU-h line counts only each job's final attempt: slotcheck shows '12.4 GPU-h over 31 runs' while sacct -D -X ElapsedRaw x gres/gpu over every attempt gives 16.…
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -6; squeue -j 192237,192238,192239 -o "%i %T %r …
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -nE "OUT=|out=|\.json" eval_mm_4b.sh | head -8; ls -la expQ/slotcheck/transcribe_r2/ 2>&1
+  ↳ 13:# Results -> <ckpt parent>/eval/mm_docqa_<MODE>[_r<RATE>].json  (base mode: expQ/base_qwen35_4b/eval/); judge-scored (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "RESULT|EXIT|wrote|Error|Traceback|^\[" expQ/slotcheck/transcribe_192236.out | tail -4; ls -la expQ/slotcheck/transcribe_r2/
+  ↳ JobID             State ExitCode    Elapsed        NodeList  (+8 lines)
+The smoke prints only at the end. Rather than poll, I'll wait on it with a monitor (up to 10 minutes):
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Monitor: {"command": "for i in $(seq 1 60); do s=$(sacct -j 192236 -X -n -o State | head -1 | tr -d ' '); case \"$s\" in COMPLETED|FAILED|CANCELLED*|TIMEOUT|NODE_FAIL|OUT_OF_MEMORY|PREEMPTED) echo \"192236 $s\"; grep -E \"RESULT|EXIT|Traceback|Error…
+  ↳ Monitor started (task bg5fdvjfl, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+Waiting for the smoke result (monitor armed).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git status --short | head -20
+  ↳ M CLAUDE.md (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 192236 -X -o JobID,State,Elapsed; ls -la expQ/slotcheck/transcribe_r2/
+  ↳ JobID             State    Elapsed  (+5 lines)
+I'll wait for the monitor's notification rather than poll.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; until s=$(sacct -j 192236 -X -n -o State | head -1 | tr -d ' '); [[ "$s" != RUNNING && "$s" != PENDING ]]; do sleep 15; done; echo "$s"; sacct -j 192236 -X -o JobID,State,ExitCode,Elapsed,NodeList; gre…
+  ↳ COMPLETED (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -j 192237,192238,192239 -o "%i %T %r %M %N %l" 2>&1; expmon verdict 192236 closed "plumbing passed, decides nothing: COMPLETED 0:0 5:14 homer-017; round=2 reached the job; 500 questions, 2,000 p…
+  ↳ JOBID STATE REASON TIME NODELIST TIME_LIMIT (+5 lines)
+The full transcription (192237) is running on homer-017. Updating STATE.md for the smoke result:
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck; python3 - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ reps=[ ⏎ ('  transcription smoke 192236 (10 pages, RUNNING homer-017) → full transcription 192237 (1,252 pages, ≈ 4.4 h) → build…
+  ↳ ok
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note --did "check 3 first read decided (192223); fixed build cut rule (6b438662); check 4 mean CI [.902,.938]; launched repeat chain 192236-192239 (smoke passed)" --saw "image .602 / text .482 /…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:192239 max 12h", "summary": "Check 3, first read: the judged eval on 500 questions passed its health checks and decides two things. The model scored .602 with image slots, .482 with slots built from t…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=5.7411 turns=92 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:192239 max 12h", "summary": "Check 3, first read: the judged eval on 500 questions passed its health checks and decides two things. The model scored .602 with image slots, .482 with slots built from the page's transcription, .648 with both, and .790 uncompressed. Text slots alone are worse: −12.0 pt [−16.6, −7.6], McNemar p 3e-7. Image + text slots gain +4.6 pt [+1.0, +8.0], p .013. That gain is under the 5-pt bar but its CI …", "launched": ["192236 X_transcribe_smoke round 2 (10 pages) — COMPLETED, passed", "192237 X_transcribe round 2, 1,252 pages (afterok 192236) — RUNNING", "192238 X_build round 2 + round-1 re-audit (afterok 192237) — PENDING", "192239 X_eval judged, R s42, img/text/imgtext on 500 new questions (afterok 192238) — PENDING"], "verdicts": [{"jobid": "192223", "verdict": "closed", "note": "check 3 first read n=500: img .602 / text .482 / imgtext .648 (uncompressed .790); text-img -12.0 [-16.6,-7.6] worse; imgtext-img +4.6 [+1.0,+8.0] p .013 promising -> one repeat"}, {"jobid": "192236", "verdict": "closed", "note": "round-2 transcription smoke passed: 10/10 pages, empty 0, 1,252 unique pages for the new 500 questions"}], "gripes": ["defect: campaign report GPU-h counts final attempts only (12.4 vs 16.05 from sacct -D over every attempt)", "+1 af99bb93: paired comparisons run by hand with paired_judge.py, exact McNemar p typed into probes by hand"]}
+== final:
+{"next":"wake-when","wake_when":"job:192239 max 12h","summary":"Check 3, first read: the judged eval on 500 questions passed its health checks and decides two things. The model scored .602 with image slots, .482 with slots built from the page's transcription, .648 with both, and .790 uncompressed. Text slots alone are worse: −12.0 pt [−16.6, −7.6], McNemar p 3e-7. Image + text slots gain +4.6 pt [+1.0, +8.0], p .013. That gain is under the 5-pt bar but its CI is above 0, so the law's owner rule calls it promising and gives it exactly one repeat on new questions. The image run reproduced the recorded model file exactly on all 500 questions.\n\nThis wake:\n- Patched the campaign's own scripts so the repeat can pick the next 500 questions of the same set, and fixed the false alarm in the build's cut check.\n- Answered the verifier's flag on check 4: the bootstrap 95% CI of the mean recall is [.902, .938], entirely above the 90% bar.\n- Narrowed the law so the repeat uses truly new questions; the law's named document sets reuse the same questions.\n- Updated docs/slot_checks.md, known_issues.md and STATE.md.\n- Launched the repeat chain: the 10-page smoke passed and the full transcription of 1,252 pages is running, followed by the build and the judged eval.\n\nBudget: 31 of 32 cells used. About 16 of 30 GPU-hours spent so far, about 21 when the repeat ends.","launched":["192236 X_transcribe_smoke round 2 (10 pages) — COMPLETED, passed","192237 X_transcribe round 2, 1,252 pages (afterok 192236) — RUNNING","192238 X_build round 2 + round-1 re-audit (afterok 192237) — PENDING","192239 X_eval judged, R s42, img/text/imgtext on 500 new questions (afterok 192238) — PENDING"],"verdicts":[{"jobid":"192223","verdict":"closed","note":"check 3 first read n=500: img .602 / text .482 / imgtext .648 (uncompressed .790); text-img -12.0 [-16.6,-7.6] worse; imgtext-img +4.6 [+1.0,+8.0] p .013 promising -> one repeat"},{"jobid":"192236","verdict":"closed","note":"round-2 transcription smoke passed: 10/10 pages, empty 0, 1,252 unique pages for the new 500 questions"}],"gripes":["defect: campaign report GPU-h counts final attempts only (12.4 vs 16.05 from sacct -D over every attempt)","+1 af99bb93: paired comparisons run by hand with paired_judge.py, exact McNemar p typed into probes by hand"]}
+== rc=0 secs=948
+== verify: 7/12
