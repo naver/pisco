@@ -8,9 +8,9 @@ documents ≈ 108 slots per page (430.7 per 4-page question, 646,042 / 1,500).
 | check | question | status |
 |---|---|---|
 | 1 | does the finetune collator's 4-document cap drop the answer page? | **decided: not a cause** (0 of 20,000 rows) |
-| 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row batch moves the slots only by bf16 rounding, as much as batching with any other page |
+| 2a | does left padding change the `<MEM>` vectors? | **decided: not inert, split** (120 + 40 pages): a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row padded batch matches the no-pad batching floor by median cosine, but in fp32 its max abs difference is 2-3× that floor, so a small pad effect remains (cost on answers: check 2b, none) |
 | 2b | does training-style padding (to 64) change judge accuracy? | **decided: not a cause** (1,500 Q × 2 seeds: +0.5 / +0.9 pt, both CIs inside ±3) |
-| 3 | do text slots of the page's transcription keep what image slots lose? | running: all 1,268 pages transcribed (empty 0); the 30-question plumbing build passed on data but tripped a bug in its own check (fixed); the 500-question sets and their judged evals launch next |
+| 3 | do text slots of the page's transcription keep what image slots lose? | running: all 1,268 pages transcribed (empty 0); the three 500-question sets are built (`<MEM>`s per question: image 430.4, text 222.8, both 653.2); plumbing eval passed (30 Q × 3 sets); the judged eval of R seed 42 runs (job 192223) |
 | 4 | can stage 2 memorise 100 dense pages (slot capacity vs training)? | **decided: capacity is not the limit** (word recall .921 after the overfit vs .702 before, 100 pages; held-out pages flat) |
 
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
@@ -57,7 +57,7 @@ number: no uncompressed column applies (the set's uncompressed judge accuracy is
 | same page in a 2-row batch, NO pads (batching floor) | 40 | .9943 | 1.0000 | .662 | 2.15 | bf16 rounding of a different batch shape |
 | one row + pads, as installed | 120 / 40 | .934 (17 pads: .934) | .953 | .631 | 2.80 | **leaks**: far below the floor in both precisions |
 | one row + pads, pad zeroing forced on | 40 | .995 | 1.0000 | .642 | 2.18 | = floor: the leak is the zeroing rule |
-| 2-row batch + pads (masked, how training and the eval batch) | 40 | .9948 | 1.0000 | .665 | 2.08 | = floor: rounding, not a leak |
+| 2-row batch + pads (masked, how training and the eval batch) | 40 | .9948 | 1.0000 | .665 | 2.08 | = floor by cosine; fp32 max abs median .078 (17 pads: .095) vs the floor's .034 = 2.3-2.8×: a small residual, not rounding |
 | a question's 4 pages, padded to 64 as in training | 30 questions | .9966 | — | .637 | 2.39 | several-row path, real questions |
 
 What it means. (1) The installed transformers zeroes pad positions in Qwen3.5's linear-attention layers only when the
@@ -65,13 +65,15 @@ batch has more than one row (`modeling_qwen3_5.py:198`), so a ONE-row padded bat
 slots (fp32 .953). No recorded run takes that path: every training batch has ≥ 2 compressor rows (stage 2 bs 8,
 finetune bs 2; all chunks are padded together), and the eval pads nothing (a one-row batch has no pads). Hand-off
 2de131 asks the pisco chat to guard it before any code compresses one page at a time with padding. (2) On the
-several-row path the pads are masked: in fp32 the slots are unchanged (median 1.0000, worst .985), and in bf16 they
-move exactly as much as putting the page in a batch with any other page without pads (.9948 vs .9943). The law's
-inert bar (.9999 in bf16) cannot be met even by that floor, so check 2b asks whether this bf16 movement changes
+several-row path the pads are almost masked: median cosine equals the no-pad batching floor in both precisions
+(bf16 .9948 vs .9943, fp32 1.0000 vs 1.0000), but in fp32 the max abs difference is 2.3-2.8× that floor (median
+.078 / .095 at 63 / 17 pads vs .034; relative L2 .006 vs .003). So a small pad effect remains on that path too; it is
+not bf16 rounding, and it fails the law's inert bar (max abs ≤ 2× the floor). Check 2b asks whether it changes
 answers: in its 300-question wrapper check, 67 / 300 answers changed with training padding (233 identical).
 
 **For the stage-2 rebuild:** padding is not a cause by itself on the paths we run; bf16 batch-shape rounding moves
-slots by a cosine of about .995 per question. Check 2b says whether that changes the judge score.
+slots by a cosine of about .995 per question, and masked pads add a small residual seen in fp32. Check 2b: neither
+changes the judge score.
 
 ## Check 2b — does training's padding change the judge score? (decided 2026-11-19: not a cause)
 
@@ -89,11 +91,12 @@ judge accuracy (Qwen3-8B rubric judge), paired per question by `scripts/paired_j
 Per source (seed 42 / seed 43, padded − none): InfoVQA +0.0 / +2.2, MP-DocVQA +1.4 / +1.6, SlideVQA +0.0 / −1.0 pt; no
 CI excludes 0. The unpadded arm reproduces the recorded scores exactly (.610 / .615). Padding changes the text of
 368 / 1,500 (seed 42) and 432 / 1,500 (seed 43) answers, and flips the judge on 145 / 148 questions, in both
-directions about equally: this is the bf16 batch-shape rounding of check 2a reaching the answers.
+directions about equally: consistent with the slot movement of check 2a (bf16 batch-shape rounding plus the small
+masked-pad residual) reaching the answers.
 
 **For the stage-2 rebuild:** the eval does not need training's padding; the gap is not here. Beside it: changing only
 the batch shape flips the judge on about 10% of questions (net ±1 pt), so a paired difference under ~1.5 pt between two
-arms is within what bf16 rounding alone produces on 1,500 questions.
+arms is within what a change of batch shape alone produces on 1,500 questions.
 
 ## Check 4 — can stage 2 memorise 100 dense pages? (decided 2026-11-19: slot capacity is not the limit)
 
@@ -118,7 +121,8 @@ Health: training job 192002 ran to its last step (loss .602 → .028, no NaN); t
 32.8 s per step with 52.0 GB peak GPU memory of 80 (SLURM accounting); the recall prints `mem_position_stride=8`;
 slots per page are the same before and after the overfit on every page. The loss had NOT flattened at step 210
 (−21% over the last 50 steps, the plateau rule asks ≤ 2%), so .921 is a lower bound of what training can store.
-The fp32 second training is not run: the plan fixed before the result ran it only if bf16 stayed under 90%.
+The fp32 second training is not run: the law runs it only if arm O's budget line (≈ 5 GPU-hours) still holds, and arm O
+has used ≈ 7.9 (smoke 0.27, training 3.6, two recall passes 2.63 + 1.45). bf16 already clears the 90% bar.
 
 **For the stage-2 rebuild:** about 120 slots per page CAN hold 92% of a dense page's words (lower bound, one training,
 one seed). The slots are not too few; the rebuild should change what training teaches (objective, data, steps), not

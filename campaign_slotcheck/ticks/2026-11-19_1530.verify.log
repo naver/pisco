@@ -1,0 +1,55 @@
+== verifier 2026-11-19_1530  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session 8d59fb70-a252-4ba5-959c-5e16e034fd7b  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+286 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 287	## 4. Recorded verdicts (newest last) (+55 lines)
+→ Glob: {"pattern": "expQ/slotcheck/**/*.json"}
+→ Grep: {"pattern": "budget|GPU-h", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 7:time, not GPU-hours (navmem: 0.4 of 12 GPU-h used, cells of 1m42–3m17). (+13 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/CAMPAIGN.md
+  ↳ 160	  or 4 is a proposed arm in BLOCKED.md, never launched here. (+34 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt (+100 lines)
+Checking the cited numbers against their output files (pad split, recall, audit).
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781.out
+  ↳ 1	FACTORS kind=probe arm=P2a_split n_pages=40 widths=17,63 passes=bf16,fp32 model=ft_mm_4b_184778 set=mm_docqa_1500_1m (+58 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall"}
+  ↳ expQ/slotcheck/recall/start_dense100_lim5.json (+7 lines)
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon", "output_mode": "files_with_matches"}
+  ↳ No files found
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "*.{md,jsonl,json}", "output_mode": "files_with_matches", "head_limit": 10}
+  ↳ Found 4 files (+4 lines)
+→ Glob: {"pattern": "recall_192209*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/recall_192209.out
+→ Grep: {"pattern": "RESULT|SUMMARY|paired|recall|ci|std|sd", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_192209.out", "output_mode": "content", "-i": true, "head_limit": 60}
+  ↳ 2:FACTORS kind=probe_recall arm=O_recall passes=o_bf16_dense100:/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model:slotcheck_dense100 o_bf16_heldout:/beegfs/scratch/user/hdejean/pisco/expQ (+6 lines)
+→ Grep: {"pattern": "2de131", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1441:[Omitted long matching line]
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_192209.out
+  ↳ 280	Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+15 lines)
+→ Grep: {"pattern": "\"(mean|summary|recall_mean|n_pages|mems)[a-z_]*\"\\s*:", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/o_bf16_dense100.json", "output_mode": "content", "-o": true, "head_limit": 20}
+  ↳ 22:"mems": (+21 lines)
+Still checking: reading the per-page recall file, then the arm X build audit.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/o_bf16_dense100.json
+  ↳ 1	{ (+39 lines)
+→ Glob: {"pattern": "{textsets_192221/*,build_text_sets_192221*,eval_x_192220*,x_s42/eval/*}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck"}
+  ↳ expQ/slotcheck/textsets_192221/audit.json (+4 lines)
+→ Grep: {"pattern": "\"(cut|per_source|source_counts|sources|questions|37710|ok|fail)[a-z_]*\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/textsets_192221/audit.json", "output_mode": "content", "head_limit": 40}
+  ↳ 13:   "cut": 0, (+41 lines)
+→ Grep: {"pattern": "EXIT|FAIL|exceeds|empty|mems|rows|node|homer", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/eval_x_192220.out", "output_mode": "content", "-i": true, "head_limit": 40}
+  ↳ 3:node homer-014.kr.europe.naverlabs.com (+7 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/textsets_192221/audit.json
+  ↳ 1	{ (+134 lines)
+→ Grep: {"pattern": "37710", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/textsets_192221/audit.json", "output_mode": "content", "-A": 35, "head_limit": 120}
+  ↳ 5040:   "qid": "37710.jpeg-2", (+121 lines)
+→ StructuredOutput: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%, all Docmatix)…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2697 turns=24 is_error=False denials=0
+== declared: {"claims": [{"claim": "Check 1 (arm C, feasibility gate PASS): the 4-document cap n…", "status": "supported", "reason": "Grid 191663: dropped_trained=0, partial_trained=1910, rows_t…"}, {"claim": "Check 2a (arm P): n = 120 pages, job 191672, not inert (medi…", "status": "supported", "reason": "Grid 191672: w63_cos=0.934078, controls_ok=True (repeat 1.00…"}, {"claim": "Check 2b (arm P) decided: NOT A CAUSE. Padded − not padded j…", "status": "supported", "reason": "Grid 191783 matches: 0.6147 vs 0.6100, diff +0.0047, CI −0.0…"}, {"claim": "Check 4 (arm O) decided: slot capacity is NOT the limit (gat…", "status": "provisional", "reason": "Grid 192209 matches every number: 0.921 / 0.702, CI +.185/+.…"}, "… +6 more"], "summary": "Checks 1 and 2a/2b are backed by the grid and their output f…"}
+== final:
+{"claims":[{"claim":"Check 1 (arm C, feasibility gate PASS): the 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; beside it 1,910 / 20,000 (9.55%, all Docmatix) lose one of two source pages. Job 191663 (closed).","status":"supported","reason":"Grid 191663: dropped_trained=0, partial_trained=1910, rows_trained=20000, gate1/gate2=True. audit_ft_191663/summary.txt gives the numbers per source: docmatix 1,910/10,000 partial (19.10%), every other source 0. Natural is 0/8,000 because every photo row has exactly one document. The planted [4,5] row counts as dropped, 50/50 sampled rows pass, and the health sums hold. 0% is under the law's ≤2% 'closed, not a cause' bar. Partial rows do not gate, under the definition fixed before the count was read."},{"claim":"Check 2a (arm P): n = 120 pages, job 191672, not inert (median cos .934 at 63 pads, bar .9999). Split, n = 40, job 191781: one-row padded batch leaks (.935 bf16 / .953 fp32; .995 / 1.0000 with zeroing forced), latent (hand-off 2de131); two-row padded batch .9948 / 1.0000 = floor .9943 / 1.0000, but fp32 max abs 2.3-2.8× that floor (.078 / .095 vs .034; rel L2 .006 vs .003) → fails the max-abs inert bar.","status":"supported","reason":"Grid 191672: w63_cos=0.934078, controls_ok=True (repeat 1.0000/0, other page .739). pad_split_191781.out matches the claim: bf16 A63 .9345, Afix63 .9947, B63 .9948, twin0 .9943; fp32 A63 .9527, B63 1.0000. fp32 max-abs medians: B63 .0780, B17 .0951, twin0 .0340; rel L2 .0058 / .0065 vs .0028. One note: the '2.3-2.8× floor' uses the no-pad two-row twin (.034), not the law's repeat floor (0). The bar fails either way. Hand-off 2de131 is cited in EXPERIMENTS.md and docs/slot_checks.md."},{"claim":"Check 2b (arm P) decided: NOT A CAUSE. Padded − not padded judge accuracy, n = 1,500 paired per seed: s42 .615 − .610 = +0.5 pt [−1.1, +2.1], p .62 (191783); s43 .624 − .615 = +0.9 pt [−0.7, +2.5], p .29 (191784). Both CIs inside ±3 pt.","status":"supported","reason":"Grid 191783 matches: 0.6147 vs 0.6100, diff +0.0047, CI −0.011/+0.021, McNemar .618. Grid 191784 matches: 0.6240 vs 0.6147, +0.0093, CI −0.007/+0.025, p .285. Both: rows=1500, 0 unparseable, mems_ratio 1.0000. Each pair ran in one job on one node (homer-020 / homer-019). Both CIs sit inside ±3 pt at both seeds, the law's 'not a cause' condition."},{"claim":"Check 4 (arm O) decided: slot capacity is NOT the limit (gate ≥ 90%). Overfit recall .921 vs start .702, +21.9 pt [+18.5, +25.3], 98 up / 2 down, sign p 8e-27, n = 100; held-out .667 vs .670 (−0.3 [−4.2, +3.6]); ceiling .974; loss not flattened so .921 is a lower bound. One training, one seed.","status":"provisional","reason":"Grid 192209 matches every number: 0.921 / 0.702, CI +.185/+.253, 98/2, sign_p 8e-27, held-out −.003 [−.042, +.036], ceiling .974, self_pair 0, mems 116-123. 192002 last50 .0280 vs prev50 .0355 = −21%. The paired gain over the start model is solid. But the verdict
+== rc=0

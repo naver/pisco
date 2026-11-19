@@ -1,0 +1,153 @@
+== campaign slotcheck wake 2026-11-19_1530  reasons=idle,scheduled  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795069801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=11.6 idle_h=1.9 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7419 sig=3f0317b9 same=4 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-in_1
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session 09a9e5cc-18fb-4e29-a934-60f0c28ec92a  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md
+  ↳ # Wake brief — campaign slotcheck — 2026-11-19_1530   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+94 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && cat CAMPAIGN.md && echo ===== && cat STATE.md && ls -la
+  ↳ Exit code 1 (+88 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck && sed -n 30,120p CAMPAIGN.md
+  ↳ If it replicates or extends a paper, `papers/<slug>.md` (`expmon paper`, skill `paper`) is the source of every number (+90 lines)
+→ Bash: sed -n 120,175p CAMPAIGN.md
+  ↳ the recall port prints `mem_position_stride=8`. (+55 lines)
+→ Bash: sed -n 175,260p CAMPAIGN.md; echo =====STATE; cat STATE.md; ls -la
+  ↳ Exit code 1 (+87 lines)
+Reading the campaign state now (law read; next: STATE.md, known issues, ledger).
+→ Bash: sed -n 260,330p CAMPAIGN.md; echo "--- STATE"; cat STATE.md; ls -la
+  ↳ - **never**: `pisco/**`, `test_*.py`, `scripts/eval_mm_docqa.py`, `eval_mm_4b.sh`, `pt_mm_4b.sh`, `ft_mm_4b.sh`, (+185 lines)
+→ Bash: cat VERIFY.md; echo "--- ticks"; ls -t ticks | head -5; tail -30 ticks/$(ls -t ticks | grep 1500 | head -1)
+  ↳ # VERIFY — campaign slotcheck — 2026-11-19_1330   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+39 lines)
+→ Bash: grep -o "two-row 'not a pad ef[^|]*" ticks/2026-11-19_1330.verify.log | head -2; grep -o "EXPERIMENTS.md:1495 (10:41), 'read ove[^|]*" ticks/2026-11-19_1330.verify.log | head -2; sed -n 1490,1500p ../EXPERIMENTS.md
+  ↳ two-row 'not a pad effect' reading is not: it fails the law's own inert test, max abs ≤ 2× the repeat floor (the repeat floor is 0; even against the wake's own no-pad twin, fp32 is 2.3×, and B17 is 2. (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && cat campaign_slotcheck/known_issues.md | head -80; ls scripts/slotcheck/; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/model.py scripts/slotch…
+  ↳ # Known issues — campaign slotcheck   (symptom → verdict → action; check here BEFORE diagnosing) (+71 lines)
+→ Bash: cat scripts/slotcheck/build_text_sets.sbatch; echo "--- EVAL_X"; cat scripts/slotcheck/eval_x.sbatch
+  ↳ #!/bin/bash (+69 lines)
+→ Bash: grep -n "JUDGE\|LIMIT\|exists\|skip\|OUTF\|out_file\|\.json" eval_mm_4b.sh | head -40; ls expQ/slotcheck/; ls -la expQ/slotcheck/x_s42/ 2>/dev/null; ls eval_data | grep slotcheck
+  ↳ 12:#   expmon launch --exp mmpisco --stage eval --parent <jid> eval_mm_4b.sh <CKPT_MODEL_DIR> [MODE=pisco] [LIMIT] [DATA] [IMAGE_RATE] (+53 lines)
+Preparing the check-3 launches (text slots vs image slots); verifying the eval script's file naming and resume logic first.
+→ Bash: sed -n 22,36p eval_mm_4b.sh; sed -n 50,95p eval_mm_4b.sh
+  ↳ LIMIT=${3:-} (+54 lines)
+→ Bash: sed -n 36,49p eval_mm_4b.sh | grep -n "CHUNK\|CML\|DML"; grep -n "chunk_text\|compressor_max_length\|decoder_max_length\|args.chunk\|args.cml\|doc_images" scripts/eval_mm_docqa.py | head -30
+  ↳ 2:RAWARG=""; [[ -n "${RAW:-}" ]] && { RAWARG="--raw_policy $RAW"; DML=${DML:-6144}; SUF="${SUF}_raw${RAW}"; }   # env RAW=gold|route1|route2|all: pages fed raw (selective expansion) (+33 lines)
+→ Bash: grep -E '"(192214|192215|192216|192217)"' .expmon/runs.jsonl | python3 -c ' ⏎ import json,sys ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print(d.get("jobid"), d.get("stage"), d.get("parent"), d.get("argv") or d.get("cmd"), d.get("env"))' …
+  ↳ 192214 X_build_smoke None ['30', '_smoke'] {} (+14 lines)
+→ Bash: grep -E '"192217"' .expmon/runs.jsonl | head -1 | cut -c1-1500; expmon launch --help 2>&1 | head -40
+  ↳ {"ts": "2026-11-19 13:34", "jobid": "192217", "launcher": "scripts/slotcheck/eval_x.sbatch", "argv": ["x_s42", "img,text,imgtext"], "git": "2d9b4b4+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisc (+13 lines)
+Dry-running the three launches (eval smoke, full text-set build, full eval).
+→ Bash: expmon launch --dry-run --exp slotcheck --stage X_eval_smoke --env JUDGE=0 -p gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 30 _smoke 2>&1 | tail -15; ech…
+  ↳ launch: REFUSED — this cell (exp='slotcheck', same factors) was closed as a dead arm by run 192215. (+6 lines)
+→ Bash: grep -n "force\|REFUSED" campaign_slotcheck/ticks/2026-11-19_1030.log | head -10; expmon gripe --open --search closed dead 2>&1 | head -20
+  ↳ == 23 open report(s) matching 'closed dead', every machine, newest first == (+19 lines)
+The eval smoke is refused only because its identical twin (192215) was closed as "never ran". There is no factor difference; I'll relaunch with `--force` and +1 the existing gripe about this.
+→ Bash: expmon launch --dry-run --force --exp slotcheck --stage X_eval_smoke --env JUDGE=0 -p gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 30 _smoke 2>&1 | tail …
+  ↳ would submit: sbatch -p gpu-be --exclude=homer-[005-009] --gres=gpu:1 -c 4 --mem 8G --time 0:45:00 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 30 _smoke (+9 lines)
+Dry-runs pass. Recording the intent, then submitting the eval smoke and the full build in parallel.
+→ Bash: expmon note "slotcheck wake 15:30 arm X (check 3) chain intent: (a) eval_x.sbatch x_s42 img,text,imgtext 30 _smoke JUDGE=0 (plumbing on the 30-Q smoke sets; --force: its identical twin 192215 never ran, killed when its parent failed; no fac…
+  ↳ expmon note: 147 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+7 lines)
+→ Bash: expmon launch --exp slotcheck --stage X_eval --parent 192221 -p gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 1:45:00 --dependency=afterok:192220:192221 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 2>&1 | ta…
+  ↳ output:  /beegfs/scratch/user/hdejean/pisco/expQ/192222/   (unless the script sets a named run dir) (+11 lines)
+Chain is in: smoke eval and full build running, full eval waits on both. Now fixing the verifier's two flags while the smoke runs.
+→ Bash: sacct -X -n -j 191890,191891,191892,191893,192002,192209 -o JobID,Elapsed,AllocTRES%60,State | awk '{print $1,$2,$4, ($3 ~ /gpu=1/ ? "gpu1":"gpu0")}'; grep -n "fp32\|bf16 rounding\|rounding" docs/slot_checks.md | head -20
+  ↳ 191890 00:01:01 COMPLETED gpu0 (+16 lines)
+→ Bash: sed -n 1,30p docs/slot_checks.md; echo ...; sed -n 44,75p docs/slot_checks.md; echo ...; sed -n 100,140p docs/slot_checks.md
+  ↳ # Slot checks — campaign slotcheck (2026-11) (+89 lines)
+→ Bash: grep -i "maxabs\|max_abs" expQ/slotcheck/pad_split_191781.out | head -30
+  ↳ SUMMARY bf16 repeat: {"pages": 40, "cos_med_median": 1.0000004768371582, "cos_min_min": 1.0, "maxabs_max": 0.0, "maxabs_median": 0.0, "rel_l2_median": 0.0} (+15 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ rep=[ ⏎ ("a one-row padded batch leaks the pads (latent: no training or eval run takes that path); a several-row batch moves the slots only by bf16 rounding, as much as batchi…
+  ↳ ok
+→ Bash: sed -n 78,100p docs/slot_checks.md; sed -n 140,200p docs/slot_checks.md
+  ↳ ## Check 2b — does training's padding change the judge score? (decided 2026-11-19: not a cause) (+22 lines)
+→ Bash: python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ rep=[("directions about equally: this is the bf16 batch-shape rounding of check 2a reaching the answers.", ⏎ "directions about equally: consistent with the slot movement of ch…
+  ↳ ok (+21 lines)
+Both jobs are running on homer-014 (build has written the three 500-question sets, audit in progress). Filing the gripe +1 meanwhile.
+→ Bash: expmon gripe --same bcedcbaf "pisco/slotcheck 2026-11-19: relaunch of eval smoke 192215 (verdict 'closed — never ran: afterok parent failed') refused as 'closed as a dead arm'; needed --force (192220). Suggest: a verdict whose text says nev…
+  ↳ logged as a +1 of bcedcbaf (entry 0a45f5a6) -> /home/hdejean/.claude/feedback/ncp.log
+→ Bash: sed -n 1,40p scripts/paired_judge.py | head -50; ls -la expQ/base_qwen35_4b/eval/mm_docqa_base_px1003520_mm_docqa_1500_1m.json expQ/ft_mm_4b_184778/eval/mm_docqa_pisco_px1003520_mm_docqa_1500_1m.json
+  ↳ """Paired comparison of two eval outputs (scripts/eval_mm_docqa.py JSON, judge-scored) on the SAME questions. (+41 lines)
+→ Bash: squeue -u hdejean -o "%i %j %T %M %N" | grep -v expmon; tail -c 1500 expQ/slotcheck/textsets_192221.out; echo; grep -c . expQ/slotcheck/eval_x_192220.out; grep -E "=== set|EM|rows|exceeds|Error|error" expQ/slotcheck/eval_x_192220.out | tail…
+  ↳ JOBID NAME STATE TIME NODELIST (+25 lines)
+→ Bash: date; expmon campaign report --section leaves 2>&1 | head -60
+  ↳ Thu Nov 19 03:34:15 PM KST 2026 (+13 lines)
+Writing the new STATE.md while the smoke and build finish.
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: date; squeue -u hdejean -o "%i %j %T %M %N %r" | grep -v expmon; tail -c 1200 expQ/slotcheck/textsets_192221.out; echo; grep -E "=== set|\[eval\]|exceeds|Error|rc=|EXIT" expQ/slotcheck/eval_x_192220.out | tail -8
+  ↳ Thu Nov 19 03:34:55 PM KST 2026 (+35 lines)
+→ ToolSearch: {"query": "select:Monitor", "max_results": 1}
+→ Monitor: {"command": "cd /beegfs/scratch/user/hdejean/pisco; prev=\"\"; for i in $(seq 1 60); do s=$(squeue -h -j 192220,192221 -o \"%i %T\" 2>/dev/null | sort | tr '\\n' ' '); [ \"$s\" != \"$prev\" ] && echo \"queue: ${s:-none}\"; prev=\"$s\"; grep…
+  ↳ Monitor started (task bp4smrmni, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+→ Bash: cat scripts/slotcheck/build_text_sets.py | sed -n 1,40p
+  ↳ """Campaign slotcheck, arm X (check 3): the three eval sets over the SAME 500 document questions (CPU). (+39 lines)
+Waiting for the smoke and build to finish.
+→ Bash: ls -la expQ/slotcheck/x_s42/eval/ 2>/dev/null; ls expQ/slotcheck/textsets_192221/ 2>/dev/null
+  ↳ total 1 (+3 lines)
+→ Monitor: {"command": "cd /beegfs/scratch/user/hdejean/pisco; prev=\"\"; seen=\"\"; for i in $(seq 1 58); do s=$(squeue -h -j 192220,192221 -o \"%i %T\" 2>/dev/null | sort | tr '\\n' ' '); [ \"$s\" != \"$prev\" ] && echo \"queue: ${s:-none}\"; prev=\…
+  ↳ Monitor started (task b6wi9xfvb, expires in 10m unless the source ends first; you get one notice at expiry — re-arm if you still need the watch). You will be notified on each event. Keep working — do 
+→ ToolSearch: {"query": "select:TaskStop", "max_results": 1}
+→ TaskStop: {"task_id": "bp4smrmni"}
+  ↳ {"message":"Successfully stopped task: bp4smrmni (cd /beegfs/scratch/user/hdejean/pisco; prev=\"\"; for i in $(seq 1 60); do s=$(squeue -h -j 192220,192221 -o \"%i %T\" 2>/dev/null | sort | tr '\\n' '
+Waiting on the monitor for the smoke eval and build to finish.
+→ Bash: date; tail -3 expQ/slotcheck/eval_x_192220.out | cut -c1-300
+  ↳ Thu Nov 19 03:35:25 PM KST 2026 (+3 lines)
+→ Bash: timeout 540 bash -c 'while [ -n "$(squeue -h -j 192220,192221 -o %i)" ] && [ "$(squeue -h -j 192220,192221 -o %i | wc -l)" -ge 2 ]; do sleep 15; done'; date; squeue -h -j 192220,192221,192222 -o "%i %T %M %r"; sacct -X -n -j 192220,192221 -…
+  ↳ Thu Nov 19 03:35:37 PM KST 2026 (+4 lines)
+The full build failed its own health check: 1 of 500 questions is "cut" in the text and image+text sets (answer string in the transcription but not in what the compressor receives). Diagnosing.
+→ Bash: grep -vE "Saving the dataset|Compressor max length|Decoder max length|image processor|Pad token" expQ/slotcheck/textsets_192221.out | tail -40; ls -la expQ/slotcheck/textsets_192221/
+  ↳ FACTORS kind=build arm=X_build limit=0 tag=none questions=500 sets=img,text,imgtext cml=256 chunk=1 (+29 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/slotcheck/textsets_192221/audit.json')) ⏎ print(type(a), list(a.keys())[:10] if isinstance(a,dict) else len(a)) ⏎ for k,v in (a.items() if isinstance(a,dict) else []): ⏎     if isinst…
+  ↳ <class 'dict'> ['summary', 'stats', 'fails', 'md5', 'rows'] (+2 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ a=json.load(open('expQ/slotcheck/textsets_192221/audit.json')) ⏎ rows=a['rows'] ⏎ for r in rows: ⏎     if r.get('cut_pisco'): ⏎         print(json.dumps(r)[:1200]) ⏎ print(sum(1 for r in rows if r.get('text…
+  ↳ {"v": "X_text", "i": 323, "qid": "37710.jpeg-9", "src": "infovqa", "n_mem": 402, "n_chunks": 13, "chunk_tok_max": 289, "chunk_toks": [289, 289, 289, 289, 289, 233, 289, 289, 289, 289, 289, 289, 116],  (+15 lines)
+→ Bash: sed -n 140,172p scripts/longdoc/audit_inputs.py
+  ↳ batch, background, _ = coll.example_chunks(docs, imgs, query) (+32 lines)
+→ Bash: grep -n "chunk_docs" pisco/mm_collator.py | head; python3 - <<'EOF' ⏎ import json,glob,re ⏎ q=json.load(open('expQ/slotcheck/transcribe/questions.json')) ⏎ print(type(q), (list(q.keys())[:5] if isinstance(q,dict) else q[0].keys() if isinsta…
+  ↳ 458:        if self.chunk_docs: (+1 lines)
+→ Bash: sed -n 450,475p pisco/mm_collator.py; python3 - <<'EOF' ⏎ import json ⏎ q=json.load(open('expQ/slotcheck/transcribe/questions.json')) ⏎ v=q.get('37710.jpeg-9'); print(json.dumps(v)[:800]) ⏎ EOF
+  ↳ self.teacher_inputs = teacher_inputs (+26 lines)
+Diagnosing the build failure: checking whether the collator's per-document chunk cap (`n_max_chunks`) cuts long transcriptions.
+→ Bash: grep -n "n_max_chunks\|chunk_overlap" pisco/mm_collator.py pisco/collator.py pisco/collator_utils.py scripts/eval_mm_docqa.py scripts/longdoc/audit_inputs.py | head -20
+  ↳ pisco/mm_collator.py:460:                ids, chunk_length=self.compressor_max_length, chunk_overlap=self.chunk_overlap (+19 lines)
+→ Bash: ls eval_data/slotcheck_docqa_text_500/ eval_data/slotcheck_docqa_imgtext_500/ eval_data/slotcheck_docqa_img_500/; cat eval_data/slotcheck_docqa_*_500/dml.txt 2>/dev/null; python3 - <<'EOF' ⏎ import json,glob ⏎ rec={r['query_id']:r for r in …
+  ↳ eval_data/slotcheck_docqa_img_500/: (+20 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,glob,re ⏎ keys=["0178a9c9c3065448_736x1024", "3ae38941ef25e244_1024x576", "423d093fbe74a92c_480x1600", "0c5dbb89111a520f_1216x800"] ⏎ T={} ⏎ for f in sorted(glob.glob('expQ/slotcheck/transcribe/shard*of4.json…
+  ↳ 0178a9c9c3065448_736x1024 MISSING (+3 lines)
+→ Bash: python3 -c ' ⏎ import json ⏎ d=json.load(open("expQ/slotcheck/transcribe/shard0of4.json")) ⏎ print(type(d), list(d.keys())[:8] if isinstance(d,dict) else len(d)) ⏎ x = d if isinstance(d,list) else next(v for v in d.values() if isinstance(v,…
+  ↳ <class 'dict'> ['args', 'records'] (+1 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json,glob,re ⏎ keys=["0178a9c9c3065448_736x1024", "3ae38941ef25e244_1024x576", "423d093fbe74a92c_480x1600", "0c5dbb89111a520f_1216x800"] ⏎ T={} ⏎ for f in sorted(glob.glob('expQ/slotcheck/transcribe/shard*of4.json…
+  ↳ 0178a9c9c3065448_736x1024 chars 2976 {'key': '0178a9c9c3065448_736x1024', 'new_tokens': 1024, 'sec': 29.9, 'visual_tokens': 736} 2016 at [] (+4 lines)
+→ Bash: expmon kill 192222 2>&1 | tail -2; expmon verdict 192221 closed "sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); emp…
+  ↳ 192220        eval_x.sbatch  RUNNING        4:43    gpu-be homer-014 (+3 lines)
+→ Bash: expmon verdict 192222 closed "never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke" 2>&1 | tail -1; squeue -h -j 192222 -o "%i %T"; expmon probe 1922…
+  ↳ verdict recorded: 192222 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+1 lines)
+Adding the new symptom to known_issues.md while the smoke finishes.
+→ Bash: cat >> campaign_slotcheck/known_issues.md <<'EOF' ⏎ | `build_text_sets.sbatch` exits 4 `FAIL text: cut 1 rows (answer in the transcription, not in the compressor's text)` (+ the same row in imgtext) while the 3 sets are complete with `stats…
+  ↳ Creating fresh decoder LoRA adapter (+3 lines)
+→ Bash: timeout 560 bash -c 'while [ -n "$(squeue -h -j 192220 -o %i)" ]; do sleep 15; done'; date; sacct -X -n -j 192220 -o JobID,State,ExitCode,Elapsed,NodeList; grep -E "=== set|EXIT CODE|exceeds|Traceback|rc=|\[eval\] (done|wrote|EM|judge)|mean…
+  ↳ Thu Nov 19 03:42:02 PM KST 2026 (+14 lines)
+The eval smoke passed: COMPLETED 0:0 in 8:54, all three sets exited 0. Checking its result files, then sizing `--time` for the full judged eval from the measured per-question times.
+→ Bash: ls expQ/slotcheck/x_s42/eval/; python3 - <<'EOF' ⏎ import json,glob ⏎ for f in sorted(glob.glob('expQ/slotcheck/x_s42/eval/*.json')): ⏎     d=json.load(open(f)); r=d['records'] ⏎     empty=sum(1 for x in r if not (x.get('prediction') or '')…
+  ↳ mm_docqa_pisco_k8_px1003520_chunk_cml256_slotcheck_docqa_imgtext_500_smoke_lim30.json (+10 lines)
+→ Bash: expmon launch --dry-run --exp slotcheck --stage X_eval -p gpu-be --exclude='homer-[005-009]' --gres=gpu:1 -c 4 --mem 8G --time 1:45:00 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext 2>&1 | tail -6
+  ↳ would submit: sbatch -p gpu-be --exclude=homer-[005-009] --gres=gpu:1 -c 4 --mem 8G --time 1:45:00 scripts/slotcheck/eval_x.sbatch x_s42 img,text,imgtext (+3 lines)
+→ Bash: expmon verdict 192220 closed "plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img +…
+  ↳ verdict recorded: 192220 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+→ Bash: expmon note -j 192220 "correction of the verdict line: img + text = imgtext exactly (11,404 + 2,412 = 13,816 <MEM>s over 30 Q), not +2" 2>&1 | tail -1; squeue -h -j 192223 -o "%i %T %M %N %r"
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+Full judged eval (192223) is running on homer-014. Updating STATE.md, the deliverable and the display.
+→ Bash: python3 - <<'EOF' ⏎ p='campaign_slotcheck/STATE.md' ⏎ s=open(p).read() ⏎ rep=[ ⏎ ("""- Check 3 (arm X), relaunched this wake as one chain: eval plumbing on the 30-question sets (192220, no judge) and the ⏎   full 500-question build (192221)…
+  ↳ ok
+→ Bash: python3 - <<'EOF' ⏎ p='docs/slot_checks.md' ⏎ s=open(p).read() ⏎ a="| 3 | do text slots of the page's transcription keep what image slots lose? | running: all 1,268 pages transcribed (empty 0); the 30-question plumbing build passed on data …
+  ↳ ok (+2 lines)
+→ Bash: sed -n 40,60p campaign_slotcheck/STATE.md; sed -n 75,90p campaign_slotcheck/STATE.md
+  ↳ **Open, and running** (+35 lines)
+→ Bash: sacct -X -n -j 192223 -o Start,State,NodeList; expmon note "slotcheck wake 15:30" --did "arm X: eval smoke 192220 passed (30 Q x 3 sets, empty 0, mems img+text=imgtext); full build 192221 wrote 500 Q x 3 sets but exit 4 on 1/500 'cut' = chu…
+  ↳ 2026-11-19T15:42:36    RUNNING       homer-014  (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:192223 max 3h", "summary": "Check 3 (do text slots of a page's transcription keep what its image slots lose?) is now running: the judged eval of model R seed 42 on the three 500-question sets (image s…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=3.9032 turns=66 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:192223 max 3h", "summary": "Check 3 (do text slots of a page's transcription keep what its image slots lose?) is now running: the judged eval of model R seed 42 on the three 500-question sets (image slots / transcription slots / both), job 192223 on homer-014, --time 1:45. Plumbing passed this wake. Eval smoke 192220: COMPLETED 0:0, 30/30 rows per set, 0 empty answers, <MEM> counts img + text = imgtext exactly. Full build 19…", "launched": ["192220 X_eval_smoke (eval_x.sbatch x_s42 img,text,imgtext 30 _smoke, JUDGE=0) — COMPLETED, closed", "192221 X_build (build_text_sets.sbatch, 500 Q x 3 sets) — FAILED exit 4 on a cut-rule misfire, sets complete, closed", "192222 X_eval (afterok both) — killed, never ran, closed", "192223 X_eval (eval_x.sbatch x_s42 img,text,imgtext, judged, 3 x 500 Q) — RUNNING"], "verdicts": [{"jobid": "192220", "verdict": "closed", "note": "plumbing passed: 30/30 rows x 3 sets, 0 empty, mems img+text = imgtext"}, {"jobid": "192221", "verdict": "closed", "note": "sets complete (500 rows x 3, stats.json + dml.txt); exit 4 = 1/500 cut flag from a chunk-boundary split, not truncation"}, {"jobid": "192222", "verdict": "closed", "note": "never ran: afterok parent exited 4; relaunched as 192223"}], "gripes": ["+1 of bcedcbaf: relaunching eval smoke 192215 (closed as 'never ran') was refused as a dead arm and needed --force (192220)"]}
+== final:
+{"next":"wake-when","wake_when":"job:192223 max 3h","summary":"Check 3 (do text slots of a page's transcription keep what its image slots lose?) is now running: the judged eval of model R seed 42 on the three 500-question sets (image slots / transcription slots / both), job 192223 on homer-014, --time 1:45. Plumbing passed this wake. Eval smoke 192220: COMPLETED 0:0, 30/30 rows per set, 0 empty answers, <MEM> counts img + text = imgtext exactly. Full build 192221 wrote all 3 sets of 500 questions, with <MEM>s per question image 430.4 / text 222.8 / both 653.2. It exited 4 on its cut rule for 1 of 500 questions, a misfire and not truncation: the chunk token counts of that question's 4 pages equal the transcriptions' own token counts. The answer '2016' is split across a chunk boundary. This is inferred, not decoded, and costs at most 0.2 pt against a 5-pt bar. It is a new known_issues row. Its never-run child 192222 was killed and relaunched as 192223. Both verifier flags are fixed in STATE.md and docs/slot_checks.md. (1) Check 2a: two-row padding is not just bf16 rounding; in fp32 its max-abs difference is 2.3-2.8× the batching floor, a small residual pad effect, and check 2b shows no cost on answers. (2) The fp32 overfit was not run because of the law's budget line (arm O used about 7.9 of about 5 GPU-h), not an 'under 90%' rule. Budget: 27 of 32 cells, about 16 of 30 GPU-h. Next: when 192223 ends, pair text − image and both − image (n = 500, bar 5 pt), add the uncompressed decoder on the same rows, write the check 3 table, then the one end-of-campaign owner question.","launched":["192220 X_eval_smoke (eval_x.sbatch x_s42 img,text,imgtext 30 _smoke, JUDGE=0) — COMPLETED, closed","192221 X_build (build_text_sets.sbatch, 500 Q x 3 sets) — FAILED exit 4 on a cut-rule misfire, sets complete, closed","192222 X_eval (afterok both) — killed, never ran, closed","192223 X_eval (eval_x.sbatch x_s42 img,text,imgtext, judged, 3 x 500 Q) — RUNNING"],"verdicts":[{"jobid":"192220","verdict":"closed","note":"plumbing passed: 30/30 rows x 3 sets, 0 empty, mems img+text = imgtext"},{"jobid":"192221","verdict":"closed","note":"sets complete (500 rows x 3, stats.json + dml.txt); exit 4 = 1/500 cut flag from a chunk-boundary split, not truncation"},{"jobid":"192222","verdict":"closed","note":"never ran: afterok parent exited 4; relaunched as 192223"}],"gripes":["+1 of bcedcbaf: relaunching eval smoke 192215 (closed as 'never ran') was refused as a dead arm and needed --force (192220)"]}
+== rc=0 secs=792
+== verify: 8/10
