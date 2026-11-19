@@ -96,6 +96,9 @@ Arm E sets, written to `eval_data/longdoc_text_1500`, `eval_data/longdoc_pages_1
 - closed-book (soundness check 1) runs once on `eval_data/longdoc_closedbook` (every question once, no document; base
   mode `TOPK=0`): without a document the prompt is the same in every set and bucket, so each bucket's closed-book score
   is that file restricted to the bucket's questions (paired on the question id before the last `__`).
+[2026-11-19] Pages and mixed model cells run one cell per length bucket on `eval_data/longdoc_pages_1500_{p10,p20,p40}`
+and `eval_data/longdoc_mixed_1500_{m10,m20,m40}` (`scripts/longdoc/split_buckets.py`: the same rows, source order),
+so a gpu-be preemption loses one bucket at most; text runs whole. A bucket cell pairs only with the same bucket.
 Model cells, in this order: R s42 then s43 (does the gap grow with length on real documents?); then the long-chunk
 question on text: the C256 and L1024 finetunes of the same seed, both at CML 1,024 (the length L1024 was trained on),
 paired, s42 and s43. A tie at CML 1,024 opens CML 256 for both as a second round, never in the same round.
@@ -210,7 +213,9 @@ plumbing cell per new variant (the 20-page prompt fits on one A100, and the flag
   a hand-off to the pisco chats (it moves every campaign's yardstick); the wake never applies it itself.
 
 ## Budget and caps
-- cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16). The estimate uses measured walls: a judged 1,500-Q document
+- cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16). [Owner, 2026-11-19 REQUEST 17:05: option 1 of
+  the arm E budget question approved ("do as recommended"): cells 87, GPU-hours 114, for arm E's model cells at both
+  seeds plus the long-chunk text cells; the arm L re-run at 512 (option 2) was NOT approved.] The estimate uses measured walls: a judged 1,500-Q document
   cell took 28-98 min, photos 18 min, text 17 min (campaign_probes/CAMPAIGN.md:116-120). About 62 cells are planned
   (A 2, J 3, L ~24, U ~12, P ~5, T ~16), mostly ≤ 1.6 h each. Uncompressed 20-page cells are unmeasured: the first one
   measures, with `--time 4:54:00` until then. CPU jobs count 0 GPU-h. A cell = every `expmon launch --exp longdoc`

@@ -1,0 +1,53 @@
+== verifier 2026-11-19_1800  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 573fa813-51ae-4d34-9da9-667cc83dce58  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+276 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 278	   vs audit, node, model.py md5 f8ae6efe); soundness check 1 per bucket with `closedbook_pair.py`; gap and Δ_len per (+212 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/*"}
+→ Glob: {"pattern": "expQ/longdoc/audit_191516/*"}
+→ Grep: {"pattern": "1687|−.169|-.169", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+3 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 1	{ (+279 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Grep: {"pattern": "191147|191516|191777|191778", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1115:[Omitted long matching line] (+23 lines)
+Checking the cited numbers against the audit and result files. Most match so far; a few small mismatches are noted.
+→ Grep: {"pattern": "out-of-range|out_of_range|beyond .*range", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc", "output_mode": "content", "glob": "*.md"}
+  ↳ campaign_longdoc/STATE.md:40:  pages 4,221 / 4,221, mixed 4,212 / 4,221 (`expQ/longdoc/audit_191516/out_of_range.json`, counted by a wake from the (+4 lines)
+→ Grep: {"pattern": "out_of_range", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147", "output_mode": "content", "glob": "*.json", "head_limit": 40}
+  ↳ expQ/longdoc/audit_191147/audit.json:58:   "out_of_range_share": 0.0, (+13 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json
+  ↳ 1	{ (+59 lines)
+→ Grep: {"pattern": "finetune_max|max_mem|max_span|\"variant\"|\"name\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191147/audit.json", "output_mode": "content", "head_limit": 40}
+  ↳ 8:  "finetune_max_mem": 488, (+1 lines)
+→ Grep: {"pattern": "ci95|lo|mean", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length", "glob": "*closed*", "output_mode": "files_with_matches"}
+  ↳ No files found
+→ Grep: {"pattern": "closedbook_pair|closed-book", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true}
+  ↳ 1236:[Omitted long matching line] (+11 lines)
+→ Grep: {"pattern": "\\.173|lower bound|\\+17", "path": "/beegfs/scratch/user/hdejean/pisco", "glob": "{EXPERIMENTS.md,campaign_longdoc/*.md}", "output_mode": "content", "-n": true}
+  ↳ EXPERIMENTS.md:21:- 2026-06-26 15:51 [job 149908] FINETUNED 4B->4B eval (official qa_f1 x100, LongBench): avg 34.7 vs pretrain 27.0 (+28%); per-bucket 0-4k 37.0, 4-8k 29.8, 8-12k 31.9, 12k+ 40.1. Fine (+11 lines)
+Still checking: the closed-book comparison file and the model links. Then I'll give the verdict.
+→ Grep: {"pattern": "\\d", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "*closedbook*.json", "output_mode": "files_with_matches"}
+  ↳ Found 1 file (+1 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/e_r43/model/config.json
+  ↳ 1	{ (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/t_l1024_s43/model/config.json
+  ↳ 1	{ (+4 lines)
+→ Grep: {"pattern": "ci95|\"mean\"|\"n\"|bucket|lo|\"diff\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/soundness/closedbook_trial300.json", "output_mode": "content", "head_limit": 120}
+  ↳ 3:  "file": "expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500_lim300.json", (+64 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/soundness/closedbook_trial300.json
+  ↳ 1	[ (+61 lines)
+→ Grep: {"pattern": "87|114|option 1|option 2", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md", "output_mode": "content", "-n": true}
+  ↳ 45:"send it"; arm A's audit, job 191147):** g10 is 10 independent HotpotQA paragraphs glued together (p50 1,515 tokens, (+8 lines)
+→ StructuredOutput: {"claims": [{"claim": "provisional: training does not show the decoder long inputs (a count, not yet a cause) — finetune sample max 488 <MEM>s / span 4,017 (191147); beyond range: 10/20 pages 1,500/1,500, 40 passages 1,498/1,500, 20 passage…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.3414 turns=23 is_error=False denials=0
+== declared: {"claims": [{"claim": "provisional: training does not show the decoder long inputs …", "status": "provisional", "reason": "Every number matches. audit_191147/audit.json: finetune_max_…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "The 191169 verdict says 360/360 byte-identical and recall 70…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "The counts match the 191515 verdict exactly: 1,407 Q on 387 …"}, {"claim": "provisional: the arm E answer cap is 512 tokens. Uncompresse…", "status": "provisional", "reason": "Verdict 191777 says 8/300. Verdict 191778 also says 8/300 fo…"}, "… +11 more"], "summary": "Every number I checked in STATE.md matches the grid, the ver…"}
+== final:
+{"claims":[{"claim":"provisional: training does not show the decoder long inputs (a count, not yet a cause) — finetune sample max 488 <MEM>s / span 4,017 (191147); beyond range: 10/20 pages 1,500/1,500, 40 passages 1,498/1,500, 20 passages 35/1,500, 4 pages 0/1,500; arm E above 488: text 2,246/2,246, pages 4,221/4,221, mixed 4,212/4,221","status":"provisional","reason":"Every number matches. audit_191147/audit.json: finetune_max_mem 488 and finetune_max_span 4017; out-of-range shares are 0.0 for docs_p4, 1.0 / 1.0 for 10 / 20 pages, .0233 (35/1,500) and .9987 (1,498/1,500) for text. out_of_range.json gives 2246/2246, 4221/4221, 4212/4221. But this is a count from a 2,000-row sample, and the arm E counts were made by a wake, not a job. CAMPAIGN.md:36 says a count names a cause only together with a paired effect from arm U or P, and neither has run."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"The 191169 verdict says 360/360 byte-identical and recall 70.5% = 70.5%. That clears the law's ±2 pt check of the port against the legacy probe, whose recorded value is 71%. It is a control with a job behind it, not a new metric."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 rows (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225. Closed-book set: 1,407 questions (job 191774).","status":"supported","reason":"The counts match the 191515 verdict exactly: 1,407 Q on 387 PDFs, 4,221 / 4,221 / 2,246 rows, the text bucket sizes, and needles 300 / 225 / 225. The 191774 verdict gives 1,407 closed-book questions with 0 mismatches. One part is not checked: the Apache-2.0 licence appears in no verdict."},{"claim":"provisional: the arm E answer cap is 512 tokens. Uncompressed text at the cap 7/300 (2.3%, bar 5%) by a frontend tokenizer recount with padding off (no job); verdict 191777 says 8/300 (2.7%, padded). Mixed 7/300 (191778), closed-book 5/1,407 (191776), R mixed 4/300 (191887). By characters 191777 is 6.3%.","status":"provisional","reason":"Verdict 191777 says 8/300. Verdict 191778 also says 8/300 for mixed; the 7/300 comes only from the padding-off recount at EXPERIMENTS.md:1460, which was run on the frontend with no job. Closed-book 5/1,407 and R mixed 4/300 match 191776 and 191887. Both counts are under the 5% bar, but they come from 300-row trial cells. The token-count rule was written after 191777 had been seen."},{"claim":"provisional: arm E soundness check 3 (needle) passes in every bucket when scored as 'code string in the answer' — text 75/75 ×4 (191877); pages 75/75, 73/75, 74/75 (191878); mixed 75/75, 75/75, 74/75 (191879); bar 90%. Under EM the text needle scores .53/.36/.43/.15 and fails; the substring scoring was chosen after the data were seen.","status":"provisional","reason":"The co
+== rc=0

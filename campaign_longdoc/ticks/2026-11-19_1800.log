@@ -1,0 +1,89 @@
+== campaign longdoc wake 2026-11-19_1800  reasons=gate,request  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795078801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.2 idle_h=9.4 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=7372 sig=3f0317b9 same=19 behind=0 upstream=0 upfiles=0 upmine=0 upsib=5 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session bf2664f7-9fda-4b26-abee-a7081102d5b3  model claude-opus-5-5  tools 52
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/bf2664f7-9fda-4b26-abee-a7081102d5b3/tool-results/b6b4nd4en.txt
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/bf2664f7-9fda-4b26-abee-a7081102d5b3/tool-results/b6b4nd4en.txt
+  ↳ 14	    Answer to the open question «Arm E model cells: approve about 54 more GPU-hours and 17 more cells?» (longdoc · BLOCKED.md): owner, 2026-11-19 (pisco chat): "do as recommended" = yes: approve th (+149 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/bf2664f7-9fda-4b26-abee-a7081102d5b3/tool-results/b6b4nd4en.txt
+  ↳ 164	191307     T    -        ended     closed     eval_mm  pisco    t_l1024_s43 text_hotpotqa_1500 all      ckpt       10       451584     0        0             none       brief        0         none (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && ls -la && wc -l CAMPAIGN.md STATE.md BLOCKED.md known_issues.md && cat REQUEST && echo ---- && cat GATE
+  ↳ total 166 (+25 lines)
+The owner approved the bigger long-document grid. I'm reading the campaign rules and the last state before I launch it.
+→ Bash: cat BLOCKED.md
+→ Bash: cat STATE.md
+  ↳ ## Arm E model cells: approve about 54 more GPU-hours and 17 more cells? (+51 lines)
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+168 lines)
+→ Bash: grep -n '^#' CAMPAIGN.md
+  ↳ 1:# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+12 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 60	## Arms — what varies, what is held constant (+301 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && ls scripts/longdoc/ && cat known_issues.md 2>/dev/null | head -0; cat campaign_longdoc/known_issues.md | cut -c1-400
+  ↳ ae_nll.py (+59 lines)
+→ Bash: cat scripts/longdoc/eval_mnt.sbatch && ls -la eval_data/ | grep longdoc && ls eval_data/longdoc_pages_1500 && cat scripts/longdoc/build_closedbook.sbatch
+  ↳ #!/bin/bash (+59 lines)
+→ Bash: cat scripts/longdoc/build_closedbook.py | head -80 && cat eval_data/longdoc_pages_1500/stats.json | head -50 && ls -la eval_data/longdoc_pages_1500/train eval_data/longdoc_mixed_1500/train && du -sh eval_data/longdoc_pages_1500 eval_data/lo…
+  ↳ """Campaign longdoc, arm E soundness check 1: a CLOSED-BOOK set, every LongDocURL question ONCE, no document. (+118 lines)
+Writing the split-by-length step for the long-document sets, then launching the first cells.
+→ Bash: grep -n "add_argument" scripts/eval_mm_docqa.py | cut -c1-160 | head -60; grep -n "LIMIT\|SUF=\|\$4\|\$3\|load_from_disk\|limit" eval_mm_4b.sh | head -30
+  ↳ 563:    ap.add_argument("--mode", choices=["pisco", "base", "pisco_text"], default="pisco") (+62 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ want={'191669','191670','191673','191674','191776','191777','191778','191887','191515','191774'} ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     j=str(r.get('j…
+  ↳ {"ts": "2026-11-17 21:41", "jobid": "191515", "launcher": "scripts/longdoc/build_long.sbatch", "argv": ["all", "1500"], "git": "f01b1af+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/19151 (+18 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/ | grep -i longdoc; ls expQ/longdoc/e_r42/eval/ 2>/dev/null; python3 - <<'EOF' ⏎ import json,glob ⏎ f=sorted(glob.glob('expQ/base_qwen35_4b/eval/*longdoc_mixed_1500*mnt512*lim300.json')) ⏎ print(f) ⏎ d=json.load(…
+  ↳ Exit code 1 (+19 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ f='expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_mixed_1500_lim300.json' ⏎ d=json.load(open(f)) ⏎ print(type(d), list(d.keys())[:20] if isinstance(d,dict) else len(d)) ⏎ recs…
+  ↳ <class 'dict'> ['summary', 'records'] (+55 lines)
+→ Bash: sed -n 10,40p expQ/longdoc/eval_mnt_191778.out | cut -c1-250; grep -n "^\[\|eval\]\|judge" expQ/longdoc/eval_mnt_191778.out | tail -15 | cut -c1-250
+  ↳ Loading weights:   0%|          | 0/723 [00:00<?, ?it/s] (+47 lines)
+→ Bash: grep -n "load_from_disk\|\[\"train\"\]\|load_dataset" scripts/eval_mm_docqa.py | head; ls -la expQ/longdoc/e_r42/ expQ/longdoc/t_c256_s42/ expQ/longdoc/t_l1024_s43/ ; ls expQ/longdoc/e_r43 2>&1 | head -2; python3 - <<'EOF' ⏎ import json,col…
+  ↳ Exit code 1 (+28 lines)
+Writing the job that splits the long-document page and mixed sets into one set per length.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/split_buckets.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/split_buckets.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/split_buckets.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/split_buckets.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: expmon launch --help 2>&1 | head -40; ls expQ/ft_mm_4b_184780/model >/dev/null && ln -s /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184780/model expQ/longdoc/e_r43/model 2>&1 || (mkdir -p expQ/longdoc/e_r43 && ln -s /beegfs/scratch/use…
+  ↳ Usage: expmon launch [--dry-run] [--local] [--smoke] [--exp <campaign>] [--parent <jid|artifact>] [--stage <label>] [--force] (+17 lines)
+→ Bash: expmon launch --dry-run --exp longdoc --stage E -p gpu-be --gres=gpu:0 -c 2 --mem 16G --time 1:00:00 --exclude='homer-[005-009]' scripts/longdoc/split_buckets.sbatch 2>&1 | tail -15
+  ↳ would submit: sbatch -p gpu-be --gres=gpu:0 -c 2 --mem 16G --time 1:00:00 --exclude=homer-[005-009] scripts/longdoc/split_buckets.sbatch  (+3 lines)
+→ Bash: expmon note "longdoc wake 18:00: owner REQUEST 17:05 = option 1 of BLOCKED.md approved (arm E model cells, +54 GPU-h 60->114, +17 cells 70->87, both seeds). Intent: (a) split_buckets.sbatch (CPU, new) writes eval_data/longdoc_{pages,mixed}_…
+  ↳ expmon note: 100 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+6 lines)
+→ Bash: ls -la --time-style=full-iso pisco/model.py && git diff --stat pisco/model.py && git log -1 --format='%h %ci' -- pisco/model.py && git show HEAD:pisco/model.py | md5sum | cut -c1-8 && git diff pisco/model.py | head -80
+  ↳ -rw-r--r-- 1 hdejean hdejean 73501 2026-11-19 17:06:46.000000000 +0900 pisco/model.py (+30 lines)
+→ Bash: expmon launch --exp longdoc --stage E -p gpu-be --gres=gpu:0 -c 2 --mem 16G --time 1:00:00 --exclude='homer-[005-009]' scripts/longdoc/split_buckets.sbatch 2>&1 | tail -4
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/split_buckets_192265.out (+3 lines)
+→ Bash: ls expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json 2>&1 | tail -1; expmon launch --dry-run --exp longdoc --stage E -p gpu-be --mem 8G --time 8:45:00 --exclude='homer-[005-009]' --env MNT=512 --en…
+  ↳ ls: cannot access 'expQ/base_qwen35_4b/eval/mm_docqa_base_k1000_px1003520_cml1024_mnt512_longdoc_text_1500.json': No such file or directory (+5 lines)
+→ Bash: expmon launch --exp longdoc --stage E -p gpu-be --mem 8G --time 8:45:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 scripts/longdoc/eval_mnt.sbatch expQ/longdoc/e_r42/model base '' /beegfs/scrat…
+  ↳ Submitted batch job 192266 (+5 lines)
+→ Bash: python3 - <<'EOF' ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if str(r.get('jobid')) in ('192265','192266','192267','192268'): ⏎         print(r['jobid'], len(r['argv']), r['argv'], r['env'], r['slurm'])…
+  ↳ 192265 0 [] {} {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '1:00:00'} (+8 lines)
+Four jobs are in. Now recording the owner's decision in the campaign rules and state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 - <<'EOF' ⏎ p='CAMPAIGN.md' ⏎ s=open(p).read() ⏎ old="- cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16)." ⏎ new=("- cells for the whole campaign: 70 · GP…
+  ↳ 100:and `eval_data/longdoc_mixed_1500_{m10,m20,m40}` (`scripts/longdoc/split_buckets.py`: the same rows, source order), (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && tail -5 expQ/longdoc/split_buckets_192265.out | cut -c1-300; echo ---; grep -m5 "md5\|eval_mm_4b\|pisco/model.py\|\[10/" expQ/longdoc/eval_mnt_192266.out | cut -c1-200
+  ↳ FACTORS kind=split_buckets arm=E sets=pages,mixed (+5 lines)
+→ Bash: grep -n "unsupported\|UNSUPPORTED\|wrong\|Waiting on the owner" campaign_longdoc/VERIFY.md | cut -c1-900 | tail -6
+  ↳ 5:19 claim(s): 2 supported · 17 provisional · 0 unsupported (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && rm REQUEST BLOCKED.md && ls && expmon gripe --open --search dependency 2>&1 | tail -5
+  ↳ campaign.conf (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon gripe -c gap "runs.jsonl drops --dependency and --mem from the launch row (192267/192268 launched with --dependency afterok:192265 --mem 8G; 'slurm' holds only partition/exclude/time), so 'a r…
+  ↳ logged (gap) -> /home/hdejean/.claude/feedback/ncp.log
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Recording the wake in the ledger and checking the split job before I stop.
+→ Bash: expmon note "longdoc wake 18:00" --did "owner REQUEST executed: arm E option 1 approved (cells 87, GPU-h 114); wrote split_buckets.py; launched 192265 split build, 192266 U text 2,246 rows, 192267 U pages p40, 192268 U mixed m40 (afterok 19…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ Bash: echo "wake-when job:192265 max 2h" > campaign_longdoc/NEXT && cat campaign_longdoc/NEXT && ls -d eval_data/longdoc_*_1500_* 2>&1 | head; du -sh eval_data/longdoc_pages_1500_p10 2>/dev/null
+  ↳ wake-when job:192265 max 2h (+2 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Executed owner REQUEST (arm E option 1: cells 70→87, GPU-h 60→114; option 2 not approved), recorded in CAMPAIGN.md budget; deleted REQUEST and answered BLOCKED.md. Wrote scripts/longdoc/split_buckets.{py,sb…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.4600 turns=38 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Executed owner REQUEST (arm E option 1: cells 70→87, GPU-h 60→114; option 2 not approved), recorded in CAMPAIGN.md budget; deleted REQUEST and answered BLOCKED.md. Wrote scripts/longdoc/split_buckets.{py,sbatch} (per-bucket pages/mixed sets), made e_r43 symlink. Launched 4/4: 192265 split build (CPU), 192266 uncompressed text whole set cap 512, 192267 uncompressed pages p40 and 192268 mixed m40 (afterok 192265). Noted pisco/model.py md5 changed to f8ae6efe (another chat's one-row pad fix); full arm E grid runs on it. STATE.md rewritten with verifier corrections; NEXT wake-when job:192265 max 2h.", "launched": ["192265", "192266", "192267", "192268"], "wake_when": "job:192265 max 2h", "gripes": ["gap: runs.jsonl drops --dependency and --mem from the launch row, so a relaunch cannot be rebuilt exactly from expmon runs"]}
+== final:
+{"next":"wake-when","summary":"Executed owner REQUEST (arm E option 1: cells 70→87, GPU-h 60→114; option 2 not approved), recorded in CAMPAIGN.md budget; deleted REQUEST and answered BLOCKED.md. Wrote scripts/longdoc/split_buckets.{py,sbatch} (per-bucket pages/mixed sets), made e_r43 symlink. Launched 4/4: 192265 split build (CPU), 192266 uncompressed text whole set cap 512, 192267 uncompressed pages p40 and 192268 mixed m40 (afterok 192265). Noted pisco/model.py md5 changed to f8ae6efe (another chat's one-row pad fix); full arm E grid runs on it. STATE.md rewritten with verifier corrections; NEXT wake-when job:192265 max 2h.","launched":["192265","192266","192267","192268"],"wake_when":"job:192265 max 2h","gripes":["gap: runs.jsonl drops --dependency and --mem from the launch row, so a relaunch cannot be rebuilt exactly from expmon runs"]}
+== rc=0 secs=344
+== verify: 3/15
