@@ -1,0 +1,9 @@
+== campaign longdoc wake 2026-11-21_0800  reasons=heartbeat  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795215602 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.1 idle_h=23.8 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=6570 sig=3f0317b9 same=48 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 6f1b23d9-f167-4f71-b272-95492f6669f2  model claude-sonnet-5-5  tools 51
+You've hit your weekly limit · resets Nov 24, 7pm (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your weekly limit · resets Nov 24, 7pm (Asia/Seoul)
+== rc=1 secs=10
