@@ -1,0 +1,9 @@
+== campaign slotcheck wake 2026-11-21_0000  reasons=heartbeat  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795186802 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=26.3 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=6761 sig=3f0317b9 same=52 behind=0 upstream=0 upfiles=0 upmine=0 upsib=5 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/hook.log
+== session 89d94a10-c744-4471-a720-7a737d98afae  model claude-sonnet-5-5  tools 51
+You've hit your weekly limit · resets Nov 24, 7pm (Asia/Seoul)
+== result: subtype=success cost=0.0000 turns=1 is_error=True denials=0
+== final:
+You've hit your weekly limit · resets Nov 24, 7pm (Asia/Seoul)
+== rc=1 secs=10
