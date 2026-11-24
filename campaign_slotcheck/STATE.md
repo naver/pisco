@@ -24,7 +24,7 @@ stage-2 rebuild that teaches the image slots to keep the page's words: recommend
   closed; start 191893). Held-out 100 pages .667 vs .670: −0.3 pt [−4.2, +3.6]. Text-layer ceiling .974. 116-123
   slots per page. Loss not flat at step 210 (job 192002) → .921 is a lower bound. A repeat needs 2 cells (training +
   recall); 1 is left → offered to the owner as option C.
-- provisional (re-derived from the files this wake; next critic pass pending): Check 3 (arm X) DECIDED, n = 1,000
+- provisional (one seed; pooled read at the 5-pt bar; 1.52× the slots): Check 3 (arm X) DECIDED, n = 1,000
   paired questions (two disjoint reads of `mm_docqa_1500_1m`, R seed 42), judge accuracy:
   - image + transcription slots − image slots: read 1 +4.6 pt [+1.0, +8.0], McNemar 51 / 28, p .013 (job 192223);
     repeat on 500 new questions +5.4 pt [+1.8, +8.8], 56 / 29, p .005, no source CI wholly below 0 (job 192239)
@@ -83,42 +83,31 @@ stage-2 rebuild that teaches the image slots to keep the page's words: recommend
 | X (check 3) | decided: image + text +5.0 pt pooled, passes its repeat; text alone −13.7 | none |
 | campaign | all four decided | the owner's answer to BLOCKED.md (A / B / C / D). A, B or D: nothing more to launch here → close-out. C: launch the second overfit seed (`pt_overfit.sbatch` with another seed, then `recall.sbatch`, chained) |
 
-## Health evidence this wake (numbers, not adjectives)
-- 192237: `sacct` COMPLETED 0:0 4:13:18 homer-017; log `RESULT … pages=1252 unique_total=1252 empty=0 at_cap=121
-  mean_words=199 s_per_page_median=9.4`, `=== EXIT CODE 0 ===`.
-- 192238: COMPLETED 0:0 4:39 homer-017; round-1 re-audit RESULT `text_cut=1 text_cut_boundary=1 imgtext_cut=1
-  imgtext_cut_boundary=1 ok=True` + `round-1 re-audit EXIT CODE 0`; round 2 RESULT `cut 0` on all three sets, `ok=True`,
-  img / text / imgtext slots per question 431.9 / 222.6 / 654.5, answer in transcription 454 / 500.
-- 192239: COMPLETED 0:0 35:56 homer-016, one attempt; each set 500 rows, judge on 500, `judge_unparseable` 0, empty
-  answers 0, `grep -c exceeds` 0, three `EXIT CODE 0`; `topk` 4 / 4 / 8, `max_pixels` 1,003,520, greedy. Read 1 and
-  read 2 share 0 query_ids. md5 in the log: eval_mm_4b.sh b3d1cda1 / eval_mm_docqa.py dfe32aa0 / judge_mm_docqa.py
-  02bc8748 / paired_judge.py a3cc13b2 / build_text_sets.py 6b438662 / **pisco/model.py f8ae6efe** (read 1 ran on
-  994cff3d). The change (another chat, 2026-11-19 17:06, uncommitted) drops pad columns in a one-row compressor batch;
-  the eval pads nothing, and the round-2 image cell reproduces the recorded R s42 file on 500 / 500 answers and slot
-  counts (`scripts/slotcheck/compare_preds.py`), so the two reads are comparable. Each paired difference is within one
-  job, one node, one code.
-- Paired numbers: `python3 scripts/paired_judge.py` per read; pooled and per-source with its own `bootstrap_ci` /
-  `mcnemar` (2,000 resamples) on the concatenated pairs; recorded with `expmon probe 192239`.
-- Budget: 31 of 32 cells; GPU-hours, all attempts from `sacct -D`: 20.9 of 30. Arm X 10.1 (17 jobs, `sacct -D`) of
-  its ≈ 12 line.
+## Health evidence this wake (2026-11-24 19:00; numbers, not adjectives)
+- No campaign job ran since 2026-11-20 (brief: running 0, pending 0, problems 0, new result files 0, gpuh24 0.0).
+- The last cells (192237 / 192238 / 192239) closed on 2026-11-20 with health OK; their evidence is in their
+  `expmon verdict` lines (grid VERDICT `closed`), not repeated here.
+- Budget unchanged: 31 of 32 cells; GPU-hours, all attempts from `sacct -D`: 20.9 of 30. Arm X 10.1 of its ≈ 12 line.
 
-## Verifier findings of the 16:30 pass, fixed
-- Check 3 "rests on a build with an undecoded 1/500 cut": decoded — 192238's round-1 re-audit gives cut_boundary 1 =
-  cut 1, ok=True (a digit string split at a chunk boundary, not truncation).
-- Check 3 "one read": repeated on 500 new questions (192239), passes; pooled 1,000 reported.
-- Check 3 "+4.6 has no outcome under the 5-pt bar": the law's general Promising rule mapped it; the repeat alone
-  (+5.4, CI above 0) and the pooled read (+5.0, CI above 0) both clear the check's own 5-pt bar.
-- Check 4 "one training, no repeat": stays `provisional`; a repeat needs 2 cells, 1 is left → owner option C.
+## Verifier (pass of 2026-11-20 00:00)
+16 claims: 7 supported, 9 provisional, 0 unsupported. Nothing to fix. The provisional ones are already marked
+provisional above (check 4 = one training; check 3 = one seed, pooled read at the 5-pt bar, 1.52× the slots).
 
-## Efficiency line (SPEED: 4.8 h queued with nothing running)
-No launch is left in this campaign's plan, so there is nothing to place. If the owner picks C, ask
-`gpucap land a100 1` before the training launch.
+## This wake
+- Woken by alert + daily heartbeat. The alert was the account's weekly usage limit (wake 2026-11-21 00:00 failed
+  in 10 s; held until 2026-11-24 19:00). The hold is over; the ALERT file is deleted (known_issues row 23, now
+  also covers the weekly limit). +1 on the open gripe 69929754 (the tick spends a wake on a self-resolving alert).
+- No REQUEST, no GATE, no answer to owner question d336f3 in `expmon questions`.
+
+## Efficiency line (SPEED: the login's usage limit held this loop 23.5 h, 100 % of the window)
+Moving the loop to another login is an owner matter (`cc-team`, files under ~/.claude, which the loop may not
+touch). It costs nothing here: the campaign has no launch left until the owner answers BLOCKED.md.
 
 ## Law notes this wake
-- None changed. The law's prediction (checks 1 and 2 not causes; check 4 clears 90%) held.
+- None changed.
 
 ## Blockers / needs the owner
-- BLOCKED.md: the ONE end-of-campaign question (the four verdicts + the stage-2 rebuild they motivate). NEXT
-  `waiting-owner`.
-- Hand-off 2de131 (pad leak guard) still open: the guard sits uncommitted in `pisco/model.py` (f8ae6efe); a note this
-  wake tells the pisco chats it is a no-op on the eval path and still untested on the one-row padded path.
+- BLOCKED.md: the ONE end-of-campaign question (the four verdicts + the stage-2 rebuild they motivate), queue id
+  d336f3. NEXT `waiting-owner`.
+- Hand-off 2de131 (pad leak guard) still open: the guard sits uncommitted in `pisco/model.py` (f8ae6efe); no-op on
+  the eval path (192239: 500 / 500 same answers), still untested on the one-row padded path it fixes.
