@@ -1,27 +1,21 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-20 08:00 (twenty-fifth LLM wake; woken because all nine running arm E cells ended).
-NEXT: `waiting-owner` — BLOCKED.md holds the final checkpoint question (ranked causes; fund arms U / P on page images
-at 40 vs 10 pages, 9 runs ≈ 13 GPU-h, or close). Only 2 of 87 runs are left.
+Last wake: 2026-11-24 19:00 (twenty-sixth LLM wake; woken by the heartbeat and the usage-limit alert, now past its
+reset). Previous working wake: 2026-11-20 08:00.
+NEXT: `waiting-owner` — BLOCKED.md holds the final checkpoint question (queue id b62ccf, unanswered 4 days): fund arms
+U / P on page images at 40 vs 10 pages (9 runs ≈ 13 GPU-h, cap 87 → 96), or close. Only 2 of 87 runs are left.
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- Nine cells ended, all COMPLETED 0:0, one attempt, code md5 b3d1cda1 / dfe32aa0 / 02bc8748 / f8ae6efe / eval_mnt
-  1c874b32 (unchanged), no "exceeds" in any log: R s43 pages 20 192362 (homer-016, 1:57:38), mixed 20 192363 (homer-016,
-  1:52:12), pages 40 192364 (homer-012, 3:53:02), mixed 40 192365 (homer-014, 2:58:25); C256 / L1024 text s42 192366 /
-  192367 (homer-016, 2:48:08 / 3:02:25), s43 192374 / 192375 (homer-011 / homer-013, 2:35:22 / 3:00:19); closed-book
-  re-run 192376 (homer-014, 0:29:50). Health (`cell_health.py --cap 512`, `expQ/longdoc/length/health_0800.json`): every
-  row judged, 0 unparseable, `<MEM>`s used = the audit's prediction exactly in all eight pisco files; answers at the cap
-  2.3 / 2.8 / 3.7 / 3.8% (R s43 p20 / m20 / p40 / m40), text 4.1 / 5.08 / 3.0 / 4.6% (C256 s42 / L1024 s42 / C256 s43 /
-  L1024 s43; L1024 s42 is 2 answers over 5%: on the 2,079 questions neither s42 file caps, L1024 − C256 is +4.9 vs +4.6
-  on all, known_issues.md new row), closed-book 0.4%. All nine verdicts closed with probes.
-- Launched 1 of cap 4: the project-prompt re-judge 192405 (`rejudge.sbatch E_pages_p10_p40`, 6 files, argv 7 checked,
-  `--time 0:18` = 191629's 5:46 × 3, `--mem 3G`), homer-018, COMPLETED 0:0 5:58, unparseable 0; verdict closed.
-- Wrote `scripts/longdoc/plot_length.py` (stdlib SVG: the pixi env has no plotting library) →
-  `expQ/longdoc/figures/length_curve.svg`. Rewrote `docs/longdoc_diagnosis.md` (arm E s43 columns, long-chunk text
-  table, length verdict, figure). Hand-off 8d45d0 to the pisco chats: the shared 32-token answer cap.
-- BLOCKED.md: the final checkpoint (one question). `expmon display --exp longdoc` refreshed.
+- No-op. No REQUEST, no GATE, no answer in `expmon questions` (b62ccf still waiting), no job of this campaign in the
+  queue, no new result file, no ✗ in `expmon check`. Launched nothing.
+- Fixed the verifier's one minor note: needle text EM at ~4k is .53 (191877 verdict), not .52.
+- ALERT (usage limit 2026-11-21, reset 2026-11-24 19:00) is past; the efficiency line "SPEED: the login's usage limit
+  held this loop 100%" does not call for a loop change: the loop has nothing to run until the owner answers, so it
+  needs almost no quota. Moving logins is the owner's call and not worth a question.
+- The 2026-11-20 08:00 wake's work (nine arm E cells closed, project-prompt re-judge 192405, figure
+  `expQ/longdoc/figures/length_curve.svg`, `docs/longdoc_diagnosis.md`, hand-off 8d45d0) stands unchanged.
 
 ## TL;DR — where this leaves the question
 **Settled**
@@ -78,7 +72,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
 - provisional: arm E soundness check 3 (needle) passes in every bucket, scored "exact code string in the answer" AND
   judge, both ≥ 90% (uncompressed, cap 512, 25 documents × 3 depths per length): text 75 / 75 at ~4k / 8k / 16k / 32k,
   judge 1.00 each (191877); pages 75 / 75, 73 / 75, 74 / 75 at 10 / 20 / 40 pages, judge 1.00 / .95 / .97 (191878);
-  mixed 75 / 75, 75 / 75, 74 / 75, judge 1.00 / 1.00 / .99 (191879). Whole-answer EM fails everywhere (text .52 / .36 /
+  mixed 75 / 75, 75 / 75, 74 / 75, judge 1.00 / 1.00 / .99 (191879). Whole-answer EM fails everywhere (text .53 / .36 /
   .43 / .15); the scoring rule was written after the data.
 - provisional: arm E input check passes (job 191516, every row, CML 1,024): cut 0 and parity 1.0000 on text (2,246),
   pages (4,221), mixed (4,221) and the three needle sets; the CML 256 control cuts 235 / 2,246. Parity has no failing

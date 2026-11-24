@@ -1,0 +1,33 @@
+== campaign longdoc wake 2026-11-24_1900  reasons=alert,heartbeat  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795514402 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=106.8 min_util=- alert=1 unpushed=0 cron=5 daemon=1 disk_gb=5741 sig=260cc69f same=165 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 93ee53a2-429d-4676-b133-b63f1f6e9a38  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+23 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/93ee53a2-429d-4676-b133-b63f1f6e9a38/tool-results/bvvjuhnyb.txt
+  ↳ <persisted-output> (+23 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/93ee53a2-429d-4676-b133-b63f1f6e9a38/tool-results/bvvjuhnyb.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-24_1900   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+149 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=/home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/93ee53a2-429d-4676-b133-b63f1f6e9a38/tool-results/bvvjuhnyb.txt; grep -n '^## ' $F; awk 'NR>150' $F | grep -v '^[0-9]\{6\} ' | head -…
+  ↳ 5:## Sensors (newest first, 3 ticks) (+57 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la; cat NEXT; echo ---; wc -l STATE.md CAMPAIGN.md known_issues.md VERIFY.md 2>/dev/null; echo ---; expmon questions 2>&1 | head -40
+  ↳ total 170 (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat VERIFY.md | cut -c1-1200; echo ----; sed -n 1,60p STATE.md
+  ↳ # VERIFY — campaign longdoc — 2026-11-20_0800   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+86 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 60,194p STATE.md; grep -n '\.52' STATE.md
+  ↳ sign 186 / 235 p .02; text t8k / t16k / t32k vs t4k +0.7 / +3.6 / +3.9 (s42), −2.5 / −0.7 / −1.7 (s43), every CI (+135 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n '191877\] verdict' EXPERIMENTS.md | cut -c1-900
+  ↳ 1456:- 2026-11-19 02:06 [job 191877] verdict: closed — healthy: COMPLETED 0:0 10:56 homer-016, one attempt, MaxRSS 2.3 GB; needle text uncompressed cap 512, 300 rows, judge on all, unparseable 0, prom
+Now I'll update STATE.md: fix the EM figure, rewrite the header and the "This wake" section.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc && python3 - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ s=s.replace("Whole-answer EM fails everywhere (text .52 / .36 /","Whole-answer EM fails everywhere (text .53 / .36 /",1) ⏎ start…
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon note "longdoc wake 2026-11-24 19:00: no-op (heartbeat + expired usage-limit alert); owner question b62ccf (fund arms U/P, 9 runs ~13 GPU-h, or close) still unanswered; nothing launched; STATE.…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "No-op wake (heartbeat + the usage-limit alert, now past its reset). No REQUEST, no GATE, no answer to owner question b62ccf (fund the two last probes on 40- vs 10-page image documents, 9 runs ~13 GPU-h …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.8897 turns=12 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "No-op wake (heartbeat + the usage-limit alert, now past its reset). No REQUEST, no GATE, no answer to owner question b62ccf (fund the two last probes on 40- vs 10-page image documents, 9 runs ~13 GPU-h with cap 87->96, or close). No campaign job runs, no new results, no failures. Fixed the verifier's one minor note in STATE.md (needle text EM .53, not .52), refreshed the STATE header and this-wake section, ledger note, NEXT stays waiting-owner.", "launched": [], "verdicts": [], "blocked": "BLOCKED.md (queue b62ccf, 4 days): owner must choose option A (fund slot-reading + position probes, +9 runs to cap 96, ~13 GPU-h inside the 114 approved; recommended) or option B (close with the cause of the 40-page loss open).", "gripes": []}
+== final:
+{"next":"waiting-owner","summary":"No-op wake (heartbeat + the usage-limit alert, now past its reset). No REQUEST, no GATE, no answer to owner question b62ccf (fund the two last probes on 40- vs 10-page image documents, 9 runs ~13 GPU-h with cap 87->96, or close). No campaign job runs, no new results, no failures. Fixed the verifier's one minor note in STATE.md (needle text EM .53, not .52), refreshed the STATE header and this-wake section, ledger note, NEXT stays waiting-owner.","launched":[],"verdicts":[],"blocked":"BLOCKED.md (queue b62ccf, 4 days): owner must choose option A (fund slot-reading + position probes, +9 runs to cap 96, ~13 GPU-h inside the 114 approved; recommended) or option B (close with the cause of the 40-page loss open).","gripes":[]}
+== rc=0 secs=116
+== verify: 4/18

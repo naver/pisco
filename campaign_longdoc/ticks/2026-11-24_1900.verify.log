@@ -1,0 +1,48 @@
+== verifier 2026-11-24_1900  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session bcaa3323-e7b7-447b-a069-7f4557b7bdba  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+245 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 246	  parity 1,500 / 1,500 on every gating variant; health 646,042 = 646,042; CML 256 controls cut 924 / 1,500 and 275 / (+169 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (25446 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 416	191149     T    -        ended     closed     eval_mm  pisco    t_l1024_s42 mm_docqa_1500_1m all      ckpt       4        451584     0        0             none       brief        1         none   (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 476	{"ts": "2026-11-17 22:01", "jobid": "191378", "verdict": "closed", "note": "healthy (COMPLETED 0:0, homer-017, 50:42, one attempt; 1,500 rows, judge on all, unparseable 0, mems_used 1,614,940 = au (+39 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 516	{"ts": "2026-11-20 04:33", "jobid": "192359", "verdict": "closed", "note": "health OK: R s43 text cap 512, 2,246/2,246 judged, unparseable 0, at cap 81 (3.6%), prompt max 4,976, mems_used 3,887,46 (+70 lines)
+Checking each claim in the campaign's STATE.md against the verdicts and grid; next I'm opening the result tables those claims cite.
+→ Glob: {"pattern": "expQ/longdoc/length/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/VERIFY.md
+  ↳ 1	# VERIFY — campaign longdoc — 2026-11-20_0800   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+26 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "E_dlen_*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/E_dlen_mixed_m40_s42_judge.json (+25 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t16k_s43_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_em.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_match.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s43_match.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t32k_s42_judge.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_mixed_m40_s42_judge.json
+  ↳ 1	{ (+11 lines)
+→ Grep: {"pattern": "GPU-h|b62ccf|runs", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md", "output_mode": "content"}
+  ↳ 1:## Final checkpoint: fund the last two probes (9 runs, ~13 GPU-hours), or close the campaign? (+10 lines)
+→ Grep: {"pattern": "\\.1687", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true}
+  ↳ 1116:- 2026-11-17 00:56 longdoc arm J control: scripts/longdoc/length_effect.py recovers the tail model's one-chunk minus ten-chunk HotpotQA difference (183538, k10 CML4096, n=1,500 pairs): d = -.1687
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ StructuredOutput: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2% (1,407 each); bar 5% (tokenizer count, padding off). R at the cap: …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.4760 turns=21 is_error=False denials=0
+== declared: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Every share matches its job's verdict: uncompressed 192266 4…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "The 191169 verdict says 360/360 pages are byte-identical and…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "The 191515 verdict gives 1,407 questions on 387 PDFs, 4,221 …"}, {"claim": "provisional: R − uncompressed on one long document, cap 512,…", "status": "provisional", "reason": "All 14 gaps, CIs and McNemar splits match the verdicts (e.g.…"}, "… +14 more"], "summary": "Every number I checked matches its job's verdict or its resu…"}
+== final:
+{"claims":[{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2% (1,407 each); bar 5% (tokenizer count, padding off). R at the cap: s42 pages 1.4 / 1.7 / 3.6%, mixed 1.8 / 1.9 / 3.2%, text 3.2%; s43 pages 1.1 / 2.3 / 3.7%, mixed 1.8 / 2.8 / 3.8%, text 3.6%.","status":"supported","reason":"Every share matches its job's verdict: uncompressed 192266 47/2,246; 192287/192288/192267 8/14/14; 192289/192290/192268 15/26/31. R s42: 192326/192356/192324 20/24/50; 192357/192358/192325 26/27/45; 192323 71. R s43: 192360 15, 192362 33, 192364 52, 192361 25, 192363 39, 192365 54, 192359 81. All are under the law's 5% bar. The 300-row trial 191777 is also under it (8/300 in its verdict; the law quotes 7/300), so the cap stays at 512."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt).","status":"supported","reason":"The 191169 verdict says 360/360 pages are byte-identical and word recall is 70.5% = 70.5%. The law's gate is the legacy 71% within ±2 pt, so the gate is met."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each (1,407 × 10 / 20 / 40 pages), text 2,246 rows (t4k 637 / t8k 610 / t16k 588 / t32k 411), needles text 300 / pages 225 / mixed 225. Closed-book set: 1,407 questions (job 191774). Bucket sets (job 192265): 6 × 1,407 rows.","status":"supported","reason":"The 191515 verdict gives 1,407 questions on 387 PDFs, 4,221 + 4,221 rows, and 2,246 text rows split 637/610/588/411 (they sum to 2,246). It gives needle sets of 300/225/225. The 191774 verdict gives 1,407 closed-book questions with 0 mismatches; the 192265 verdict gives 6 × 1,407 rows. I did not re-check the licence."},{"claim":"provisional: R − uncompressed on one long document, cap 512, same code, paired per question (`paired_judge.py`), both seeds, n 1,407 per pages / mixed bucket (McNemar R-only / U-only): pages 10/20/40, mixed 10/20/40, text whole set and per bucket, R s43 − R s42 within 2 pt.","status":"provisional","reason":"All 14 gaps, CIs and McNemar splits match the verdicts (e.g. 192324 −23.0 [−26.1,−19.9] 123/447; 192364 −23.7 114/447; 192323 −17.9 147/549). The s43 text buckets are not in a verdict but add up: t4k −19.0 + 3.3 = −15.7, and t16k R43 .418 vs U .587 = −16.8 (E_dlen_text_t16k_s43_judge.json). Both seeds ran on the same md5 as their reference. This is a reported gap with no bar, labelled provisional."},{"claim":"provisional: DECIDED for page images — a length loss at 40 pages. Δ_len 40 vs 10 pages (n 1,407, every file < 5% at the cap): rubric judge −6.5 [−9.5, −3.5] sign 165 / 249 p 4e-5 (s42), −5.3 [−8.4, −2.3] 177 / 245 p .001 (s43); project prompt −5.7 / −6.1 (192405); match −4.6 [−7.1, −2.1] / −3.6 [−6.0, −1.1]; EM +6.0 / +7.2 flips. By arm J's letter the EM flip makes it \"judge-sensitiv
+== rc=0

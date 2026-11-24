@@ -1619,3 +1619,5 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-11-20 08:12 did: arm E pages length decided (provisional)
   - saw: page images lose a further -5 to -6 pt at 40 vs 10 pages, both seeds, under rubric judge, project prompt and match (n 1,407); EM flips (EM fault)
   - next: owner checkpoint: fund arms U / P (9 cells, ~13 GPU-h) or close
+- 2026-11-24 19:02 longdoc wake 2026-11-24 19:00: no-op (heartbeat + expired usage-limit alert); owner question b62ccf (fund arms U/P, 9 runs ~13 GPU-h, or close) still unanswered; nothing launched; STATE.md EM .52->.53 per verifier
+- 2026-11-24 19:02 slotcheck wake 2026-11-24 19:00 (alert + heartbeat): weekly usage-limit hold ended at 19:00; deleted the self-resolved quota ALERT (known_issues row 23); nothing running, no REQUEST, owner question d336f3 still unanswered -> waiting-owner
