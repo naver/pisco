@@ -1,38 +1,34 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-25 23:00 (full wake: one launch fault diagnosed, the position chain relaunched, 4 cells submitted).
-NEXT: `wake-when job:193603 max 2h` — the position-probe identity check (300 rows, ~20 min). That wake reads it and
-launches the last two slot-reading cells (seed 43, 10 and 40 pages).
+Last wake: 2026-11-25 23:30 (full wake: position identity check passed, last 2 slot-reading cells launched).
+NEXT: `wake-when job:193536,193604,193605,193606,193607,193608 max 5h` — every U / P cell has left the queue
+(the 40-page seed-43 cell is the long one, ~4 h). That wake computes D per seed for arm U and the shifted − plain
+gap per seed for arm P, runs the one project-prompt re-judge, writes `docs/longdoc_diagnosis.md` and the final
+BLOCKED.md checkpoint. A failure wakes it earlier.
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- Identity check 193533 (arm P gate) TIMEOUT at 0:50 after 930 of 1,407 rows. Root cause, a launch fault: the row
-  limit went in as `--env LIMIT=300`, but `eval_mm_4b.sh` reads it from positional arg 3 (`LIMIT=${3:-}`; argv had
-  `''`), so a 300-row wall ran every row (FACTORS line `limit=all`). No output file. Its running metrics (em / f1 / anls /
-  match per 10 rows) equal 192326's at 93 / 93 checkpoints (rows 10-930): supporting evidence, not the gate.
-  Verdict closed; the dependants 193534 / 193535 (DependencyNeverSatisfied) cancelled with `expmon kill`, verdict closed.
-- Relaunched (relaunch 1 of 2 for the identity cell): 193603 identity check, arg 3 = 300 (`len(argv)` 4, `--time 0:55`
-  = 3.08 s/row measured on 193533 × 300 + load ≈ 17 min, × 3) → 193604 R s42 / 193605 R s43 shifted (afterok 193603,
-  `--time 3:40 --mem 9G`). Plus 193606 = U R s42 pages p10 eighth (`--time 3:40 --mem 9G`). Cells 93 of 96.
-- `pisco/model.py` md5 is now 2a1cc007 (commit 52cc9e9, rebuild campaign); the arm E grid ran on f8ae6efe (an
-  uncommitted, always-on one-row pad guard). 2a1cc007 = the same guard, opt-in, default off. It only acts on a
-  compressor call with ONE row and pads; arm E page cells compress all 10 / 40 pages of a question in one call
-  (`COMPRESS_SLICE = 0`, `scripts/eval_mm_docqa.py:94`), so the guard is never reached there. The 93 / 93 equal
-  checkpoints agree; 193603 (exact predictions) settles it for pages p10. U / P cells on 2a1cc007 pair with the plain
-  cells if 193603 passes.
-- Law tightened (CAMPAIGN.md, "Small cells are plumbing"): `LIMIT` is positional arg 3; read `limit=` on the FACTORS
-  line. known_issues.md row added. Gripe (wish): `expmon check` should flag an `--env` value that the job's FACTORS
-  line contradicts.
-- Verifier fixes: seed agreement restated (text t4k differs +3.3); match numbers −4.5 / −3.6; the L1024 s42 file at
-  5.08% of answers at the cap stated; the unchecked "4-page 0 / 1,500" count dropped; P scripts are now tracked
-  (`git ls-files`, md5 d2abdd65 / e970ba7f / e69e3663).
+- Identity check 193603 (arm P gate) COMPLETED 0:0 in 17 min: 300 rows, `MPOS=0`, 0 of 300 predictions differ from
+  192326, log `[eval_mpos] IDENTITY OK`. Verdict closed. The shifted cells 193604 / 193605 started 23:22 (afterok).
+  Their logs show md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, model.py 2a1cc007,
+  `MPOS=…/pages_p40_minus_p10.json (per-question table)`, 1,407 rows.
+- Launched the last two arm U cells (`len(argv)` 4, arg 3 '' = all rows, checked in `.expmon/runs.jsonl`):
+  193607 = R s43 pages p10 eighth (`--time 3:40 --mem 9G`), 193608 = R s43 pages p40 eighth (`--time 11:26 --mem 22G`),
+  both `expQ/longdoc/u_r43/` (model → ft_mm_4b_184780), both RUNNING on homer-014. Cells 95 of 96.
+- Verifier fixes: the U / P code difference (model.py 2a1cc007 vs f8ae6efe) is now settled by 193603; the P chain
+  started (no longer only in SLURM); the prediction is dated by commit 622ae40 (19:13), before the first U cell
+  started (193536, 20:43); GPU-hours now come from sacct (below).
 
 ## TL;DR — where this leaves the question
 **Settled**
 - The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0
   / 1.0%, mixed 1.1 / 1.8 / 2.2% (1,407 each); bar 5% (tokenizer count, padding off). R at the cap: s42 pages 1.4 / 1.7 /
   3.6%, mixed 1.8 / 1.9 / 3.2%, text 3.2%; s43 pages 1.1 / 2.3 / 3.7%, mixed 1.8 / 2.8 / 3.8%, text 3.6%.
+- The arm P position probe reproduces the plain eval exactly (job 193603, 2026-11-25): `MPOS=0`, 300 rows of
+  pages p10, R s42, on pisco/model.py 2a1cc007: 0 of 300 predictions differ from 192326 (log `IDENTITY OK`, exit 0,
+  17 min). So model.py 2a1cc007 (opt-in pad guard, off) = f8ae6efe on the page path; U / P cells on it pair with
+  the plain cells.
 - The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% =
   70.5% (gate ±2 pt).
 - Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows
@@ -115,31 +111,26 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   CI above 0, at both seeds → the decoder reads many `<MEM>`s worse than few; CI inside ±3 at both → not this cause).
   "Eighth" = keep the eighth of the slots the last prompt position attends to most (`KEEPF=0.125 KEEPM=attn_global`).
   Plain pairs: s42 192326 (p10) / 192324 (p40), s43 192360 / 192364.
-  - 193536 = R s42 p40 eighth, RUNNING since 20:43 on homer-014: 1,010 / 1,407 rows at 8,141 s (plain 192324 took
-    9,615 s to the same row); about 1 h left with the judge. provisional: running match .313 vs plain .302 at row
-    1,010 (unjudged, decides nothing).
-  - 193606 = R s42 p10 eighth, PENDING. With 193536 it gives D at s42.
-  - To launch next wake: s43 p10 (`--time 3:40 --mem 9G`) and s43 p40 (`--time 11:26 --mem 22G`), same env, dir
-    `u_r43`, launch shape below with `--env KEEPF=0.125 --env KEEPM=attn_global` and `--stage U`.
+  - s42: 193536 (p40) RUNNING, 1,240 / 1,407 rows at 9,880 s; 193606 (p10) RUNNING, 110 rows at 339 s.
+  - s43: 193607 (p10), 193608 (p40) RUNNING since 23:35.
+  - provisional: running match (unjudged, decides nothing) 193536 .317 at row 1,240.
 - Arm P, positions (gate: R shifted − R plain on 10-page documents ≤ −3 pt with the CI below 0, at s42 and s43 →
   positions past where the decoder reads well cost accuracy; CI inside ±3 at both → not this cause). Each 10-page
   question's `<MEM>`s and question are moved to where its own 40-page version puts them (N p50 28,934 position ids);
-  slot count unchanged.
-  - 193603 identity check, RUNNING: 300 rows (arg 3), `MPOS=0`, `JUDGE=0`, `expQ/longdoc/p0_r42/`; log must end
-    `[eval_mpos] IDENTITY OK` (exit 4 otherwise). Output `…_lim300.json`.
-  - 193604 R s42 / 193605 R s43 shifted, PENDING (afterok 193603), 1,407 rows each, judged, `expQ/longdoc/p_r42/`,
-    `p_r43/`. Paired with 192326 / 192360. Health: `.mpos.json` offsets = the table, `mems_used` = the plain file's.
-  - If the identity check fails: the shifted cells never start (afterok); read the first differing rows, then
-    BLOCKED.md (no cell left for a second try, see Budget).
-  The 40-page loss to explain: Δ_len −6.5 (s42) / −5.3 (s43). If P costs about that much, positions are the cause.
-- Prediction written before the cells (kept and marked later): P costs ≥ 3 pt at both seeds; U's D lies inside ±3.
-- Health for every U / P cell, besides the law's list: the md5 line in its log must read eval_mm_4b.sh b3d1cda1,
-  eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, and pisco/model.py f8ae6efe or 2a1cc007 (2a1cc007 accepted
-  only if 193603 passes; reason under "This wake").
-- Then one project-prompt re-judge (`rejudge.sbatch`, `--time 0:18 --mem 3G`) of the files behind whatever decides.
-- Budget: cells 93 of 96 used; the 3 left are exactly U s43 p10, U s43 p40 and the re-judge: any further relaunch
-  needs the owner (BLOCKED.md). GPU-h ≈ 94 of 114 so far (≈ 90 before 19:00 + 193533 0.84 + 193536 ≈ 3.5 by its end);
-  ≈ 10 more planned (identity 0.3, P 2 × 1.2, U 1.2 + 1.2 + 3.5, re-judge 0.3) → ≈ 104.
+  slot count unchanged. 193604 (R s42) / 193605 (R s43) RUNNING, 150 / 300 rows of 1,407 at ~560 / 913 s, judged,
+  `expQ/longdoc/p_r42/`, `p_r43/`. Pair with 192326 / 192360. Health: `.mpos.json` offsets = the table, `mems_used` =
+  the plain file's. provisional: running match 193604 .327 at row 150, 193605 .330 at row 300 (plain 192326 on its
+  first 300 rows .330); unjudged, decides nothing.
+- The 40-page loss to explain: Δ_len −6.5 (s42) / −5.3 (s43). If P costs about that much, positions are the cause.
+- Prediction, written in STATE.md at commit 622ae40 (2026-11-25 19:13), before any U / P cell started: P costs ≥ 3 pt
+  at both seeds; U's D lies inside ±3.
+- Health for every U / P cell, besides the law's list: md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0,
+  judge_mm_docqa.py 02bc8748, pisco/model.py 2a1cc007 (accepted by 193603).
+- Then one project-prompt re-judge (`rejudge.sbatch`, `--time 0:18 --mem 3G`) of the files behind whatever decides:
+  the last cell (96 of 96).
+- Budget: cells 95 of 96 (`.expmon/runs.jsonl`, exp longdoc). GPU-h 90.5 of 114 by sacct at 23:40 (95 jobs, 9
+  CPU-only; running jobs counted to now); ≈ 8.5 more planned (193536 ~0.5, 193604 / 193605 / 193606 / 193607 ~1.1
+  each, 193608 ~3.8, re-judge 0.3) → ≈ 99. Any relaunch beyond the re-judge needs the owner (BLOCKED.md).
 - provisional (plumbing, 300 rows, never decides): R s42 − uncompressed on LongDocURL. Pages cap 256 −17.0 [−23.0,
   −11.0] (24 / 75; 191673 vs 191669); text cap 256 −16.3 [−21.7, −11.0] (15 / 64; 191674 vs 191670); mixed cap 512
   −15.7 [−22.0, −9.3] (31 / 78; 191887 vs 191778).
@@ -148,6 +139,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   191390); 20 pages +4.3 [+1.8, +6.9] (s42, 191377), +3.1 [+0.5, +5.7] (s43, 192007), questions with no capped answer
   −0.6 / −2.0 (n 1,221 / 1,220). Text 40 vs 10 passages: −2.6 [−5.6, +0.3] (s42, 191392), +0.1 [−3.0, +3.1] (s43,
   192008); no capped answer −4.8 / −3.4 (n 731 / 733, a subset chosen on answers).
+
 
 ## Arm E — the long-document yardstick
 Source: LongDocURL (`dengchao/LongDocURL`, Apache-2.0). Builder `scripts/longdoc/longdoc_build.py` (md5 f14e4640) +
@@ -171,10 +163,11 @@ logs `expQ/longdoc/eval_mnt_<jobid>.out`.
 ## Owned jobs
 | job | arm | state | rows | note |
 |---|---|---|---|---|
-| 193603 | P identity check, R s42 pages p10, `MPOS=0` | RUNNING | 300 | relaunch 1 / 2 of 193533; exit 4 if any prediction differs from 192326 |
-| 193604 / 193605 | P R s42 / s43 pages p10 shifted to 40-page positions | PENDING (afterok 193603) | 1,407 each | replace 193534 / 193535 |
-| 193536 | U R s42 pages p40 eighth | RUNNING | 1,407 | 1,010 rows at 8,141 s |
-| 193606 | U R s42 pages p10 eighth | PENDING | 1,407 | |
+| 193536 | U R s42 pages p40 eighth | RUNNING | 1,407 | 1,240 rows at 9,880 s |
+| 193606 | U R s42 pages p10 eighth | RUNNING | 1,407 | started 23:05 |
+| 193607 / 193608 | U R s43 pages p10 / p40 eighth | RUNNING | 1,407 each | launched this wake |
+| 193604 / 193605 | P R s42 / s43 pages p10 shifted to 40-page positions | RUNNING | 1,407 each | started 23:22 afterok 193603 |
+| 193603 | P identity check, R s42 pages p10, `MPOS=0` | COMPLETED, verdict closed "PASS" | 300 | 0 of 300 differ from 192326 |
 | 193533 | P identity check (first try) | TIMEOUT, verdict closed "launch fault" | 930 of 1,407 run, no output | row limit passed as env, not arg 3 |
 | 193534 / 193535 | P shifted (first try) | CANCELLED, verdict closed | — | DependencyNeverSatisfied |
 | 192405 | J project-prompt re-judge, pages 10 / 40 | COMPLETED, verdict closed | 6 × 1,407 | copies in `expQ/longdoc/rejudge/E_pages_p10_p40/` |
@@ -187,8 +180,9 @@ logs `expQ/longdoc/eval_mnt_<jobid>.out`.
 | 191517 | J re-judge (first try) | FAILED, verdict closed "launch fault" | — | replaced by 191629 |
 | 191515 / 191516 / 191392 / 191393 / 191375-191378 / 191390 / 191391 / 191305-191308 / 191218-191221 / 191169-191172 / 191148-191155 / 191165-191168 / 191145-191147 | E, L, T, A | COMPLETED, verdict closed | | |
 
-Cells used: 93 of 96 (`.expmon/runs.jsonl`, exp longdoc). Code md5 for the arm E grid: eval_mm_4b.sh b3d1cda1,
-eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
+Cells used: 95 of 96 (`.expmon/runs.jsonl`, exp longdoc). Code md5 for the arm E grid: eval_mm_4b.sh b3d1cda1,
+eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32; U / P cells
+the same but model.py 2a1cc007 (accepted by 193603).
 
 ## Adopted jobs
 (none — the other jobs in the queue are the expmon daemons 188764 / 162472)
@@ -197,10 +191,10 @@ eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe, 
 | arm | status | next |
 |---|---|---|
 | E long-document yardstick | DONE (provisional): gap −16 to −24 pt at every size, seeds within 2 pt; length loss on page images at 40 pages (both seeds, judge / project / match); no bar elsewhere; long-chunk text: seeds disagree | — |
-| U reading many `<MEM>`s | s42 p40 running, s42 p10 queued | launch s43 p10, s43 p40; then D per seed |
-| P positions | identity check running, 2 shifted cells chained on it | check identity (193603 log: `IDENTITY OK`), then pair 193604 / 193605 with 192326 / 192360 |
+| U reading many `<MEM>`s | all 4 cells running | D per seed with `length_effect.py`-style pairing (eighth − plain at 40) − (eighth − plain at 10) |
+| P positions | identity PASS; both shifted cells running | pair 193604 / 193605 with 192326 / 192360 (`paired_judge.py`) |
 | L length on a fixed model | NOT DECIDED (cap confound); 512 re-run not approved | answered by arm E |
-| J instrument | control 1 PASS; project prompt run on every number that decides | re-judge U / P files once they decide |
+| J instrument | control 1 PASS; project prompt run on every number that decides | re-judge the U / P files that decide (last cell) |
 | A audit | DECIDED (provisional); E re-run PASS (191516) | — |
 | T long-chunk training | CLOSED (provisional); text half answered by arm E (seeds disagree) | — |
 
@@ -226,9 +220,9 @@ eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe, 
   the frontend: exactly 3 changed lines).
 - `scripts/longdoc/mpos_map.py ROWS VARIANT SHORT LONG OUT` (stdlib): per-question offsets from the audit rows.
   `expQ/longdoc/mpos/pages_p40_minus_p10.json` (md5 ca3c56de): 1,407 questions, N min 27,990 / p50 28,934 / max 29,670.
-- `--dependency` is not recorded in `.expmon/runs.jsonl` (gripe 04e7f373, +1 this wake): the P chain lives only in SLURM.
+- `--dependency` is not recorded in `.expmon/runs.jsonl` (gripe 04e7f373): a chain lives only in SLURM.
 
 
 ## Blockers / needs the owner
 - None. The final checkpoint was answered (option A, 2026-11-25). When U and P decide, the ranked causes go back to
-  the owner in `docs/longdoc_diagnosis.md` and the campaign closes.
+  the owner in `docs/longdoc_diagnosis.md` (one BLOCKED.md question, `waiting-owner`) and the campaign closes.

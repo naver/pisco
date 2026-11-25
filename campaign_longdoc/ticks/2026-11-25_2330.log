@@ -1,0 +1,55 @@
+== campaign longdoc wake 2026-11-25_2330  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795617002 live=193536:RUNNING,193604:RUNNING,193605:RUNNING,193606:RUNNING running=4 pending=0 problems=0 problems_other=0 new=0 gpuh24=4.6 idle_h=0.0 min_util=25 alert=0 unpushed=0 cron=6 daemon=1 disk_gb=5319 sig=aedd144f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:193603_max_2h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:193603 (ended)   (NEXT was: wake-when job:193603 max 2h)
+== session 1d248934-d56a-4a88-b1da-a5f52ce20ca5  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/1d248934-d56a-4a88-b1da-a5f52ce20ca5/tool-results/boazs76ur.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-25_2330   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+193 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+  ↳ 379 CAMPAIGN.md (+237 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 193603,193604,193605,193606,193536 --format=JobID,State,ExitCode,Elapsed,Start -X; ls expQ/longdoc/ | grep -E 'mpos_1936|mnt_1936|mnt_19353'; tail -15 expQ/longdoc/eval_mpos_193603.out 2>/dev/…
+  ↳ JobID             State ExitCode    Elapsed               Start  (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'md5\|IDENTITY' expQ/longdoc/eval_mpos_193603.out | head; grep -n '^#' campaign_longdoc/CAMPAIGN.md
+  ↳ 375:[eval_mpos] IDENTITY OK (+13 lines)
+Checking the campaign law before launching the last two slot-reading cells (identity check passed: 300/300 predictions equal).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 60,127p campaign_longdoc/CAMPAIGN.md | grep -n -i -A6 'arm U\|arm P' | head -60; sed -n 223,305p campaign_longdoc/CAMPAIGN.md
+  ↳ ## Budget and caps (+81 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"(193606|193536)"' .expmon/runs.jsonl | python3 -c " ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print(json.dumps({k:d[k] for k in d if k in ('jobid','argv','env','sbatch','…
+  ↳ { (+53 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc; ls -la u_r42 u_r43 e_r43 p_r43 2>&1; readlink -f u_r42/model u_r43/model e_r43/model 2>&1; grep -n 'mem\|MaxRSS' ../../campaign_longdoc/CAMPAIGN.md | grep -i 'U\b\|arm U' | head
+  ↳ e_r43: (+31 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json ⏎ n=0 ⏎ for l in open('.expmon/runs.jsonl'): ⏎     d=json.loads(l) ⏎     if d.get('exp')=='longdoc': n+=1 ⏎ print('longdoc runs',n)"; tail -3 expQ/longdoc/eval_mnt_193536.out…
+  ↳ longdoc runs 93 (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep '^\[' expQ/longdoc/eval_mnt_193536.out | tail -1 | cut -c1-200; grep -E 'md5|model.py' expQ/longdoc/eval_mnt_193606.out | head -3 | cut -c1-300; expmon launch --dry-run --exp longdoc --stage U -p …
+  ↳ [1240/1407] em=0.266 f1=0.426 anls=0.365 match=0.317  9880s (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp longdoc --stage U -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 --env KEEPF=0.125 --env …
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_193607.out (+7 lines)
+Launched the last two slot-reading cells (seed 43, 10 and 40 pages). Now recording notes and verdicts, then rewriting STATE.md.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     d=json.loads(l) ⏎     if d.get('jobid') in ('193607','193608'): print(d['jobid'],d['argv'],len(d['argv']),d['slurm'])"; squeue -j…
+  ↳ 193607 ['expQ/longdoc/u_r43/model', 'pisco', '', '/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pages_1500_p10'] 4 {'partition': 'gpu-be', 'exclude': 'homer-[005-009]', 'time': '3:40:00'} (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git log -S "P costs ≥ 3 pt" --format='%h %ci %s' -- campaign_longdoc/STATE.md | tail -2; ids=$(python3 -c " ⏎ import json ⏎ print(','.join(json.loads(l)['jobid'] for l in open('.expmon/runs.jsonl') if …
+  ↳ 622ae40 2026-11-25 19:13:52 +0900 campaign longdoc: wake 2026-11-25_1900 (rc=0, gate,heartbeat,request) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc; for j in 193604 193605; do echo "== $j"; grep -E 'md5|  pisco/model.py|eval_mm_docqa.py|eval_mm_4b.sh|judge_mm' eval_mpos_$j.out | head -5 | cut -c1-120; grep -E '^\[eval_mpos\]' eval_mpos…
+  ↳ == 193604 (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --exp longdoc --section leaves 2>&1 | head -30 || expmon campaign report --section leaves 2>&1 | head -30
+  ↳ **Settled** (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ a=s.index('**Settled**\n'); b=s.index('**Open, and running**') ⏎ settled=s[a:b] ⏎ # add identity gate line after the cap line (first bul…
+  ↳ 8684 834 1782 2321
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'EOF' ⏎ settled,tail_open,armE,tooling=open('/tmp/longdoc_parts.txt').read().split('\n=====\n') ⏎ tooling=tooling.replace("- `--dependency` is not recorded in `.expmon/runs…
+  ↳ 228 (+9 lines)
+STATE.md rewritten; checking the seam between sections, then writing NEXT.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 104,112p STATE.md; sed -n 134,146p STATE.md
+  ↳ - Text autoencoding at 256 tokens, d = L1024 − C256: stage 1 −.0018 [−.0031, −.0006], 271 / 229, p .067 (191218); (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; echo 'wake-when job:193536,193604,193605,193606,193607,193608 max 5h' > NEXT; cat NEXT
+  ↳ wake-when job:193536,193604,193605,193606,193607,193608 max 5h
+→ StructuredOutput: {"next": "wake-when", "summary": "Position-probe identity check 193603 PASSED (300/300 predictions equal the plain eval 192326, IDENTITY OK, exit 0), so the two shifted-position cells 193604/193605 started on schedule and model.py 2a1cc007 …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.2976 turns=21 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Position-probe identity check 193603 PASSED (300/300 predictions equal the plain eval 192326, IDENTITY OK, exit 0), so the two shifted-position cells 193604/193605 started on schedule and model.py 2a1cc007 is accepted for U/P cells. Launched the last two slot-reading (arm U) cells for seed 43 at 10 and 40 pages (193607, 193608; argv 4 checked). All six U/P cells now running; cells 95 of 96, GPU-h 90.5 of 114 by sacct (~99 after planned cells). STATE.md rewritten (verifier points fixed: code-difference settled, prediction dated by commit 622ae40, GPU-h sourced from sacct). Next wake: when all six cells leave the queue (max 5h) — compute D per seed for U, shifted − plain for P, one project-prompt re-judge, write docs/longdoc_diagnosis.md and the final owner checkpoint.", "launched": ["193607", "193608"], "verdicts": [{"jobid": "193603", "verdict": "closed", "note": "arm P identity gate PASS: 0 of 300 predictions differ from 192326 on model.py 2a1cc007"}], "wake_when": "job:193536,193604,193605,193606,193607,193608 max 5h", "gripes": []}
+== final:
+{"next":"wake-when","summary":"Position-probe identity check 193603 PASSED (300/300 predictions equal the plain eval 192326, IDENTITY OK, exit 0), so the two shifted-position cells 193604/193605 started on schedule and model.py 2a1cc007 is accepted for U/P cells. Launched the last two slot-reading (arm U) cells for seed 43 at 10 and 40 pages (193607, 193608; argv 4 checked). All six U/P cells now running; cells 95 of 96, GPU-h 90.5 of 114 by sacct (~99 after planned cells). STATE.md rewritten (verifier points fixed: code-difference settled, prediction dated by commit 622ae40, GPU-h sourced from sacct). Next wake: when all six cells leave the queue (max 5h) — compute D per seed for U, shifted − plain for P, one project-prompt re-judge, write docs/longdoc_diagnosis.md and the final owner checkpoint.","launched":["193607","193608"],"verdicts":[{"jobid":"193603","verdict":"closed","note":"arm P identity gate PASS: 0 of 300 predictions differ from 192326 on model.py 2a1cc007"}],"wake_when":"job:193536,193604,193605,193606,193607,193608 max 5h","gripes":[]}
+== rc=0 secs=219
+== verify: 5/25
+== codereview: none
