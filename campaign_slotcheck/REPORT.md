@@ -1,23 +1,20 @@
-# Campaign report — slotcheck (2026-11-19 16:42)
+# Campaign report — slotcheck (2026-11-25 19:04)
 Successor of campaign 'longdoc' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/REPORT.md). Open at hand-off: rejudge.sbatch — job 191629 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 — job 191634 COMPLETED, no verdict; CML=1024 PX=1003520 TOPK=1000 — job 191635 COMPLETED, no verdict; CML=1024 DML=5612 PX=1003520 TOPK=1000 — job 191636 COMPLETED, no verdict. **Those four jobs belong to the LIVE sibling longdoc: never verdict, relaunch, kill or re-use them here.** **Question (owner, QUESTION.md):** "no progress has been done after many tries to improve the models. double check
-window 2026-11-18 → 2026-11-19 (until 2027-02-16) · 46 ticks · 12 wakes (4 rc≠0) · 12.4 GPU-h over 31 runs (SLURM only; off-cluster compute: expmon probe <jid> card_h=<hours>)
-⚠ The campaign idled 4.7 h of its 22.5 h window (20%) — with work outstanding, that is the main operational fact.
+window 2026-11-18 → 2026-11-25 (until 2027-02-16) · 339 ticks · 16 wakes (5 rc≠0) · 17.3 GPU-h over 31 runs (SLURM only; off-cluster compute: expmon probe <jid> card_h=<hours>)
+⚠ The campaign idled 140.8 h of its 169.0 h window (83%) — with work outstanding, that is the main operational fact.
 
 ## Where this leaves the question
 **Settled**
+- check 3 repeat, n=500 new questions (disjoint ids), R s42, homer-016, health OK (3 x 500 rows, judge on all, 0 unparseable, 0 empty, 0 exceeds; image cell = recorded R s42 on these 500, 500/500 same answers): image .632 / text .478 / image+text .686 / uncompressed .832. image+text - image +5.4 pt [+1.8,+8.8] McNemar 56/29 p .005, no source CI below 0 -> PASSES the repeat; text - image -15.4 [-20.2,-10.6] -> worse again. Pooled 1,000 Q: +5.0 [+2.5,+7.6] p 1.2e-4 / -13.7 [-17.1,-10.3]. model.py f8ae6efe (one-row pad drop; no-op here) — job 192239, closed
+- round-2 build healthy: COMPLETED 0:0 4:39 homer-017; 500 rows x 3 sets (img/text/imgtext _500_r2), empty 0, cut 0, slots per question 431.9 / 222.6 / 654.5, answer in transcription 454/500, ok=True; round-1 re-audit decodes its one 'cut' row as a chunk-boundary split (cut_boundary 1 = cut 1, ok=True); build_text_sets.py 6b438662 — job 192238, closed
+- round-2 transcription healthy: COMPLETED 0:0 4:13:18 homer-017, one attempt; 1,252/1,252 pages, empty 0, 121 at the 1,024-token cap, median 9.4 s/page; transcribe_pages.py 03867f94 — job 192237, closed
+- plumbing passed, decides nothing: COMPLETED 0:0 5:14 homer-017; round=2 reached the job; 500 questions, 2,000 page slots, 1,252 unique pages; 10/10 pages, empty 0, 3 at the 1,024 cap, median 25.2 s/page (round-1 smoke 13.6) — job 192236, closed
 - check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions — job 192223, closed
 - plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design — job 192220, closed
-- never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke — job 192222, closed
-- sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt — job 192221, closed
-- never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used) — jobs 192215-192217 (3 cells), closed
-- plumbing FAILED its own health check by a bug in the check (exit 4, 1:11, homer-014): chunk length incl. <MEM>s compared to CML + 1, and imgtext's image chunks counted as text. Data passed: 30 Q x 3 sets, empty 0, cut 0, mems mean 380.1 / 80.4 / 460.5. Patched build_text_sets.py 1c110e22; decides nothing — job 192214, closed
-- … 19 more
+- … 23 more
 
 **Open, and running**
-- ROUND=2 — job 192236 RUNNING 2:25
-- ROUND=2 — job 192237 PENDING 0:00
-- ROUND=2 — job 192238 PENDING 0:00
-- eval_x.sbatch — job 192239 PENDING 0:00
+- (none)
 
 ## Arms
 | arm | job | state | GPU-h | verdict | headline (last verdict, else latest probe) |
@@ -45,22 +42,22 @@ window 2026-11-18 → 2026-11-19 (until 2027-02-16) · 46 ticks · 12 wakes (4 r
 | … 11 more | | | | | |
 
 ## Findings (from verdicts, not prose)
+- check 3 repeat, n=500 new questions (disjoint ids), R s42, homer-016, health OK (3 x 500 rows, judge on all, 0 unparseable, 0 empty, 0 exceeds; image cell = recorded R s42 on these 500, 500/500 same answers): image .632 / text .478 / image+text .686 / uncompressed .832. image+text - image +5.4 pt [+1.8,+8.8] McNemar 56/29 p .005, no source CI below 0 -> PASSES the repeat; text - image -15.4 [-20.2,-10.6] -> worse again. Pooled 1,000 Q: +5.0 [+2.5,+7.6] p 1.2e-4 / -13.7 [-17.1,-10.3]. model.py f8ae6efe (one-row pad drop; no-op here) (job 192239, closed)
+- round-2 build healthy: COMPLETED 0:0 4:39 homer-017; 500 rows x 3 sets (img/text/imgtext _500_r2), empty 0, cut 0, slots per question 431.9 / 222.6 / 654.5, answer in transcription 454/500, ok=True; round-1 re-audit decodes its one 'cut' row as a chunk-boundary split (cut_boundary 1 = cut 1, ok=True); build_text_sets.py 6b438662 (job 192238, closed)
+- round-2 transcription healthy: COMPLETED 0:0 4:13:18 homer-017, one attempt; 1,252/1,252 pages, empty 0, 121 at the 1,024-token cap, median 9.4 s/page; transcribe_pages.py 03867f94 (job 192237, closed)
+- plumbing passed, decides nothing: COMPLETED 0:0 5:14 homer-017; round=2 reached the job; 500 questions, 2,000 page slots, 1,252 unique pages; 10/10 pages, empty 0, 3 at the 1,024 cap, median 25.2 s/page (round-1 smoke 13.6) (job 192236, closed)
 - check 3 first read, n=500 paired, homer-014, health OK (500/500 judged, 0 unparseable, 0 empty, 0 exceeds): img .602 / text .482 / imgtext .648 (uncompressed .790). text-img -12.0 [-16.6,-7.6] p<.001 = worse; imgtext-img +4.6 [+1.0,+8.0] p .013 = PROMISING, repeat 192236-192239 on new questions (job 192223, closed)
-- plumbing passed, decides nothing: COMPLETED 0:0 8:54 homer-014, one attempt; 30/30 rows in each of img / text / imgtext, empty predictions 0/30 each, no 'exceeds' error; mems_used 11,404 / 2,412 / 13,816 (img + text = imgtext +2); prompt max 494 / 269 / 673; JUDGE=0 by design (job 192220, closed)
-- never ran (0 of 3 sets): afterok parent 192221 exited 4 on its cut rule although the sets are complete; killed, relaunched after the eval smoke (job 192222, closed)
-- sets complete and usable: FAILED exit 4 in 2:19 on homer-014 on its cut rule only. 500 rows x 3 sets written (stats.json + dml.txt: DML img 839 / text 862 / imgtext 1361); empty 0; mems per question img 430.4 (215,202 = the 1,500-Q set's 430.7/Q) / text 222.8 / imgtext 653.2 (= img + text); prompt max 583 / 606 / 1105; answer string in the transcription 424/500. The 1 'cut' row (37710.jpeg-9, answer 2016, in text and imgtext) is NOT truncation: n_max_chunks None, and the chunk sizes of its 4 pages (4x256 | 256+207 | 4x256 | 256+256+103 text tokens) equal the transcriptions' own generated token counts (1024 / 463 / 1024 / 615), so every token reaches the compressor; the audit joins decoded chunks with a space, so a digit string split at the 512-token boundary reads as missing (inferred from position ~char 1068 of 1416, not decoded). 1/500 = 0.2 pt at most, bar 5 pt (job 192221, closed)
-- never ran: afterok parent 192214 failed (a bug in its health check, patched 1c110e22); killed, relaunch next wake (submission cap 4 used) (jobs 192215-192217, closed)
 
 ## What went wrong
-- The campaign idled 4.7 h of its 22.5 h window (20%) — with work outstanding, that is the main operational fact.
-- 4 of 12 LLM wakes returned rc≠0.
+- The campaign idled 140.8 h of its 169.0 h window (83%) — with work outstanding, that is the main operational fact.
+- 5 of 16 LLM wakes returned rc≠0.
 - 3 run(s) ended FAILED/TIMEOUT/NODE_FAIL: 192002 192214 192221.
 
 ## Left, and what it costs
-- 4 arm(s) without a verdict; at the median arm cost of 0.8 GPU-h that is ~3.1 GPU-h
+- 0 arm(s) without a verdict
 - window: until 2027-02-16
 
 ## Artifacts
 - (no best/runner-up run yet)
 - campaign dir: /beegfs/scratch/user/hdejean/pisco/campaign_slotcheck (STATE.md)
-- ledger: 50 entries of this campaign — expmon ledger (linked, never pasted)
+- ledger: 54 entries of this campaign — expmon ledger (linked, never pasted)

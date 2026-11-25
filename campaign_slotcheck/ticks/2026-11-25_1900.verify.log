@@ -1,0 +1,39 @@
+== verifier 2026-11-25_1900  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+== session 63eca223-e343-4ec0-860b-7c88209ec219  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign slotcheck (+254 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/slotcheck/VERIFY_INPUT.md
+  ↳ 256	192010     X_transcribe 192009   ended     closed     transcribe X_transcribe -         -         -        -        -        -        all      -        -        mm_docqa_1500_1m 1003520  4         (+77 lines)
+→ Grep: {"pattern": "0\\.0759|\\.0759|0\\.034|\\.095", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_slotcheck/STATE.md:22:  .095 at 17 vs .034), but the one-row path with zeroing forced on also reads .0759, so the gap may be rounding that (+11 lines)
+→ Grep: {"pattern": "4c0b26|2de131", "path": "/beegfs/scratch/user/hdejean/pisco", "output_mode": "files_with_matches", "glob": "!display_*.html"}
+  ↳ Found 18 files (+18 lines)
+→ Grep: {"pattern": "InfoVQA|SlideVQA|MP-DocVQA|878", "path": "/beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md", "output_mode": "content"}
+  ↳ 112:Per source (seed 42 / seed 43, padded − none): InfoVQA +0.0 / +2.2, MP-DocVQA +1.4 / +1.6, SlideVQA +0.0 / −1.0 pt; no (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/slot_checks.md
+  ↳ 60	a cause of the document gap. One data note: 1,910 Docmatix rows (9.55% of document rows) lose one of their two source (+119 lines)
+→ Grep: {"pattern": "0759|Afix63_maxabs|fp32_Afix", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck", "output_mode": "content", "head_limit": 20}
+  ↳ expQ/slotcheck/pad_split_191781/pad_split.json:1437:      "cos_min": 0.676715075969696, (+21 lines)
+Checking the padding-probe result file (job 191781) for the max-abs numbers the state file cites, then I'll give the verdicts.
+→ Grep: {"pattern": "\"(summary|maxabs_med|maxabs_median|med_maxabs)\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781/pad_split.json", "output_mode": "content", "head_limit": 40}
+  ↳ 10:   "summary": { (+17 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/pad_split_191781/pad_split.json
+  ↳ 2598	  }, (+69 lines)
+→ Grep: {"pattern": "natural.*(8000|8,000)|(8000|8,000).*natural", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck", "output_mode": "content", "glob": "!**/tokenizer.json", "head_limit": 10}
+  ↳ expQ/slotcheck/audit_ft_191663/summary.txt:21:## natural_8k_teacher [all rows]  (set 8000 rows, trained = first 8000) (+6 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/audit_ft_191663/summary.txt
+  ↳ 1	topk_docs=4; dropped = every gold position >= 4; partial = some gold >= 4, one kept (+39 lines)
+→ Grep: {"pattern": "19353[3-6]", "path": "/beegfs/scratch/user/hdejean/pisco", "output_mode": "files_with_matches", "glob": "campaign_*/**"}
+  ↳ Found 3 files (+3 lines)
+→ Grep: {"pattern": "4c0b26|2de131", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 1441:[Omitted long matching line] (+2 lines)
+→ Grep: {"pattern": "(?i)owner|verbatim|\"A\"", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck/SUCCESSOR.md", "output_mode": "content", "head_limit": 15}
+  ↳ 6:## The owner's decision (verbatim, REQUEST of 2026-11-25) (+4 lines)
+I checked every claim; writing the verdicts now.
+→ StructuredOutput: {"claims": [{"claim": "TL;DR: campaign closed 2026-11-25; checks 1 and 2 decided by their gates, checks 3 and 4 provisional; owner chose option A in a NEW campaign; nothing running; deliverable docs/slot_checks.md", "status": "supported", "…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0693 turns=16 is_error=False denials=0
+== declared: {"claims": [{"claim": "TL;DR: campaign closed 2026-11-25; checks 1 and 2 decided by…", "status": "supported", "reason": "Owner's 'A' is quoted verbatim in SUCCESSOR.md:6-7 and in th…"}, {"claim": "Check 1 (arm C, feasibility gate PASS): 4-document cap never…", "status": "supported", "reason": "Grid 191663: dropped_trained=0, partial_trained=1910, rows_t…"}, {"claim": "Check 2a (arm P, padding probe), n = 120 pages, job 191672: …", "status": "supported", "reason": "Grid 191672: pages=120, w63_cos=0.934078, w17_cos=0.933568, …"}, {"claim": "provisional: Check 2a split, n = 40 pages, job 191781: a ONE…", "status": "provisional", "reason": "Grid 191781 matches: bf16_A63 .9345, fp32_A63 .9527, bf16_Af…"}, "… +11 more"], "summary": "Check 1 (dropped answer pages: 0/20,000 and 0/8,000), check …"}
+== final:
+{"claims":[{"claim":"TL;DR: campaign closed 2026-11-25; checks 1 and 2 decided by their gates, checks 3 and 4 provisional; owner chose option A in a NEW campaign; nothing running; deliverable docs/slot_checks.md","status":"supported","reason":"Owner's 'A' is quoted verbatim in SUCCESSOR.md:6-7 and in the ledger at EXPERIMENTS.md:1624. STAND-DOWN exists and BLOCKED.md is deleted (git status). The four pending jobs 193533-193536 are listed in campaign_longdoc/STATE.md and NEXT, not slotcheck's. All 31 grid rows are ended/closed."},{"claim":"Check 1 (arm C, feasibility gate PASS): 4-document cap never removes ALL answer pages of a trained row — 0 / 20,000 document rows, 0 / 8,000 photo rows → not a cause; 1,910 / 20,000 (9.55%, all Docmatix) lose one of two source pages. Job 191663.","status":"supported","reason":"Grid 191663: dropped_trained=0, partial_trained=1910, rows_trained=20000, gate1/gate2=True. audit_ft_191663/summary.txt gives 0/20,000 and 0/8,000 per source, with docmatix partial 1,910 (19.10% of 10,000) and health sums true. Controls pass (50/50 sampled rows; planted [4,5] counted as dropped). 0% is ≤2%, so the law closes it as not a cause. Partial rows do not gate by the 17:45 definition. Caveat: 0/8,000 for photos is trivial, since each photo row has 1 document."},{"claim":"Check 2a (arm P, padding probe), n = 120 pages, job 191672: not inert (median cosine .934 at 63 pads, bar .9999).","status":"supported","reason":"Grid 191672: pages=120, w63_cos=0.934078, w17_cos=0.933568, inert=False. controls_ok=True: repeat floor max abs 0, other page cos .739 < .99. mems_same=True. A median cosine of .934 misses the .9999 inert bar."},{"claim":"provisional: Check 2a split, n = 40 pages, job 191781: a ONE-row padded batch leaks pads (median cos .935 bf16 / .953 fp32 at 63 pads; .995 / 1.0000 with pad zeroing forced on) — latent, no recorded run takes that path (hand-off 2de131).","status":"provisional","reason":"Grid 191781 matches: bf16_A63 .9345, fp32_A63 .9527, bf16_Afix63 .9947, fp32_Afix63 1.0000, pages=40. Hand-off 2de131 is in EXPERIMENTS.md:1565. 'Latent' still rests on reasoning about batch sizes, with no per-batch row count, as the wake itself says."},{"claim":"provisional (interpretation): two-row padded batch median cosine .9948 bf16 / 1.0000 fp32 = no-pad two-row floor .9943 / 1.0000; fp32 max abs 2.3-2.8× that floor (median .078 at 63 / .095 at 17 vs .034), but the one-row path with zeroing forced on also reads .0759, so the gap may be rounding (job 191781).","status":"provisional","reason":"The numbers check out in pad_split_191781/pad_split.json fp32 summary: twin0 maxabs_median .0340, B63 .0780, B17 .0951, Afix63 .0759; cosines match grid bf16_B63 .9948 and twin0 .9943. Against the law's own repeat floor (max abs 0), this path is not inert. The interpretation also contradicts the deliverable: docs/slot_checks.md:81,91-92 says 'not rounding … fails the law's inert bar', while STATE says 'may be rounding'."},{"claim":"Check 2b (ar
+== rc=0

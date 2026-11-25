@@ -28,6 +28,12 @@ questions of check 3, .617 vs .811 (19.4 pt). Judge accuracy = Qwen3-8B rubric j
 Prediction written in the law before any cell: checks 1 and 2 are not causes, and check 4 clears 90% (the limit is
 training). All three held. Check 3 had no prediction.
 
+**Owner's decision (2026-11-25): rebuild stage 2 in a new campaign.** Two stage-2 runs, both on the spread `<MEM>`
+layout (the recipe of `expQ/archq3/pt_mm_5M_spread`): one with a larger share of page transcription on document
+pages (the one change), one a second seed of today's recipe (the control). Gate 1: page word recall before any
+finetune (stop at ≈ 63 GPU-h if it fails); gate 2: finetune + paired judge on documents, photos and text; ≈ 90 GPU-h.
+Not a repeat of check 4. Brief for the new campaign: `campaign_slotcheck/SUCCESSOR.md`.
+
 ## Check 1 — answer pages dropped by `topk_docs=4` in the finetune set (decided 2026-11-18)
 
 Cell: CPU audit, job 191663 (`scripts/slotcheck/audit_ft_rows.py`), every row of the two sets the reference finetunes
