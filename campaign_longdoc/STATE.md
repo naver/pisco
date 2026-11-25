@@ -1,8 +1,10 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-25 19:00 (twenty-seventh LLM wake; woken by the owner's REQUEST + GATE and the heartbeat).
-NEXT: `wake-when job:193533 max 3h` — the position-probe identity check; that wake checks it and launches the last
-three slot-reading cells (the 4-per-wake cap stopped them here).
+Last wake: 2026-11-25 22:30 (bookkeeping wake, light model; nothing launched or decided).
+NEXT: `wake-when job:193533 max 3h` — the position-probe identity check (running, 30 min in); its dependants 193534/193535
+start after it; U cell 193536 (R s42 p40, eighth of slots) running ~1h50. Then the last three U cells launch.
+Verifier note: the status lines marked provisional stay provisional (no new result); the working-tree edit of pisco/model.py
+belongs to the rebuild campaign: the md5 health line of each U/P cell decides if it pairs.
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 

@@ -1,2 +1,0 @@
-ALERT 2026-11-25 19:17 — campaign longdoc (the next LLM wake must handle this, then delete the file)
-- no campaign job ran for 131.1h (cap 24h) — held, not broken: 165 of its 262 ticks in that time were held by the usage limit (82h); no wake for this line (the hold ending wakes it)

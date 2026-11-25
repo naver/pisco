@@ -1,0 +1,18 @@
+== campaign longdoc wake 2026-11-25_2230  reasons=scheduled  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795613402 live=193535:PENDING,193534:PENDING,193536:RUNNING,193533:RUNNING running=2 pending=2 problems=0 problems_other=0 new=0 gpuh24=2.3 idle_h=0.0 min_util=100 alert=1 unpushed=0 cron=6 daemon=1 disk_gb=5328 sig=413a37da same=0 behind=0 upstream=0 upfiles=0 upmine=1 upsib=3 uplaw=0 push_rc=0 next=wake-when_job:193533_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 7e78e582-37a1-4b5d-beb8-a289c05d9e5c  model claude-sonnet-5-5  tools 51
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-25_2230   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+202 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls campaign_longdoc .expmon/campaign/longdoc | head -40; head -30 campaign_longdoc/STATE.md; tail -5 campaign_longdoc/known_issues.md | cut -c1-200
+  ↳ campaign_longdoc: (+74 lines)
+Nothing to act on. I'll update the header of STATE.md, delete the read ALERT (a hold notice), and write NEXT.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'E' ⏎ p='STATE.md';s=open(p).read() ⏎ a=s.index('Last wake:');b=s.index('Question:') ⏎ s=s[:a]+"""Last wake: 2026-11-25 22:30 (bookkeeping wake, light model; nothing launch…
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:193533 max 3h", "summary": "No change since last wake. The position-probe identity check (193533) is running, the two shifted-position cells wait on it, and the slot-reading cell 193536 is running. I …
+  ↳ (Bash completed with no output)
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.2948 turns=5 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:193533 max 3h", "summary": "No change since last wake. The position-probe identity check (193533) is running, the two shifted-position cells wait on it, and the slot-reading cell 193536 is running. I updated the STATE.md header, deleted the read ALERT (a usage-limit hold notice) and wrote NEXT. Nothing launched, no verdicts."}
+== final:
+{"next":"wake-when","wake_when":"job:193533 max 3h","summary":"No change since last wake. The position-probe identity check (193533) is running, the two shifted-position cells wait on it, and the slot-reading cell 193536 is running. I updated the STATE.md header, deleted the read ALERT (a usage-limit hold notice) and wrote NEXT. Nothing launched, no verdicts."}
+== rc=0 secs=34
