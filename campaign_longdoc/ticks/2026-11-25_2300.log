@@ -1,0 +1,133 @@
+== campaign longdoc wake 2026-11-25_2300  reasons=problems,problems-standing,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795615202 live=193535:PENDING,193534:PENDING,193536:RUNNING running=1 pending=2 problems=3 problems_other=0 new=0 gpuh24=3.1 idle_h=0.0 min_util=0 alert=0 unpushed=0 cron=6 daemon=1 disk_gb=5325 sig=28c203a9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:193533_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:193533 (ended)   (NEXT was: wake-when job:193533 max 3h)
+== session 774ed086-3973-4d5c-8ae2-5cad538c1da2  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/774ed086-3973-4d5c-8ae2-5cad538c1da2/tool-results/bj1fjefgz.txt | cut -c1-600
+  ↳ <persisted-output> (+22 lines)
+→ Bash: F=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md; wc -l $F; grep -n '^## ' $F
+  ↳ 194 /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md (+12 lines)
+→ Bash: F=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md; sed -n 17,64p $F | cut -c1-700; echo ----; sed -n 155,194p $F | cut -c1-700
+  ↳ ## Verifier (VERIFY.md: a read-only pass re-derived the last STATE.md from the grid — fix these FIRST) (+88 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; ls
+  ↳ 376 CAMPAIGN.md (+13 lines)
+Reading the campaign law and state; the arm P identity check (job 193533) hit its time limit, so I'm diagnosing it.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; grep -n '^#' CAMPAIGN.md; echo; sed -n '/Pre-authorised/,/^## Patchable/p' CAMPAIGN.md | cut -c1-900
+  ↳ 1:# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+31 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 1,60p STATE.md | cut -c1-1200
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 60,215p STATE.md | cut -c1-1200
+  ↳ sign 186 / 235 p .02; text t8k / t16k / t32k vs t4k +0.7 / +3.6 / +3.9 (s42), −2.5 / −0.7 / −1.7 (s43), every CI (+155 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon logs 193533 60 2>&1 | cut -c1-400; echo ----; sacct -j 193533 -X --format=JobID,State,ExitCode,Elapsed,Start,End,NodeList,TimeLimit 2>&1
+  ↳ no log file for 193533 yet — pattern '*_%j.out' matched no existing file. Dir listing: (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/ | grep -E '19353|mpos' ; ls -la expQ/longdoc/p0_r42/ expQ/longdoc/p0_r42/eval 2>&1 | head -20; cat campaign_longdoc/known_issues.md | cut -c1-300
+  ↳ -rw-r--r--   1 hdejean hdejean  81810 Nov 25 23:01 eval_mnt_193536.out (+57 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=expQ/longdoc/eval_mpos_193533.out; head -40 $F | cut -c1-300; echo ......; tail -30 $F | cut -c1-300; echo; grep -c 'it/s\|s/it' $F
+  ↳ b3d1cda17302eb3f1d9fd4441ebc789a  eval_mm_4b.sh (+78 lines)
+Identity check (job 193533) diagnosed: it ran all 1,407 rows instead of 300, so its 50-minute limit was too short. Checking the launch record and the running slot-reading cell next.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"193533"|"193534"|"193536"' .expmon/runs.jsonl | cut -c1-1500; echo; F=expQ/longdoc/eval_mnt_193536.out; head -8 $F | cut -c1-200; grep -E '^\[[0-9]+/1407\]' $F | tail -3
+  ↳ {"ts": "2026-11-25 19:06", "jobid": "193533", "launcher": "scripts/longdoc/eval_mpos.sbatch", "argv": ["expQ/longdoc/p0_r42/model", "pisco", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_p (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -i 'limit' eval_mm_4b.sh scripts/longdoc/eval_mpos.sbatch scripts/longdoc/eval_mnt.sbatch | cut -c1-250; echo ---; grep -n -i 'limit' scripts/longdoc/eval_mpos.py | head; echo ---; git log --on…
+  ↳ eval_mm_4b.sh:12:#   expmon launch --exp mmpisco --stage eval --parent <jid> eval_mm_4b.sh <CKPT_MODEL_DIR> [MODE=pisco] [LIMIT] [DATA] [IMAGE_RATE] (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git show 5955890:pisco/model.py | md5sum; git show 52cc9e9:pisco/model.py | md5sum; md5sum pisco/model.py; git diff 5955890 52cc9e9 -- pisco/model.py | head -80
+  ↳ 994cff3d483cf85645f7f78c2eb85d4a  - (+49 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff 5955890 52cc9e9 --stat -- pisco/model.py; grep -n 'f8ae6efe' EXPERIMENTS.md | head -8 | cut -c1-400; grep -rn 'f8ae6efe' campaign_slotcheck/*.md campaign_rebuild/*.md 2>/dev/null | head -5 | c…
+  ↳ pisco/model.py | 22 ++++++++++++++++++++++ (+14 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/eval_mnt_192326.out && diff <(grep -E '^\[[0-9]+/1407\]' expQ/longdoc/eval_mnt_192326.out | sed 's/  [0-9]*s$//' | head -93) <(grep -E '^\[[0-9]+/1407\]' expQ/longdoc/eval_mpos_193533.o…
+  ↳ expQ/longdoc/eval_mnt_192326.out (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'MPOS_REF\|ref\b\|limit\|exit(4\|sys.exit' scripts/longdoc/eval_mpos.py | head -30 | cut -c1-200; echo ---; grep -n 'def compress\|\.compress(\|compressor_batch\|batch_size' scripts/eval_mm_doc…
+  ↳ 10:MPOS_REF = a recorded result json: after the run, every prediction must equal the reference's for the same (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 60,90p scripts/longdoc/eval_mpos.py; sed -n 97,135p scripts/eval_mm_docqa.py; grep -n 'compress_sliced(' scripts/eval_mm_docqa.py | head
+  ↳ CUR["n"] = 0 (+71 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'COMPRESS_SLICE' scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/longdoc/*.sbatch | head -5 | cut -c1-200
+  ↳ scripts/eval_mm_docqa.py:94:COMPRESS_SLICE = 0   # --compress_slice: chunks per compressor forward (0 = all at once, the legacy single call) (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 193533 "result: TIMEOUT at 0:50 after 930 of 1,407 rows: launch fault — LIMIT was passed as env, but eval_mm_4b.sh reads the row limit from positional arg 3 (argv had ''), so it ran all …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon kill 193534 2>&1 | tail -3; expmon kill 193535 2>&1 | tail -3
+  ↳ 193535     eval_mpos.sbatch  PENDING        0:00    gpu-be (DependencyNeverSatisfied) (+5 lines)
+Both stuck cells are cancelled. Dry-running the corrected identity check.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp longdoc --stage P -p gpu-be --mem 9G --time 0:55:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 --env MPOS=0 -…
+  ↳ would submit: sbatch -p gpu-be --mem 9G --time 0:55:00 --exclude=homer-[005-009] scripts/longdoc/eval_mpos.sbatch expQ/longdoc/p0_r42/model pisco 300 /beegfs/scratch/user/hdejean/pisco/eval_data/longd (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json; expmon launch --exp longdoc --stage P -p gpu-be --mem 9G --time 0:55:00 --exclude='homer-[005-0…
+  ↳ -rw-rw-r-- 1 hdejean hdejean 1007673 Nov 20 01:17 expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json (+4 lines)
+Identity check relaunched as job 193603. Now the two shifted-position cells, chained to start only if it passes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp longdoc --stage P -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --dependency=afterok:193603 --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 -…
+  ↳ env:          CML=1024 DML=5612 MNT=512 MPOS=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/mpos/pages_p40_minus_p10.json PX=1003520 TOPK=1000 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --dry-run --exp longdoc --stage P -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --dependency=afterok:193603 --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 -…
+  ↳ would submit: sbatch -p gpu-be --mem 9G --time 3:40:00 --exclude=homer-[005-009] --dependency=afterok:193603 scripts/longdoc/eval_mpos.sbatch expQ/longdoc/p_r42/model pisco  /beegfs/scratch/user/hdeje (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for C in p_r42 p_r43; do expmon launch --exp longdoc --stage P -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --dependency=afterok:193603 --env MNT=512 --env PX=1003520 --env TOPK=1000 -…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mpos_193604.out (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json ⏎ for l in open('.expmon/runs.jsonl'): ⏎     r=json.loads(l) ⏎     if r['jobid'] in ('193603','193604','193605'): print(r['jobid'], len(r['argv']), r['argv'][1:3], r['slur…
+  ↳ 193603 4 ['pisco', '300'] 0:55:00 (+6 lines)
+The position chain is set up: the identity check is running, and the two shifted cells wait on it. Now the fourth and last submission allowed this wake: the slot-reading cell for seed 42 on 10 pages.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/u_r42/ expQ/longdoc/u_r42/eval 2>&1; expmon launch --dry-run --exp longdoc --stage U -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env T…
+  ↳ expQ/longdoc/u_r42/: (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon launch --exp longdoc --stage U -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK=1000 --env CML=1024 --env DML=5612 --env KEEPF=0.125 --env …
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_193606.out
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note -j 193603 "intent: arm P identity gate relaunch 1/2 of 193533: 300 rows (arg 3) of pages p10, R s42, MPOS=0, MPOS_REF=192326's file, JUDGE=0, --time 0:55 (measured 3.08 s/row x 300 + load ~…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'f8ae6efe\|2a1cc007\|LIMIT' campaign_longdoc/CAMPAIGN.md | cut -c1-300; sed -n 220,240p campaign_longdoc/CAMPAIGN.md | cut -c1-400; expmon gripe --open --search factors env 2>&1 | head -5
+  ↳ 175:- Small cells are plumbing: a `LIMIT=300` cell proves the path runs. It never decides an arm, even when it agrees. (+30 lines)
+Adding the new symptom to the known-issues table, clarifying the law's row-limit wording, and logging one tooling gripe.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 173,177p CAMPAIGN.md; tail -2 known_issues.md | cut -c1-200
+  ↳ legacy probe on the checkpoint `probe_recall_4b.sh ae_s2` used (71% of words rebuilt, architecture_review.md:105) within (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ p='CAMPAIGN.md'; s=open(p).read() ⏎ old="- Small cells are plumbing: a `LIMIT=300` cell proves the path runs. It never decides an arm, even when it agrees.\n" ⏎ …
+  ↳ | a `LIMIT=300` cell (identity check 193533, `--time 0:50`) TIMEOUTs after 930 of 1,407 rows; its FACTORS line reads `limit=all`; the launch had `--en
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search limit positional 2>&1 | head -4; expmon gripe -c wish "launch/check: an --env KEY=V whose key also appears on the job's FACTORS log line with a different value went unflagg…
+  ↳ == 2 open report(s) matching 'limit positional', every machine, newest first == (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git ls-files scripts/longdoc | grep -E 'mpos' ; git status --short scripts/longdoc pisco | head; md5sum scripts/longdoc/eval_mpos.py scripts/longdoc/eval_mpos.sbatch scripts/longdoc/mpos_map.py | cut -…
+  ↳ scripts/longdoc/eval_mpos.py (+8 lines)
+The position-probe scripts are committed and match the launched md5s. The slot-reading cell is running faster than its plain twin (8,141 s vs 9,615 s at row 1,010). Rewriting the state file now.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ a=s.index('## TL;DR'); b=s.index('**Open, and running**'); c=s.index('## Arm E — the long-document yardstick'); d=s.index('## Owned j…
+  ↳ 2173 10398 13290 15072 17056
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ a=s.index('## TL;DR') ⏎ head='''# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) ⏎  ⏎ Last wake: 20…
+  ↳ 113:**Open, and running**
+Now the open-and-running block, the owned-jobs table and the next-step table.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ s=open('STATE.md').read() ⏎ b=s.index('**Open, and running**'); c=s.index('- provisional (plumbing, 300 rows, never decides)') ⏎ openblk='''**Open, and running**…
+  ↳ 234 STATE.md (+8 lines)
+Checking that the relaunched identity check actually picked up the 300-row limit.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -12 expQ/longdoc/eval_mpos_193603.out | grep -E 'model.py|FACTORS|rows from|MPOS' | cut -c1-200; grep -E '^\[[0-9]+/' expQ/longdoc/eval_mpos_193603.out | tail -1
+  ↳ 2a1cc007186b6558eaeb00a1f6c2f8a3  pisco/model.py (+3 lines)
+The relaunch logged `limit=300` and loaded 300 rows. No arm decided this wake, so the results page needs no refresh. Writing the wait condition.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo 'wake-when job:193603 max 2h' > campaign_longdoc/NEXT; cat campaign_longdoc/NEXT; expmon note "did: longdoc wake 2026-11-25 23:00: identity check 193533 TIMEOUT diagnosed as launch fault (row limi…
+  ↳ wake-when job:193603 max 2h (+1 lines)
+The position probe's first try failed through a launch mistake, not a model problem. I relaunched it correctly and started one more slot-reading cell. Nothing is decided yet.
+
+**What went wrong**
+- The identity check (job 193533) must give exactly the same answers as the original run before any shifted-position cell may start. It was meant to run 300 questions. It ran all 1,407 and hit its 50-minute limit at question 930, with no output file.
+- Cause: the 300-row limit was passed as an environment variable. The eval script only reads it as its third command-line argument, so it ignored the value and ran every row.
+- The scores it printed every 10 questions match the reference run at all 93 checkpoints (questions 10 to 930). That strongly suggests the check would pass, but the law asks for exact answer equality, so it still has to rerun.
+- Its two dependent cells could never start, so I cancelled them.
+
+**Running now**
+| What | Rows | State |
+|---|---|---|
+| Identity check rerun, limit now given correctly (its log confirms 300 rows) | 300 | running, about 20 min |
+| Positions moved to where a 40-page document puts them, seeds 42 and 43 | 1,407 each | start only if the identity check passes |
+| Slot reading: keep the eighth of the `<MEM>` slots (compressed page tokens) the model attends to most, seed 42, 40 pages | 1,407 | 1,010 rows done, about 1 h left |
+| Same slot-reading cell, seed 42, 10 pages | 1,407 | queued |
+
+**One code change to know about**
+- Another campaign (rebuild) committed a change to `pisco/model.py`. The padding fix the reference cells ran with is now opt-in and off by default.
+- It cannot affect these page cells: each question's pages go through the compressor in one batch of many rows, and the fix only acts on one-row batches. The identity check proves this on 10-page documents.
+
+**Budget**
+- 93 of 96 cells used. The 3 left are exactly the plan: two seed-43 slot-reading cells and one second-judge re-score. Any further relaunch will need your approval.
+- About 94 of 114 GPU-hours used, about 104 at the end.
+
+**Next wake** starts when the identity check ends, at most 2 hours from now. It reads the result and launches the two seed-43 slot-reading cells.
+
+I also clarified the row-limit rule in the campaign law, added the symptom to the known-issues table, and filed a tooling request so the job checker flags this mismatch.
+
+Nothing needed from you.
+→ StructuredOutput: {"next": "wake-when", "summary": "Position-probe identity check 193533 TIMEOUT (930 of 1,407 rows run): a launch fault. The 300-row limit was passed as an env var, but eval_mm_4b.sh reads it from positional arg 3. Its running metrics equal …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.0968 turns=42 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Position-probe identity check 193533 TIMEOUT (930 of 1,407 rows run): a launch fault. The 300-row limit was passed as an env var, but eval_mm_4b.sh reads it from positional arg 3. Its running metrics equal the reference 192326 at 93/93 ten-row checkpoints (supporting evidence, not the gate). Killed the stuck dependants 193534/193535 (DependencyNeverSatisfied). Relaunched the chain: 193603 identity…", "launched": ["193603", "193604", "193605", "193606"], "verdicts": [{"jobid": "193533", "verdict": "closed", "note": "launch fault: row limit passed as env, not arg 3; TIMEOUT after 930/1407 rows; running metrics = 192326 at 93/93 checkpoints; relaunched as 193603"}, {"jobid": "193534", "verdict": "closed", "note": "cancelled, DependencyNeverSatisfied; relaunched as 193604"}, {"jobid": "193535", "verdict": "closed", "note": "cancelled, DependencyNeverSatisfied; relaunched as 193605"}], "gripes": ["wish: expmon check should flag an --env KEY whose value the job's FACTORS log line contradicts (LIMIT=300 env vs limit=all logged, 193533)"], "wake_when": "job:193603 max 2h"}
+== final:
+{"next":"wake-when","summary":"Position-probe identity check 193533 TIMEOUT (930 of 1,407 rows run): a launch fault. The 300-row limit was passed as an env var, but eval_mm_4b.sh reads it from positional arg 3. Its running metrics equal the reference 192326 at 93/93 ten-row checkpoints (supporting evidence, not the gate). Killed the stuck dependants 193534/193535 (DependencyNeverSatisfied). Relaunched the chain: 193603 identity check (limit=300 confirmed in FACTORS) -> 193604/193605 shifted cells (afterok). Launched slot-reading cell 193606 (s42 p10 eighth). pisco/model.py 2a1cc007 (pad guard opt-in, default off) is judged a no-op on page cells (one multi-row compress call per question); 193603 settles it. Law clarified (LIMIT is positional), known_issues row added, verifier fixes applied in STATE.md. Cells 93/96, the 3 left are U s43 p10/p40 + re-judge.","launched":["193603","193604","193605","193606"],"verdicts":[{"jobid":"193533","verdict":"closed","note":"launch fault: row limit passed as env, not arg 3; TIMEOUT after 930/1407 rows; running metrics = 192326 at 93/93 checkpoints; relaunched as 193603"},{"jobid":"193534","verdict":"closed","note":"cancelled, DependencyNeverSatisfied; relaunched as 193604"},{"jobid":"193535","verdict":"closed","note":"cancelled, DependencyNeverSatisfied; relaunched as 193605"}],"gripes":["wish: expmon check should flag an --env KEY whose value the job's FACTORS log line contradicts (LIMIT=300 env vs limit=all logged, 193533)"],"wake_when":"job:193603 max 2h"}
+== rc=0 secs=432
+== verify: 5/26
+== codereview: none

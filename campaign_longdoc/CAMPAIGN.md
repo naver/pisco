@@ -173,6 +173,9 @@ the repeat to be "adopted". Decide arms as soon as their cells complete — do n
   legacy probe on the checkpoint `probe_recall_4b.sh ae_s2` used (71% of words rebuilt, architecture_review.md:105) within
   ±2 pt before any use on a stride-8 model. The AE probe must give 0 for a model paired with itself.
 - Small cells are plumbing: a `LIMIT=300` cell proves the path runs. It never decides an arm, even when it agrees.
+  `LIMIT` is POSITIONAL argument 3 of `eval_mm_4b.sh` / `eval_mnt.sbatch` / `eval_mpos.sbatch` (`… MODEL pisco 300 DATA`);
+  an `--env LIMIT=300` is overwritten by `LIMIT=${3:-}` and the cell runs every row (193533, 2026-11-25). Before
+  trusting a limited cell, read `limit=` on its FACTORS log line.
 - A NEW metric (one the wake designs itself) closes nothing until its row here states its n (cells or pairs) and
   a known-positive control it recovers (variety shipped a null built from one seed pair). Next to any threshold count, report the paired per-item test —
   navmem's count showed nothing where a paired sign test found the one real effect (98 closer / 59 farther, p=0.002; control p=0.22).

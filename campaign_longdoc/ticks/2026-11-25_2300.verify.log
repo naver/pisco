@@ -1,0 +1,57 @@
+== verifier 2026-11-25_2300  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 7295586d-7c53-4f99-bcc1-58a081d589c3  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+244 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 246	  mixed 10 / 20 / 40 +49.0 / +47.8 / +46.7 (1,407 each). (+199 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (30044 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 446	192367     E    -        ended     closed     -        -        -        -        -        -          -        -          -        -             -          -            -         -         -       (+89 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 536	{"ts": "2026-11-18 16:36", "jobid": "191393", "verdict": "closed", "note": "healthy: COMPLETED 0:0 homer-019 26:57, one attempt; 1,500 rows, judge on all, unparseable 0. Uncompressed text 40 passa (+110 lines)
+Checking the wake's claims against the verdict log now: most grid and verdict numbers match so far. Next I'm opening a few cited files (length tables, audit counts, run log) to confirm the rest.
+→ Glob: {"pattern": "expQ/longdoc/length/E_*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Grep: {"pattern": "1687", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+1 lines)
+→ Grep: {"pattern": "COMPRESS_SLICE", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content"}
+  ↳ 94:COMPRESS_SLICE = 0   # --compress_slice: chunks per compressor forward (0 = all at once, the legacy single call) (+3 lines)
+→ Grep: {"pattern": "19360[3-6]|193536", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1182:[Omitted long matching line] (+4 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl
+  ↳ 1182	{"ts": "2026-11-25 19:06", "jobid": "193536", "launcher": "scripts/longdoc/eval_mnt.sbatch", "argv": ["expQ/longdoc/u_r42/model", "pisco", "", "/beegfs/scratch/user/hdejean/pisco/eval_data/longdo (+9 lines)
+→ Grep: {"pattern": "md5|FACTORS|limit=", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_193536.out", "output_mode": "content", "head_limit": 20}
+  ↳ 7:FACTORS kind=eval_mm max_new_tokens=512 mode=pisco ckpt=u_r42 data=longdoc_pages_1500_p40 limit=all image_rate=ckpt topk=1000 max_pixels=1003520 merged=0 samples_per_q=0 raw_policy=none answer_style
+→ Grep: {"pattern": "md5|FACTORS|limit=|IDENTITY", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "eval_mpos_193603.out", "output_mode": "content", "head_limit": 20}
+  ↳ expQ/longdoc/eval_mpos_193603.out:8:FACTORS kind=eval_mm max_new_tokens=512 mpos=0 mode=pisco ckpt=p0_r42 data=longdoc_pages_1500_p10 limit=300 image_rate=ckpt topk=1000 max_pixels=1003520 merged=0 sa
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 1	{ (+279 lines)
+→ Grep: {"pattern": "f8ae6efe|2a1cc007|b3d1cda1|dfe32aa0|model\\.py", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc", "glob": "eval_m*_19353[36].out", "output_mode": "content", "head_limit": 20}
+  ↳ expQ/longdoc/eval_mnt_193536.out:1:b3d1cda17302eb3f1d9fd4441ebc789a  eval_mm_4b.sh (+5 lines)
+→ Glob: {"pattern": "E_dlen_pages_p40_s4*_match.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/E_dlen_pages_p40_s43_match.json (+1 lines)
+→ Grep: {"pattern": "\"mean\"|ci95|\"n\"|sign", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_match.json", "output_mode": "content", "-A": 3, "head_limit": 30}
+  ↳ 3: "n": 1407, (+28 lines)
+→ Glob: {"pattern": "E_dlen_text*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/E_dlen_text_t8k_s42_judge.json (+5 lines)
+→ Glob: {"pattern": "out_of_range.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/out_of_range.json
+→ Grep: {"pattern": "^ \"(n|mean|sign_p)\"|^  -?0\\.", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length", "glob": "E_dlen_text_*_judge.json", "output_mode": "content", "head_limit": 60}
+  ↳ expQ/longdoc/length/E_dlen_text_t8k_s43_judge.json:3: "n": 610, (+29 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+Most numbers check out against the grid, verdicts and length tables. Last step: confirming the running slot-reading cell's progress line, then I'll write the verdicts.
+→ Grep: {"pattern": "\\b1010\\b|1,010|\\[1010", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_193536.out", "output_mode": "content", "head_limit": 5}
+  ↳ 1137:[1010/1407] em=0.262 f1=0.424 anls=0.361 match=0.313  8141s
+→ Grep: {"pattern": "IDENTITY|Traceback|Error", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mpos_193603.out", "output_mode": "content", "head_limit": 5}
+  ↳ No matches found
+→ Grep: {"pattern": "\\[1010/1407\\]", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mnt_192324.out", "output_mode": "content"}
+  ↳ 1137:[1010/1407] em=0.241 f1=0.398 anls=0.333 match=0.302  9615s
+→ StructuredOutput: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R s42 pages 1.4/1.7/3.6, mixed 1.8/1.9/3.2, text 3.2; s43 pages 1.1/2.3/3.7, mixed 1.8/…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6063 turns=25 is_error=False denials=0
+== declared: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed at the cap …", "status": "supported", "reason": "Every share matches its verdict: 192266 47 (2.1%), 192287/19…"}, {"claim": "The transcription-probe port is validated (job 191169): 360/…", "status": "supported", "reason": "Verdict 191169: '360/360 pages byte-identical … 70.5% = 70.5…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515 (1,407 Q / 387 PDFs, 4,221 / 4,221 / 2,246 w…"}, {"claim": "provisional: R − uncompressed on one long document, cap 512,…", "status": "provisional", "reason": "All 18 gaps, CIs and McNemar counts match their verdicts, fo…"}, "… +22 more"], "summary": "Every Settled number in STATE.md matches the grid, the verdi…"}
+== final:
+{"claims":[{"claim":"The arm E answer cap is 512 tokens: uncompressed at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R s42 pages 1.4/1.7/3.6, mixed 1.8/1.9/3.2, text 3.2; s43 pages 1.1/2.3/3.7, mixed 1.8/2.8/3.8, text 3.6 (bar 5%)","status":"supported","reason":"Every share matches its verdict: 192266 47 (2.1%), 192287/192288/192267 0.6/1.0/1.0, 192289/192290/192268 1.1/1.8/2.2, 192326/192356/192324 1.4/1.7/3.6, 192357/192358/192325 1.8/1.9/3.2, 192323 3.2, 192360/192362/192364 1.1/2.3/3.7, 192361/192363/192365 1.8/2.8/3.8, 192359 3.6. All are under the 5% bar. Side note: for 191777 the law says 7/300 = 2.3% but its verdict says 8/300 = 2.7%. Both are under 5%, and this bullet does not cite 191777."},{"claim":"The transcription-probe port is validated (job 191169): 360/360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt)","status":"supported","reason":"Verdict 191169: '360/360 pages byte-identical … 70.5% = 70.5% (gate +-2 pt)'. The law's target is 71% ±2 pt, which this meets."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable Q on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637/610/588/411), needles 300/225/225; closed-book 1,407 (191774); bucket sets 6 × 1,407 (192265)","status":"supported","reason":"Verdicts 191515 (1,407 Q / 387 PDFs, 4,221 / 4,221 / 2,246 with buckets 637/610/588/411, needles 300/225/225), 191774 (1,407 Q, 0 mismatches) and 192265 (6 × 1,407 rows) all match."},{"claim":"provisional: R − uncompressed on one long document, cap 512, paired, both seeds, n 1,407 per pages/mixed bucket (pages −16.6…−23.7, mixed −19.5…−22.5, text −17.9/−17.3; R s43 − R s42 within 2 pt per whole bucket; t4k +3.3)","status":"provisional","reason":"All 18 gaps, CIs and McNemar counts match their verdicts, for example 192324 '−23.0 [−26.1,−19.9] 123/447' and 192365 '−22.5 [−25.4,−19.6] 110/426'. Seed differences −1.8/−0.9/−0.6 and +1.0/+0.1/−0.6 match the 192360…192365 verdicts. The text whole-set seed difference computes to +0.6 (.4216 − .4154), not +0.7. The wake marked this provisional."},{"claim":"provisional: DECIDED for page images — a length loss at 40 pages. Δ_len 40 vs 10 rubric −6.5 [−9.5,−3.5] 165/249 (s42), −5.3 [−8.4,−2.3] 177/245 (s43); project −5.7/−6.1; match −4.5/−3.6; EM +6.0/+7.2 flips","status":"provisional","reason":"The numbers check out: 192324 and 192364 verdicts, 192405 (project −5.7 [−8.7,−2.6] / −6.1 [−9.2,−3.0]), and E_dlen_pages_p40_s42_match.json (−.0455 [−.071,−.021], n 1,407). All four files are under the 5% cap (3.6/1.0/1.4/0.6 at s42; 3.7 at s43). So the ≤ −3 pt, CI-below-0 bar is met at both seeds. But arm J's own wording says a Δ_len that flips sign under EM makes the arm 'judge-sensitive'. No law amendment exempts EM, and the owner's 'option A' answer funded arms U and P; it did not rule on EM. 'DECIDED' therefore overreaches; it stays provisional."},{"claim":"provisional, NOT DECIDED: pages 20 vs 10 −2.8/−1.9; mixed 20 vs 
+== rc=0
