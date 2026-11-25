@@ -1,0 +1,63 @@
+== campaign rebuild wake 2026-11-25_2030  reasons=problems,first  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795606202 live=- running=0 pending=0 problems=1 problems_other=0 new=0 gpuh24=0.0 idle_h=0.0 min_util=- alert=0 unpushed=1 cron=6 daemon=1 disk_gb=5346 sig=799f5c17 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/hook.log
+== session 51ed50fa-e073-47ea-a090-e3cef3285aee  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md
+  ↳ # Wake brief — campaign rebuild — 2026-11-25_2030   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+76 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_rebuild && ls -la && cat CAMPAIGN.md
+  ↳ total 72 (+256 lines)
+→ Bash: cat STATE.md && echo ---- && cat DECISIONS.md && echo ---- && cat QUESTION_REVIEW.md && echo ---- && ls ticks
+→ Bash: cat known_issues.md
+  ↳ # STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append) (+83 lines)
+  ↳ # Known issues — campaign rebuild   (symptom → verdict → action; check here BEFORE diagnosing) (+48 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco && expmon ledger 40 2>&1 | tail -60; echo ----; git status --short pisco/ scripts/rebuild/; git log --oneline -3
+  ↳ == experiment ledger: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md == (+60 lines)
+→ Bash: ls -la scripts/rebuild/ scripts/slotcheck/ && grep -n '"193564"\|"193554"' .expmon/runs.jsonl | head; ls expQ/rebuild 2>/dev/null
+  ↳ scripts/rebuild/: (+42 lines)
+Checking the pre-arm proof and getting the first gate ready (the check that the word-recall readout still reproduces its known numbers on today's code).
+→ Bash: tail -30 expQ/rebuild/preflight_cpu_193564.out; echo ----; cat scripts/slotcheck/recall.sbatch
+  ↳ === EXIT CODE 0 === (+86 lines)
+→ Bash: ls -la expQ/slotcheck/recall/ | head -40; ls expQ/slotcheck/*191893* expQ/slotcheck/*192209* 2>/dev/null; grep -n '"191893"\|"192209"' .expmon/runs.jsonl
+  ↳ total 1832 (+15 lines)
+→ Bash: grep -E "^[0-9a-f]{8}|===|plumbing|recall|node|Elapsed|EXIT" expQ/slotcheck/recall_191893.out | head -40; echo; grep -E "^[0-9a-f]{8}|===|plumbing|node|EXIT" expQ/slotcheck/recall_192209.out | head; sacct -j 191893,192209 -X -o JobID,State,…
+  ↳ FACTORS kind=probe_recall arm=O_recall passes=start_dense100:start:slotcheck_dense100 ref_dense100:ref:slotcheck_dense100 start_heldout:start:slotcheck_dense100_heldout ref_heldout:ref:slotcheck_dense (+32 lines)
+→ Bash: cat scripts/rebuild/preflight_cpu.sbatch; echo -----; sed -n 1,60p scripts/longdoc/recall_pair.py; echo ----; grep -n "add_argument\|def main\|^import\|^from" scripts/longdoc/mem_recall.py | head -40
+  ↳ #!/bin/bash (+114 lines)
+→ Bash: head -20 scripts/analyze_mem_recall.py | grep -n import; R=expQ/slotcheck/recall; timeout 60 python3 -I scripts/longdoc/recall_pair.py --ref $R/ref_dense100.json --a $R/start_dense100.json --b $R/o_bf16_dense100.json 2>&1 | tail -15
+  ↳ 13:import argparse (+7 lines)
+→ Bash: sacct -j 191893,192209 -o JobID,State,Elapsed,MaxRSS,ReqMem -P | head; grep -n "stride\|print(" scripts/longdoc/mem_recall.py | head -20; ls -la expQ/archq3/pt_mm_5M_spread/model expQ/slotcheck/o_bf16/model | head -30
+  ↳ JobID|State|Elapsed|MaxRSS|ReqMem (+38 lines)
+Writing the word-recall launcher for this campaign, then launching the first gate's three readouts.
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/rebuild/recall.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/rebuild/recall.sbatch (file state is current in your context — no need to Read it back)
+→ Bash: bash -n scripts/rebuild/recall.sbatch && echo SYNTAX_OK; diff scripts/slotcheck/recall.sbatch scripts/rebuild/recall.sbatch | head -60; md5sum eval_mm_4b.sh scripts/eval_mm_docqa.py scripts/judge_mm_docqa.py scripts/paired_judge.py pisco/mo…
+  ↳ SYNTAX_OK (+70 lines)
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco; expmon launch --exp rebuild --stage feas --dry-run -p gpu-be --exclude='homer-[005-009]' --time 2:20:00 --mem 10G scripts/rebuild/recall.sbatch "r2_dense100:${R}/expQ/archq3/pt_mm_5M_spread/model:slotch…
+  ↳ would submit: sbatch -p gpu-be --exclude=homer-[005-009] --time 2:20:00 --mem 10G scripts/rebuild/recall.sbatch r2_dense100:/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model:slotche (+3 lines)
+→ Bash: R=/beegfs/scratch/user/hdejean/pisco ⏎ MD="md5 eval_mm_4b.sh b3d1cda1 eval_mm_docqa.py dfe32aa0 judge_mm_docqa.py 02bc8748 paired_judge.py a3cc13b2 model.py 2a1cc007 mm_collator.py 12d80001 mem_recall.py 9f241620 probe_mem_recall.py 14730fe…
+  ↳ expmon note: 92 words (ledger entries should be <= 80; --did/--saw/--next keeps them skimmable) (+13 lines)
+→ Bash: expmon logs 193554 25 2>&1 | grep -aE "FAIL|Error|assert|Ran|OK|EXIT" | head -10; sacct -j 193554,193564 -X -o JobID,State,ExitCode,Elapsed -P; squeue -j 193565,193566,193567 -o "%i %T %R" 
+  ↳ AssertionError: 2 != 1 (+12 lines)
+→ Bash: expmon verdict 193554 closed "pre-arm unit tests, FAILED rc 1 in 3:10: 39/40 OK, one test-side miscount (AssertionError 2 != 1, fixed in the test); superseded by preflight 193564: 40/40 tests OK + 8 configs OK, COMPLETED 0:0 10:09" 2>&1 | t…
+  ↳ verdict recorded: 193554 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+Three readout jobs are queued. Now checking the training launcher so the next wake can start the 20-step smoke runs straight away.
+→ Bash: sed -n 1,40p scripts/rebuild/pt_stage2.sbatch; grep -n "#SBATCH" scripts/rebuild/ft.sbatch
+  ↳ #!/bin/bash (+48 lines)
+→ Bash: sacct -j 184777 -o JobID,State,Elapsed,MaxRSS,ReqMem,NodeList -P 2>&1 | head -5; gpucap land a100 1 2>&1 | tail -5
+  ↳ JobID|State|Elapsed|MaxRSS|ReqMem|NodeList (+9 lines)
+→ Bash: expmon campaign report --section leaves 2>&1 | head -30
+  ↳ **Settled** (+7 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: echo "wake-when job:193565,193566,193567 max 6h" > campaign_rebuild/NEXT && cat campaign_rebuild/NEXT && expmon note --did "rebuild wake 2026-11-25 20:30: pre-arm proof re-read (193564 OK, pisco/ clean), 193554 closed as superseded; wrote s…
+  ↳ wake-when job:193565,193566,193567 max 6h (+1 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "First wake after arming. Pre-arm proof re-read (CPU preflight 193564 OK: 40/40 tests, 8 configs; pisco/ clean). Closed the ✗ unit-test job 193554 as superseded. Wrote scripts/rebuild/recall.sbatch (port of …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.5919 turns=26 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "First wake after arming. Pre-arm proof re-read (CPU preflight 193564 OK: 40/40 tests, 8 configs; pisco/ clean). Closed the ✗ unit-test job 193554 as superseded. Wrote scripts/rebuild/recall.sbatch (port of slotcheck's validated launcher, outputs under expQ/rebuild/recall/). Launched the feasibility gate alone: page word recall on slotcheck_dense100 (100 pages) for R2 (bar .702±.01), overfit o_bf16 (bar .921±.01), and a fresh uncompressed reference (self-pair 1.000). Recorded numbers re-derived from files before launch. No training until the gate passes.", "launched": ["193565 feasibility gate: R2 recall on slotcheck_dense100", "193566 feasibility gate: overfit o_bf16 recall on slotcheck_dense100", "193567 feasibility gate: uncompressed reference on slotcheck_dense100"], "verdicts": [{"jobid": "193554", "verdict": "closed", "note": "pre-arm unit tests rc 1 (one test-side miscount), superseded by 193564"}, {"jobid": "193564", "verdict": "closed", "note": "pre-arm proof OK: preflight_cpu_ok=1, 40/40 tests, 8 configs differ only in law keys"}], "wake_when": "job:193565,193566,193567 max 6h"}
+== final:
+{"next":"wake-when","summary":"First wake after arming. Pre-arm proof re-read (CPU preflight 193564 OK: 40/40 tests, 8 configs; pisco/ clean). Closed the ✗ unit-test job 193554 as superseded. Wrote scripts/rebuild/recall.sbatch (port of slotcheck's validated launcher, outputs under expQ/rebuild/recall/). Launched the feasibility gate alone: page word recall on slotcheck_dense100 (100 pages) for R2 (bar .702±.01), overfit o_bf16 (bar .921±.01), and a fresh uncompressed reference (self-pair 1.000). Recorded numbers re-derived from files before launch. No training until the gate passes.","launched":["193565 feasibility gate: R2 recall on slotcheck_dense100","193566 feasibility gate: overfit o_bf16 recall on slotcheck_dense100","193567 feasibility gate: uncompressed reference on slotcheck_dense100"],"verdicts":[{"jobid":"193554","verdict":"closed","note":"pre-arm unit tests rc 1 (one test-side miscount), superseded by 193564"},{"jobid":"193564","verdict":"closed","note":"pre-arm proof OK: preflight_cpu_ok=1, 40/40 tests, 8 configs differ only in law keys"}],"wake_when":"job:193565,193566,193567 max 6h"}
+== rc=0 secs=243
+== verify: 5/7

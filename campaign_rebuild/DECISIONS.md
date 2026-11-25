@@ -7,18 +7,21 @@ deleting the `GUESS:` marker; `expmon campaign preflight` refuses while one is l
 - none
 
 ## Always yours: budget
-- L129: - GPU-hours: **190** (owner's figure ≈ 175 = 90 + 85; the +15 is the label judge, arm L's six evals and recall on five
-- L134: - **Owner checkpoints:** (1) W or P passes gate 1 → their gate-2 finetunes (≈ 14 GPU-h each) are outside the 190:
-- L135: ONE question. (2) A PROMISING gate 2 → the seed-43 repeat, ONE question. (3) P's smoke projects stage 2 over 40 GPU-h → ONE
+- L132: - GPU-hours: **190** (owner's figure ≈ 175 = 90 + 85; the +15 is the label judge, arm L's six evals and recall on five
+- L137: - **Owner checkpoints:** (1) W or P passes gate 1 → their gate-2 finetunes (≈ 14 GPU-h each) are outside the 190:
+- L138: ONE question. (2) A PROMISING gate 2 → the seed-43 repeat, ONE question. (3) P's smoke projects stage 2 over 40 GPU-h → ONE
+
+## Always yours: which score this campaign moves
+- (no 'Headline score' line found)
 
 ## Always yours: where your go-ahead is needed
-- L134: - **Owner checkpoints:** (1) W or P passes gate 1 → their gate-2 finetunes (≈ 14 GPU-h each) are outside the 190:
+- L137: - **Owner checkpoints:** (1) W or P passes gate 1 → their gate-2 finetunes (≈ 14 GPU-h each) are outside the 190:
 
 ## Always yours: what an accepted result becomes (default-on needs a proper judge)
-- L122: - **On acceptance:** nothing is switched on by the wake; this campaign delivers trained models and findings. Default-on
+- L125: - **On acceptance:** nothing is switched on by the wake; this campaign delivers trained models and findings. Default-on
 
 ## Always yours: what live campaigns already use
 - longdoc: model's rebuild from the slots (`scripts/longdoc/mem_recall.py --arm ae` vs `--arm ref`, paired by / `scripts/longdoc/recall_pair.py`; plain `<AE>` prompt, 768 new tokens). Judge accuracy in [0, 1], pt = .01, Qwen3-8B rubric / `scripts/paired_judge.py`, `pis …
 
 ## Checker findings
-- none
+- ⚠ score: no 'Headline score:' line: name the main score this campaign aims to move, its value now and the target, or 'none: measures only' with the owner's words (law created 2026-11-25, before the rule: warning only)
