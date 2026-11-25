@@ -95,6 +95,7 @@ class PISCOConfig(PretrainedConfig):
         freeze_norm_gain: bool = False,
         freeze_compressor: bool = False,
         freeze_part: Optional[str] = None,
+        one_row_pad_guard: bool = False,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -230,6 +231,10 @@ class PISCOConfig(PretrainedConfig):
         # mode). "compressor" = adapter + <MEM> token row + merger, the connector trains; "connector" = MLP + norm
         # gain, the compressor LoRA trains. None (default) freezes nothing. See frozen_parts.
         self.freeze_part = freeze_part
+        # Drop the pad columns of a ONE-row padded compressor batch (see PISCO.compress). Off by default:
+        #   every recorded finetune (bs 1, a photo row = one image, padded to 64) trained on the leaking
+        #   path, so turning it on changes the training of photo rows and is its own arm (campaign rebuild).
+        self.one_row_pad_guard = bool(one_row_pad_guard)
 
 
 FREEZE_PARTS = ("compressor", "connector")
@@ -921,6 +926,23 @@ class PISCO(PreTrainedModel):
         """
         if input_ids is None:
             raise ValueError("`input_ids` must not be None for compression.")
+
+        # A ONE-row batch with pads: transformers zeroes pad states in Qwen3.5's linear-attention
+        # layers only when the batch has more than one row (apply_mask_to_padding_states), so the
+        # pads leak into that row's <MEM>s (campaign slotcheck, job 191781: median cos .935 vs the
+        # unpadded call). Dropping the pad columns makes the call identical to the unpadded one.
+        # Opt-in (PISCOConfig.one_row_pad_guard): the recorded finetunes trained on the leaking path.
+        if (
+            getattr(self.config, "one_row_pad_guard", False)
+            and attention_mask is not None
+            and attention_mask.dim() == 2
+            and input_ids.shape[0] == 1
+            and not bool(attention_mask.all())
+        ):
+            keep = attention_mask[0].bool()
+            input_ids, attention_mask = input_ids[:, keep], attention_mask[:, keep]
+            if mm_token_type_ids is not None:
+                mm_token_type_ids = mm_token_type_ids[:, keep]
 
         extra = {}
         if pixel_values is not None:

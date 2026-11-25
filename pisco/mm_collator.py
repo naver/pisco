@@ -15,7 +15,8 @@ batch holds at least one image — `pixel_values`, `image_grid_thw`, `mm_token_t
 (see pisco.mm_utils.collate_compressor). The `<MEM>` invariant is asserted as everywhere.
 """
 
-from typing import Any, Dict, List, Optional
+import os
+from typing import Any, Dict, List, Optional, Sequence
 
 import numpy as np
 import torch
@@ -112,8 +113,27 @@ class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
         find_snippet_words: tuple = (6, 12),
         teacher_inputs: bool = False,
         teacher_max_length: int = 6144,
+        mix_sources: Optional[Sequence[str]] = None,
+        mix_override: Optional[Dict[str, float]] = None,
+        ae_window_p: float = 0.0,
+        ae_window_cue: int = 16,
+        ae_window_sources: Optional[Sequence[str]] = None,
+        log_task_counts_every: int = 5000,
         **kwargs,
     ):
+        """Campaign rebuild options (all off by default; off = the old RNG stream, draw for draw):
+        - mix_sources + mix_override: image rows whose `source` field is in `mix_sources` (e.g.
+          ["pdfa", "wiki-ss"]) draw their task from `mix_override` ({p_image_ae, p_text, p_image_cont,
+          p_desc, p_find}, renormalised like the global mix) instead of the global p_* mix.
+        - ae_window_p / ae_window_cue / ae_window_sources: an image-AE row whose page text is longer than
+          `ae_target_max_tokens` (and whose source is in `ae_window_sources`, None = any) targets, with
+          probability ae_window_p, a window of ae_target_max_tokens tokens starting at a uniform random
+          token >= 1 instead of the top. The window's first `ae_window_cue` tokens are given in clear
+          between <AE> and the <MEM>s (masked by mask_before_mem), the rest is the target:
+              <AE> cue <MEM>*n <bos> window[cue:] <eos>
+          Rows at or under the cap, and the other (1 - p) rows, keep the top-of-page target.
+        - log_task_counts_every: each dataloader worker prints its task counts per source family every
+          N rows (stdout only; no randomness). 0 = off."""
         super().__init__(
             compressor_tokenizer=compressor_tokenizer,
             decoder_tokenizer=decoder_tokenizer,
@@ -140,19 +160,70 @@ class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
         # Qwen3.5's Triton (GatedDeltaNet) kernels re-tune for every new (batch, length)
         # shape (30-90 s each, measured); padding to a multiple keeps the shape set small.
         self.pad_to_multiple_of = pad_to_multiple_of
+        self.task_probs = self._task_mix(p_image_ae, p_text, p_image_cont, p_desc, p_find)
+        print(f"[mm-pretrain] task mix {self.task_probs}, image_compr_rate={image_compr_rate}")
+
+        self.mix_sources = self._source_set(mix_sources)
+        self.source_task_probs = None
+        if self.mix_sources:
+            if not mix_override:
+                raise ValueError("mix_sources needs mix_override={p_image_ae, p_text, p_image_cont, p_desc, p_find}")
+            o = {str(k): float(v) for k, v in dict(mix_override).items()}
+            unknown = set(o) - {"p_image_ae", "p_text", "p_image_cont", "p_desc", "p_find"}
+            if unknown:
+                raise ValueError(f"mix_override: unknown keys {sorted(unknown)}")
+            self.source_task_probs = self._task_mix(
+                o.get("p_image_ae", 0.0), o.get("p_text", 0.0), o.get("p_image_cont", 0.0),
+                o.get("p_desc", 0.0), o.get("p_find", 0.0))
+            print(f"[mm-pretrain] sources {sorted(self.mix_sources)}: task mix {self.source_task_probs}")
+        elif mix_override:
+            raise ValueError("mix_override given without mix_sources")
+
+        if not 0.0 <= float(ae_window_p) <= 1.0:
+            raise ValueError(f"ae_window_p={ae_window_p} not in [0, 1]")
+        self.ae_window_p = float(ae_window_p)
+        self.ae_window_cue = int(ae_window_cue)
+        if self.ae_window_p > 0 and not 0 < self.ae_window_cue < self.ae_target_max_tokens:
+            raise ValueError(f"ae_window_cue={ae_window_cue} must be in (0, ae_target_max_tokens)")
+        self.ae_window_sources = self._source_set(ae_window_sources)
+        if self.ae_window_p > 0:
+            print(f"[mm-pretrain] AE windows: p={self.ae_window_p} cue={self.ae_window_cue} tokens "
+                  f"sources={sorted(self.ae_window_sources) if self.ae_window_sources else 'any'}")
+        self.log_task_counts_every = int(log_task_counts_every)
+        self._task_counts: Dict[str, Dict[str, int]] = {}
+        self._rows_seen = 0
+        self._last_ae_window: Optional[int] = None   # start token of the last AE window (None = top target)
+
+    @staticmethod
+    def _task_mix(p_image_ae, p_text, p_image_cont, p_desc, p_find) -> Dict[str, float]:
         total = p_image_ae + p_text + p_image_cont + p_desc + p_find
         assert total > 0, "all task probabilities are zero"
-        self.task_probs = {
+        probs = {
             "image_ae": p_image_ae / total,
             "text": p_text / total,
             "image_cont": p_image_cont / total,
         }
         # chat tasks only enter the draw when enabled: an old config keeps its exact RNG stream
         if p_desc > 0:
-            self.task_probs["desc"] = p_desc / total
+            probs["desc"] = p_desc / total
         if p_find > 0:
-            self.task_probs["find"] = p_find / total
-        print(f"[mm-pretrain] task mix {self.task_probs}, image_compr_rate={image_compr_rate}")
+            probs["find"] = p_find / total
+        return probs
+
+    @staticmethod
+    def _source_set(sources) -> Optional[set]:
+        """None / "" / [] -> None; "a,b" or a list (Hydra ListConfig) -> {"a", "b"}."""
+        if not sources:
+            return None
+        if isinstance(sources, str):
+            sources = sources.split(",")
+        out = {str(s).strip() for s in sources if str(s).strip()}
+        return out or None
+
+    def _count_task(self, source: str, task: str):
+        fam = (source or "?").split("/")[0]
+        d = self._task_counts.setdefault(fam, {})
+        d[task] = d.get(task, 0) + 1
 
     # ------------------------------------------------------------------ tasks
     def _image_chunks(self, image) -> MMChunkBatch:
@@ -175,9 +246,30 @@ class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
             cache[id(image)] = b
         return b
 
-    def prepare_for_image_autoencoding(self, image, text_ids: List[int]):
+    def prepare_for_image_autoencoding(self, image, text_ids: List[int], source: Optional[str] = None):
         chunks = self._image_chunks(image)
-        target = self.compressor_tokenizer.decode(text_ids[: self.ae_target_max_tokens])
+        cap = self.ae_target_max_tokens
+        if (
+            self.ae_window_p > 0
+            and len(text_ids) > cap
+            and (self.ae_window_sources is None or source in self.ae_window_sources)
+            and np.random.uniform() < self.ae_window_p
+        ):
+            start = int(np.random.randint(1, len(text_ids) - cap + 1))     # a full window fits
+            window = text_ids[start : start + cap]
+            c = self.ae_window_cue
+            decoder_text = (
+                self.decoder_tokenizer.ae_token
+                + self.compressor_tokenizer.decode(window[:c])
+                + self.decoder_tokenizer.mem_token * chunks.total_mems
+                + self.decoder_tokenizer.bos_token
+                + self.compressor_tokenizer.decode(window[c:])
+                + self.decoder_tokenizer.eos_token
+            )
+            self._last_ae_window = start
+            return chunks, decoder_text
+        self._last_ae_window = None
+        target = self.compressor_tokenizer.decode(text_ids[:cap])
         decoder_text = (
             self.decoder_tokenizer.ae_token
             + self.decoder_tokenizer.mem_token * chunks.total_mems
@@ -300,17 +392,26 @@ class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
             texts, padding="do_not_pad", return_tensors=None, truncation=False
         )["input_ids"]
 
-        names = list(self.task_probs)
-        probs = np.array([self.task_probs[n] for n in names])
-        # A degenerate mix (one task at p=1) must not consume randomness, so that
-        # p_text=1 reproduces PretrainingCollator's RNG stream exactly.
-        fixed_task = names[int(probs.argmax())] if probs.max() >= 1.0 else None
+        sources = [str(x.get("source") or "") for x in examples]
+
+        def draw_spec(task_probs):
+            names = list(task_probs)
+            probs = np.array([task_probs[n] for n in names])
+            # A degenerate mix (one task at p=1) must not consume randomness, so that
+            # p_text=1 reproduces PretrainingCollator's RNG stream exactly.
+            fixed = names[int(probs.argmax())] if probs.max() >= 1.0 else None
+            return names, probs, fixed
+
+        spec_global = draw_spec(self.task_probs)
+        spec_source = draw_spec(self.source_task_probs) if self.source_task_probs is not None else None
 
         batches: List[MMChunkBatch] = []
         decoder_texts: List[str] = []
         prefix_lengths: List[Optional[int]] = []      # None = not a chat row (mask_before_mem)
         teacher_texts: List[Optional[str]] = []       # None = no KL for this row
         for idx, (text, ids, image) in enumerate(zip(texts, pre, images)):
+            names, probs, fixed_task = (
+                spec_source if spec_source is not None and sources[idx] in self.mix_sources else spec_global)
             if image is None:
                 task = "text"
             elif fixed_task is not None:
@@ -321,18 +422,31 @@ class MultimodalPretrainingCollator(_VisionSafeText, PretrainingCollator):
             if task in ("desc", "find") and chat is None:
                 task = "image_ae"
             plen, t_text = None, None
+            counted = task
             if chat is not None:
                 b, dec, plen, t_text = chat
             elif task == "image_ae":
-                b, dec = self.prepare_for_image_autoencoding(image, ids)
+                b, dec = self.prepare_for_image_autoencoding(image, ids, sources[idx])
+                if self._last_ae_window is not None:
+                    counted = "image_ae_window"
+                if len(ids) > self.ae_target_max_tokens:
+                    self._count_task(sources[idx], "image_ae_over_cap")
             elif task == "image_cont":
                 b, dec = self.prepare_for_image_continuation(image, ids)
             else:
                 b, dec = self._text_task(text, ids)
+            self._count_task(sources[idx], counted)
             batches.append(b)
             decoder_texts.append(dec)
             prefix_lengths.append(plen)
             teacher_texts.append(t_text)
+
+        n_before = self._rows_seen
+        self._rows_seen += len(examples)
+        every = self.log_task_counts_every
+        if every > 0 and self._rows_seen // every > n_before // every:
+            print(f"[mm-pretrain] task counts pid={os.getpid()} rows={self._rows_seen}: {self._task_counts}",
+                  flush=True)
 
         compressor_inputs = collate_compressor(batches, self, self.vision_ids)
 

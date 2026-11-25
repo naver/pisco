@@ -83,8 +83,11 @@ number: no uncompressed column applies (the set's uncompressed judge accuracy is
 
 What it means. (1) The installed transformers zeroes pad positions in Qwen3.5's linear-attention layers only when the
 batch has more than one row (`modeling_qwen3_5.py:198`), so a ONE-row padded batch leaks the pads into the page's
-slots (fp32 .953). No recorded run takes that path: every training batch has ≥ 2 compressor rows (stage 2 bs 8,
-finetune bs 2; all chunks are padded together), and the eval pads nothing (a one-row batch has no pads). Hand-off
+slots (fp32 .953). Stage 2 never takes that path (bs 8, all chunks padded together) and the eval pads nothing (a
+one-row batch has no pads), but the finetune does: it runs bs 1 (`expQ/ft_mm_4b_184778/training_config.yaml`), a photo
+row holds one image (`scripts/build_mm_natural_qa.py:82`) and the collator pads to 64 (`pisco/mm_collator.py:431`), so
+R's 8,000 photo rows trained on leaked pads that the eval never shows (corrected 2026-11-25 by the rebuild question
+review; this page said "finetune bs 2" before). Effect on photo answers: unmeasured. Hand-off
 2de131 asks the pisco chat to guard it before any code compresses one page at a time with padding. (2) On the
 several-row path the pads are almost masked: median cosine equals the no-pad batching floor in both precisions
 (bf16 .9948 vs .9943, fp32 1.0000 vs 1.0000), but in fp32 the max abs difference is 2.3-2.8× that floor (median

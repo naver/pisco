@@ -620,5 +620,166 @@ class TestKDLoss(unittest.TestCase):
         self.assertTrue(kl.requires_grad is False or kl.grad_fn is not None)
 
 
+class TestRebuildOptions(unittest.TestCase):
+    """Campaign rebuild: per-source task mix, window AE targets, opt-in one-row pad guard."""
+
+    # last commit of pisco/mm_collator.py before the rebuild options (2026-10-28)
+    OLD_SHA = "69869340b1eed8761dad8b4492b38c847b1dbc4a"
+
+    @staticmethod
+    def _rows(n_long=20):
+        srcs = ["pdfa", "wiki-ss", "cauldron/vqav2", "pdfa"]
+        rows = []
+        for r in range(6):
+            n = n_long if r % 2 == 0 else 8
+            rows.append({"image": make_image(64, 64, 20 + 30 * r),
+                         "text": " ".join(f"r{r}w{i}" for i in range(n)),
+                         "teacher_text": " ".join(f"d{r}t{i}" for i in range(14)),
+                         "source": srcs[r % len(srcs)]})
+        return rows
+
+    def _old_collator_cls(self):
+        import importlib.util, os, subprocess, tempfile
+        root = os.path.dirname(os.path.abspath(__file__))
+        try:
+            src = subprocess.run(["git", "show", f"{self.OLD_SHA}:pisco/mm_collator.py"], cwd=root,
+                                 capture_output=True, text=True, check=True).stdout
+        except Exception as e:                                   # no git / shallow clone
+            self.skipTest(f"git show {self.OLD_SHA[:8]} failed: {e}")
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "old_mm_collator.py")
+        with open(path, "w") as f:
+            f.write(src)
+        spec = importlib.util.spec_from_file_location("old_mm_collator", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.MultimodalPretrainingCollator
+
+    def _run(self, coll, rows, seed=0, calls=6):
+        np.random.seed(seed)
+        return [coll.torch_call(rows) for _ in range(calls)]
+
+    def _assert_same(self, a, b):
+        self.assertEqual(len(a), len(b))
+        for x, y in zip(a, b):
+            self.assertEqual(set(x), set(y))
+            for k in x:
+                if torch.is_tensor(x[k]):
+                    self.assertTrue(torch.equal(x[k], y[k]), k)
+                else:
+                    self.assertEqual(x[k], y[k], k)
+
+    def test_off_reproduces_the_old_collator_draw_for_draw(self):
+        Old = self._old_collator_cls()
+        kw = dict(p_image_ae=0.2, p_text=0.5, p_image_cont=0.05, p_desc=0.15, p_find=0.1,
+                  ae_target_max_tokens=10, teacher_inputs=False, pad_to_multiple_of=None)
+        tok = MockTokenizer()
+        old = Old(compressor_tokenizer=tok, decoder_tokenizer=MockTokenizer(), compr_rate=4,
+                  compressor_max_length=16, decoder_max_length=256, image_processor=FakeImageProcessor(), **kw)
+        new = make_pretrain_collator(**kw)
+        new.compressor_tokenizer = tok                  # same vocab object -> same ids
+        old.decoder_tokenizer = new.decoder_tokenizer
+        rows = self._rows()
+        self._assert_same(self._run(old, rows), self._run(new, rows))
+        # the options at their off values explicitly, and the count log on, change nothing either
+        new2 = make_pretrain_collator(mix_sources=None, mix_override=None, ae_window_p=0.0,
+                                      log_task_counts_every=1, **kw)
+        new2.compressor_tokenizer, new2.decoder_tokenizer = tok, new.decoder_tokenizer
+        self._assert_same(self._run(old, rows), self._run(new2, rows))
+
+    def test_source_mix_routes_rows_by_source(self):
+        coll = make_pretrain_collator(p_image_ae=0.0, p_text=0.0, p_image_cont=1.0,
+                                      mix_sources=["pdfa", "wiki-ss"], mix_override={"p_image_ae": 1.0})
+        rows = self._rows()
+        b = coll.torch_call(rows)
+        for row, ex in zip(b["decoder_input_ids"], rows):
+            first = row[row != PAD].tolist()[0]
+            self.assertEqual(first, AE if ex["source"] in ("pdfa", "wiki-ss") else BOS, ex["source"])
+        # 6 rows cycling pdfa, wiki-ss, cauldron/vqav2, pdfa -> 3 / 2 / 1
+        self.assertEqual(coll._task_counts["pdfa"]["image_ae"], 3)
+        self.assertEqual(coll._task_counts["wiki-ss"]["image_ae"], 2)
+        self.assertEqual(coll._task_counts["cauldron"]["image_cont"], 1)
+        # a comma string (Hydra / CLI form) is the same set
+        self.assertEqual(make_pretrain_collator(mix_sources="pdfa, wiki-ss",
+                                                mix_override={"p_text": 1}).mix_sources, {"pdfa", "wiki-ss"})
+
+    def test_source_mix_draws_the_override_probabilities(self):
+        coll = make_pretrain_collator(p_image_ae=0.2, p_text=0.5, p_image_cont=0.3, log_task_counts_every=0,
+                                      mix_sources=["pdfa"], mix_override={"p_image_ae": 0.45, "p_text": 0.25,
+                                                                          "p_image_cont": 0.3})
+        rows = [{"image": make_image(64, 64), "text": "a b c d e f", "source": "pdfa"}] * 8
+        np.random.seed(1)
+        for _ in range(150):
+            coll.torch_call(rows)
+        c = coll._task_counts["pdfa"]
+        n = sum(c.values())
+        self.assertEqual(n, 1200)
+        self.assertAlmostEqual(c["image_ae"] / n, 0.45, delta=0.04)
+        self.assertAlmostEqual(c["text"] / n, 0.25, delta=0.04)
+
+    def test_window_target(self):
+        coll = make_pretrain_collator(p_image_ae=1.0, p_text=0.0, p_image_cont=0.0, ae_target_max_tokens=10,
+                                      ae_window_p=1.0, ae_window_cue=3, ae_window_sources=["pdfa"])
+        long_pdfa = {"image": make_image(64, 64), "text": " ".join(f"w{i}" for i in range(40)), "source": "pdfa"}
+        short_pdfa = {"image": make_image(64, 64), "text": " ".join(f"s{i}" for i in range(10)), "source": "pdfa"}
+        long_photo = {"image": make_image(64, 64), "text": " ".join(f"p{i}" for i in range(40)),
+                      "source": "cauldron/x"}
+        dec = coll.decoder_tokenizer
+        for seed in range(20):
+            np.random.seed(seed)
+            b = coll.torch_call([long_pdfa, short_pdfa, long_photo])
+            words = [dec.decode([t]) for t in b["decoder_input_ids"][0].tolist()]
+            ids, lab = b["decoder_input_ids"][0], b["labels"][0]
+            real = [w for w in words if w != "<pad>"]
+            self.assertEqual(real[0], "<AE>")
+            last_mem = (ids == MEM).nonzero().max().item()
+            cue = [w for w in real[1:] if w != "<MEM>"][:3]
+            self.assertEqual(real[1:4], cue)                         # the cue sits between <AE> and the <MEM>s
+            start = int(cue[0][1:])
+            self.assertGreaterEqual(start, 1)                        # never the top of the page
+            self.assertLessEqual(start, 40 - 10)                     # a full window fits
+            self.assertEqual(cue, [f"w{start + k}" for k in range(3)])
+            target = [dec.decode([int(t)]) for t in ids[lab != -100].tolist()]
+            self.assertEqual(target, [f"w{start + k}" for k in range(3, 10)] + ["<eos>"])
+            self.assertTrue((lab[: last_mem + 1] == -100).all())    # the cue is not a target
+            # at or under the cap, and another source: the top-of-page target, unchanged
+            for i, first in ((1, "s0"), (2, "p0")):
+                r = [dec.decode([t]) for t in b["decoder_input_ids"][i].tolist() if t != PAD]
+                self.assertEqual(r[0], "<AE>")
+                self.assertEqual(r[r.index("<bos>") + 1], first)
+                self.assertNotIn(first, r[: r.index("<bos>")])
+        self.assertEqual(coll._task_counts["pdfa"]["image_ae_window"], 20)
+        self.assertEqual(coll._task_counts["pdfa"]["image_ae"], 20)
+        self.assertEqual(coll._task_counts["pdfa"]["image_ae_over_cap"], 20)
+        self.assertEqual(coll._task_counts["cauldron"]["image_ae_over_cap"], 20)
+
+    def test_window_half_the_rows(self):
+        coll = make_pretrain_collator(p_image_ae=1.0, p_text=0.0, p_image_cont=0.0, ae_target_max_tokens=10,
+                                      ae_window_p=0.5, ae_window_cue=3, log_task_counts_every=0)
+        row = {"image": make_image(64, 64), "text": " ".join(f"w{i}" for i in range(40)), "source": "pdfa"}
+        np.random.seed(3)
+        for _ in range(100):
+            coll.torch_call([row] * 4)
+        c = coll._task_counts["pdfa"]
+        self.assertAlmostEqual(c["image_ae_window"] / (c["image_ae_window"] + c["image_ae"]), 0.5, delta=0.07)
+
+    def test_bad_options_are_refused(self):
+        with self.assertRaises(ValueError):
+            make_pretrain_collator(mix_override={"p_text": 1.0})
+        with self.assertRaises(ValueError):
+            make_pretrain_collator(mix_sources=["pdfa"])
+        with self.assertRaises(ValueError):
+            make_pretrain_collator(mix_sources=["pdfa"], mix_override={"p_texts": 1.0})
+        with self.assertRaises(ValueError):
+            make_pretrain_collator(ae_window_p=0.5, ae_window_cue=10, ae_target_max_tokens=10)
+        with self.assertRaises(ValueError):
+            make_pretrain_collator(ae_window_p=1.5)
+
+    def test_one_row_pad_guard_is_opt_in(self):
+        from pisco.model import PISCOConfig
+        self.assertFalse(PISCOConfig().one_row_pad_guard)
+        self.assertTrue(PISCOConfig(one_row_pad_guard=True).one_row_pad_guard)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
