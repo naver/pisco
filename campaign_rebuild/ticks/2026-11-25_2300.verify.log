@@ -1,0 +1,121 @@
+== verifier 2026-11-25_2300  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/VERIFY_INPUT.md
+== session 6a1c6d7a-a38a-4876-a18e-177ee8b97672  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign rebuild (+196 lines)
+→ Glob: {"pattern": "expQ/rebuild/recall/**"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/BLOCKED.md
+  ↳ 1	# BLOCKED — campaign rebuild — 2026-11-25 23:00 (+40 lines)
+→ Glob: {"pattern": "scripts/rebuild/*"}
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall"}
+  ↳ expQ/rebuild/recall/r2_dense100_lim5.json (+4 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/rebuild"}
+  ↳ scripts/rebuild/config_check.py (+4 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/ticks/2026-11-25_2300.log
+  ↳ 1	== campaign rebuild wake 2026-11-25_2300  reasons=problems,problems-standing,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code) (+124 lines)
+→ Grep: {"pattern": "RESULT|mem_position_stride|exists|skip|node|host|homer|PREEMPT|CANCELLED|md5|recall|words", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall_193565.out", "output_mode": "content", "head_limit": 120}
+  ↳ 2:FACTORS kind=recall passes=r2_dense100:/beegfs/scratch/user/hdejean/pisco/expQ/archq3/pt_mm_5M_spread/model:slotcheck_dense100 px=1003520 (+29 lines)
+Checking the recall job logs against each claim in STATE.md (read-only).
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall_193565.out
+  ↳ 1	GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-ca4cc8e0-4c60-bfa0-17c6-207974716e12) (+122 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall_193565.out
+  ↳ 205	Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+26 lines)
+→ Grep: {"pattern": "^node|^[0-9a-f]{8}  |plumbing|wrote|mem_position_stride|EXIT|PREEMPT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall_191893.out", "output_mode": "content"}
+  ↳ 3:node homer-016.kr.europe.naverlabs.com (+16 lines)
+→ Grep: {"pattern": "^node|plumbing|wrote|exists|CANCELLED|EXIT|\\[100/100\\]", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall_193566.out", "output_mode": "content"}
+  ↳ 3:node homer-017.kr.europe.naverlabs.com git aa1e445 (+15 lines)
+→ Grep: {"pattern": "^node|plumbing|wrote|exists|CANCELLED|EXIT|\\[100/100\\]|FACTORS", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall_193567.out", "output_mode": "content"}
+  ↳ 2:FACTORS kind=recall passes=ref_dense100:ref:slotcheck_dense100 px=1003520 (+4 lines)
+→ Grep: {"pattern": "\\.702|\\.921|192209|191893", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_slotcheck", "output_mode": "content", "head_limit": 30}
+  ↳ campaign_slotcheck/VERIFY.md:15:[Omitted long matching line] (+31 lines)
+→ Grep: {"pattern": "RESULT|git|Ran |OK|FAIL|config_check|diff|allowed|^[0-9a-f]{8}  |EXIT", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/preflight_cpu_193564.out", "output_mode": "content", "head_limit": 80}
+  ↳ 8:Ran 40 tests in 12.121s (+27 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/rebuild/preflight_cpu_193564.out
+  ↳ 1	FACTORS kind=preflight_cpu (+62 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/known_issues.md
+  ↳ 1	# Known issues — campaign rebuild   (symptom → verdict → action; check here BEFORE diagnosing) (+52 lines)
+→ Glob: {"pattern": "VERIFY*", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_rebuild"}
+  ↳ campaign_rebuild/VERIFY.md
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/VERIFY.md
+  ↳ 1	# VERIFY — campaign rebuild — 2026-11-25_2030   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+17 lines)
+→ Grep: {"pattern": "\"query_id\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100_lim5.json", "output_mode": "count"}
+  ↳ expQ/rebuild/recall/r2_dense100_lim5.json:5 (+2 lines)
+→ Glob: {"pattern": "start_dense100*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall"}
+  ↳ expQ/slotcheck/recall/start_dense100_lim5.json (+1 lines)
+→ Grep: {"pattern": "\"[a-z_]+\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100_lim5.json", "output_mode": "content", "-o": true, "head_limit": 40}
+  ↳ 2:"args":  (+41 lines)
+→ Grep: {"pattern": "\"text\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100_lim5.json", "output_mode": "content", "head_limit": 2}
+  ↳ 21:[Omitted long matching line] (+3 lines)
+→ Grep: {"pattern": "\"text\": ", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100_lim5.json", "output_mode": "content", "head_limit": 2}
+  ↳ 21:[Omitted long matching line] (+3 lines)
+Comparing the first 5 rebuilt texts of R2 today against the recorded run.
+→ Grep: {"pattern": "\"text\": \".{0,150}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100_lim5.json", "output_mode": "content", "-o": true}
+  ↳ 21:"text": "AN ANNOUNCEMENT ON PROGRESS OF THE POPCA CODE\nOF CONSIDERATIONS FOR SUBMISSIONS OF ISSUES TO BE ADDRESSED BY THE CODE\nFor the use of personal inform (+4 lines)
+→ Grep: {"pattern": "\"text\": \".{0,150}", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100_lim5.json", "output_mode": "content", "-o": true}
+  ↳ 21:"text": "AN ANNOUNCEMENT ON PROGRESS OF THE POPCA CODE\nOF CONSIDERATIONS FOR SUBMISSIONS OF ISSUES TO BE ADDRESSED BY THE CODE\nFor the use of personal inform (+4 lines)
+→ Grep: {"pattern": ".{120}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100_lim5.json", "output_mode": "content", "-o": true}
+  ↳ 21:235, Lynwood, 0010, South Africa\nTel: +27 11 369 2200, Fax: +27 11 369 2464, Email: info@assaf.org.za\nwww.assaf.org.za", (+4 lines)
+→ Grep: {"pattern": ".{120}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100_lim5.json", "output_mode": "content", "-o": true}
+  ↳ 21:235, Lynwood, 0010, South Africa\nTel: +27 11 369 2200, Fax: +27 11 369 2464, Email: info@assaf.org.za\nwww.assaf.org.za", (+4 lines)
+→ Grep: {"pattern": ".{100}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/r2_dense100.json", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 21:South Africa\nTel: +27 11 369 2200, Fax: +27 11 369 2400, Email: info@assaf.org.za\nwww.assaf.org.za", (+6 lines)
+→ Grep: {"pattern": ".{100}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/start_dense100.json", "output_mode": "content", "-o": true, "head_limit": 5}
+  ↳ 21:South Africa\nTel: +27 11 369 2200, Fax: +27 11 369 2464, Email: info@assaf.org.za\nwww.assaf.org.za", (+6 lines)
+→ Grep: {"pattern": "git|md5", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/rebuild/recall.sbatch", "output_mode": "content"}
+  ↳ 27:echo "node $(hostname) git $(git rev-parse --short HEAD)" (+1 lines)
+→ Grep: {"pattern": "git|md5|unittest|config_check|test_mm", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/rebuild/preflight_cpu.sbatch", "output_mode": "content"}
+  ↳ 12:# arm through the committed launchers (Hydra --cfg job, no training), each checked by config_check.py. (+3 lines)
+→ Grep: {"pattern": "\"193564\"|\"193565\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content"}
+  ↳ 1184:{"ts": "2026-11-25 20:07", "jobid": "193564", "launcher": "scripts/rebuild/preflight_cpu.sbatch", "argv": [], "git": "622ae40+dirty", "outdir": "/beegfs/scratch/user/hdejean/pisco/expQ/193564", " (+1 lines)
+→ Grep: {"pattern": "stage-2 rebuild arms|wake 2026-11-25_2030|sync 2026-11-25_2030|wake 2026-11-25_2100", "path": "/beegfs/scratch/user/hdejean/pisco/.git/logs/HEAD", "output_mode": "content"}
+  ↳ 197:622ae4025b050c48f3f7ecaab9f8cb2413ea5bd8 52cc9e976ca99d01d6be539ccfd93c5484f32ca5 herve-dejean <herve.dejean@naverlabs.com> 1795605529 +0900	commit: campaign rebuild: stage-2 rebuild arms, opt-in  (+3 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/NEXT
+  ↳ 1	waiting-owner (+1 lines)
+→ Grep: {"pattern": "\"19360[3-6]\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "head_limit": 8}
+  ↳ 1188:"193603" (+3 lines)
+→ Grep: {"pattern": "\"exp\": \"[a-z_]+\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true, "offset": 1183, "head_limit": 10}
+  ↳ No entries at this offset (+2 lines)
+→ Grep: {"pattern": "\"jobid\": \"1936\\d\\d\".*\"exp\": \"[a-z_]+\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "content", "-o": true}
+  ↳ 1188:"jobid": "193603", "launcher": "scripts/longdoc/eval_mpos.sbatch", "argv": ["expQ/longdoc/p0_r42/model", "pisco", "300", "/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pages_1500_p10"], "g (+3 lines)
+→ Grep: {"pattern": ".{80}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall/o_bf16_dense100.json", "output_mode": "content", "-o": true, "head_limit": 3}
+  ↳ 4:heckpoint_path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model", (+4 lines)
+→ Glob: {"pattern": "o_bf16*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall"}
+  ↳ expQ/slotcheck/recall/o_bf16_dense100_lim5.json (+2 lines)
+→ Grep: {"pattern": ".{80}\",\\s*$", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/recall/o_bf16_dense100.json", "output_mode": "content", "-o": true, "head_limit": 3}
+  ↳ 4:heckpoint_path": "/beegfs/scratch/user/hdejean/pisco/expQ/slotcheck/o_bf16/model", (+4 lines)
+Spot checks match; counting records in the result files, then I'll give the verdict.
+→ Grep: {"pattern": "\"query_id\"", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/rebuild/recall", "output_mode": "count"}
+  ↳ expQ/rebuild/recall/o_bf16_dense100_lim5.json:5 (+6 lines)
+I checked all six claims in STATE.md: five hold up as written, and the sixth (the finetune-config check) stays provisional, as the wake itself marked it.
+
+**Settled**
+- **Known positive passes.** The model overfit on the dense pages scores .921 page word recall (share of a page's words rebuilt from its slots) on 100 pages. That is the recorded .921 (job 192209).
+  - The grid row for job 193566 shows .921, 100 pages, 100 identical texts, verdict closed.
+  - The result file has 100 records. Its opening text matches the recorded file.
+- **Reference passes.** The fresh uncompressed transcription scores 1.000 against itself and 1.000 against the recorded one, on 100 pages (job 193567, 100 records). The "itself" check only proves the pairing code works, but it is what the law asks for.
+- **The recorded stage-2 model misses its bar.** It reads .715 against .702 ± .01, so it misses by .003 (job 193565, 100 records).
+  - The spread numbers are in the closed verdict: +1.3 points [−2.4, +5.2], 52 pages up / 45 down, sign test p .54.
+  - "Not a code change" holds on the files:
+    - **Earlier node:** today's 5-page run (homer-019) gives the same word counts as the recorded run, and the same start and end of text on all 5 pages.
+    - **Later node:** today's 100-page run (homer-017) ends differently on all of those 5 pages.
+    - **Overfit model:** it gave 100/100 identical texts on that same later node.
+  - What makes the nodes differ is not tested. STATE.md does not claim it is.
+- **Pre-arm check, stage-2 part.** The CPU job 193564 log shows the facts claimed: 40 tests OK, result line = 1, and each of the four stage-2 setups differs from the recorded run only in the keys the law allows.
+  - It ran on uncommitted code (git 622ae40 plus edits), as stated.
+  - The code was committed about 80 seconds after the job ended (git history: about 20:18:49, job ended 20:17:26).
+  - One caveat: the claim that the files were not edited during the run rests on file times the wake read. No log records file checksums from the run, and I cannot read file times without a shell.
+- **Pre-arm check, finetune part: stays provisional.** The two finetune setups were checked against `ft.sbatch` before its last edit. They must be re-checked before any finetune.
+
+**Open, and running**
+- **Nothing runs for this campaign.** All 5 of its jobs have ended. The jobs still in the queue (193536, 193603–193606) belong to the long-document campaign. The next-step file says `waiting-owner`.
+  - One small gap: STATE.md gives two options, but BLOCKED.md offers three. The one left out is "measure the noise first, about 2 GPU-hours".
+
+Nothing needed from you.
+→ StructuredOutput: {"claims": [{"claim": "Feasibility gate, known positive PASSES: the overfit model `expQ/slotcheck/o_bf16/model` gives page word recall .921 on `slotcheck_dense100` (100 pages) = recorded .921 (job 192209), 100 / 100 rebuilt texts identical …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7014 turns=44 is_error=False denials=0
+== declared: {"claims": [{"claim": "Feasibility gate, known positive PASSES: the overfit model `…", "status": "supported", "reason": "Grid row 193566: probe recall_dense100=0.921, n_pages=100, r…"}, {"claim": "Feasibility gate, reference PASSES: the fresh uncompressed t…", "status": "supported", "reason": "Grid row 193567: probe self_pair=1.000, vs_recorded_ref=1.00…"}, {"claim": "Feasibility gate, R2 MISSES its bar: R2 .715 vs bar .702 ± .…", "status": "supported", "reason": "Grid row 193565: recall_dense100=0.715, n_pages=100, recorde…"}, {"claim": "Pre-arm proof, stage-2 half: job 193564 COMPLETED 0:0, `RESU…", "status": "supported", "reason": "preflight_cpu_193564.out: line 8-9 'Ran 40 tests … OK'; K: s…"}, "… +2 more"], "summary": "Five of the six STATE.md claims check out against the grid, …"}
+== final:
+{"claims":[{"claim":"Feasibility gate, known positive PASSES: the overfit model `expQ/slotcheck/o_bf16/model` gives page word recall .921 on `slotcheck_dense100` (100 pages) = recorded .921 (job 192209), 100 / 100 rebuilt texts identical — job 193566.","status":"supported","reason":"Grid row 193566: probe recall_dense100=0.921, n_pages=100, recorded=0.921, identical_texts=100, verdict closed. The recorded .921 for 192209 is in campaign_slotcheck/STATE.md:28-29. The log recall_193566.out:221-222 shows [100/100] and the file was written; o_bf16_dense100.json has 100 records. I spot-checked the first two text endings against expQ/slotcheck/recall/o_bf16_dense100.json and they are identical. The bar is .921 ± .01, as the law sets."},{"claim":"Feasibility gate, reference PASSES: the fresh uncompressed transcription paired with itself 1.000, with the recorded reference 1.000 (9 of 100 pages differ by < 0.1 pt) — job 193567.","status":"supported","reason":"Grid row 193567: probe self_pair=1.000, vs_recorded_ref=1.000, n_pages=100, verdict closed. recall_193567.out:122-124 shows [100/100], the file was written, exit 0; ref_dense100.json has 100 records. Self-pairing only checks the pairing code, but it is exactly the law's bar. The '9 pages < 0.1 pt' figure is in the verdict note only."},{"claim":"Feasibility gate, R2 MISSES its bar: R2 .715 vs bar .702 ± .01 (job 191893), today − recorded +1.3 pt [−2.4, +5.2], 52 / 45 pages, sign p .54, n 100 — job 193565. 99 / 100 texts differ; per page sd .20, 28 pages move > 10 pt. Not a code change: ... the 5-page pass of the same job on homer-019 wrote the 5 recorded texts exactly, the 100-page pass on homer-017 did not. By the law (FAIL → stop before training) the campaign waits for the owner (BLOCKED.md).","status":"supported","reason":"Grid row 193565: recall_dense100=0.715, n_pages=100, recorded=0.702, so it misses the .702 ± .01 bar by .003; r2_dense100.json has 100 records. The paired numbers are in the 23:06 verdict. The sd .2015 and 28 pages above 10 points match the wake's computation (tick log line 53), and a sign test p of about .54 for 52/45 checks by hand. The code claim checks on the files: today's lim5 word counts [479,412,461,474,260] equal recall_191893.out:37, and the start and end of all 5 texts are identical to start_dense100_lim5.json. Today's 100-page file (homer-017) ends differently on all of those 5 pages, while the recorded 100-page file matches its own lim5. The cause between nodes is untested; the bullet does not assert one. NEXT = waiting-owner, as the law requires."},{"claim":"Pre-arm proof, stage-2 half: job 193564 COMPLETED 0:0, `RESULT preflight_cpu_ok=1`, 40 / 40 unit tests, stage-2 K / S / W / P configs differ from the recorded one only in the law's keys. It ran on uncommitted files (git 622ae40+dirty), but every file it used for stage 2 ... was last written before the job started (20:07:17) and has the md5 of commit 52cc9e9.","status":"supported","reason":"preflight_cpu_193564.ou
+== rc=0

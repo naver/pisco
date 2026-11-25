@@ -1,57 +1,68 @@
 # STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-25 21:00 (verifier alert only). HEAD 503368a; `git status pisco/ scripts/rebuild/` clean NOW.
-The three recall cells record git `6440bd1+dirty`: `scripts/rebuild/recall.sbatch` was written and launched uncommitted
-at the 20:30 wake, then committed by that wake's tick in 503368a; the committed file has the launched md5 7a5109fc
-(`git show 503368a:scripts/rebuild/recall.sbatch | md5sum`): the submitted script equals the committed one.
+Last wake: 2026-11-25 23:00 (woken: the three feasibility-gate cells ended). HEAD ca348f9. This wake wrote, uncommitted
+at exit (the tick commits): `docs/stage2_rebuild.md` (new), `campaign_rebuild/BLOCKED.md` (new), two rows of
+`known_issues.md`, this file. No code edited, nothing launched.
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
-- Pre-arm proof holds: CPU job 193564 COMPLETED 0:0 (10:09), `RESULT preflight_cpu_ok=1`: 40 / 40 unit tests
-  (options off = the old collator's RNG stream draw for draw vs commit 69869340) and the resolved configs of stage 2
-  K / S / W / P and finetunes K s42 / K s43 / L s42 / L s43 differ from the recorded ones only in the law's keys.
-  The earlier unit-test job 193554 (rc 1, 39 / 40, a test-side miscount) is superseded and closed.
+- Feasibility gate, known positive PASSES: the overfit model `expQ/slotcheck/o_bf16/model` gives page word recall .921
+  on `slotcheck_dense100` (100 pages) = recorded .921 (job 192209), 100 / 100 rebuilt texts identical — job 193566.
+- Feasibility gate, reference PASSES: the fresh uncompressed transcription paired with itself 1.000, with the recorded
+  reference 1.000 (9 of 100 pages differ by < 0.1 pt) — job 193567.
+- Feasibility gate, R2 MISSES its bar: R2 `expQ/archq3/pt_mm_5M_spread/model` .715 vs bar .702 ± .01 (job 191893),
+  today − recorded +1.3 pt [−2.4, +5.2], 52 / 45 pages, sign p .54, n 100 — job 193565. 99 / 100 texts differ; per
+  page sd .20, 28 pages move > 10 pt. Not a code change: the `pisco/model.py` diff since 994cff3d is the opt-in pad
+  guard (off); the 5-page pass of the same job on homer-019 wrote the 5 recorded texts exactly, the 100-page pass on
+  homer-017 did not. By the law (FAIL → stop before training) the campaign waits for the owner (BLOCKED.md).
+- Pre-arm proof, stage-2 half: job 193564 COMPLETED 0:0, `RESULT preflight_cpu_ok=1`, 40 / 40 unit tests, stage-2
+  K / S / W / P configs differ from the recorded one only in the law's keys. It ran on uncommitted files (git
+  622ae40+dirty), but every file it used for stage 2 (`pisco/model.py`, `pisco/mm_collator.py`, `test_mm_collators.py`,
+  `scripts/rebuild/config_check.py`, `pt_stage2.sbatch`) was last written before the job started (20:07:17) and has
+  the md5 of commit 52cc9e9.
+- provisional: pre-arm proof, finetune half. `scripts/rebuild/ft.sbatch` was edited at 20:17:50, after the job ended
+  (20:17:26), so the K / L finetune config checks did not test the committed file (8f9eb8d6). Re-run
+  `ft.sbatch <ARM> 42 cfg` (and P) before any finetune.
 
 **Open, and running**
-- Feasibility gate (can page word recall be read on today's code, `pisco/model.py` 2a1cc007 vs 994cff3d when recorded):
-  three cells on `slotcheck_dense100` (100 pages), queued on gpu-be: R2 (193565, bar .702 ± .01), overfit o_bf16
-  (193566, bar .921 ± .01), a fresh uncompressed reference (193567, paired with itself = 1.000, and with the recorded ref).
-- Nothing trains yet: the law starts training only after this gate passes.
+- Nothing runs. Owner question in BLOCKED.md: count the feasibility gate as passed (recommended, 0 GPU-h now) or stop.
 
 ## Owned jobs (jobid | arm | state | elapsed | epoch or step/total | eta | note)
 - 193554 | unit tests | FAILED rc 1, verdict closed | 3:10 | — | — | superseded by 193564
 - 193564 | preflight (CPU) | COMPLETED 0:0, verdict closed | 10:09 | — | — | tests + 8 configs OK
-- 193565 | feasibility: R2 recall, dense100 | PENDING (Priority), SLURM start estimate 2026-11-30 20:30 | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
-- 193566 | feasibility: o_bf16 recall, dense100 | PENDING (Priority), estimate 2026-11-30 22:45 | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
-- 193567 | feasibility: ref recall, dense100 | PENDING (Priority), estimate 2026-12-01 01:00 | 0 | 100 pages | ~40 min after start | `--time 1:55 --mem 10G`
+- 193565 | feasibility: R2 recall, dense100 | COMPLETED 0:0 (3 attempts, 2 preempted), verdict closed | 49:35 | 100 / 100 pages | — | `expQ/rebuild/recall/r2_dense100.json`
+- 193566 | feasibility: o_bf16 recall, dense100 | COMPLETED 0:0 (3 attempts, 2 preempted), verdict closed | 55:54 | 100 / 100 pages | — | `expQ/rebuild/recall/o_bf16_dense100.json`
+- 193567 | feasibility: reference, dense100 | COMPLETED 0:0, verdict closed | 37:08 | 100 / 100 pages | — | `expQ/rebuild/recall/ref_dense100.json`
 
-Queued since 20:33. If still PENDING for Priority at 02:33 (6 h), the law's pre-authorised move applies:
-`gpucap land a100 1`, then `scontrol update JobId=… Partition=gpu,gpu-be` (trainings + these ≤ 8 GPUs on `gpu`).
-
-All three: `scripts/rebuild/recall.sbatch` (7a5109fc, written this wake: slotcheck's b61a7b4c with outputs under
-`expQ/rebuild/recall/`, any model dir as ARM, optional `:PER_SOURCE`, every law md5 printed), `-p gpu-be
---exclude=homer-[005-009]`. `--time` = measured pass wall × 3 (40-41 min per 100-page pass + 5 min plumbing, jobs
-191893 / 192209); `--mem` = 192209 MaxRSS 6.5 GB × 1.5. md5 at launch: eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py
-dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3cc13b2, model.py 2a1cc007, mm_collator.py 12d80001,
-mem_recall.py 9f241620, probe_mem_recall.py 14730fed. Logs: `expQ/rebuild/recall_<jid>.out`.
+`expmon check`'s `✗ COMPLETED but crash signature: preempted` on 193566 (and 193565) is benign: attempt 2 wrote the
+complete file and was preempted a minute later; attempt 3 found it (`exists, skipped`) and exited 0; the appended log
+still holds attempt 1-2's preemption line (known_issues row added, gripe filed).
 
 ## Adopted jobs (found running in this project, not launched by the campaign — never killed, never duplicated)
-(none; 193533-193536 are the live sibling longdoc's, never touched)
+(none; 193534-193536 are the live sibling longdoc's, never touched)
 
 ## Open arms and the next decision for each
 | arm | status | next |
 |---|---|---|
-| feasibility gate | 3 cells queued | read: `python3 -I scripts/longdoc/recall_pair.py --ref expQ/rebuild/recall/ref_dense100.json --a expQ/rebuild/recall/r2_dense100.json --b expQ/rebuild/recall/o_bf16_dense100.json` → A .702 ± .01, B .921 ± .01; self-pair `--a ref --b ref` → 1.000; fresh vs recorded ref (`--b expQ/slotcheck/recall/ref_dense100.json`). Also check each log: `mem_position_stride=8`, plumbing words > 0. FAIL → BLOCKED.md "gate 1 cannot be read on today's code", NEXT `waiting-owner` |
-| K / S / W / P (stage 2) | launchers committed | after the gate: four 20-step smokes, `expmon launch --exp rebuild --stage <ARM>_smoke --constraint=gpu_a100 --time 1:30:00 --mem 65G scripts/rebuild/pt_stage2.sbatch <ARM> 20` (`--mem` = R2 run 184777 MaxRSS 42.8 GB × 1.5; `gpucap land a100 1` first; 6 A100 nodes free at 20:30). Then full runs, `--time` = smoke s/step × 2,499 × 1.25 |
-| L (cleaned labels) | launcher committed | after the gate (the wake after the smokes, 4-per-wake cap): dump + judge the 28k teacher labels, build `data/rebuild_ft_clean_{docpages,natural}`, the R re-run check, then L s42 / s43 |
-| gate-1 references | not started | after the gate: one `--arm ref` pass on `slotcheck_dense100_heldout` and on `mm_docqa_1500_1m` gold pages (`:120`), shared by every model |
-| gate-2 finetunes | `ft.sbatch <ARM> 42` | run `ft.sbatch P 42 cfg` before any P finetune (its config resolution was added after 193564) |
+| feasibility gate | decided: 2 pass, R2 misses by .003 | owner answer (BLOCKED.md). If "A": add to the law's gate 1 "every model of one page set is read in ONE recall job (one node), with a fresh R2 pass beside K; report R2's read-to-read difference beside the seed floor" (`recall.sbatch` already takes several `NAME:MODEL:SET` passes) |
+| K / S / W / P (stage 2) | waiting on the owner | after "A": four 20-step smokes, `expmon launch --exp rebuild --stage <ARM>_smoke --constraint=gpu_a100 --time 1:30:00 --mem 65G scripts/rebuild/pt_stage2.sbatch <ARM> 20` (`--mem` = R2 run 184777 MaxRSS 42.8 GB × 1.5; `gpucap land a100 1` first). Then full runs, `--time` = smoke s/step × 2,499 × 1.25 |
+| L (cleaned labels) | waiting on the owner | after the smokes (4-per-wake cap): `ft.sbatch` config re-check, dump + judge the 28k teacher labels, build `data/rebuild_ft_clean_{docpages,natural}`, the R re-run check, then L s42 / s43 |
+| gate-1 references | not started | one `--arm ref` pass on `slotcheck_dense100_heldout` and on `mm_docqa_1500_1m` gold pages (`:120`), shared by every model |
+| gate-2 finetunes | `ft.sbatch <ARM> 42` | config re-check first (see the provisional line) |
 
 ## Health evidence this wake (numbers, not adjectives)
-- Recorded gate-1 numbers re-derived on the frontend (stdlib `recall_pair.py`): R2 .702, o_bf16 .921, o_bf16 − R2
-  +.219 [+.185, +.253], 98 / 2 pages, n 100.
-- Budget: 0 of 190 GPU-h spent on GPUs (only CPU jobs ran); 5 of 60 cells. The feasibility gate will cost ≈ 2.3 GPU-h
-  (3 cells × ~45 min), above the law's 1.5 estimate (it assumed 14 s/page; measured walls are ~24 s/page with loads).
+- Each recall file: 100 records, stride 8 on every page, 116-123 slots per page (mean 119.9, identical for R2 and o_bf16),
+  5-page plumbing words R2 [479, 412, 461, 474, 260], o_bf16 [480, 449, 484, 488, 366]; md5 at run: eval_mm_4b.sh
+  b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, paired_judge.py a3cc13b2, model.py 2a1cc007,
+  mm_collator.py 12d80001, mem_recall.py 9f241620, probe_mem_recall.py 14730fed, recall.sbatch 7a5109fc (= the committed
+  file in 503368a). All nodes A100-SXM4-80GB (homer-019, -017, -014), outside homer-[005-009].
+- Pairing: `python3 -I scripts/longdoc/recall_pair.py --ref <ref> --a <A> --b <B>` (stdlib) on the fresh and recorded
+  files; o_bf16 − R2 on today's files +20.6 pt [+17.1, +24.3], 97 / 3 pages (recorded +21.9 pt).
+- Budget: ≈ 2.4 of 190 GPU-h (193565 0.83 + 193566 0.93 + 193567 0.62, sacct elapsed, 1 GPU each); 5 of 60 cells.
+  Recall measured 23 s per page (law assumed 14 s): gate-1 recall projects ≈ 21 GPU-h vs 12 budgeted (≈ 200 of 190 in
+  total) — told to the owner as a heads-up; the wake asks before going over.
 
 ## Blockers / needs the owner
-(none)
+- BLOCKED.md: the feasibility gate's R2 bar missed by .003 (run-to-run readout noise, not code); recommendation A =
+  count it passed and read gate-1 models in one job with a fresh R2 (0 GPU-h now, +1.3 at gate 1). It relaxes a bar,
+  so it needs the owner's word.

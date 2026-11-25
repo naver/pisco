@@ -1,0 +1,126 @@
+== campaign rebuild wake 2026-11-25_2300  reasons=problems,problems-standing,condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795615202 live=- running=0 pending=0 problems=1 problems_other=0 new=0 gpuh24=0.6 idle_h=0.1 min_util=- alert=0 unpushed=0 cron=6 daemon=1 disk_gb=5325 sig=a690efc9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=wake-when_job:193565,193566,193567_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/hook.log
+== wait condition met: job:193565,193566,193567 (ended)   (NEXT was: wake-when job:193565,193566,193567 max 6h)
+== session 128c23fa-3b36-416f-98ef-aee0499d4c11  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md
+  ↳ # Wake brief — campaign rebuild — 2026-11-25_2300   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+83 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_rebuild; cat CAMPAIGN.md; echo ======; cat STATE.md; echo =====; cat known_issues.md; ls -la
+  ↳ Exit code 1 (+99 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN rebuild — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+246 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ 1	# STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append) (+57 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/known_issues.md
+  ↳ 1	# Known issues — campaign rebuild   (symptom → verdict → action; check here BEFORE diagnosing) (+50 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/rebuild/ expQ/rebuild/recall/ 2>&1; sacct -j 193565,193566,193567 -D -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,MaxRSS 2>&1; ls -la .expmon/campaign/rebuild/ | head -30
+  ↳ expQ/rebuild/: (+65 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 193565 193566 193567; do echo "#### $j"; grep -n -E "RESULT|mem_position_stride|refus|md5|exists|skip|plumb|words|Error|error|Traceback|pages|START|attempt|host|node" expQ/rebuild/recall_$j.ou…
+  ↳ #### 193565 (+71 lines)
+Reading the feasibility gate: all three recall jobs finished their 100 pages (two were preempted right after writing). Now pairing the files.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 205,226p expQ/rebuild/recall_193565.out; sed -n 215,235p expQ/rebuild/recall_193566.out; head -40 scripts/longdoc/recall_pair.py; grep -n "^import\|^from" scripts/longdoc/recall_pair.py
+  ↳ Setting `pad_token_id` to `eos_token_id`:248046 for open-end generation. (+89 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "^import\|^from" scripts/analyze_mem_recall.py; R=expQ/rebuild/recall; S=expQ/slotcheck/recall; ls -la $S/ | head; echo "### R2 vs o_bf16 (fresh ref)"; python3 -I scripts/longdoc/recall_pair.py…
+  ↳ 13:import argparse (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=expQ/rebuild/recall; S=expQ/slotcheck/recall; P=scripts/longdoc/recall_pair.py ⏎ echo "### recorded: start(R2) vs o_bf16, recorded ref"; python3 -I $P --ref $S/ref_dense100.json --a $S/start_dense100…
+  ↳ ### recorded: start(R2) vs o_bf16, recorded ref (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; R=expQ/rebuild/recall; S=expQ/slotcheck/recall ⏎ python3 -I - <<'EOF' ⏎ import json ⏎ def L(p):  ⏎     d=json.load(open(p)); return d ⏎ R='expQ/rebuild/recall'; S='expQ/slotcheck/recall' ⏎ files={'rec_…
+  ↳ {'rec_full': ['args', 'records']} (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in 193565 193566 193567; do echo "## $j"; grep -n "GPU 0\|^node" expQ/rebuild/recall_$j.out; done; f=$(ls expQ/slotcheck/*191893*.out 2>/dev/null); echo "191893 log: $f"; grep -n "GPU 0\|^node\|m…
+  ↳ ## 193565 (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "batch\|bs\b\|for .* in range\|generate(" scripts/longdoc/mem_recall.py | head -30; git log --oneline -8 -- pisco/model.py; for c in $(git log --format=%h -8 -- pisco/model.py); do echo "$c $(g…
+  ↳ 51:        batch, _, _ = coll.example_chunks([" "], [row["doc_images"][g]], None) (+20 lines)
+Diagnosing why the fresh R2 recall (.715) misses its bar (.702 ± .01) while the overfit model reproduces exactly. Checking the code change in `pisco/model.py`.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git diff 5955890 52cc9e9 -- pisco/model.py | head -120
+  ↳ diff --git a/pisco/model.py b/pisco/model.py (+46 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/rebuild/recall_193565.out expQ/rebuild/recall_193566.out expQ/slotcheck/recall_191893.out; do echo "## $f"; grep -n -i "fast path\|fla\b\|flash\|causal.conv\|torch implementation\|triton\…
+  ↳ ## expQ/rebuild/recall_193565.out (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json, statistics as st ⏎ R='expQ/rebuild/recall'; S='expQ/slotcheck/recall' ⏎ a={r['query_id']:r for r in json.load(open(f'{S}/start_dense100.json'))['records']} ⏎ b={r['q…
+  ↳ mems same 100 /100 (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -d .pixi/envs/*/lib/python3*/site-packages/{fla,causal_conv1d,flash_attn,flash_linear_attention}* 2>/dev/null; grep -rn "autotune" .pixi/envs/default/lib/python3*/site-packages/fla/ops/gated_delta_r…
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/causal_conv1d (+33 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -rln "triton.autotune" .pixi/envs/default/lib/python3.13/site-packages/fla/ops/gated_delta_rule/ .pixi/envs/default/lib/python3.13/site-packages/fla/ops/common/ 2>/dev/null | head; grep -rn "FLA_C…
+  ↳ .pixi/envs/default/lib/python3.13/site-packages/fla/ops/gated_delta_rule/wy_fast.py (+11 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la campaign_rebuild/; ls -la --time-style=full-iso campaign_rebuild/VERIFY.md campaign_rebuild/STATE.md 2>&1; head -5 campaign_rebuild/VERIFY.md 2>/dev/null; git status --short scripts/rebuild/ pis…
+  ↳ total 80 (+23 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; head -12 expQ/rebuild/preflight_cpu_193564.out; grep -n "md5\|[0-9a-f]\{8\}  " expQ/rebuild/preflight_cpu_193564.out | head -20; for f in scripts/rebuild/*.sbatch scripts/rebuild/*.py pisco/mm_collator…
+  ↳ FACTORS kind=preflight_cpu (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 193564 -X -o Start,End -n; git log -1 --format=%ci 52cc9e9; ls -l --time-style=+%H:%M:%S pisco/mm_collator.py pisco/model.py test_mm_collators.py scripts/rebuild/ft.sbatch scripts/rebuild/pt_s…
+  ↳ 2026-11-25T20:07:17 2026-11-25T20:17:26  (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json, sys, statistics as st ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall ⏎ R='expQ/rebuild/recall'; S='expQ/slotcheck/recall' ⏎ ref={r['query_id'…
+  ↳ (ref_n, hyp_n, keep=<function <lambda> at 0x7f3d0ef848b0>) (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json, sys, statistics as st ⏎ sys.path.insert(0,'scripts') ⏎ from analyze_mem_recall import recall, norm ⏎ R='expQ/rebuild/recall'; S='expQ/slotcheck/recall' ⏎ ref={r['que…
+  ↳ R2 fresh-recorded: mean 0.0130 sd 0.2015 mean|d| 0.1193 max|d| 0.697 |d|>.05 49 |d|>.10 28 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "crash signature" 2>&1 | head -15; echo; expmon gripe --open --search "preempted completed" 2>&1 | head -15; echo; expmon gripe --open --search "verifier stale" 2>&1 | head…
+  ↳ == 2 open report(s) matching 'crash signature', every machine, newest first == (+19 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon probe 193565 recall_dense100=0.715 n_pages=100 recorded=0.702 diff_vs_recorded=0.013 2>&1 | tail -2; expmon probe 193566 recall_dense100=0.921 n_pages=100 recorded=0.921 identical_texts=100 2>&1…
+  ↳ probe recorded: 193565 (recall_dense100=0.715 n_pages=100 recorded=0.702 diff_vs_recorded=0.013)   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/probes.jsonl) (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon verdict 193565 closed "feasibility gate R2 cell: 100/100 pages, stride 8, plumbing 5 pages non-empty; page word recall .715 vs bar .702 +-.01 = MISS by 0.3 pt. Paired vs recorded 191893: +1.3 pt…
+  ↳ verdict recorded: 193565 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la docs/stage2_rebuild.md 2>&1; cat campaign_rebuild/DECISIONS.md | head -30
+  ↳ ls: cannot access 'docs/stage2_rebuild.md': No such file or directory (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I -c " ⏎ import json,statistics as st ⏎ for f in ['expQ/rebuild/recall/r2_dense100.json','expQ/rebuild/recall/o_bf16_dense100.json']: ⏎     r=json.load(open(f))['records']; m=[x['mems'] for x …
+  ↳ expQ/rebuild/recall/r2_dense100.json 119.91 116 123 {8} (+22 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/docs/stage2_rebuild.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/docs/stage2_rebuild.md (file state is current in your context — no need to Read it back)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/docs/stage2_rebuild.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/docs/stage2_rebuild.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_rebuild; cat >> known_issues.md <<'EOF' ⏎ | `expmon check` prints `✗ COMPLETED but crash signature: preempted` on a recall cell (193565 / 193566, 2026-11-25) | benign: attempt 2 wrote the compl…
+  ↳ | verifier ALERT: STATE.md says "`git status … scripts/rebuild/` clean" but the launches record `<sha>+dirty` (recall ce (+2 lines)
+Now the gripes and the ledger note.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "expmon check flags a requeued --open-mode=append job as 'COMPLETED but crash signature: preempted' when its LAST attempt exited 0 and the output is complete (rebuild 193565/1935…
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "rebuild feasibility gate (dense100, 100 pages, page word recall): known positive o_bf16 .921 = recorded (100/100 texts identical) PASS; reference self-pair 1.000 PASS; R2 .715 vs bar .702 …
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -c '<tr' display_rebuild.html; expmon campaign report rebuild --section leaves 2>&1 | head -30 || expmon campaign report --section leaves 2>&1 | head -30
+  ↳ 6 (+9 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "waiting-owner" > campaign_rebuild/NEXT; cat campaign_rebuild/NEXT; git status --short campaign_rebuild docs/stage2_rebuild.md
+  ↳ waiting-owner (+6 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md has been updated successfully. (file state is current in your context — no need to Read it back)
+Training has not started: the check that must pass before any training missed one of its three bars by 0.3 point, so the campaign stopped and is waiting for your decision.
+
+## What the check measured
+Before any training, the law re-reads three known numbers on 100 dense document pages. The metric is "page word recall": the share of a page's words the model can rebuild from its compressed slots. Higher is better.
+
+| check | today | recorded | bar | result |
+|---|---|---|---|---|
+| recorded stage-2 model (the start of every arm), recall ↑ | .715 | .702 | .702 ± .01 | missed by .003 |
+| model trained on these 100 pages (known positive), recall ↑ | .921 | .921 | .921 ± .01 | pass, all 100 rebuilt texts identical |
+| reference transcription paired with itself | 1.000 | 1.000 | 1.000 | pass |
+
+## Why the miss is noise, not a code change
+- **Code unchanged:** the only edit to `pisco/model.py` since the recorded run is a switch that is off by default and off here.
+- **Same output on one node:** on homer-019, today's code wrote the recorded text exactly for the first 5 pages.
+- **Different output on another:** on homer-017 (same A100 model), the full 100-page pass changed 99 of 100 rebuilt texts.
+- **No real difference overall:** today minus recorded is +1.3 points (95% interval −2.4 to +5.2; p .54).
+- **Large swings per page:** 28 of 100 pages move by more than 10 points between two reads of the same model.
+- **Why only this model moves:** the rebuild is long (768 tokens, always taking the top token), and this model is unsure, so a tiny rounding difference sends it down another path. The model trained on these pages is very sure, so it does not move.
+- **Not proven:** what makes the two nodes differ. My guess, untested, is the kernel settings that Qwen3.5's linear-attention layers choose by timing.
+
+**Consequence for later:** this noise alone gives about ±4 points of uncertainty on a 100-page set. The first gate (gate 1, page word recall after the stage-2 trainings) needs a +3-point gain, so on the 100-page sets only large gains will show. The 360 eval pages (about ±2 points) will decide it.
+
+## Done this wake
+- Closed the three check jobs and recorded their numbers and the diagnosis.
+- Wrote the results page `docs/stage2_rebuild.md` and the question in `campaign_rebuild/BLOCKED.md`.
+- Spent about 2.4 of 190 GPU-hours. Nothing new was launched.
+
+**Cost warning:** recall takes 23 s per page, not the 14 s the plan assumed. Gate 1 recall now projects to about 21 GPU-hours instead of 12, so about 200 of 190 in total. The loop will ask you before it goes over.
+
+**Your decision:** I recommend **A**. It costs nothing now and keeps every gate's bar. It loosens the ±1-point bar on this check, so it needs your word.
+- **A (recommended):** count the check as passed. The next wake starts the four short stage-2 test runs: about 2 GPU-hours, then about 120 for the full runs. At gate 1, each page set is read in one job on one node, with a fresh read of the old stage-2 model beside the control. That adds about 1.3 GPU-hours.
+- **B:** first measure the noise on more nodes (about 2 GPU-hours), then I ask again.
+- **C:** stop the campaign.
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Feasibility gate read (100 dense pages, page word recall): known positive o_bf16 .921 = recorded (100/100 texts identical) PASS; reference self-pair 1.000 PASS; R2 .715 vs bar .702±.01 MISS by .003 (tod…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.4839 turns=40 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Feasibility gate read (100 dense pages, page word recall): known positive o_bf16 .921 = recorded (100/100 texts identica…", "launched": [], "verdicts": [{"jobid": "193565", "verdict": "closed", "note": "R2 recall .715 vs bar .702±.01: miss by .003; +1.3 pt [-2.4,+5.2] vs recorded, readout noise, same code path"}, {"jobid": "193566", "verdict": "closed", "note": "known positive o_bf16 .921 = recorded, 100/100 texts identical: pass"}, {"jobid": "193567", "verdict": "closed", "note": "reference self-pair 1.000, vs recorded ref 1.000: pass"}], "blocked": "Feasibility gate: R2's page word recall .715 missed the law's .702±.01 bar by .003 (run-to-run readout noise, not code).…", "gripes": ["defect: expmon check flags a requeued --open-mode=append job as 'COMPLETED but crash signature: preempted' when its last…", "+1 of e44ef74d: BRIEF Verifier table showed a stale VERIFY.md (20:36) against the 20:30 STATE although the 21:00 wake ha…"]}
+== final:
+{"next":"waiting-owner","summary":"Feasibility gate read (100 dense pages, page word recall): known positive o_bf16 .921 = recorded (100/100 texts identical) PASS; reference self-pair 1.000 PASS; R2 .715 vs bar .702±.01 MISS by .003 (today−recorded +1.3 pt [−2.4,+5.2], 52/45, p .54). Diagnosed as run-to-run readout noise, not code: model.py diff is an off opt-in guard; the 5-page pass on homer-019 reproduced the recorded texts exactly, the 100-page pass on homer-017 changed 99/100 (per-page sd .20). Per the law (FAIL → stop before training) wrote BLOCKED.md with recommendation A (count passed; gate-1 reads of one set in one job with a fresh R2; 0 GPU-h now, +1.3 at gate 1), which relaxes a bar so needs the owner. Verdicts closed on 193565/193566/193567, probes recorded, docs/stage2_rebuild.md written, 2 known_issues rows, display refreshed, STATE rewritten. ~2.4 of 190 GPU-h spent; gate-1 recall projects ~21 vs 12 GPU-h (heads-up in BLOCKED.md). Pre-arm stage-2 proof confirmed against commit 52cc9e9 by mtimes+md5; finetune half provisional (ft.sbatch edited after preflight).","launched":[],"verdicts":[{"jobid":"193565","verdict":"closed","note":"R2 recall .715 vs bar .702±.01: miss by .003; +1.3 pt [-2.4,+5.2] vs recorded, readout noise, same code path"},{"jobid":"193566","verdict":"closed","note":"known positive o_bf16 .921 = recorded, 100/100 texts identical: pass"},{"jobid":"193567","verdict":"closed","note":"reference self-pair 1.000, vs recorded ref 1.000: pass"}],"blocked":"Feasibility gate: R2's page word recall .715 missed the law's .702±.01 bar by .003 (run-to-run readout noise, not code). Law says stop before training; owner must choose A (count as passed, recommended, 0 GPU-h now), B (measure noise first, ~2 GPU-h) or C (stop). See campaign_rebuild/BLOCKED.md.","gripes":["defect: expmon check flags a requeued --open-mode=append job as 'COMPLETED but crash signature: preempted' when its last attempt exited 0 with complete output (grep hits an earlier attempt's line)","+1 of e44ef74d: BRIEF Verifier table showed a stale VERIFY.md (20:36) against the 20:30 STATE although the 21:00 wake had fixed it"]}
+== rc=0 secs=552
+== verify: 5/6
+== codereview: none
