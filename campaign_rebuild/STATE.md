@@ -1,6 +1,9 @@
 # STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-25 20:30 (first wake after arming). HEAD 6440bd1, `git status pisco/ scripts/rebuild/` clean.
+Last wake: 2026-11-25 21:00 (verifier alert only). HEAD 503368a; `git status pisco/ scripts/rebuild/` clean NOW.
+The three recall cells record git `6440bd1+dirty`: `scripts/rebuild/recall.sbatch` was written and launched uncommitted
+at the 20:30 wake, then committed by that wake's tick in 503368a; the committed file has the launched md5 7a5109fc
+(`git show 503368a:scripts/rebuild/recall.sbatch | md5sum`): the submitted script equals the committed one.
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
@@ -18,9 +21,12 @@ Last wake: 2026-11-25 20:30 (first wake after arming). HEAD 6440bd1, `git status
 ## Owned jobs (jobid | arm | state | elapsed | epoch or step/total | eta | note)
 - 193554 | unit tests | FAILED rc 1, verdict closed | 3:10 | — | — | superseded by 193564
 - 193564 | preflight (CPU) | COMPLETED 0:0, verdict closed | 10:09 | — | — | tests + 8 configs OK
-- 193565 | feasibility: R2 recall, dense100 | PENDING (Priority) | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
-- 193566 | feasibility: o_bf16 recall, dense100 | PENDING (Priority) | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
-- 193567 | feasibility: ref recall, dense100 | PENDING (Priority) | 0 | 100 pages | ~40 min after start | `--time 1:55 --mem 10G`
+- 193565 | feasibility: R2 recall, dense100 | PENDING (Priority), SLURM start estimate 2026-11-30 20:30 | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
+- 193566 | feasibility: o_bf16 recall, dense100 | PENDING (Priority), estimate 2026-11-30 22:45 | 0 | 100 pages | ~45 min after start | `--time 2:20 --mem 10G`
+- 193567 | feasibility: ref recall, dense100 | PENDING (Priority), estimate 2026-12-01 01:00 | 0 | 100 pages | ~40 min after start | `--time 1:55 --mem 10G`
+
+Queued since 20:33. If still PENDING for Priority at 02:33 (6 h), the law's pre-authorised move applies:
+`gpucap land a100 1`, then `scontrol update JobId=… Partition=gpu,gpu-be` (trainings + these ≤ 8 GPUs on `gpu`).
 
 All three: `scripts/rebuild/recall.sbatch` (7a5109fc, written this wake: slotcheck's b61a7b4c with outputs under
 `expQ/rebuild/recall/`, any model dir as ARM, optional `:PER_SOURCE`, every law md5 printed), `-p gpu-be

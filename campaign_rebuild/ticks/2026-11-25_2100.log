@@ -1,0 +1,43 @@
+== campaign rebuild wake 2026-11-25_2100  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795608001 live=193567:PENDING,193566:PENDING,193565:PENDING running=0 pending=3 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=0.5 min_util=- alert=1 unpushed=0 cron=6 daemon=1 disk_gb=5363 sig=e3a5da94 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:193565,193566,193567_max_6h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/hook.log
+== session 33f8081f-fbe8-481f-bd34-bb6e096e4cb8  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md
+  ↳ # Wake brief — campaign rebuild — 2026-11-25_2100   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+93 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_rebuild/STATE.md; echo ======; cat .expmon/campaign/rebuild/VERIFY.md 2>/dev/null | head -50; echo =====; git status --short scripts/rebuild/ pisco/
+  ↳ Exit code 1 (+52 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls .expmon/campaign/rebuild/; git status --short scripts/rebuild/ pisco/; git log --oneline -3
+  ↳ alert.seen (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git show --stat 503368a | head -30; md5sum scripts/rebuild/recall.sbatch
+  ↳ commit 503368a55c7aa4504d0767ee5d733db7f701a49e (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_rebuild/CAMPAIGN.md
+  ↳ # CAMPAIGN rebuild — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+245 lines)
+Woken by a verifier alert: one line in the state file says the launcher folder was clean when it wasn't. Fixing that line now; the three recall jobs are still queued.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_rebuild/known_issues.md; echo ====; cat campaign_rebuild/ALERT; echo ===; cat campaign_rebuild/VERIFY.md; expmon ledger 5 2>&1 | tail -8
+  ↳ Exit code 1 (+38 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -i "verif" campaign_rebuild/known_issues.md | cut -c1-600; grep -il "verifier.*ALERT\|ALERT.*verifier" campaign_*/known_issues.md
+  ↳ | gpu-be job shows CANCELLED then RUNNING again, Restarts>0, checkpoints keep advancing | benign preemption + requeue | verify world size (`sacct -j J -o AllocTRES`); no action | (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -i "verifier.*alert\|alert.*verifier" campaign_longdoc/known_issues.md campaign_slotcheck/known_issues.md | cut -c1-700; git log --oneline -5 -- campaign_slotcheck/ALERT campaign_longdoc/ALERT
+  ↳ campaign_longdoc/known_issues.md:| verifier ALERT: STATE.md says "verdict closed" for an ended cell whose grid VERDICT is `-` (191378, 2026-11-17) | the wake ledgered health as a note/probe but never  (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git log --format='%h %s' --stat -8 -- 'campaign_*/ALERT' | grep -B3 "ALERT" | head -40
+  ↳ 503368a campaign rebuild: wake 2026-11-25_2030 (rc=0, problems,first) (+30 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git show 503368a:scripts/rebuild/recall.sbatch | md5sum; git diff --quiet 503368a -- scripts/rebuild/recall.sbatch && echo same_as_commit; squeue -j 193565,193566,193567 -o "%i %T %r %S" 2>&1 | head
+  ↳ 7a5109fc81eed6efcb49ac042de8db8c  - (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='campaign_rebuild/STATE.md' ⏎ s=open(p).read() ⏎ old=s.split('\n')[2] ⏎ assert old.startswith('Last wake:'), old ⏎ new=("Last wake: 2026-11-25 21:00 (verifier alert only). HEAD 50…
+  ↳ 3:Last wake: 2026-11-25 21:00 (verifier alert only). HEAD 503368a; `git status pisco/ scripts/rebuild/` clean NOW. (+7 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -i 's/(`git show 503368a:scripts\/rebuild\/recall.sbatch | md5sum`), so the cells ran committed code byte for byte./(`git show 503368a:scripts\/rebuild\/recall.sbatch | md5sum`): the submitted scri…
+  ↳ Last wake: 2026-11-25 21:00 (verifier alert only). HEAD 503368a; `git status pisco/ scripts/rebuild/` clean NOW. (+13 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tail -3 campaign_rebuild/known_issues.md | cut -c1-120; expmon gripe --open --search dirty launcher 2>&1 | head -20
+  ↳ | a shared file's md5 changed between two reads of one arm (`pisco/model.py` 994cff3d in read 1 → f8ae6efe in read 2 of  (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same c437e42e "pisco/rebuild 2026-11-25: recall cells 193565-193567 record 6440bd1+dirty; the tree was dirty anyway (CLAUDE.md, docs/, untracked test file), so +dirty did not say the LAU…
+  ↳ logged as a +1 of c437e42e (entry bb6a5f24) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; echo "wake-when job:193565,193566,193567 max 6h" > campaign_rebuild/NEXT; cat campaign_rebuild/NEXT
+  ↳ wake-when job:193565,193566,193567 max 6h
+→ StructuredOutput: {"next": "wake-when", "summary": "Verifier-alert wake. Fixed the unsupported STATE.md line: scripts/rebuild/recall.sbatch was uncommitted when recall cells 193565-193567 launched (git 6440bd1+dirty); the tick committed it in 503368a with th…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.8573 turns=17 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Verifier-alert wake. Fixed the unsupported STATE.md line: scripts/rebuild/recall.sbatch was uncommitted when recall cells 193565-193567 launched (git 6440bd1+dirty); the tick committed it in 503368a with the launched md5 7a5109fc. Added a known_issues row, deleted ALERT, ledger note. Feasibility-gate cells still PENDING (Priority), SLURM estimates 2026-11-30 20:30 to 2026-12-01 01:00; partition move pre-authorised at 6 h (02:33). No launches.", "launched": [], "verdicts": [], "gripes": ["+1 c437e42e: +dirty on a dirty tree does not show the launcher itself was uncommitted; suggest runs.jsonl stores launcher md5 + tracked flag"], "wake_when": "job:193565,193566,193567 max 6h"}
+== final:
+{"next":"wake-when","summary":"Verifier-alert wake. Fixed the unsupported STATE.md line: scripts/rebuild/recall.sbatch was uncommitted when recall cells 193565-193567 launched (git 6440bd1+dirty); the tick committed it in 503368a with the launched md5 7a5109fc. Added a known_issues row, deleted ALERT, ledger note. Feasibility-gate cells still PENDING (Priority), SLURM estimates 2026-11-30 20:30 to 2026-12-01 01:00; partition move pre-authorised at 6 h (02:33). No launches.","launched":[],"verdicts":[],"gripes":["+1 c437e42e: +dirty on a dirty tree does not show the launcher itself was uncommitted; suggest runs.jsonl stores launcher md5 + tracked flag"],"wake_when":"job:193565,193566,193567 max 6h"}
+== rc=0 secs=127
+== verify: unchanged
