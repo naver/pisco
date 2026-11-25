@@ -1,0 +1,89 @@
+== campaign longdoc wake 2026-11-26_0300  reasons=condition  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795629602 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=12.6 idle_h=0.2 min_util=- alert=0 unpushed=0 cron=6 daemon=1 disk_gb=5208 sig=3f0317b9 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:193608,193645_max_3h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== wait condition met: job:193608,193645 (ended)   (NEXT was: wake-when job:193608,193645 max 3h)
+== session 305990ee-e369-45bc-b060-017371635746  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+22 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/305990ee-e369-45bc-b060-017371635746/tool-results/blw2b18hx.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-26_0300   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+183 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/305990ee-e369-45bc-b060-017371635746/tool-results/blw2b18hx.txt
+  ↳ 184
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; wc -l campaign_longdoc/CAMPAIGN.md campaign_longdoc/STATE.md campaign_longdoc/known_issues.md; cat campaign_longdoc/STATE.md
+  ↳ 379 campaign_longdoc/CAMPAIGN.md (+243 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/known_issues.md | cut -c1-400
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+44 lines)
+  ↳ <persisted-output> (+27 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/305990ee-e369-45bc-b060-017371635746/tool-results/bsyqxfst7.txt
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+379 lines)
+Reading the last two finished jobs (the seed-43 40-page slot-reading cell and the second-judge re-score) to decide arm U.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 193608,193645 -X -o JobID,JobName%20,State,ExitCode,Elapsed,NodeList,Start,End 2>&1; ls -la expQ/longdoc/ | head -50; ls expQ/longdoc/rejudge/UP_pages_p10_p40/ 2>&1
+  ↳ JobID                     JobName      State ExitCode    Elapsed        NodeList               Start                 End  (+59 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -d expQ/longdoc/*/; ls -la expQ/longdoc/u_r43/eval/ 2>&1; ls expQ/longdoc/*193608* expQ/longdoc/*193645* 2>&1; ls expQ/longdoc/length/ | grep -E "U_|P_|health" 
+  ↳ expQ/longdoc/ae/ (+46 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; tail -30 expQ/longdoc/eval_mnt_193608.out | cut -c1-300; echo ----; cat expQ/longdoc/rejudge_193645.out | cut -c1-300 | tail -40
+  ↳ f1                           0.4232 (+72 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c " ⏎ import json;d=json.load(open('expQ/longdoc/length/U_D_pages_s42_judge.json'));print(json.dumps({k:v for k,v in d.items() if k not in ('per_item','items','rows')},indent=1)[:2500])"; ls e…
+  ↳ { (+87 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; L=expQ/longdoc/length; U3=expQ/longdoc/u_r43/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; E3=expQ/longdoc/e_r43/eval/mm_docqa_pisco_k1000_px1003520_cml102…
+  ↳ == D s43 judge (+29 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,30p scripts/longdoc/cell_health.py; python3 -c " ⏎ import json;d=json.load(open('expQ/longdoc/length/health_UP_2026-11-26.json'));print(type(d)); print(json.dumps(d,indent=0)[:1500])"
+  ↳ #!/usr/bin/env python3 (+104 lines)
+Seed-43 result is in: the slot-reading effect is +3.3 pt at seed 43 (seed 42 was +2.8). Now checking that cell's health, then the second-judge pairs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=expQ/longdoc/u_r43/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json; timeout 60 .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --ca…
+  ↳ mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.4606, "at_cap": 28, "at_cap_pct": 1.99, "prompt_ (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; L=expQ/longdoc/length; RU=expQ/longdoc/rejudge/UP_pages_p10_p40; RE=expQ/longdoc/rejudge/E_pages_p10_p40 ⏎ for s in 42 43; do ⏎ U=$RU/u_r${s}__mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml102…
+  ↳ == D s42 project (+19 lines)
+Both seeds now agree in sign. Next: record verdicts, count the GPU-hours used, then rewrite the diagnosis doc and the owner checkpoint.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; IDS=$(python3 -c " ⏎ import json ⏎ ids=[] ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     if r.get('exp')=='longdoc': ids.append(str(r.get('jobid') or r.g…
+  ↳ 96 (+3 lines)
+Recording the verdicts and the arm result in the ledger.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon verdict 193608 closed "health OK: arm U R s43 pages p40 eighth; 1407/1407 judged, unparseable 0, at cap 28 (1.99%), mems ratio 815,874/6,757,206 = .121 (eighth by design, = s42 twin); homer-0…
+  ↳ verdict recorded: 193608 -> closed   (-> /beegfs/scratch/user/hdejean/pisco/.expmon/verdicts.jsonl; also ledgered) (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat docs/longdoc_diagnosis.md
+  ↳ <persisted-output> (+17 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/305990ee-e369-45bc-b060-017371635746/tool-results/bpm9908xa.txt
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+281 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for s in 42; do python3 -I scripts/paired_judge.py expQ/longdoc/u_r42/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json expQ/longdoc/e_r42/eval/mm_docq…
+  ↳ longdocurl_p40  1407   0.453   0.429   +0.025   0.009 [+0.008, +0.043]     105      70    0.010 (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; git show 622ae40^:campaign_longdoc/BLOCKED.md 2>/dev/null | head -45 | cut -c1-400
+  ↳ ## Final checkpoint: fund the last two probes (9 runs, ~13 GPU-hours), or close the campaign? (+34 lines)
+Writing the results into the diagnosis doc (header, slot-reading row, positions row, training-data row, plus a ranked answer at the top).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ lines=s.split('\n') ⏎ # line 3 (index 2): header ⏎ assert lines[2].startswith('Rewritten by each campaign wake') ⏎ lines[2]=("Rewr…
+  ↳ 27:| training never shows long inputs | input audit (count o (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ L=open(p).read().split('\n') ⏎ def idx(pref): ⏎     return [i for i,l in enumerate(L) if l.startswith(pref)][0] ⏎ L[idx('| 2a |')]=L[idx('| 2a |')].r…
+  ↳ 292
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ t='''### Arm U detail: keep only the most-attended eighth of the slots (LongDocURL pages, 1,407 Q per cell, cap 512) ⏎ Rate 8 toke…
+  ↳ ok
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n "attn_global" scripts/eval_mm_docqa.py | head -8
+  ↳ 300:        else:   # attn: per chunk the "first" count, most-attended slots; attn_global: the same total over all chunks (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 280,320p scripts/eval_mm_docqa.py
+  ↳ if dec["input_ids"].shape[1] > decoder_max_length: (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='docs/longdoc_diagnosis.md' ⏎ s=open(p).read() ⏎ old='''"Eighth" = per question, keep the 12.5% of `<MEM>` slots the last prompt ⏎ position attends to most (one pass over all slot…
+  ↳ ok
+Doc updated. Now the ledger note, the results page refresh, and the owner checkpoint.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "provisional: arm U BETWEEN THE BARS (not confirmed, not ruled out): keep the most-attended eighth of the slots, LongDocURL pages, R, n 1,407 per cell. D = (eighth-plain at 40 pages) - (eig…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon campaign report --section leaves 2>&1 | head -40 | cut -c1-250
+  ↳ **Settled** (+10 lines)
+Writing the new STATE.md (whole-file rewrite).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 - <<'EOF' ⏎ p='campaign_longdoc/STATE.md' ⏎ s=open(p).read() ⏎ start=s.index('## TL;DR') ⏎ settled_start=s.index('**Settled**',start) ⏎ open_start=s.index('**Open, and running**',start) ⏎ armE=…
+  ↳ 8:## This wake (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search "section leaves" 2>&1 | head -5 | cut -c1-200; expmon gripe --open --search "leaves Settled" 2>&1 | head -5 | cut -c1-200
+  ↳ == 24 open report(s) matching 'section leaves', every machine, newest first == (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 5719593e "longdoc 2026-11-26: 87 Settled bullets, all per-cell 'health OK' verdict texts; the arm-level findings (ledger 'provisional:' notes) never appear, so the TL;DR is hand-bui…
+  ↳ logged as a +1 of 5719593e (entry 7eb260ef) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "longdoc wake 2026-11-26 03:00: woken by its wait (193608, 193645 ended, both COMPLETED 0:0, health OK, verdicts closed). Arm U between the bars: D +2.8 / +3.3 (s42 / s43), positive under r…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Every funded run is in: 96 of 96 runs, 98.3 of 114 GPU-hours. The campaign now waits for the owner's decision on the final checkpoint in BLOCKED.md.\n\nArm U (does the decoder read many `<MEM>` slots wo…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.9354 turns=36 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "Every funded run is in: 96 of 96 runs, 98.3 of 114 GPU-hours. The campaign now waits for the owner's decision on the final checkpoint in BLOCKED.md.\n\nArm U (does the decoder read many `<MEM>` slots worse than a few?). The test keeps only the most-attended eighth of the slots. The effect is the 40-page gain minus the 10-page gain:\n- Seed 42: +2.8 pt [+0.4, +5.3], sign test p .019.\n- Seed 43: +3.3 p…", "launched": [], "verdicts": [{"jobid": "193608", "verdict": "closed", "note": "health OK; arm U s43 40 pages eighth .461 vs plain .422, +3.8 pt; D s43 +3.3 [+0.8,+6.0]"}, {"jobid": "193645", "verdict": "closed", "note": "health OK; project-prompt re-judge of 6 U/P files; D project +1.8 / +3.8, P project -0.4 / -0.1"}], "blocked": "Final checkpoint for the owner (BLOCKED.md): close the diagnosis now (recommended, 0 GPU-h), or fund one repeat of the slot-reading probe on new documents (~15 runs over the 96-run cap, ~17 GPU-h, MMLongBench-Doc with its licence not yet checked, under-powered at ~700-1,000 questions).", "gripes": ["+1 of 5719593e: campaign report --section leaves prints 87 per-cell health verdicts as Settled, never the arm-level findings; suggest newest ledger note per arm, cell verdicts folded into a count"]}
+== final:
+{"next":"waiting-owner","summary":"Every funded run is in: 96 of 96 runs, 98.3 of 114 GPU-hours. The campaign now waits for the owner's decision on the final checkpoint in BLOCKED.md.\n\nArm U (does the decoder read many `<MEM>` slots worse than a few?). The test keeps only the most-attended eighth of the slots. The effect is the 40-page gain minus the 10-page gain:\n- Seed 42: +2.8 pt [+0.4, +5.3], sign test p .019.\n- Seed 43: +3.3 pt [+0.8, +6.0], p .035.\n- Other scorers give the same sign, within 2 pt (seed 42 / seed 43): project prompt +1.8 / +3.8, match +1.9 / +1.9, exact match +1.8 / +1.9.\n- Verdict: between the bars. The cause bar is +3 pt at both seeds, and seed 42 misses it by 0.2 pt. So it is not confirmed and not ruled out.\n\nArm P (position numbers): not a cause, also under the project prompt (−0.4 / −0.1 pt).\n\nDelivered:\n- `docs/longdoc_diagnosis.md` rewritten. It now opens with the ranked answer:\n  1. The compression itself, about 233–258 of 1,407 questions already lost at 10 pages.\n  2. The extra 40-page loss on page images (−6.5 / −5.3 pt). About half of it fits the slot-reading effect; none of it comes from positions.\n  3. Long-chunk stage-1 training hurts image pages.\n- The doc also has a new arm U table, and the results page was refreshed.\n\nThe BLOCKED.md question: close now (recommended, 0 GPU-hours), or fund one repeat of arm U on new documents (~15 runs, ~17 GPU-hours). The only candidate source gives about 700–1,000 usable questions, so the repeat would be under-powered.","launched":[],"verdicts":[{"jobid":"193608","verdict":"closed","note":"health OK; arm U s43 40 pages eighth .461 vs plain .422, +3.8 pt; D s43 +3.3 [+0.8,+6.0]"},{"jobid":"193645","verdict":"closed","note":"health OK; project-prompt re-judge of 6 U/P files; D project +1.8 / +3.8, P project -0.4 / -0.1"}],"blocked":"Final checkpoint for the owner (BLOCKED.md): close the diagnosis now (recommended, 0 GPU-h), or fund one repeat of the slot-reading probe on new documents (~15 runs over the 96-run cap, ~17 GPU-h, MMLongBench-Doc with its licence not yet checked, under-powered at ~700-1,000 questions).","gripes":["+1 of 5719593e: campaign report --section leaves prints 87 per-cell health verdicts as Settled, never the arm-level findings; suggest newest ledger note per arm, cell verdicts folded into a count"]}
+== rc=0 secs=521
+== verify: 5/24
+== codereview: none
