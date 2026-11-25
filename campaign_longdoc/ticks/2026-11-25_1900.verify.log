@@ -1,0 +1,67 @@
+== verifier 2026-11-25_1900  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session 02ac36df-b431-4103-8d67-46e9d2c2f752  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+242 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 244	  mixed 75 / 75, 75 / 75, 74 / 75, judge 1.00 / 1.00 / .99 (191879). Whole-answer EM fails everywhere (text .53 / .36 / (+199 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (25872 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 444	191149     T    -        ended     closed     eval_mm  pisco    t_l1024_s42 mm_docqa_1500_1m all      ckpt       4        451584     0        0             none       brief        1         none   (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 504	{"ts": "2026-11-17 21:41", "jobid": "191391", "verdict": "closed", "note": "plumbing OK: 300 rows, judge on all, unparseable 0, no exceeds error, mems per row 577-962 inside the audit range (p50 7 (+59 lines)
+Checking STATE.md claims against the grid and verdicts; reading the last part of the verifier input now.
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 564	{"ts": "2026-11-17 02:32", "jobid": "191152", "metrics": {"judge": "0.6353"}} (+51 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/E_*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Grep: {"pattern": "1687|-\\.169", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content"}
+  ↳ 140:- 2026-10-12 21:03 [job 171687] mmpisco checkpoint-100 previews, judge-scored (slidevqa-100, truncated preds): 20K run judge .49 / EM .30; 65K rate-8 run judge .42 / EM .25; no-ft stage-2 .44 / .1 (+3 lines)
+→ Grep: {"pattern": "Budget and caps|option A|18:40|96", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 10:Successor of campaign 'longchunk' (its report: /beegfs/scratch/user/hdejean/pisco/campaign_longchunk/REPORT.md). Open at hand-off: pt_text_4b_long.sh — job 189693 CANCELLED, no verdict. (+12 lines)
+→ Grep: {"pattern": "KEEPF|KEEPM|MPOS", "path": "/beegfs/scratch/user/hdejean/pisco/eval_mm_4b.sh", "output_mode": "content"}
+  ↳ 46:KEEPFARG=""; [[ -n "${KEEPF:-}" ]] && { KEEPFARG="--mem_keep_frac $KEEPF --mem_keep_mode ${KEEPM:-first}"; SUF="${SUF}_keep${KEEPF/./}${KEEPM:+_$KEEPM}"; }   # env KEEPF=0.75 [KEEPM=even]: keep the (+1 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 218	  a hand-off to the pisco chats (it moves every campaign's yardstick); the wake never applies it itself. (+19 lines)
+→ Grep: {"pattern": "attn_global|mem_keep_mode|mem_keep_frac", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 242:    """Arm E probe (--mem_keep_mode attn*): one eager forward of the full prompt; the attention of the last prompt (+17 lines)
+→ Grep: {"pattern": "t8k|t16k|t32k|dlen", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true}
+  ↳ 1195:[Omitted long matching line] (+13 lines)
+→ Grep: {"pattern": "t4k.{0,80}\\+3\\.6|\\+0\\.7 \\[.{0,120}\\+3\\.9", "path": "/beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md", "output_mode": "content", "-n": true, "-o": true}
+  ↳ No matches found
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+64 lines)
+→ Glob: {"pattern": "*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/mpos"}
+  ↳ expQ/longdoc/mpos/pages_p40_minus_p10.json
+→ Glob: {"pattern": "out_of_range*", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/out_of_range.json
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t8k_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_match.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t32k_s42_judge.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t16k_s42_judge.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s43_match.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_em.json
+  ↳ 1	{ (+11 lines)
+Numbers check out so far; doing two last file checks (position-offset map and the position-probe script), then writing the verdicts.
+→ Grep: {"pattern": "MPOS_REF|exit\\(4\\)|sys.exit\\(4|position_ids", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.py", "output_mode": "content", "-n": true, "head_limit": 20}
+  ↳ 10:MPOS_REF = a recorded result json: after the run, every prediction must equal the reference's for the same (+4 lines)
+→ Grep: {"pattern": "\"(min|p50|max|n)\"\\s*:\\s*[0-9]+", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/mpos/pages_p40_minus_p10.json", "output_mode": "content", "-o": true, "head_limit": 10}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.py
+  ↳ 1	#!/usr/bin/env python3 (+88 lines)
+→ Grep: {"pattern": "_pos_kwargs", "path": "/beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py", "output_mode": "content", "-n": true}
+  ↳ 256:                      **_pos_kwargs(model, ids, attn)) (+4 lines)
+→ StructuredOutput: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2%; R s42 pages 1.4 / 1.7 / 3.6%, mixed 1.8 / 1.9 / 3.2%, text 3.2%; s…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.6166 turns=30 is_error=False denials=0
+== declared: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Every share matches its verdict: 192266 47 (2.1%); 192287/19…"}, {"claim": "The transcription-probe port is validated (job 191169): 360 …", "status": "supported", "reason": "Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%.…"}, {"claim": "Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,40…", "status": "supported", "reason": "Verdicts 191515 (1,407 Q on 387 PDFs, 4,221/4,221/2,246, buc…"}, {"claim": "provisional: R − uncompressed on one long document, cap 512,…", "status": "provisional", "reason": "Every gap, CI and McNemar split matches its verdict (192326……"}, "… +22 more"], "summary": "Every cited number matches its job, verdict or result file, …"}
+== final:
+{"claims":[{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47 / 2,246, 192266), pages 0.6 / 1.0 / 1.0%, mixed 1.1 / 1.8 / 2.2%; R s42 pages 1.4 / 1.7 / 3.6%, mixed 1.8 / 1.9 / 3.2%, text 3.2%; s43 pages 1.1 / 2.3 / 3.7%, mixed 1.8 / 2.8 / 3.8%, text 3.6%","status":"supported","reason":"Every share matches its verdict: 192266 47 (2.1%); 192287/192288/192267 8/14/14; 192289/192290/192268 15/26/31; 192326/192356/192324 20/24/50; 192357/192358/192325 26/27/45; 192323 71; 192360/192362/192364 15/33/52; 192361/192363/192365 25/39/54; 192359 81. All are under the 5% bar, so the cap stays 512, as the law's 191777 rule says."},{"claim":"The transcription-probe port is validated (job 191169): 360 / 360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt)","status":"supported","reason":"Verdict 191169: 360/360 pages byte-identical, 70.5% = 70.5%. The law's gate is to match the legacy 71% within ±2 pt; it does."},{"claim":"Arm E sets exist (job 191515): LongDocURL (Apache-2.0), 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637/610/588/411), needles 300/225/225; closed-book 1,407 (191774); bucket sets 6 × 1,407 (192265)","status":"supported","reason":"Verdicts 191515 (1,407 Q on 387 PDFs, 4,221/4,221/2,246, buckets 637/610/588/411, needles 300/225/225), 191774 (1,407 closed-book questions) and 192265 (6 × 1,407 rows, FAILURES none) all match. The licence is not in a verdict; I did not check it."},{"claim":"provisional: R − uncompressed on one long document, cap 512, paired, both seeds, n 1,407 per pages/mixed bucket and 2,246 text (gaps −16.6 to −23.7 pt), seeds agree within 2 pt in every cell","status":"provisional","reason":"Every gap, CI and McNemar split matches its verdict (192326…192365 against 192266-192290; e.g. p40 s42 −23.0 [−26.1,−19.9] 123/447), with the same md5 throughout. The 'within 2 pt' line is loose: the text t4k bucket differs by +3.3 [+0.8,+5.8] between seeds (192359), and pages 10 differs by −1.8, above the law's 1.2 noise band. The 2-pt band is the wake's own, not the law's."},{"claim":"provisional: DECIDED for page images — a length loss at 40 pages. Δ_len 40 vs 10 pages rubric −6.5 [−9.5,−3.5] sign 165/249 (s42), −5.3 [−8.4,−2.3] 177/245 (s43); project −5.7 / −6.1; match −4.6 / −3.6; EM +6.0 / +7.2 flips","status":"provisional","reason":"The numbers match 192324/192364 (rubric) and 192405 (project); the match files say −4.5 [−7.1,−2.1] (s42) and −3.6 [−6.0,−1.1] (s43). All four files are under 5% at the cap, so the law's bar is met at both seeds. But E_dlen_pages_p40_s42_em.json gives +6.0 [+3.6,+8.3], sign 171/94: a sign flip with the CI excluding 0. Arm J's rule then calls the arm 'judge-sensitive'. The EM-fault exemption was written after the data, and the owner's 2026-11-25 'A' funded arms U/P without ruling on it. 'DECIDED' overstates; keep provisional."},{"claim":"provisional, NOT DECIDED: pages 20 vs 10 −2.8 [−5.6,−0.1] / −1.9 [−4.8,+0
+== rc=0

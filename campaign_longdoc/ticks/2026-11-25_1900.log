@@ -1,0 +1,108 @@
+== campaign longdoc wake 2026-11-25_1900  reasons=gate,heartbeat,request  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795600801 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=130.8 min_util=- alert=0 unpushed=0 cron=5 daemon=1 disk_gb=5462 sig=3f0317b9 same=47 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 3198fd8c-d689-414e-be00-2447c08a665c  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3198fd8c-d689-414e-be00-2447c08a665c/tool-results/b9x0wuwcb.txt
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3198fd8c-d689-414e-be00-2447c08a665c/tool-results/b9x0wuwcb.txt
+  ↳ 14	    Answer to the open question «Final checkpoint: fund the last two probes (9 runs, ~13 GPU-hours), or close the campaign?» (longdoc · BLOCKED.md): Owner (in the .claude chat, 2026-11-25), words:  (+149 lines)
+→ Bash: F=/home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/3198fd8c-d689-414e-be00-2447c08a665c/tool-results/b9x0wuwcb.txt; grep -n '^## ' $F; awk 'NR>163' $F | grep -v '^[0-9]\{6\} ' | head -150
+  ↳ 5:## Sensors (newest first, 3 ticks) (+54 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; ls; cat GATE; cat ../.expmon/campaign/longdoc/campaign.conf 2>/dev/null | head -40; ls ../.expmon/campaign/longdoc/
+  ↳ 372 CAMPAIGN.md (+55 lines)
+Owner approved funding the last two probes; reading the campaign law and state before launching them.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat campaign.conf; echo ----; cat CAMPAIGN.md
+  ↳ <persisted-output> (+21 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 1	# CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+372 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat STATE.md
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+187 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_longdoc/known_issues.md | cut -c1-300; echo; ls campaign_qafreeze/ campaign_longchunk/ 2>/dev/null | head -40; squeue -u hdejean -h -o '%i %j %T' | head
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+79 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; wc -l scripts/eval_mm_docqa.py eval_mm_4b.sh scripts/longdoc/eval_mnt.sbatch; grep -n 'keep_frac\|keep_mode\|KEEPF\|KEEPM\|position_ids\|_pos_kwargs\|decoder_position_ids\|def main\|attn_global' script…
+  ↳ 786 scripts/eval_mm_docqa.py (+35 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/scripts/eval_mm_docqa.py
+  ↳ 238	    return ((emb.float() / scale).round().clamp(-q, q) * scale).to(emb.dtype) (+134 lines)
+Owner said yes to the last two probes. Checking how the earlier 40-page cells were launched so the new ones match exactly.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -E '"(192324|192326|192360|192364)"' .expmon/runs.jsonl | python3 -c ' ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print(d.get("jobid"), d.get("argv"), {k:v for k,v in d.items()…
+  ↳ 192324 ['expQ/longdoc/e_r42/model', 'pisco', '', '/beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_pages_1500_p40'] {'launcher': 'scripts/longdoc/eval_mnt.sbatch', 'outdir': '/beegfs/scratch/user/ (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc; readlink e_r42/model e_r43/model; mkdir -p u_r42 u_r43 && ln -s "$(readlink e_r42/model)" u_r42/model && ln -s "$(readlink e_r43/model)" u_r43/model; ls -la u_r42 u_r43; ls u_r42/model/ | …
+  ↳ /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat scripts/longdoc/eval_mnt.sbatch | head -32; expmon launch --dry-run --exp longdoc --stage U -p gpu-be --mem 22G --time 11:26:00 --exclude='homer-[005-009]' --env MNT=512 --env PX=1003520 --env TOPK…
+  ↳ #!/bin/bash (+36 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/audit_191516/ | head; head -c 1500 expQ/longdoc/audit_191516/rows.jsonl; echo; grep -n 'def decoder_position_ids' -A 32 pisco/model.py | head -50
+  ↳ audit.json (+40 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'def mem_spread_position_ids' -A 30 pisco/*.py | head -45; grep -n 'position_ids' pisco/model.py | head -30
+  ↳ pisco/model.py:280:def mem_spread_position_ids( (+45 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls .pixi/envs/default/lib/python3*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py); grep -n 'rope_deltas' $f | head -30
+  ↳ 1198:    rope_deltas (`torch.LongTensor` of shape `(batch_size, )`, *optional*): (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; f=$(ls .pixi/envs/default/lib/python3*/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py); sed -n 1975,2025p $f
+  ↳ video_grid_thw=video_grid_thw, (+50 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'generate\|def test' test_positions.py | head -20; grep -n '"position_ids" in model_kwargs\|position_ids\[..., -1:\]\|position_ids = position_ids' .pixi/envs/default/lib/python3*/site-packages/…
+  ↳ 16:    def test_stride_one_is_consecutive(self): (+15 lines)
+Launching the slot-reading probe now; also writing the position-shift probe as a small wrapper under `scripts/longdoc/` so no shared eval file changes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c ' ⏎ import json,collections ⏎ c=collections.Counter() ⏎ for l in open("expQ/longdoc/audit_191516/rows.jsonl"): ⏎     d=json.loads(l); c[d["v"]]+=1 ⏎ print(c)'; grep -m3 -n '"E_pages' expQ/lo…
+  ↳ Counter({'E_pages_cml1024': 4221, 'E_mixed_cml1024': 4221, 'E_text_cml1024': 2246, 'E_text_cml256': 2246, 'E_needle_text': 300, 'E_needle_pages': 225, 'E_needle_mixed': 225}) (+54 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/e_r42/eval/; python3 -c ' ⏎ import json ⏎ d=json.load(open("expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json")) ⏎ print(type(d), list(d)…
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_longdoc_pages_1500_lim300.json (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c ' ⏎ import json ⏎ d=json.load(open("expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p10.json")) ⏎ r=d["records"]; print(len(r), list(r[0])) ⏎ print({…
+  ↳ 1407 ['query_id', 'source', 'query', 'answers', 'prediction', 'em', 'f1', 'anls', 'match', 'mems_used', 'n_images', 'decoder_prompt_tokens', 'judge', 'judge_raw'] (+1 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mpos_map.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/mpos_map.py (file state is current in your context — no need to Read it back)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.py
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.py (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n 'gen_pisco(\|sys.exit\|^if __name__' scripts/eval_mm_docqa.py; sed -n 776,786p scripts/eval_mm_docqa.py; python3 -m py_compile scripts/longdoc/eval_mpos.py scripts/longdoc/mpos_map.py && echo C…
+  ↳ 267:def gen_pisco(model: PISCO, coll: MultimodalFineTuningCollator, row, *, device, decoder_max_length, max_new_tokens, (+15 lines)
+→ Write: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.sbatch
+  ↳ File created successfully at: /beegfs/scratch/user/hdejean/pisco/scripts/longdoc/eval_mpos.sbatch (file state is current in your context — no need to Read it back)
+Position-probe launcher written; checking its text substitution locally (seconds, no compute).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; DER=/tmp/mpos_test.sh; sed -e 's/^STYLEARG=""; MNT=32; /STYLEARG=""; MNT=${MNT:?}; SUF="${SUF}_mnt${MNT}_mpos${MTAG:?}"; /' \ ⏎     -e 's/^echo "FACTORS kind=eval_mm mode=/echo "FACTORS kind=eval_mm ma…
+  ↳ 51c51 (+17 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/expQ/longdoc; for c in p0_r42:e_r42 p_r42:e_r42 p_r43:e_r43; do n=${c%%:*}; s=${c##*:}; mkdir -p $n && ln -s "$(readlink $s/model)" $n/model; done; ls -l p0_r42 p_r42 p_r43 | grep model; cd /beegfs/scra…
+  ↳ lrwxrwxrwx 1 hdejean hdejean 61 Nov 25 19:06 model -> /beegfs/scratch/user/hdejean/pisco/expQ/ft_mm_4b_184778/model (+11 lines)
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md has been updated successfully. (file state is current in your context — no need to Read it back)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "intent: owner REQUEST 2026-11-25 18:40 (\"A\"): fund arms U (slot reading) and P (positions) on LongDocURL page images 10 vs 40 pages, cap 96 cells / 114 GPU-h. This wake: P identity check…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+Identity check submitted (job 193533). Now the two position-shift cells, chained to run only if the identity check passes.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; T=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/mpos/pages_p40_minus_p10.json; expmon launch --dry-run --exp longdoc --stage P -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-009]' --dependen…
+  ↳ would submit: sbatch -p gpu-be --mem 9G --time 3:40:00 --exclude=homer-[005-009] --dependency afterok:193533 scripts/longdoc/eval_mpos.sbatch expQ/longdoc/p_r42/model pisco  /beegfs/scratch/user/hdeje (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; T=/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/mpos/pages_p40_minus_p10.json; for c in p_r42 p_r43; do expmon launch --exp longdoc --stage P -p gpu-be --mem 9G --time 3:40:00 --exclude='homer-[005-0…
+  ↳ log:     /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/eval_mpos_193534.out (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; squeue -u hdejean -h -o '%i %T %R %P %l' | grep -E '19353[3-6]'; tail -3 .expmon/runs.jsonl | python3 -c ' ⏎ import sys,json ⏎ for l in sys.stdin: ⏎     d=json.loads(l); print(d.get("jobid"), len(d.get…
+  ↳ 193533 PENDING (Priority) gpu-be 50:00 (+7 lines)
+Four jobs queued (89 of 96 runs used). Now closing out the owner's request: removing the answered question and the request file, then updating the state.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat REQUEST >> /dev/null; rm -f REQUEST BLOCKED.md; ls; cd ..; for j in 193533 193534 193535 193536; do :; done; expmon note -j 193533 "intent: arm P identity gate: 300 rows of pages p…
+  ↳ campaign.conf (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 24989ea7 "ncp/pisco longdoc 2026-11-25: BRIEF.md 58.5 KB; ~45 KB is the 'expmon grid longdoc' section whose 40+ factor columns are '-' on most rows. Suggest: drop all-'-' columns an…
+  ↳ logged as a +1 of 24989ea7 (entry 58ab055a) -> /home/hdejean/.claude/feedback/ncp.log (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --same 04e7f373 "still true 2026-11-25 (longdoc 193534/193535 launched with --dependency afterok:193533; runs.jsonl slurm dict has no dependency): the chain is invisible to the grid and th…
+  ↳ logged as a +1 of 04e7f373 (entry 124129ec) -> /home/hdejean/.claude/feedback/ncp.log
+Now rewriting STATE.md with this wake's actions and the new running jobs.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'EOF' ⏎ s = open("STATE.md").read() ⏎ a = s.index("## TL;DR") ⏎ b = s.index("**Open, and running**") ⏎ c = s.index("- provisional (plumbing, 300 rows") ⏎ d = s.index("## Ar…
+  ↳ 17297 1488 9650 9843 10677 12458 13226 13298 14914
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'EOF' ⏎ s = open("STATE.md").read() ⏎ settled = s[s.index("## TL;DR"):s.index("**Open, and running**")] ⏎ plumb = s[s.index("- provisional (plumbing, 300 rows"):s.index("##…
+  ↳ 20237 (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 160,176p STATE.md
+  ↳ | 192359 / 192360 / 192361, 192323 / 192326 / 192356 / 192324 / 192357 / 192358 / 192325 | E R s43 / s42 | COMPLETED, verdict closed | | health OK | (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -i '166,170d' STATE.md; sed -n 163,170p STATE.md; grep -n 'BLOCKED.md' STATE.md | head
+  ↳ | 191517 | J re-judge (first try) | FAILED, verdict closed "launch fault" | — | replaced by 191629 | (+9 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 53,55p STATE.md
+  ↳ [−6.0, −1.1]; EM +6.0 / +7.2 flips (uncompressed EM .190 → .080 while its judge .672 → .659: EM fails on the accepted (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -i '54s/sourced to EM.s fault, put to the owner in$/sourced to EM'"'"'s fault and stated in the final/; 55s/^  BLOCKED.md\. Tables/  checkpoint, which the owner answered 2026-11-25…
+  ↳ reference). By arm J's letter the EM flip makes it "judge-sensitive"; sourced to EM's fault and stated in the final (+22 lines)
+Jobs are queued and state is written; adding one health rule (code checksums must match the plain cells) since a sibling campaign is active in the same checkout.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 - <<'EOF' ⏎ p="STATE.md"; s=open(p).read() ⏎ old="- Then one project-prompt re-judge" ⏎ new=("- Health for every U / P cell, besides the law's list: the md5 line in its log mus…
+  ↳ 120:- Health for every U / P cell, besides the law's list: the md5 line in its log must read eval_mm_4b.sh b3d1cda1, (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "did: longdoc wake 2026-11-25 19:00: executed owner REQUEST (\"A\": fund arms U/P, cap 96, 114 GPU-h); wrote arm P as scripts/longdoc/eval_mpos.py (shared eval untouched) + offsets table; l…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+4 lines)
+→ StructuredOutput: {"next": "wake-when", "wake_when": "job:193533 max 3h", "summary": "I carried out the owner's \"A\": both remaining probes on 10- vs 40-page page-image documents are now funded, and the first four runs are queued. That uses 89 of the 96 all…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.9372 turns=46 is_error=False denials=0
+== declared: {"next": "wake-when", "wake_when": "job:193533 max 3h", "summary": "I carried out the owner's \"A\": both remaining probes on 10- vs 40-page page-image documents are now funded, and the first four runs are queued. That uses 89 of the 96 allowed runs; the GPU-hour cap stays at 114.\n\n- **Owner decision recorded.** It is in CAMPAIGN.md, the request file is deleted, and the answered question file is removed.\n- **Position probe.** This tests whether the 40-page loss come…", "launched": ["193533 arm P identity check: R s42 pages p10, 300 rows, MPOS=0, must equal 192326 predictions", "193534 arm P: R s42 pages p10 shifted to 40-page positions (afterok 193533)", "193535 arm P: R s43 pages p10 shifted to 40-page positions (afterok 193533)", "193536 arm U: R s42 pages p40, most-attended eighth of slots"], "verdicts": [], "gripes": ["+1 24989ea7: BRIEF.md 58.5 KB, mostly an all-'-' grid section; drop empty columns", "+1 04e7f373: --dependency not recorded in runs.jsonl manifest (chain 193533->193534/193535 invisible to grid/verifier)"]}
+== final:
+{"next":"wake-when","wake_when":"job:193533 max 3h","summary":"I carried out the owner's \"A\": both remaining probes on 10- vs 40-page page-image documents are now funded, and the first four runs are queued. That uses 89 of the 96 allowed runs; the GPU-hour cap stays at 114.\n\n- **Owner decision recorded.** It is in CAMPAIGN.md, the request file is deleted, and the answered question file is removed.\n- **Position probe.** This tests whether the 40-page loss comes from position numbers. It moves each 10-page document's compressed slots and question to the positions its own 40-page version uses: about 28,900 positions later, with the same number of slots. I wrote it as a small wrapper, `scripts/longdoc/eval_mpos.py`, that imports the shared eval script unchanged. So no shared file was edited, and the sibling campaign slotcheck keeps comparing on the same code.\n- **Position-probe chain (queued).**\n  - Job 193533 runs 300 questions with the shift set to 0. It must give exactly the predictions of the recorded unshifted run, or it exits with an error.\n  - Only if that passes, the full shifted runs start: seed 42 (job 193534) and seed 43 (job 193535).\n- **Slot-reading probe.** This tests whether the decoder reads many slots worse than few: it keeps only the most-attended eighth of the slots. The first run is queued (job 193536: seed 42, 40 pages). The other three runs (seed 42 at 10 pages, seed 43 at 10 and 40 pages) wait for the next wake because of the 4-submissions-per-wake cap.\n- **Nothing decided yet.** All new runs are still pending in the queue. My prediction, written before any result: the position shift costs at least 3 points at both seeds, and the slot-reading effect stays within ±3 points.\n- **Next wake.** It starts when the identity check ends (at most 3 h). It confirms the identity check passed, checks that every run used the same code as the earlier runs, and launches the last three slot-reading runs. A second-judge re-score follows once a probe decides.\n\nNothing needed from you.","launched":["193533 arm P identity check: R s42 pages p10, 300 rows, MPOS=0, must equal 192326 predictions","193534 arm P: R s42 pages p10 shifted to 40-page positions (afterok 193533)","193535 arm P: R s43 pages p10 shifted to 40-page positions (afterok 193533)","193536 arm U: R s42 pages p40, most-attended eighth of slots"],"verdicts":[],"gripes":["+1 24989ea7: BRIEF.md 58.5 KB, mostly an all-'-' grid section; drop empty columns","+1 04e7f373: --dependency not recorded in runs.jsonl manifest (chain 193533->193534/193535 invisible to grid/verifier)"]}
+== rc=0 secs=522
+== verify: 4/26

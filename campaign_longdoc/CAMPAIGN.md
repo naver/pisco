@@ -220,7 +220,11 @@ plumbing cell per new variant (the 20-page prompt fits on one A100, and the flag
 ## Budget and caps
 - cells for the whole campaign: 70 · GPU-hours: 60 (owner, 2026-11-16). [Owner, 2026-11-19 REQUEST 17:05: option 1 of
   the arm E budget question approved ("do as recommended"): cells 87, GPU-hours 114, for arm E's model cells at both
-  seeds plus the long-chunk text cells; the arm L re-run at 512 (option 2) was NOT approved.] The estimate uses measured walls: a judged 1,500-Q document
+  seeds plus the long-chunk text cells; the arm L re-run at 512 (option 2) was NOT approved.] [Owner, 2026-11-25
+  REQUEST 18:40, words "A": the final checkpoint's option A — fund arms U and P on page images at 40 vs 10 pages
+  (U 4 cells, P 4 cells, one second-judge re-score): cells 96, GPU-hours unchanged at 114. Arm P is implemented as
+  `scripts/longdoc/eval_mpos.py` (imports `scripts/eval_mm_docqa.py` unchanged, env `MPOS`; freely patchable), so no
+  shared eval file changes; its gate is a 300-row `MPOS=0` run equal to the recorded R plain predictions.] The estimate uses measured walls: a judged 1,500-Q document
   cell took 28-98 min, photos 18 min, text 17 min (campaign_probes/CAMPAIGN.md:116-120). About 62 cells are planned
   (A 2, J 3, L ~24, U ~12, P ~5, T ~16), mostly ≤ 1.6 h each. Uncompressed 20-page cells are unmeasured: the first one
   measures, with `--time 4:54:00` until then. CPU jobs count 0 GPU-h. A cell = every `expmon launch --exp longdoc`

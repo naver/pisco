@@ -1,21 +1,25 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-24 19:00 (twenty-sixth LLM wake; woken by the heartbeat and the usage-limit alert, now past its
-reset). Previous working wake: 2026-11-20 08:00.
-NEXT: `waiting-owner` — BLOCKED.md holds the final checkpoint question (queue id b62ccf, unanswered 4 days): fund arms
-U / P on page images at 40 vs 10 pages (9 runs ≈ 13 GPU-h, cap 87 → 96), or close. Only 2 of 87 runs are left.
+Last wake: 2026-11-25 19:00 (twenty-seventh LLM wake; woken by the owner's REQUEST + GATE and the heartbeat).
+NEXT: `wake-when job:193533 max 3h` — the position-probe identity check; that wake checks it and launches the last
+three slot-reading cells (the 4-per-wake cap stopped them here).
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- No-op. No REQUEST, no GATE, no answer in `expmon questions` (b62ccf still waiting), no job of this campaign in the
-  queue, no new result file, no ✗ in `expmon check`. Launched nothing.
-- Fixed the verifier's one minor note: needle text EM at ~4k is .53 (191877 verdict), not .52.
-- ALERT (usage limit 2026-11-21, reset 2026-11-24 19:00) is past; the efficiency line "SPEED: the login's usage limit
-  held this loop 100%" does not call for a loop change: the loop has nothing to run until the owner answers, so it
-  needs almost no quota. Moving logins is the owner's call and not worth a question.
-- The 2026-11-20 08:00 wake's work (nine arm E cells closed, project-prompt re-judge 192405, figure
-  `expQ/longdoc/figures/length_curve.svg`, `docs/longdoc_diagnosis.md`, hand-off 8d45d0) stands unchanged.
+- OWNER REQUEST 2026-11-25 18:40 executed: answer "A" to the final checkpoint = fund arms U (reading many `<MEM>`s)
+  and P (positions) on page images, 10 vs 40 pages, both seeds, plus one second-judge re-score; cells 87 → 96, GPU-hours
+  stay 114. Recorded in CAMPAIGN.md "Budget and caps"; REQUEST and the answered BLOCKED.md deleted.
+- `KEEPF` / `KEEPM` reach the arm E pages branch: `eval_mm_4b.sh:46` → `--mem_keep_frac/--mem_keep_mode` →
+  `gen_pisco` (`scripts/eval_mm_docqa.py:292-316`, attn_global = top eighth of the last prompt position's attention over
+  all slots, then the kept slots get fresh spread positions).
+- Arm P written as a wrapper, not a patch of the shared eval (`scripts/longdoc/eval_mpos.py`, see Tooling): the slotcheck
+  sibling keeps pairing on `eval_mm_docqa.py` dfe32aa0, and the patchable-IF invariant does not apply (nothing shared
+  changes). HF generate continues from the last prompt position + 1 (`transformers/generation/utils.py:937`), so the
+  shift reaches the answer tokens too.
+- Launched 4 (cells 89 of 96): 193533 identity check → 193534 / 193535 (afterok) → and 193536 (U s42 p40).
+- Gripes: +1 on 24989ea7 (brief 58.5 KB, mostly an all-`-` grid), +1 on 04e7f373 (`--dependency` not in the manifest).
+- Efficiency line "100% waiting for the owner": the owner answered; nothing to change in the loop.
 
 ## TL;DR — where this leaves the question
 **Settled**
@@ -47,8 +51,8 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   192324 / 192267 vs 192326 / 192287), −5.3 [−8.4, −2.3] 177 / 245 p .001 (s43; 192364 / 192267 vs 192360 / 192287);
   project prompt −5.7 [−8.7, −2.6] 178 / 257 / −6.1 [−9.2, −3.0] 183 / 271 (192405); match −4.6 [−7.1, −2.1] / −3.6
   [−6.0, −1.1]; EM +6.0 / +7.2 flips (uncompressed EM .190 → .080 while its judge .672 → .659: EM fails on the accepted
-  reference). By arm J's letter the EM flip makes it "judge-sensitive"; sourced to EM's fault, put to the owner in
-  BLOCKED.md. Tables `expQ/longdoc/length/E_dlen_pages_p40_s4{2,3}_{judge,match,em,project}.json`.
+  reference). By arm J's letter the EM flip makes it "judge-sensitive"; sourced to EM's fault and stated in the final
+  checkpoint, which the owner answered 2026-11-25 (option A, fund U / P). Tables `expQ/longdoc/length/E_dlen_pages_p40_s4{2,3}_{judge,match,em,project}.json`.
 - provisional, NOT DECIDED (no bar at both seeds): pages 20 vs 10 −2.8 [−5.6, −0.1] (s42), −1.9 [−4.8, +0.9] sign 174 /
   197 (s43); mixed 20 vs 10 −0.3 [−3.1, +2.5] / −1.2 [−4.0, +1.6]; mixed 40 vs 10 −1.4 [−4.5, +1.6] / −3.0 [−5.9, 0.0]
   sign 186 / 235 p .02; text t8k / t16k / t32k vs t4k +0.7 / +3.6 / +3.9 (s42), −2.5 / −0.7 / −1.7 (s43), every CI
@@ -100,8 +104,24 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
     191221), −0.6 [−2.7, +1.3] 121 / 130 (s43; 191307 vs 191306): the same seed pattern as arm E's long text.
 
 **Open, and running**
-- Nothing runs. Arms U (reading many `<MEM>`s) and P (positions) on page images at 40 vs 10 pages wait for the owner
-  (BLOCKED.md: 9 runs ≈ 13 GPU-h; 2 of 87 runs left).
+- Arm U, slot reading (gate in CAMPAIGN.md: D = (eighth − plain at 40 pages) − (eighth − plain at 10 pages) ≥ +3 pt,
+  CI above 0, at both seeds → the decoder reads many `<MEM>`s worse than few; CI inside ±3 at both → not this cause).
+  Plain pairs: s42 192326 (p10) / 192324 (p40), s43 192360 / 192364. Running: 193536 = R s42 p40 eighth
+  (`KEEPF=0.125 KEEPM=attn_global`, `expQ/longdoc/u_r42/`, `--time 11:26 --mem 22G`). To launch next wake: s42 p10,
+  s43 p10 (`--time 3:40 --mem 9G`), s43 p40 (`--time 11:26 --mem 22G`), same env, dirs `u_r42` / `u_r43`.
+- Arm P, positions (gate: R shifted − R plain on 10-page documents ≤ −3 pt with the CI below 0, at s42 and s43 →
+  positions past where the decoder reads well cost accuracy; CI inside ±3 at both → not this cause). Each 10-page
+  question's `<MEM>`s and question are moved to where its own 40-page version puts them (N p50 28,934 position ids);
+  slot count unchanged. Chain: 193533 identity check (300 rows, `MPOS=0`, must equal 192326's predictions, `JUDGE=0`,
+  `expQ/longdoc/p0_r42/`) → 193534 R s42 / 193535 R s43 shifted (`expQ/longdoc/p_r42/`, `p_r43/`, full 1,407 rows,
+  judged). Paired with 192326 / 192360. Health: `.mpos.json` offsets = the table, `mems_used` = the plain file's.
+  The 40-page loss to explain: Δ_len −6.5 (s42) / −5.3 (s43). If P costs about that much, positions are the cause.
+- Prediction written before the cells (kept and marked later): P costs ≥ 3 pt at both seeds; U's D lies inside ±3.
+- Health for every U / P cell, besides the law's list: the md5 line in its log must read eval_mm_4b.sh b3d1cda1,
+  eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe (the plain pairs' code). The sibling
+  slotcheck was active in this checkout during this wake; a different md5 means the cell does not pair.
+- Then one project-prompt re-judge (`rejudge.sbatch`, `--time 0:18 --mem 3G`) of the files behind whatever decides.
+- Budget: ≈ 13 GPU-h for the 8 remaining runs (walls above) → ≈ 103 of 114 GPU-h; cells 89 of 96 used.
 - provisional (plumbing, 300 rows, never decides): R s42 − uncompressed on LongDocURL. Pages cap 256 −17.0 [−23.0,
   −11.0] (24 / 75; 191673 vs 191669); text cap 256 −16.3 [−21.7, −11.0] (15 / 64; 191674 vs 191670); mixed cap 512
   −15.7 [−22.0, −9.3] (31 / 78; 191887 vs 191778).
@@ -129,17 +149,13 @@ TOPK=1000 --env CML=1024 --env DML=<set> scripts/longdoc/eval_mnt.sbatch expQ/lo
 /beegfs/scratch/user/hdejean/pisco/eval_data/longdoc_<set>[_<b>]`. Check `len(argv)` = 4 in `.expmon/runs.jsonl`.
 Results land in `expQ/longdoc/<cell>/eval/` (names `mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_<set>.json`);
 logs `expQ/longdoc/eval_mnt_<jobid>.out`.
-If the owner approves arms U / P (BLOCKED.md option A): first read `main()` of `scripts/eval_mm_docqa.py` to confirm
-`KEEPF` / `KEEPM` reach the arm E pages branch; U = eighth (`KEEPF=0.125 KEEPM=attn_global`) on `longdoc_pages_1500_p10`
-and `_p40`, s42 and s43 (4 cells), D = (eighth − plain at 40) − (eighth − plain at 10); P = ONE flag `--mem_position_offset
-N` (env `MPOS`) in `scripts/eval_mm_docqa.py` + `eval_mm_4b.sh` under the patchable-IF invariant (tests through SLURM,
-LIMIT=300 plain cell of 184778 equal to its recorded first 300; `MPOS=0` byte-identical), only while no longchunk /
-qafreeze eval runs; N from `expQ/longdoc/audit_191516/rows.jsonl` (40-page span − 10-page span); cells on pages 10 at
-s42 and s43. Then one re-judge of whatever decides.
 
 ## Owned jobs
 | job | arm | state | rows | note |
 |---|---|---|---|---|
+| 193533 | P identity check, R s42 pages p10, `MPOS=0` | PENDING (Priority) | 300 | exit 4 if any prediction differs from 192326 |
+| 193534 / 193535 | P R s42 / s43 pages p10 shifted to 40-page positions | PENDING (Dependency afterok:193533) | 1,407 each | |
+| 193536 | U R s42 pages p40 eighth | PENDING (Priority) | 1,407 | |
 | 192405 | J project-prompt re-judge, pages 10 / 40 | COMPLETED, verdict closed | 6 × 1,407 | copies in `expQ/longdoc/rejudge/E_pages_p10_p40/` |
 | 192362 / 192363 / 192364 / 192365 | E R s43 pages 20 / mixed 20 / pages 40 / mixed 40 | COMPLETED, verdict closed | 1,407 each | health OK |
 | 192366 / 192367 / 192374 / 192375 | E long-chunk text C256 / L1024 s42, s43 | COMPLETED, verdict closed | 2,246 each | health OK (L1024 s42 cap 5.08%) |
@@ -150,8 +166,7 @@ s42 and s43. Then one re-judge of whatever decides.
 | 191517 | J re-judge (first try) | FAILED, verdict closed "launch fault" | — | replaced by 191629 |
 | 191515 / 191516 / 191392 / 191393 / 191375-191378 / 191390 / 191391 / 191305-191308 / 191218-191221 / 191169-191172 / 191148-191155 / 191165-191168 / 191145-191147 | E, L, T, A | COMPLETED, verdict closed | | |
 
-Cells used: 85 of 87 (`.expmon/runs.jsonl`, exp longdoc). GPU-h: 85.7 by `sacct -X` over the 85 jobs (last attempts)
-+ about 4.5 in requeued attempts ≈ 90 of 114.
+Cells used: 89 of 96 (`.expmon/runs.jsonl`, exp longdoc). GPU-h before this wake ≈ 90 of 114 (85.7 by `sacct -X` + ~4.5 requeued).
 Code md5 for the arm E grid: eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748,
 pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 
@@ -162,10 +177,10 @@ pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 | arm | status | next |
 |---|---|---|
 | E long-document yardstick | DONE (provisional): gap −16 to −24 pt at every size, seeds within 2 pt; length loss on page images at 40 pages (both seeds, judge / project / match); no bar elsewhere; long-chunk text: seeds disagree | — |
-| U reading many `<MEM>`s | not started; 2 runs left | owner: BLOCKED.md option A |
-| P positions | not started; needs the patchable-IF flag | owner: BLOCKED.md option A |
+| U reading many `<MEM>`s | 1 of 4 cells queued (s42 p40) | launch s42 p10, s43 p10, s43 p40; then D per seed |
+| P positions | identity check + 2 shifted cells queued as a chain | check identity (193533 log: `IDENTITY OK`), then pair 193534 / 193535 with 192326 / 192360 |
 | L length on a fixed model | NOT DECIDED (cap confound); 512 re-run not approved | answered by arm E |
-| J instrument | control 1 PASS; project prompt run on every number that decides | — |
+| J instrument | control 1 PASS; project prompt run on every number that decides | re-judge U / P files once they decide |
 | A audit | DECIDED (provisional); E re-run PASS (191516) | — |
 | T long-chunk training | CLOSED (provisional); text half answered by arm E (seeds disagree) | — |
 
@@ -182,7 +197,17 @@ pisco/model.py f8ae6efe, eval_mnt.sbatch 1c874b32.
 - `scripts/longdoc/plot_length.py [OUT.svg]` (stdlib): the arm E length figure.
 - The guard refuses any command containing `rm -r`, even on a `/tmp` scratch dir.
 - `expmon display --exp longdoc` prints "0 table rows" but the page holds the grid: known gripe be8057a1.
+- `scripts/longdoc/eval_mpos.py` (md5 d2abdd65): arm P. Imports `scripts/eval_mm_docqa.py` unchanged and raises the
+  decoder position ids of the first `<MEM>` and of everything after it by env `MPOS` (a constant, or a {query_id: N}
+  json); `MPOS_REF=<recorded json>` makes the job exit 4 unless every prediction equals the reference's. Writes
+  `<output>.mpos.json` (offset per row). Launcher `scripts/longdoc/eval_mpos.sbatch` (md5 e970ba7f) = eval_mnt.sbatch
+  plus that script swap; output names `…_mnt512_mpos<tag>_…`; exits 3 if `eval_mm_4b.sh` changed shape (sed checked on
+  the frontend: exactly 3 changed lines).
+- `scripts/longdoc/mpos_map.py ROWS VARIANT SHORT LONG OUT` (stdlib): per-question offsets from the audit rows.
+  `expQ/longdoc/mpos/pages_p40_minus_p10.json` (md5 ca3c56de): 1,407 questions, N min 27,990 / p50 28,934 / max 29,670.
+- `--dependency` is not recorded in `.expmon/runs.jsonl` (gripe 04e7f373, +1 this wake): the P chain lives only in SLURM.
+
 
 ## Blockers / needs the owner
-- BLOCKED.md: final checkpoint — fund arms U / P on page images (option A, +9 runs to cap 96, ≈ 13 GPU-h inside the
-  114 approved; recommended) or close the campaign (option B).
+- None. The final checkpoint was answered (option A, 2026-11-25). When U and P decide, the ranked causes go back to
+  the owner in `docs/longdoc_diagnosis.md` and the campaign closes.
