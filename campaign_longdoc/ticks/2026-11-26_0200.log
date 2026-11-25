@@ -1,0 +1,127 @@
+== campaign longdoc wake 2026-11-26_0200  reasons=problems  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795626002 live=193608:RUNNING running=1 pending=0 problems=1 problems_other=0 new=0 gpuh24=11.7 idle_h=0.0 min_util=13 alert=1 unpushed=0 cron=6 daemon=1 disk_gb=5219 sig=6f7e0361 same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:193604,193605,193606,193607,193608_max_4h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 500be5d3-efce-4004-99ac-da8b5b80a177  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+26 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/500be5d3-efce-4004-99ac-da8b5b80a177/tool-results/bhrcofsz5.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-26_0200   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+186 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat known_issues.md
+  ↳ # Known issues — campaign longdoc   (symptom → verdict → action; check here BEFORE diagnosing) (+43 lines)
+  ↳ 379 CAMPAIGN.md (+233 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 1,200p CAMPAIGN.md
+  ↳ # CAMPAIGN longdoc — pisco   (the law; the agent re-reads this every wake; rewrite, never append) (+199 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 200,379p CAMPAIGN.md
+  ↳ failing items are grouped by shared condition across checks, and causes are ranked by items repaired, each lead (+179 lines)
+Checking the five probe cells (4 ended, 1 flagged as low GPU use) before deciding anything.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 193604,193605,193606,193607,193608 -X -o JobID,State,ExitCode,Elapsed,Start,End,NodeList,MaxRSS -P 2>&1 | head; sacct -j 193604,193605,193606,193607,193608 -D -o JobID,State,ExitCode,Elapsed,N…
+  ↳ JobID|State|ExitCode|Elapsed|Start|End|NodeList|MaxRSS (+21 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la expQ/longdoc/eval_mnt_193608.out expQ/longdoc/eval_mnt_19360[67].out expQ/longdoc/eval_mpos_19360[45].out 2>&1; tail -c 1500 expQ/longdoc/eval_mnt_193608.out; echo; date
+  ↳ -rw-r--r-- 1 hdejean hdejean 116526 Nov 26 00:15 expQ/longdoc/eval_mnt_193606.out (+27 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for f in expQ/longdoc/eval_mpos_193604.out expQ/longdoc/eval_mpos_193605.out expQ/longdoc/eval_mnt_193606.out expQ/longdoc/eval_mnt_193607.out; do echo "== $f"; grep -v 'pad_token_id' $f | grep -E 'FAC…
+  ↳ == expQ/longdoc/eval_mpos_193604.out (+65 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls expQ/longdoc/e_r42/eval/ expQ/longdoc/e_r43/eval/ expQ/longdoc/u_r42/eval/ expQ/longdoc/u_r43/eval/ expQ/longdoc/p_r42/eval/ expQ/longdoc/p_r43/eval/ | grep -v kept; sed -n 1,60p scripts/longdoc/len…
+  ↳ expQ/longdoc/e_r42/eval/: (+95 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; P42=$E/p_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_mpospages_p40_minus_p10_longdoc_pages_1500_p10.json; P43=$E/p_r43/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_mpos…
+  ↳ === P s42 shifted - plain (+35 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; python3 -I - <<'EOF' ⏎ import json ⏎ E="expQ/longdoc" ⏎ mp=json.load(open(f"{E}/mpos/pages_p40_minus_p10.json")) ⏎ print("map type", type(mp).__name__, len(mp), list(mp.items())[:2] if …
+  ↳ <persisted-output> (+11 lines)
+Checking whether the position shift actually changed the answers (a no-op would fake a "no effect" result).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ import json ⏎ E="expQ/longdoc" ⏎ mp=json.load(open(f"{E}/mpos/pages_p40_minus_p10.json")) ⏎ for s in ("42","43"): ⏎     P=f"{E}/p_r{s}/eval/mm_docqa_pisco_k1000_px1003520_cml1024…
+  ↳ s42: rows 1407/1407; predictions differ 207/1407; offsets==map 1407/1407 (n_rows 1407); mems_used P None R None; unparseable P 0; judge P 0.5010660980810234 R 0.5067519545131486 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; K=mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; B=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; for m in judge match em; do …
+  ↳ == D s42 judge (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sed -n 1,25p scripts/longdoc/cell_health.py; grep -n "cell_health" EXPERIMENTS.md | tail -3; ls .pixi/envs/
+  ↳ #!/usr/bin/env python3 (+26 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; K=mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; B=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; M=mm_docqa_pisco_k1000_px100…
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_mpospages_p40_minus_p10_longdoc_pages_1500_p10.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.5011, "at_cap": 23, "at_cap_pct": 1.63, "prom (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; for j in mpos_193604 mpos_193605 mnt_193606 mnt_193607 mnt_193608; do echo "== $j"; grep -v pad_token expQ/longdoc/eval_$j.out | grep -iE 'md5|FACTORS|model.py|limit=' | head -4; done; md5sum pisco/mod…
+  ↳ == mpos_193604 (+18 lines)
+Arm P result is in: shifting positions costs nothing (both seeds within 1 pt). Now recording verdicts and chaining the last re-judge after the running cell.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat scripts/longdoc/rejudge.sbatch | head -40; grep '"192405"' .expmon/runs.jsonl | head -c 1500; echo; ls expQ/longdoc/rejudge/; ls -la docs/longdoc_diagnosis.md
+  ↳ #!/bin/bash (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; K=mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; M=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_mpospages_p40_minus_p10_longdoc_pages_1500_p10.j…
+  ↳ would submit: sbatch -p gpu-be --mem 3G --time 0:18:00 --exclude=homer-[005-009] --dependency afterok:193608 scripts/longdoc/rejudge.sbatch UP_pages_p10_p40 expQ/longdoc/p_r42/eval/mm_docqa_pisco_k100 (+3 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; K=mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; M=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_mpospages_p40_minus_p10_longdoc_pages_1500_p10.j…
+  ↳ slurm:   partition=gpu-be constraint=- exclude=homer-[005-009] time=0:18:00 (+6 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco;  ⏎ expmon note -j 193645 "intent: arm J project-prompt re-judge of the 6 U/P files (P s42/s43 shifted p10; eighth s42/s43 p10/p40), afterok 193608, --time 0:18 --mem 3G; pairs with the copies of 192405…
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; E=expQ/longdoc; L=$E/length; K=mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500; B=mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500; M=mm_docqa_pisc…
+  ↳ P_shift_p10_s42_em.json (+8 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; grep -n -E '^#|^\| *(P|U)[ .]|position|dilution|eighth' docs/longdoc_diagnosis.md | head -60; wc -l docs/longdoc_diagnosis.md; git log --oneline -3 -- docs/longdoc_diagnosis.md
+  ↳ 1:# Long inputs: where is the bottleneck? (campaign longdoc) (+22 lines)
+Updating the findings document with the position-shift result (rows for slot reading and positions).
+→ Read: /beegfs/scratch/user/hdejean/pisco/docs/longdoc_diagnosis.md
+  ↳ 1	# Long inputs: where is the bottleneck? (campaign longdoc) (+16 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -I - <<'EOF' ⏎ p="docs/longdoc_diagnosis.md" ⏎ s=open(p).read() ⏎ old3=s.splitlines()[2] ⏎ new3=("Rewritten by each campaign wake when an arm decides. Last rewrite 2026-11-26 02:10 (arm P decid…
+  ↳ | reading many `<MEM>`s | keep only the most-attended eighth of the slots (`KEEPF=0.125 KEEPM=attn_global`), at 10 and 40 pages of one LongDocURL PDF, R, cap 512 (arm U) | 1,407 Q per cell, 4 cells pe (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 expmon occupancy 193608 2>&1 | tail -8
+  ↳ 193608     eval_mnt.sbatch      gpu0 48113/81920MiB 0%
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search starved eval 2>&1 | tail -8
+  ↳ == 0 open report(s) matching 'starved eval', every machine, newest first == (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe --open --search starved 2>&1 | tail -8
+  ↳ == 0 open report(s) matching 'starved', every machine, newest first == (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon gripe -c defect "check flags 'starved util=4% over 61m' on an inference eval cell (longdoc 193608, 40-page docs, slot pruning) that was progressing at its finished twin's pace (8,792 s vs 8,638 …
+→ Edit: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md
+  ↳ logged (defect) -> /home/hdejean/.claude/feedback/ncp.log
+  ↳ The file /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/known_issues.md has been updated successfully.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ids=$(python3 -I -c " ⏎ import json ⏎ print(','.join(json.loads(l)['jobid'] for l in open('.expmon/runs.jsonl') if '\"exp\": \"longdoc\"' in l))"); sacct -j $ids -X -n -P -o JobID,ElapsedRaw,AllocTRES,…
+  ↳ jobs 96 GPU-h 97.5
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; expmon note "provisional: arm P DECIDED not this cause at both seeds: R pages p10 shifted to its own 40-page position ids (offset p50 28,934) - plain: -0.6 [-1.4,+0.3] McNemar 16/24 p .27 (s42, 193604 …
+  ↳ noted -> /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls -la .expmon/campaign/longdoc/ | head -30; f=$(ls -t .expmon/campaign/longdoc/VERIFY.md campaign_longdoc/VERIFY.md 2>/dev/null | head -1); echo $f; head -12 $f | cut -c1-400
+  ↳ total 1013 (+42 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls; cat ALERT 2>/dev/null
+  ↳ ALERT (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; rm ALERT && echo removed; cat NEXT
+  ↳ removed (+1 lines)
+Rewriting the campaign state file with this wake's results.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ s=open("STATE.md").read() ⏎ i=s.index("**Settled**"); j=s.index("- The transcription-probe port is validated") ⏎ k=s.index("**Open, and running**"); m=s.index("-…
+  ↳ 21732 1576 2294 10260 12977
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ s=open("STATE.md").read() ⏎ head_end=s.index("## TL;DR") ⏎ settled_start=s.index("**Settled**") ⏎ p_ident_start=s.index("- The arm P position probe reproduces") …
+  ↳ 23126 (+10 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 24,45p STATE.md | cut -c1-160; echo ...; sed -n 140,153p STATE.md | cut -c1-160
+  ↳ ## TL;DR — where this leaves the question (+34 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 100 expmon display --exp longdoc 2>&1 | tail -4
+  ↳ display -> /beegfs/scratch/user/hdejean/pisco/display_longdoc.html   (0 table rows, 0 media files from 0 runs)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; echo "wake-when job:193608,193645 max 3h" > NEXT; cat NEXT; squeue -j 193608,193645 -o "%i %T %r" 2>&1
+  ↳ wake-when job:193608,193645 max 3h (+3 lines)
+The position probe is finished. Moving the compressed slots to far-out positions costs nothing at either seed, so positions are not why long documents lose accuracy. My prediction was that it would cost at least 3 points, and that prediction was wrong.
+
+## Done this wake
+- **Why I was woken:** the check flagged the last running cell (40 pages, seed 43) for low GPU use. It is not stuck: its log reached row 1,080 of 1,407 at the same time as its finished seed-42 twin did, so I left it running. I added a row to the known-issues table and filed a report on expmon, because its low-GPU rule was written for training jobs and misfires on evaluation jobs.
+- **Four cells finished cleanly.** Every question was judged, no judge reply failed to parse, and fewer than 2% of answers hit the length cap. All four ran on the same code version.
+- **Position probe (decided, provisional).** Each 10-page question's slots were moved to the positions its 40-page version uses. Scores are paired on the same 1,407 questions:
+
+| seed | shifted vs normal, judge accuracy ↑ (pt, 95% CI) | questions won / lost | answers whose wording changed |
+|---|---|---|---|
+| 42 | −0.6 [−1.4, +0.3] | 16 / 24 | 207 of 1,407 |
+| 43 | −0.1 [−0.8, +0.6] | 11 / 13 | 194 of 1,407 |
+
+  Both intervals sit inside ±3 points, which is the "not this cause" bar. About 200 answers changed wording, so the shift was really applied, but almost none changed from right to wrong.
+- **Slot-reading probe, seed 42 complete.** This probe keeps only the eighth of the compressed slots (`<MEM>` tokens) that the model attends to most:
+  - At 40 pages it gains +2.5 points over using all slots.
+  - At 10 pages it changes nothing (−0.4).
+  - The difference between the two, which is the test score, is **+2.8 [+0.4, +5.3]**. That is just under the 3-point bar for "a cause", but too far from zero to rule it out.
+  - At seed 43 the 10-page half is +0.5; the 40-page half is still running.
+- **Last cell launched (96 of the 96 allowed):** a second scoring of the six new result files with a different judge prompt, set to start only after the running cell succeeds.
+- Compute used: 97.5 of 114 GPU-hours. The findings document `docs/longdoc_diagnosis.md`, the state file and the experiment log are updated. I deleted a stale verifier alert whose issue the previous wake had already fixed.
+
+## Next
+The next wake comes when both jobs end (within 3 hours). It will:
+- finish the slot-reading test at seed 43 and check both probes under the second judge prompt;
+- write the ranked list of causes for you as one question in BLOCKED.md.
+
+If the slot-reading effect lands just under the bar again at seed 43, the campaign rule calls that "promising". That allows one repeat on new questions, which needs cells beyond the 96 allowed. That request will be part of the same question.
+
+Nothing needed from you now.
+→ StructuredOutput: {"next": "wake-when", "summary": "Woken by a false 'starved' flag on 193608 (rows at its twin's pace; benign, known_issues row + gripe). 193604-193607 closed health OK. Arm P decided (provisional): positions are not a cause, shifted - plain…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=2.7263 turns=42 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Woken by a false 'starved' flag on 193608 (rows at its twin's pace; benign, known_issues row + gripe). 193604-193607 closed health OK. Arm P decided (provisional): positions are not a cause, shifted - plain -0.6 [-1.4,+0.3] (s42) / -0.1 [-0.8,+0.6] (s43), n 1,407; prediction 'P costs >= 3 pt' wrong. Arm U s42 D +2.8 [+0.4,+5.3] sign 152/113 (between bars); s43 p10 half +0.5, p40 cell running. Launched last cell 193645 (project-prompt re-judge, afterok 193608). Cells 96/96, GPU-h 97.5/114. docs/longdoc_diagnosis.md U/P rows, STATE.md, ledger updated; stale verifier ALERT removed.", "launched": ["193645"], "verdicts": [{"jobid": "193604", "verdict": "closed", "note": "health OK; arm P s42 shifted - plain -0.6 [-1.4,+0.3] 16/24"}, {"jobid": "193605", "verdict": "closed", "note": "health OK; arm P s43 shifted - plain -0.1 [-0.8,+0.6] 11/13"}, {"jobid": "193606", "verdict": "closed", "note": "health OK; U s42 p10 eighth - plain -0.4; D s42 +2.8 [+0.4,+5.3]"}, {"jobid": "193607", "verdict": "closed", "note": "health OK; U s43 p10 eighth - plain +0.5 [-1.4,+2.3]"}], "gripes": ["expmon check flags 'starved' on inference eval cells progressing at their twin's pace (193608), waking the probe campaign for nothing"], "wake_when": "job:193608,193645 max 3h"}
+== final:
+{"next":"wake-when","summary":"Woken by a false 'starved' flag on 193608 (rows at its twin's pace; benign, known_issues row + gripe). 193604-193607 closed health OK. Arm P decided (provisional): positions are not a cause, shifted - plain -0.6 [-1.4,+0.3] (s42) / -0.1 [-0.8,+0.6] (s43), n 1,407; prediction 'P costs >= 3 pt' wrong. Arm U s42 D +2.8 [+0.4,+5.3] sign 152/113 (between bars); s43 p10 half +0.5, p40 cell running. Launched last cell 193645 (project-prompt re-judge, afterok 193608). Cells 96/96, GPU-h 97.5/114. docs/longdoc_diagnosis.md U/P rows, STATE.md, ledger updated; stale verifier ALERT removed.","launched":["193645"],"verdicts":[{"jobid":"193604","verdict":"closed","note":"health OK; arm P s42 shifted - plain -0.6 [-1.4,+0.3] 16/24"},{"jobid":"193605","verdict":"closed","note":"health OK; arm P s43 shifted - plain -0.1 [-0.8,+0.6] 11/13"},{"jobid":"193606","verdict":"closed","note":"health OK; U s42 p10 eighth - plain -0.4; D s42 +2.8 [+0.4,+5.3]"},{"jobid":"193607","verdict":"closed","note":"health OK; U s43 p10 eighth - plain +0.5 [-1.4,+2.3]"}],"gripes":["expmon check flags 'starved' on inference eval cells progressing at their twin's pace (193608), waking the probe campaign for nothing"],"wake_when":"job:193608,193645 max 3h"}
+== rc=0 secs=512
+== verify: 6/27
+== codereview: none
