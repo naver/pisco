@@ -1,0 +1,44 @@
+== campaign longdoc wake 2026-11-26_0000  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795618802 live=193608:RUNNING,193607:RUNNING,193604:RUNNING,193605:RUNNING,193606:RUNNING running=5 pending=0 problems=0 problems_other=0 new=0 gpuh24=7.4 idle_h=0.0 min_util=- alert=1 unpushed=0 cron=6 daemon=1 disk_gb=5290 sig=b036fe2f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=0 uplaw=0 push_rc=0 next=wake-when_job:193536,193604,193605,193606,193607,193608_max_5h
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session 5b29288c-7c20-4308-9917-88a4017c70e0  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+12 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/5b29288c-7c20-4308-9917-88a4017c70e0/tool-results/be2puovr1.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-26_0000   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+207 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; wc -l CAMPAIGN.md STATE.md known_issues.md; cat STATE.md
+  ↳ 379 CAMPAIGN.md (+231 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; sacct -j 193536 --format=JobID,State,ExitCode,Elapsed,MaxRSS -n | head; ls -la expQ/longdoc/u_r42/eval/ 2>/dev/null | tail; tail -20 expQ/longdoc/eval_mnt_193536.out; for j in 193604 193605 193606 1936…
+  ↳ 193536        COMPLETED      0:0   03:11:55             (+43 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; grep -n -iE 'arm U|arm P|\bU\b.*eighth|health|D =' CAMPAIGN.md | head -40; cat known_issues.md | tail -15
+  ↳ 33:- reading many `<MEM>`s: dilution D (arm U); (+26 lines)
+Fixing the flagged claim and recording the finished slot-reading cell (40 pages, seed 42).
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 140,175p CAMPAIGN.md
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=expQ/longdoc/u_r42/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json; P=$(ls expQ/longdoc/e_r42/eval/*longdoc_pages_1500_p40.json); echo $P; python3 …
+  ↳ uncompressed files fail it (documents 4 / 10 / 20 pages 5.7 / 6.9 / 16.3%, text 10 / 40 passages 32.9 / 46.9%; (+35 lines)
+  ↳ expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p40.json (+5 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=expQ/longdoc/u_r42/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json; timeout 60 pixi run python -I scripts/longdoc/cell_health.py --cap 512 $F 2>&1 …
+  ↳ timeout: failed to run command ‘pixi’: No such file or directory (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ls ~/.pixi/bin 2>/dev/null; ls .pixi/envs/ 2>/dev/null; grep -n "cell_health" campaign_longdoc/STATE.md EXPERIMENTS.md | tail -3
+  ↳ bwrap (+12 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; F=expQ/longdoc/u_r42/eval/mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json; timeout 60 .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --ca…
+  ↳ mm_docqa_pisco_k1000_px1003520_keep0125_attn_global_cml1024_mnt512_longdoc_pages_1500_p40.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.4534, "at_cap": 24, "at_cap_pct": 1.71, "prompt_
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; timeout 60 .pixi/envs/default/bin/python -I scripts/longdoc/cell_health.py --cap 512 expQ/longdoc/e_r42/eval/mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p40.json 2>&1 | tail -1
+  ↳ mm_docqa_pisco_k1000_px1003520_cml1024_mnt512_longdoc_pages_1500_p40.json {"n": 1407, "judged": 1407, "unparseable": 0, "judge": 0.4286, "at_cap": 50, "at_cap_pct": 3.55, "prompt_max": 5356, "mems_use
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; python3 -c "print(815874/6757206)"; expmon verdict 193536 closed "health OK: arm U R s42 pages p40 eighth, 1407/1407 rows judged, unparseable 0, at cap 24 (1.71%), mems ratio 815,874/6,757,206 = .121 (…
+  ↳ 0.12074132415083987 (+2 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; ids=$(python3 -I -c " ⏎ import json ⏎ ids=[] ⏎ for l in open('.expmon/runs.jsonl'): ⏎     try: r=json.loads(l) ⏎     except: continue ⏎     if r.get('exp')=='longdoc': ids.append(str(r.get('jobid') or …
+  ↳ 95 (+1 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; python3 -I - <<'EOF' ⏎ p='STATE.md' ⏎ s=open(p).read() ⏎ old_head=s[:s.index('## TL;DR')] ⏎ new_head='''# STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never appen…
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+4 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n '/Open, and running/,/Prediction, written/p' STATE.md; echo 'wake-when job:193604,193605,193606,193607,193608 max 4h' > NEXT; cd ..; expmon note "longdoc wake 2026-11-26 00:00: …
+  ↳ **Open, and running** (+21 lines)
+→ StructuredOutput: {"next": "wake-when", "summary": "Woken by verifier alert. Fixed the unsupported running number (193605 row 300 never logged; STATE now quotes log lines). Recorded arm U s42 40-page eighth cell 193536: health OK (1407/1407 judged, 0 unparse…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.0627 turns=17 is_error=False denials=0
+== declared: {"next": "wake-when", "summary": "Woken by verifier alert. Fixed the unsupported running number (193605 row 300 never logged; STATE now quotes log lines). Recorded arm U s42 40-page eighth cell 193536: health OK (1407/1407 judged, 0 unparseable, cap 1.71%, mems ratio .121), eighth − plain +2.5 [+0.8,+4.3] McNemar 70/105 p .010; D s42 waits for the 10-page cell 193606. No launch (95/96 cells, 93.3/114 GPU-h by sacct). Waiting for the five remaining U/P cells.", "wake_when": "job:193604,193605,193606,193607,193608 max 4h", "launched": [], "verdicts": [{"jobid": "193536", "verdict": "closed", "note": "health OK; arm U R s42 p40 eighth .4534 vs plain .4286, eighth − plain +2.5 [+0.8,+4.3] 70/105"}], "gripes": []}
+== final:
+{"next":"wake-when","summary":"Woken by verifier alert. Fixed the unsupported running number (193605 row 300 never logged; STATE now quotes log lines). Recorded arm U s42 40-page eighth cell 193536: health OK (1407/1407 judged, 0 unparseable, cap 1.71%, mems ratio .121), eighth − plain +2.5 [+0.8,+4.3] McNemar 70/105 p .010; D s42 waits for the 10-page cell 193606. No launch (95/96 cells, 93.3/114 GPU-h by sacct). Waiting for the five remaining U/P cells.","wake_when":"job:193604,193605,193606,193607,193608 max 4h","launched":[],"verdicts":[{"jobid":"193536","verdict":"closed","note":"health OK; arm U R s42 p40 eighth .4534 vs plain .4286, eighth − plain +2.5 [+0.8,+4.3] 70/105"}],"gripes":[]}
+== rc=0 secs=133
+== verify: 6/25
+== codereview: none
