@@ -1629,3 +1629,6 @@ status). Append with `expmon note`; read with `expmon ledger`. Newest at the bot
 - 2026-11-25 19:56 rebuild campaign drafted (hand-offs 4c0b26 + d30825), NOT armed: arms K control s43 / S transcription share / W window targets / P fp32 masters / L cleaned labels; 190 GPU-h; question review CLEAR
   - saw: R's finetunes trained the 8,000 photo rows (1 image, bs 1, pad to 64) through the one-row pad leak; docs/slot_checks.md said 'finetune bs 2' (wrong, fixed)
   - next: owner approves the rules; then pad guard default-off + collator kwargs + tests, commit, preflight, arm
+- 2026-11-25 20:25 campaign rebuild ARMED (commit 52cc9e9): owner 'yes as recommended' on all five choices
+  - did: collator mix_sources/mix_override + ae_window_*; one_row_pad_guard opt-in (default off); launchers with start-up config check; CPU preflight 193564: 40/40 tests (off = old RNG stream vs 69869340), 8 configs OK
+  - next: wake: recall feasibility gate alone, then 4 stage-2 smokes, L label judge
