@@ -1,0 +1,47 @@
+== campaign longdoc wake 2026-11-27_0130  reasons=alert  tier=full  model=claude-opus-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795710602 live=- running=0 pending=0 problems=0 problems_other=1 new=0 gpuh24=1.3 idle_h=22.7 min_util=- alert=1 unpushed=0 cron=6 daemon=1 disk_gb=4863 sig=260cc69f same=0 behind=0 upstream=0 upfiles=0 upmine=0 upsib=1 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/hook.log
+== session ddfe4af3-f247-4d21-a1bf-756c00ed32ea  model claude-opus-5-5  tools 51
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/BRIEF.md
+  ↳ <persisted-output> (+25 lines)
+→ Bash: sed -n 1,200p /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/ddfe4af3-f247-4d21-a1bf-756c00ed32ea/tool-results/bu3ttnio1.txt
+  ↳ <persisted-output> (+25 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/ddfe4af3-f247-4d21-a1bf-756c00ed32ea/tool-results/bu3ttnio1.txt
+  ↳ 1	# Wake brief — campaign longdoc — 2026-11-27_0130   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+119 lines)
+→ Bash: F=/home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/ddfe4af3-f247-4d21-a1bf-756c00ed32ea/tool-results/bu3ttnio1.txt; grep -n '^## ' $F; awk '/^## /{p=0} /^## (New result|Free|Disk|Running|Hand|Gripe|Question)/{p=1} p' $F | h…
+  ↳ 5:## Sensors (newest first, 3 ticks) (+14 lines)
+→ Read: /home/hdejean/.claude/projects/-beegfs-scratch-user-hdejean-pisco/ddfe4af3-f247-4d21-a1bf-756c00ed32ea/tool-results/bu3ttnio1.txt
+  ↳ 184	## new result files of THIS campaign since the last tick (expmon new --paths, filtered by its job ids) (+38 lines)
+Woken by an alert that the expmon daemon had stopped. The brief shows the daemon is running again (job 193847), so I'm checking the state files before I clear the alert.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la; echo ---; cat ALERT; echo ---; cat NEXT; echo ---; cat STATE.md | head -150
+  ↳ total 179 (+171 lines)
+→ Bash: crontab -l 2>&1 | grep -n -i -E 'tick|campaign' | head -20; echo "rc=$?"; echo ---; ls -la /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/ticks | tail -8; echo ---; cat /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/ALERT 2>/dev/n…
+  ↳ PreToolUse:Bash hook error: campaign guard: hard rule 3: a wake never edits or reads the crontab. Do not look for another spelling: note it in STATE.md (BLOCKED.md if it stops the plan) and move on.
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; ls -la ticks | tail -8; echo ---; tail -30 ticks/2026-11-27_0130.log; echo ---; tail -20 ticks/2026-11-26_0330.escalate.log
+  ↳ -rw-r--r-- 1 hdejean hdejean 12573 Nov 26 00:07 2026-11-26_0000.verify.log (+41 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; cat VERIFY.md | cut -c1-2500
+  ↳ # VERIFY — campaign longdoc — 2026-11-26_0300   (written by the tick from a READ-ONLY verifier wake on claude-opus-5-5; the wake may not edit this file) (+31 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco; cat campaign_rebuild/ALERT 2>/dev/null; echo ---; ls -la campaign_*/STAND-DOWN 2>/dev/null; echo ---; expmon gripe --open --search crontab armed 2>&1 | head -20
+  ↳ --- (+18 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; grep -n -i -E 'crontab|daemon' known_issues.md | cut -c1-300; echo ---; head -12 known_issues.md | cut -c1-300; echo; sed -n 150,400p STATE.md | grep -n -E '^#|Positions explain|1\.8, …
+  ↳ --- (+20 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; grep -n -E 'Positions explain|\+1\.8, \+5\.9|match −4\.5|Last wake|^## This wake|^## Blockers' STATE.md | cut -c1-200; echo ---; sed -n 230,260p STATE.md
+  ↳ 3:Last wake: 2026-11-26 03:00 (full wake, woken by its wait: the last slot-reading cell 193608 and the re-judge 193645 ended). (+15 lines)
+→ Bash: cd /beegfs/scratch/user/hdejean/pisco/campaign_longdoc; sed -n 1,16p STATE.md; echo ...; sed -n 132,136p STATE.md
+  ↳ # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append) (+21 lines)
+Now the edits: the header and "This wake" block, plus the three verifier fixes.
+→ Bash: python3 - <<'EOF' ⏎ import re ⏎ p='STATE.md'; s=open(p).read() ⏎ old_head=s[s.index('Last wake:'):s.index('## TL;DR')] ⏎ new_head='''Last wake: 2026-11-27 01:30 (full wake, woken by an ALERT; no job ran, nothing launched). ⏎ NEXT: `waiting-…
+  ↳ ok 4
+→ Bash: expmon gripe --same e8d30dc9 "pisco campaign longdoc 2026-11-27 01:30: ALERT 'crontab has no campaign tick line — the loop is not armed' written by the very tick whose sensor line reads cron=6 and which launched the LLM wake. The alert chec…
+  ↳ logged as a +1 of e8d30dc9 (entry aa9516f8) -> /home/hdejean/.claude/feedback/ncp.log (+2 lines)
+→ Bash: tail -5 known_issues.md | cut -c1-160; expmon note "longdoc wake 2026-11-27 01:30: woken by ALERT; daemon line resolved by the tick (193847 RUNNING); 'crontab has no tick line' = known false alarm (same tick cron=6; gripe e8d30dc9 +1); ALER…
+  ↳ | a model-vs-model arm E file sits just over the 5% answer-cap bar (L1024 s42 text 114 / 2,246 = 5.08%, 2026-11-20) | the 5% rule is written for Δ_len contrasts (+5 lines)
+→ StructuredOutput: {"next": "waiting-owner", "summary": "Woken by an ALERT with two lines. The \"daemon not running\" line was already fixed by the tick: daemon job 193847 is running. The \"crontab has no tick line, loop not armed\" line is a known expmon fal…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.1292 turns=18 is_error=False denials=1
+== declared: {"next": "waiting-owner", "summary": "Woken by an ALERT with two lines. The \"daemon not running\" line was already fixed by the tick: daemon job 193847 is running. The \"crontab has no tick line, loop not armed\" line is a known expmon false alarm (gripe e8d30dc9): the same tick logged cron=6 and launched this wake. The guard refused a read-only crontab check, which is noted. I filed a +1 on the gripe, added two known_issues rows and deleted the ALERT. I fixed the verifier's three mismatches in STATE.md: CI bound 1.8→1.9, string-match −4.5→−4.6, and \"positions explain none\" changed to \"at most ~1.4 pt\". Nothing was launched: all 96 funded runs are done. The campaign still waits for the owner on the final question in BLOCKED.md: close now (recommended, 0 GPU-h) or fund one repeat of the slot-reading probe (~15 runs, ~17 GPU-h). NEXT stays waiting-owner.", "launched": [], "verdicts": [], "blocked": "BLOCKED.md final checkpoint (owner's decision, confirmed by the escalation check): A. close the long-input diagnosis now (recommended, 0 GPU-h) or B. fund one repeat of the slot-reading probe on new documents (~15 runs over the 96-run cap, ~17 GPU-h).", "gripes": ["+1 on e8d30dc9 (entry aa9516f8): false 'crontab has no campaign tick line' ALERT written by a tick whose own sensor line reads cron=6; the alert check should reuse the sensor count or skip on a failed crontab read"]}
+== final:
+{"next":"waiting-owner","summary":"Woken by an ALERT with two lines. The \"daemon not running\" line was already fixed by the tick: daemon job 193847 is running. The \"crontab has no tick line, loop not armed\" line is a known expmon false alarm (gripe e8d30dc9): the same tick logged cron=6 and launched this wake. The guard refused a read-only crontab check, which is noted. I filed a +1 on the gripe, added two known_issues rows and deleted the ALERT. I fixed the verifier's three mismatches in STATE.md: CI bound 1.8→1.9, string-match −4.5→−4.6, and \"positions explain none\" changed to \"at most ~1.4 pt\". Nothing was launched: all 96 funded runs are done. The campaign still waits for the owner on the final question in BLOCKED.md: close now (recommended, 0 GPU-h) or fund one repeat of the slot-reading probe (~15 runs, ~17 GPU-h). NEXT stays waiting-owner.","launched":[],"verdicts":[],"blocked":"BLOCKED.md final checkpoint (owner's decision, confirmed by the escalation check): A. close the long-input diagnosis now (recommended, 0 GPU-h) or B. fund one repeat of the slot-reading probe on new documents (~15 runs over the 96-run cap, ~17 GPU-h).","gripes":["+1 on e8d30dc9 (entry aa9516f8): false 'crontab has no campaign tick line' ALERT written by a tick whose own sensor line reads cron=6; the alert check should reuse the sensor count or skip on a failed crontab read"]}
+== rc=0 secs=159
+== verify: 5/24
+== codereview: none

@@ -1,17 +1,21 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-26 03:00 (full wake, woken by its wait: the last slot-reading cell 193608 and the re-judge 193645 ended).
+Last wake: 2026-11-27 01:30 (full wake, woken by an ALERT; no job ran, nothing launched).
 NEXT: `waiting-owner` — the final checkpoint is in BLOCKED.md (close now, or fund one repeat of arm U).
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- 193608 (U, R s43, 40 pages, eighth) and 193645 (project-prompt re-judge of the 6 U / P files) COMPLETED 0:0 on
-  homer-014; health OK; verdicts closed; probes recorded (D_s43, eighth_minus_plain_p40, judge; D_s42/s43_project).
-- Arm U computed at seed 43 and under every scorer: between the bars (below). Arm P confirmed under the project prompt.
-- `docs/longdoc_diagnosis.md` rewritten: section 0 (ranked answer), rows "training never shows long inputs" /
-  "reading many `<MEM>`s" / "positions", and an arm U detail table. `expmon display --exp longdoc` refreshed.
-- BLOCKED.md written: the final checkpoint (one question). No launch (cells 96 of 96). No new symptom, no gripe.
+- ALERT line 1 (01:17) "expmon daemon not running": resolved by the tick — daemon 193847 RUNNING on homer-020 at 01:30.
+- ALERT line 2 (01:30) "crontab has no 'campaign tick' line — the loop is not armed": a false alarm. The same tick's
+  sensor line reads `cron=6`, and that tick launched this wake. Known expmon defect (gripe e8d30dc9: a failed
+  crontab read counts as 0); +1 filed. The guard refused my read-only `crontab -l` (hard rule 3), so I did not check
+  the crontab myself. ALERT file deleted. New row in known_issues.md.
+- Verifier fixes: s43 40-page eighth CI lower bound 1.8 → 1.9 (verdict 193608); pages Δ_len string match s42 −4.5 →
+  −4.6 (verdict 192405; file −.0455); "positions explain none of the 40-page loss" → "at most ~1.4 pt" (arm P CI).
+- Time spent waiting for the owner (93% of the last 24 h, the tick's SPEED line): does not apply to the loop. The one
+  question has one recommendation (close, 0 GPU-h), but the escalation check (2026-11-26 03:30) ruled it the owner's:
+  it touches the run cap and the one-repeat rule. Nothing the loop can do shortens it.
 
 ## TL;DR — where this leaves the question
 **Settled**
@@ -33,7 +37,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
   (`length_effect.py --strip_bucket`, tables `expQ/longdoc/length/U_D_pages_s4{2,3}_{judge,match,em,project}.json`):
   - s42: 40 pages +2.5 [+0.8, +4.3], eighth-only / plain-only 105 / 70 (193536 .453 vs 192324 .429); 10 pages −0.4
     [−2.1, +1.4] 77 / 82 (193606 .503 vs 192326 .507); D +2.8 [+0.4, +5.3] sign 152 / 113 p .019.
-  - s43: 40 pages +3.8 [+1.8, +5.9] 136 / 82 (193608 .461 vs 192364 .422); 10 pages +0.5 [−1.4, +2.3] 91 / 84 (193607
+  - s43: 40 pages +3.8 [+1.9, +5.9] 136 / 82 (193608 .461 vs 192364 .422); 10 pages +0.5 [−1.4, +2.3] 91 / 84 (193607
     .494 vs 192360 .489); D +3.3 [+0.8, +6.0] sign 173 / 135 p .035.
   - other scorers, D s42 / s43: project prompt +1.8 [−0.9, +4.5] p .24 / +3.8 [+0.9, +6.6] p .012 (193645 copies vs
     192405 copies); match +1.9 [−0.1, +3.9] / +1.9 [−0.1, +3.9]; EM +1.8 [−0.1, +3.6] / +1.9 [−0.1, +3.7]. Sign kept and
@@ -71,7 +75,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
 - provisional: DECIDED for page images — a length loss at 40 pages. Δ_len 40 vs 10 pages (`length_effect.py
   --strip_bucket`, n 1,407, every file < 5% at the cap): rubric judge −6.5 [−9.5, −3.5] sign 165 / 249 p 4e-5 (s42;
   192324 / 192267 vs 192326 / 192287), −5.3 [−8.4, −2.3] 177 / 245 p .001 (s43; 192364 / 192267 vs 192360 / 192287);
-  project prompt −5.7 [−8.7, −2.6] 178 / 257 / −6.1 [−9.2, −3.0] 183 / 271 (192405); match −4.5 [−7.1, −2.1] / −3.6
+  project prompt −5.7 [−8.7, −2.6] 178 / 257 / −6.1 [−9.2, −3.0] 183 / 271 (192405); match −4.6 [−7.1, −2.1] / −3.6
   [−6.0, −1.1]; EM +6.0 / +7.2 flips (uncompressed EM .190 → .080 while its judge .672 → .659: EM fails on the accepted
   reference). By arm J's letter the EM flip makes it "judge-sensitive"; sourced to EM's fault and stated in the final
   checkpoint, which the owner answered 2026-11-25 (option A, fund U / P). Tables `expQ/longdoc/length/E_dlen_pages_p40_s4{2,3}_{judge,match,em,project}.json`.
@@ -131,7 +135,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
 - Final checkpoint written to BLOCKED.md: close now (recommended, 0 GPU-h) or fund one repeat of arm U on new
   documents (~15 runs, ~17 GPU-h, MMLongBench-Doc, licence unchecked, under-powered at ~700-1,000 questions).
 - The 40-page loss to explain: Δ_len −6.5 (s42) / −5.3 (s43); R's own 10 → 40 page drop .507 → .429 = −7.8 (s42,
-  192326 → 192324), .489 → .422 = −6.7 (s43, 192360 → 192364). Positions explain none of it (arm P). The eighth
+  192326 → 192324), .489 → .422 = −6.7 (s43, 192360 → 192364). Positions explain at most ~1.4 pt of it (arm P CI, page images at 10 pages only). The eighth
   recovers +2.5 / +3.8 of R's drop at 40 pages and nothing at 10 pages.
 - Health for every U / P cell: md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748,
   pisco/model.py 2a1cc007. 193608: 1,407 / 1,407 judged, unparseable 0, at cap 28 (1.99%), `mems_used` 815,874 = .121 of
@@ -170,7 +174,7 @@ logs `expQ/longdoc/eval_mnt_<jobid>.out`.
 | job | arm | state | rows | note |
 |---|---|---|---|---|
 | 193645 | J project-prompt re-judge of the 6 U / P files | COMPLETED, verdict closed "health OK" | 6 × 1,407 | copies in `expQ/longdoc/rejudge/UP_pages_p10_p40/` |
-| 193608 | U R s43 pages p40 eighth | COMPLETED, verdict closed "health OK" | 1,407 | +3.8 [+1.8, +5.9] vs 192364 |
+| 193608 | U R s43 pages p40 eighth | COMPLETED, verdict closed "health OK" | 1,407 | +3.8 [+1.9, +5.9] vs 192364 |
 | 193604 / 193605 | P R s42 / s43 pages p10 shifted | COMPLETED, verdict closed "health OK" | 1,407 each | −0.6 / −0.1 |
 | 193606 / 193607 | U R s42 / s43 pages p10 eighth | COMPLETED, verdict closed "health OK" | 1,407 each | −0.4 / +0.5 |
 | 193536 | U R s42 pages p40 eighth | COMPLETED, verdict closed "health OK" | 1,407 | +2.5 [+0.8, +4.3] |
