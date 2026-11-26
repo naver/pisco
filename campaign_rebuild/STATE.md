@@ -1,8 +1,13 @@
 # STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-25 23:00 (woken: the three feasibility-gate cells ended). HEAD ca348f9. This wake wrote, uncommitted
-at exit (the tick commits): `docs/stage2_rebuild.md` (new), `campaign_rebuild/BLOCKED.md` (new), two rows of
-`known_issues.md`, this file. No code edited, nothing launched.
+Last wake: 2026-11-27 01:30 (woken: ALERT "expmon daemon not running"). The daemon job had reached its 15-day wall
+(TIMEOUT 01:00) and the tick had already resubmitted it (RUNNING 01:30, homer-020): ALERT deleted, known_issues row
+added, gripe 7e8d2f8c +1. Nothing launched, no code edited. Previous science wake: 2026-11-25 23:00 (HEAD ca348f9).
+
+Efficiency line ("99 % waiting for the owner"): does not apply as a fix here. The law makes this wait: a feasibility-gate
+FAIL stops the campaign before training until the owner answers. The recommended answer (A) relaxes the law's R2 bar, so the
+standing "≤ 5 GPU-h, weakens nothing" rule cannot accept it; option B (≈ 2 GPU-h) would fit that rule but only measures the
+noise and leaves the same question open, so the recommendation is kept unchanged.
 
 ## TL;DR — where this leaves the question (readable as an email)
 **Settled**
