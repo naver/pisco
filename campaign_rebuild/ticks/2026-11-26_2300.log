@@ -1,0 +1,18 @@
+== campaign rebuild wake 2026-11-26_2300  reasons=heartbeat  tier=light  model=claude-sonnet-5-5  patch=40  max_turns=300  claude=2.1.318 (Claude Code)
+== sensors: ts=1795701601 live=- running=0 pending=0 problems=0 problems_other=0 new=0 gpuh24=0.0 idle_h=24.1 min_util=- alert=0 unpushed=0 cron=6 daemon=1 disk_gb=4921 sig=3f0317b9 same=47 behind=0 upstream=0 upfiles=0 upmine=0 upsib=4 uplaw=0 push_rc=0 next=waiting-owner
+== brief: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md   settings: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/wake.settings.json   hook log: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/hook.log
+== session cfbfdd3f-f319-41ce-80b3-19c4291f9808  model claude-sonnet-5-5  tools 51
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/rebuild/BRIEF.md
+  ↳ 1	# Wake brief — campaign rebuild — 2026-11-26_2300   (written by the tick; READ THIS instead of running status / check / grid / new / free / df yourself) (+118 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/STATE.md
+  ↳ 1	# STATE — campaign rebuild   (rewritten WHOLESALE by every LLM wake; never append) (+68 lines)
+→ Bash: cat /beegfs/scratch/user/hdejean/pisco/campaign_rebuild/NEXT
+  ↳ waiting-owner
+→ StructuredOutput: {"next": "waiting-owner", "summary": "No-op wake. Nothing is running and there are no new results or alerts. The campaign is still waiting for the owner's answer in BLOCKED.md: count the page-recall check as passed (A, recommended, 0 GPU-h …
+  ↳ Structured output provided successfully
+== result: subtype=success cost=0.2331 turns=5 is_error=False denials=0
+== declared: {"next": "waiting-owner", "summary": "No-op wake. Nothing is running and there are no new results or alerts. The campaign is still waiting for the owner's answer in BLOCKED.md: count the page-recall check as passed (A, recommended, 0 GPU-h now), measure the noise first (B, about 2 GPU-h), or stop (C). STATE.md and NEXT are unchanged, and NEXT still reads waiting-owner. The verifier's one note is already marked provisional in STATE.md: re-run the finetune config check before any finetune."}
+== final:
+{"next":"waiting-owner","summary":"No-op wake. Nothing is running and there are no new results or alerts. The campaign is still waiting for the owner's answer in BLOCKED.md: count the page-recall check as passed (A, recommended, 0 GPU-h now), measure the noise first (B, about 2 GPU-h), or stop (C). STATE.md and NEXT are unchanged, and NEXT still reads waiting-owner. The verifier's one note is already marked provisional in STATE.md: re-run the finetune config check before any finetune."}
+== rc=0 secs=22
+== codereview: none
