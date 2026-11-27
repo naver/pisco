@@ -1,0 +1,71 @@
+== verifier 2026-11-28_0030  model=claude-opus-5-5  input=/beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+== session efd5c8de-0acb-4cc8-90d8-eeb6bb1c4c35  model claude-opus-5-5  tools 28
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 1	# Verifier input — campaign longdoc (+241 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 243	- provisional: DECIDED for page images — a length loss at 40 pages. Δ_len 40 vs 10 pages (`length_effect.py (+199 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (33942 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 443	192359     E    -        ended     closed     -        -        -        -        -        -          -        -          -        -             -          -            -         -         -       (+59 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ File content (25502 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole f
+Reading the rest of the verifier input (grid tail and recorded verdicts) before checking each claim.
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 503	193608     U    -        ended     closed     -        -        -        -        -        -          -        -          -        -             -          -            -         -         -       (+79 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 583	{"ts": "2026-11-20 04:33", "jobid": "192361", "verdict": "closed", "note": "health OK: R s43 mixed m10 cap 512, 1,407/1,407 judged, unparseable 0, at cap 25 (1.8%), prompt max 4,864, mems_used 1,4 (+89 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/.expmon/campaign/longdoc/VERIFY_INPUT.md
+  ↳ 630	{"ts": "2026-11-18 22:05", "jobid": "191776", "metrics": {"judge": "0.164"}} (+42 lines)
+→ Grep: {"pattern": "MPOS|arm P|Arm P|P\\. positions", "path": "/beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md", "output_mode": "content"}
+  ↳ 34:- positions: the offset cost (arm P); (+4 lines)
+→ Glob: {"pattern": "expQ/longdoc/length/*", "path": "/beegfs/scratch/user/hdejean/pisco"}
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 138	  [2026-11-19 08:30, tightening] A Δ_len decides only if, in each of its four files, fewer than 5% of the answers (+11 lines)
+  ↳ Ripgrep search timed out after 20 seconds. The search may have matched files but did not complete in time. Try searching a more specific path or pattern.
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/CAMPAIGN.md
+  ↳ 215	  (3) a second program tested on planted cases: MISSING (`scripts/judge_agreement.py` measures agreement, not planted (+19 lines)
+→ Glob: {"pattern": "*.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length"}
+  ↳ expQ/longdoc/length/dlen_docs_p10_s42_judge.json (+82 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_text_t8k_s42_judge.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/U_D_pages_s42_match.json
+  ↳ 1	{ (+37 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/U_D_pages_s43_match.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/U_D_pages_s42_em.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/U_D_pages_s43_em.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/U_D_pages_s42_judge.json
+  ↳ 1	{ (+11 lines)
+Checking the cited tables and files (position-shift, ledger line, runs count, blocker file) against the state claims.
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/P_shift_p10_s42_em.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/EXPERIMENTS.md
+  ↳ 1110	  - next: arm on the owner's word; first cell = CPU audit (feasibility gate) (+11 lines)
+→ Grep: {"pattern": "\"exp\": ?\"longdoc\"", "path": "/beegfs/scratch/user/hdejean/pisco/.expmon/runs.jsonl", "output_mode": "count"}
+  ↳ .expmon/runs.jsonl:96 (+2 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/campaign_longdoc/BLOCKED.md
+  ↳ 1	## Final checkpoint: close the long-input diagnosis now, or fund one repeat of the slot-reading probe (~15 runs, ~17 GPU-hours)? (+29 lines)
+→ Grep: {"pattern": "1221|1220|731|733|n_common|no_cap", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json", "output_mode": "content", "head_limit": 30}
+  ↳ 54:  "docs20_s42_no_cap": { (+14 lines)
+→ Glob: {"pattern": "out_of_range.json", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516"}
+  ↳ expQ/longdoc/audit_191516/out_of_range.json
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/cap32_sensitivity.json
+  ↳ 78	  "docs20_s43_no_cap": { (+99 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/audit_191516/out_of_range.json
+  ↳ 1	{ (+34 lines)
+→ Grep: {"pattern": "md5|node|homer|b3d1cda1|2a1cc007|elapsed|State|state", "path": "/beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/health_U43p40_2026-11-26.json", "output_mode": "content", "head_limit": 30}
+  ↳ No matches found
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/E_dlen_pages_p40_s42_match.json
+  ↳ 1	{ (+11 lines)
+→ Read: /beegfs/scratch/user/hdejean/pisco/expQ/longdoc/length/health_U43p40_2026-11-26.json
+  ↳ 1	{ (+17 lines)
+→ StructuredOutput: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R at the cap s42 pages 1.4/1.7/3.6%, mixed 1.8/1.9/3.2%, text 3.2%; s43 page…
+  ↳ Structured output provided successfully
+== result: subtype=success cost=1.7409 turns=32 is_error=False denials=0
+== declared: {"claims": [{"claim": "The arm E answer cap is 512 tokens: uncompressed full cells …", "status": "supported", "reason": "Every count matches the health verdicts: 192266 47 (2.1%), 1…"}, {"claim": "provisional: arm P DECIDED — positions are NOT a cause at bo…", "status": "provisional", "reason": "Verdicts 193604/193605/193645 match: −0.6 [−1.4,+0.3] McNema…"}, {"claim": "provisional: arm U BETWEEN THE BARS — D +2.8 [+0.4,+5.3] sig…", "status": "provisional", "reason": "These match U_D_pages_s42_judge.json (+.0284 [+.0036,+.0533]…"}, {"claim": "provisional: the position probe's MPOS=0 path reproduces the…", "status": "provisional", "reason": "Verdict 193603 says 'identity gate PASS … 0 of 300 differ … …"}, "… +20 more"], "summary": "I checked 24 claims: 4 supported, 20 provisional, 0 unsuppor…"}
+== final:
+{"claims":[{"claim":"The arm E answer cap is 512 tokens: uncompressed full cells at the cap text 2.1% (47/2,246, 192266), pages 0.6/1.0/1.0%, mixed 1.1/1.8/2.2%; R at the cap s42 pages 1.4/1.7/3.6%, mixed 1.8/1.9/3.2%, text 3.2%; s43 pages 1.1/2.3/3.7%, mixed 1.8/2.8/3.8%, text 3.6%","status":"supported","reason":"Every count matches the health verdicts: 192266 47 (2.1%), 192287/192288/192267 8/14/14, 192289/192290/192268 15/26/31, R 192326/192356/192324 20/24/50, 192357/192358/192325 26/27/45, 192323 71, s43 192360/192362/192364 15/33/52, 192361/192363/192365 25/39/54, 192359 81. All are under the 5% bar. Minor: the law text says 191777 was 7/300 (2.3%), but its verdict says 8/300 (2.7%). Both are under 5%, so the cap stands either way."},{"claim":"provisional: arm P DECIDED — positions are NOT a cause at both seeds, under both judge prompts (shifted − plain −0.6 [−1.4,+0.3] s42, −0.1 [−0.8,+0.6] s43; project −0.4/−0.1; every CI inside ±3)","status":"provisional","reason":"Verdicts 193604/193605/193645 match: −0.6 [−1.4,+0.3] McNemar 16/24, −0.1 [−0.8,+0.6] 11/13, project −0.4/−0.1. P_shift_p10_s42_em.json gives −0.6 [−1.2,−0.1]. Offsets 27,990/28,934/29,670 and mems 1,689,350 also match. The owner's 2026-11-25 amendment (CAMPAIGN.md:227-230) covers the 10-vs-40-page set. Still one element short: the identity run that bridges the model.py version gap (2a1cc007 vs f8ae6efe) covered 300 of the 1,407 rows."},{"claim":"provisional: arm U BETWEEN THE BARS — D +2.8 [+0.4,+5.3] sign 152/113 p .019 (s42), +3.3 [+0.8,+6.0] 173/135 p .035 (s43); s42 misses +3 by 0.2 pt; project/match/EM keep sign within 2 pt","status":"provisional","reason":"These match U_D_pages_s42_judge.json (+.0284 [+.0036,+.0533] 152/113 p .019) and verdicts 193536/193606/193607/193608/193645. The reading of the bar (CAMPAIGN.md:144-146) is correct. Two rounding slips in the other scorers: match s42 is +1.8 (.0185), not +1.9, and EM s43 is +1.8 (.0185), not +1.9. STATE also leaves out that the match and EM sign tests are p .13-.15. The U cells pair across model.py versions, bridged by the code diff, not by an identity run."},{"claim":"provisional: the position probe's MPOS=0 path reproduces the plain eval (job 193603): 300 rows of pages p10, R s42, model.py 2a1cc007, 0 of 300 predictions differ from 192326","status":"provisional","reason":"Verdict 193603 says 'identity gate PASS … 0 of 300 differ … IDENTITY OK'. The grid shows limit=300. The claim is well backed, but the wake marked it provisional, so it stays provisional. It covers only 300 rows of the P path."},{"claim":"The transcription-probe port is validated (job 191169): 360/360 legacy pages byte-identical, word recall 70.5% = 70.5% (gate ±2 pt)","status":"supported","reason":"Verdict 191169 says 360/360 pages byte-identical and 70.5% = 70.5%. That is within ±2 pt of the 71% the law cites."},{"claim":"Arm E sets exist (job 191515): LongDocURL, 1,407 usable questions on 387 PDFs; pages and mixed 4,221 rows each, text 2,246 (637
+== rc=0

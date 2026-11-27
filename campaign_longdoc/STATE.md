@@ -1,19 +1,19 @@
 # STATE — campaign longdoc   (rewritten WHOLESALE by every LLM wake; never append)
 
-Last wake: 2026-11-27 01:30 (full wake, woken by an ALERT; no job ran, nothing launched).
+Last wake: 2026-11-28 00:30 (full wake, woken by an ALERT; no job ran, nothing launched).
 NEXT: `waiting-owner` — the final checkpoint is in BLOCKED.md (close now, or fund one repeat of arm U).
 Question: where do long inputs lose accuracy (eval, training data, length, `<MEM>` reading, positions, long-chunk
 training)? Diagnosis only: inference probes and CPU audits, no training.
 
 ## This wake
-- ALERT line 1 (01:17) "expmon daemon not running": resolved by the tick — daemon 193847 RUNNING on homer-020 at 01:30.
-- ALERT line 2 (01:30) "crontab has no 'campaign tick' line — the loop is not armed": a false alarm. The same tick's
-  sensor line reads `cron=6`, and that tick launched this wake. Known expmon defect (gripe e8d30dc9: a failed
-  crontab read counts as 0); +1 filed. The guard refused my read-only `crontab -l` (hard rule 3), so I did not check
-  the crontab myself. ALERT file deleted. New row in known_issues.md.
-- Verifier fixes: s43 40-page eighth CI lower bound 1.8 → 1.9 (verdict 193608); pages Δ_len string match s42 −4.5 →
-  −4.6 (verdict 192405; file −.0455); "positions explain none of the 40-page loss" → "at most ~1.4 pt" (arm P CI).
-- Time spent waiting for the owner (93% of the last 24 h, the tick's SPEED line): does not apply to the loop. The one
+- ALERT (00:08) "crontab has no 'campaign tick' line — the loop is not armed": the same false alarm as on 2026-11-27
+  (known_issues.md row "ALERT crontab has no tick line"). The 00:30 tick's sensor reads `cron=6`, and that tick
+  launched this wake. +1 on gripe e8d30dc9 (entry c0daa64a). The guard refuses any crontab read (hard rule 3), so
+  I did not check it myself. ALERT file deleted.
+- Verifier (VERIFY.md 2026-11-27 01:30): 24 claims, 0 unsupported, 0 contradicted. One wording fix: the "positions
+  explain at most ~1.4 pt of the 40-page loss" bullet carried arm P's 10-page CI over to the 40-page loss; reworded
+  to say what was measured (10-page inputs only).
+- Time spent waiting for the owner (99% of the last 24 h, the tick's SPEED line): does not apply to the loop. The one
   question has one recommendation (close, 0 GPU-h), but the escalation check (2026-11-26 03:30) ruled it the owner's:
   it touches the run cap and the one-repeat rule. Nothing the loop can do shortens it.
 
@@ -135,7 +135,7 @@ training)? Diagnosis only: inference probes and CPU audits, no training.
 - Final checkpoint written to BLOCKED.md: close now (recommended, 0 GPU-h) or fund one repeat of arm U on new
   documents (~15 runs, ~17 GPU-h, MMLongBench-Doc, licence unchecked, under-powered at ~700-1,000 questions).
 - The 40-page loss to explain: Δ_len −6.5 (s42) / −5.3 (s43); R's own 10 → 40 page drop .507 → .429 = −7.8 (s42,
-  192326 → 192324), .489 → .422 = −6.7 (s43, 192360 → 192364). Positions explain at most ~1.4 pt of it (arm P CI, page images at 10 pages only). The eighth
+  192326 → 192324), .489 → .422 = −6.7 (s43, 192360 → 192364). Arm P bounds the position cost only on 10-page inputs moved to 40-page position ids (CI lower bound −1.4 pt); it was not measured on the 40-page inputs themselves. The eighth
   recovers +2.5 / +3.8 of R's drop at 40 pages and nothing at 10 pages.
 - Health for every U / P cell: md5 eval_mm_4b.sh b3d1cda1, eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748,
   pisco/model.py 2a1cc007. 193608: 1,407 / 1,407 judged, unparseable 0, at cap 28 (1.99%), `mems_used` 815,874 = .121 of
@@ -196,7 +196,7 @@ eval_mm_docqa.py dfe32aa0, judge_mm_docqa.py 02bc8748, pisco/model.py f8ae6efe, 
 the same but model.py 2a1cc007.
 
 ## Adopted jobs
-(none — the other jobs in the queue are the expmon daemons 188764 / 162472)
+(none — the other jobs in the queue are the expmon daemons 193847 (pisco) / 162472 (Reranking))
 
 ## Open arms and the next decision for each
 | arm | status | next |
